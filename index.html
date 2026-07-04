@@ -3,6 +3,15 @@
 <head>
 <script>
 window.contextInfo = {"files":[],"materials":[],"crafts":[]};
+// 提早套用使用者已儲存的字體大小設定，避免頁面載入時閃爍
+(function() {
+  try {
+    var savedFontSize = localStorage.getItem('fontSizePref');
+    document.documentElement.setAttribute('data-font-size', savedFontSize === 'small' || savedFontSize === 'large' ? savedFontSize : 'medium');
+  } catch (e) {
+    document.documentElement.setAttribute('data-font-size', 'medium');
+  }
+})();
 // 处理锚点链接跳转（srcDoc iframe 中锚点链接默认行为不正确）
 document.addEventListener('click', function(e) {
   var anchor = e.target.closest('a');
@@ -46,14 +55,34 @@ document.addEventListener('click', function(e) {
   --radius-btn: 6px;
   --radius-input: 4px;
   --transition: 0.2s ease;
+  --font-scale: 1;
+}
+html[data-font-size="small"]{ --font-scale: 0.9; }
+html[data-font-size="medium"]{ --font-scale: 1; }
+html[data-font-size="large"]{ --font-scale: 1.15; }
+@media(max-width:900px){
+  html[data-font-size="large"]{ --font-scale: 1.1; }
+}
+@media(max-width:480px){
+  html[data-font-size="large"]{ --font-scale: 1.06; }
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,-apple-system,"Segoe UI","Noto Sans TC",sans-serif;font-size:14px;line-height:1.6;color:var(--text-primary);background:var(--bg);overflow-x:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI","Noto Sans TC",sans-serif;font-size:calc(14px * var(--font-scale));line-height:1.6;color:var(--text-primary);background:var(--bg);overflow-x:hidden}
 a{text-decoration:none;color:inherit}
-button{cursor:pointer;font-family:inherit;font-size:14px}
-input,select,textarea{font-family:inherit;font-size:14px}
+button{cursor:pointer;font-family:inherit;font-size:calc(14px * var(--font-scale))}
+input,select,textarea{font-family:inherit;font-size:calc(14px * var(--font-scale))}
 table{border-collapse:collapse;width:100%}
 .icon-svg{width:1em;height:1em;display:inline-block;vertical-align:-0.15em;flex-shrink:0}
+
+/* FONT SIZE TOGGLE */
+.font-size-toggle{display:flex;align-items:center;background:rgba(255,255,255,0.08);border-radius:6px;padding:2px;gap:2px;margin-right:4px}
+.font-size-btn{padding:6px 9px;border:none;background:none;border-radius:4px;color:rgba(255,255,255,0.65);font-size:12px!important;font-weight:700;cursor:pointer;transition:var(--transition);line-height:1;white-space:nowrap}
+.font-size-btn:hover{background:rgba(255,255,255,0.14);color:#fff}
+.font-size-btn.active{background:var(--accent-gold);color:#1a1a2e}
+@media(max-width:480px){
+  .font-size-toggle{gap:1px;padding:2px}
+  .font-size-btn{padding:6px 6px;font-size:11px!important}
+}
 
 /* SCROLLBAR */
 ::-webkit-scrollbar{width:6px;height:6px}
@@ -67,38 +96,38 @@ table{border-collapse:collapse;width:100%}
 .login-logo{text-align:center;margin-bottom:28px}
 .login-logo-icon{width:64px;height:64px;background:rgba(255,255,255,0);border-radius:12px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px}
 .login-logo-icon svg{width:56px;height:56px}
-.login-title{font-size:20px;font-weight:700;color:var(--primary);line-height:1.3}
-.login-subtitle{font-size:13px;color:var(--text-secondary);margin-top:4px}
+.login-title{font-size:calc(20px * var(--font-scale));font-weight:700;color:var(--primary);line-height:1.3}
+.login-subtitle{font-size:calc(13px * var(--font-scale));color:var(--text-secondary);margin-top:4px}
 .login-gold-line{width:40px;height:3px;background:var(--accent-gold);margin:12px auto 0}
-.login-section-label{font-size:12px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px}
+.login-section-label{font-size:calc(12px * var(--font-scale));font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px}
 .login-methods{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}
 .login-method-card{border:2px solid var(--border);border-radius:8px;padding:14px 8px;text-align:center;cursor:pointer;transition:var(--transition);background:#fff}
 .login-method-card:hover{border-color:var(--secondary);background:#f8faff}
 .login-method-card.active{border-color:var(--primary);background:#eef2ff}
-.login-method-icon{font-size:24px;margin-bottom:6px;color:var(--secondary)}
+.login-method-icon{font-size:calc(24px * var(--font-scale));margin-bottom:6px;color:var(--secondary)}
 .login-method-card.active .login-method-icon{color:var(--primary)}
-.login-method-name{font-size:12px;font-weight:600;color:var(--primary);line-height:1.4}
+.login-method-name{font-size:calc(12px * var(--font-scale));font-weight:600;color:var(--primary);line-height:1.4}
 .login-form-group{margin-bottom:16px}
-.login-form-group label{display:block;font-size:12px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px}
-.login-input{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-input);font-size:14px;transition:var(--transition);outline:none}
+.login-form-group label{display:block;font-size:calc(12px * var(--font-scale));font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px}
+.login-input{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-input);font-size:calc(14px * var(--font-scale));transition:var(--transition);outline:none}
 .login-input:focus{border-color:var(--secondary);box-shadow:0 0 0 3px rgba(20,66,114,0.1)}
 .login-input.error{border-color:var(--danger)}
-.login-error-msg{font-size:12px;color:var(--danger);margin-top:4px;display:flex;align-items:center;gap:4px}
-.btn-login{width:100%;padding:12px;background:linear-gradient(135deg,var(--accent-gold),#b8922a);color:#fff;border:none;border-radius:var(--radius-btn);font-size:15px;font-weight:700;transition:var(--transition);letter-spacing:0.04em;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.login-error-msg{font-size:calc(12px * var(--font-scale));color:var(--danger);margin-top:4px;display:flex;align-items:center;gap:4px}
+.btn-login{width:100%;padding:12px;background:linear-gradient(135deg,var(--accent-gold),#b8922a);color:#fff;border:none;border-radius:var(--radius-btn);font-size:calc(15px * var(--font-scale));font-weight:700;transition:var(--transition);letter-spacing:0.04em;display:inline-flex;align-items:center;justify-content:center;gap:8px}
 .btn-login:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(201,168,76,0.4)}
 .login-announcement{margin-top:24px;padding:14px;background:#f8f9fa;border-radius:8px;border-left:3px solid var(--accent-gold)}
-.login-announcement-title{font-size:12px;font-weight:700;color:var(--primary);margin-bottom:6px;display:flex;align-items:center;gap:6px}
-.login-announcement-item{font-size:12px;color:var(--text-secondary);padding:3px 0;border-bottom:1px solid #eee}
+.login-announcement-title{font-size:calc(12px * var(--font-scale));font-weight:700;color:var(--primary);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.login-announcement-item{font-size:calc(12px * var(--font-scale));color:var(--text-secondary);padding:3px 0;border-bottom:1px solid #eee}
 .login-announcement-item:last-child{border-bottom:none}
 
 /* ===== MAIN APP ===== */
 #app{display:none;min-height:100vh}
 
 /* SIMULATION BAR */
-#sim-bar{background:var(--warning);color:#fff;padding:8px 20px;display:none;align-items:center;justify-content:space-between;font-size:13px;font-weight:600;position:fixed;top:0;left:0;right:0;z-index:10001}
+#sim-bar{background:var(--warning);color:#fff;padding:8px 20px;display:none;align-items:center;justify-content:space-between;font-size:calc(13px * var(--font-scale));font-weight:600;position:fixed;top:0;left:0;right:0;z-index:10001}
 #sim-bar.active{display:flex}
 .sim-bar-left{display:flex;align-items:center;gap:8px}
-.btn-exit-sim{background:rgba(255,255,255,0.25);border:1px solid rgba(255,255,255,0.5);color:#fff;padding:4px 12px;border-radius:4px;font-size:12px;font-weight:600;cursor:pointer}
+.btn-exit-sim{background:rgba(255,255,255,0.25);border:1px solid rgba(255,255,255,0.5);color:#fff;padding:4px 12px;border-radius:4px;font-size:calc(12px * var(--font-scale));font-weight:600;cursor:pointer}
 .btn-exit-sim:hover{background:rgba(255,255,255,0.35)}
 
 /* HEADER */
@@ -109,8 +138,8 @@ table{border-collapse:collapse;width:100%}
 .header-logo{display:flex;align-items:center;gap:10px;margin-left:8px}
 .header-logo-icon{width:40px;height:40px;background:rgba(255,255,255,1);border-radius:12px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px}
 .header-logo-icon svg{width:50px;height:50px}
-.header-title{color:#fff;font-size:15px;font-weight:700;letter-spacing:0.02em;line-height:1.3}
-.header-title small{display:block;font-size:11px;font-weight:400;opacity:0.7;letter-spacing:0.04em}
+.header-title{color:#fff;font-size:calc(15px * var(--font-scale));font-weight:700;letter-spacing:0.02em;line-height:1.3}
+.header-title small{display:block;font-size:calc(11px * var(--font-scale));font-weight:400;opacity:0.7;letter-spacing:0.04em}
 .header-spacer{flex:1}
 .header-actions{display:flex;align-items:center;gap:8px}
 .header-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:6px;cursor:pointer;color:rgba(255,255,255,0.8);transition:var(--transition);position:relative;background:none;border:none}
@@ -118,13 +147,13 @@ table{border-collapse:collapse;width:100%}
 .notif-badge{position:absolute;top:6px;right:6px;width:8px;height:8px;background:var(--danger);border-radius:50%;border:1.5px solid var(--primary)}
 .header-user{display:flex;align-items:center;gap:8px;padding:6px 12px;border-radius:6px;cursor:pointer;transition:var(--transition);color:#fff}
 .header-user:hover{background:rgba(255,255,255,0.1)}
-.header-user-avatar{width:32px;height:32px;background:linear-gradient(135deg,var(--accent-gold),#b8922a);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff}
+.header-user-avatar{width:32px;height:32px;background:linear-gradient(135deg,var(--accent-gold),#b8922a);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:calc(13px * var(--font-scale));font-weight:700;color:#fff}
 .header-user-info{text-align:left}
-.header-user-name{font-size:13px;font-weight:600;line-height:1.3}
-.header-user-role{font-size:11px;opacity:0.7}
+.header-user-name{font-size:calc(13px * var(--font-scale));font-weight:600;line-height:1.3}
+.header-user-role{font-size:calc(11px * var(--font-scale));opacity:0.7}
 .user-dropdown{position:absolute;top:calc(var(--header-h) + 4px);right:16px;background:#fff;border-radius:8px;box-shadow:var(--shadow-md);min-width:180px;overflow:hidden;z-index:1001;display:none}
 .user-dropdown.open{display:block}
-.user-dropdown-item{padding:10px 16px;font-size:13px;cursor:pointer;transition:var(--transition);display:flex;align-items:center;gap:8px;color:var(--text-primary)}
+.user-dropdown-item{padding:10px 16px;font-size:calc(13px * var(--font-scale));cursor:pointer;transition:var(--transition);display:flex;align-items:center;gap:8px;color:var(--text-primary)}
 .user-dropdown-item:hover{background:#f5f7fa}
 .user-dropdown-divider{height:1px;background:var(--border)}
 
@@ -133,20 +162,20 @@ table{border-collapse:collapse;width:100%}
 #sidebar.collapsed{width:var(--sidebar-collapsed)}
 #sidebar.sim-offset{top:calc(var(--header-h) + 40px)}
 .sidebar-section{padding:8px 0}
-.sidebar-section-label{padding:8px 16px 4px;font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.1em;white-space:nowrap;overflow:hidden}
+.sidebar-section-label{padding:8px 16px 4px;font-size:calc(11px * var(--font-scale));font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.1em;white-space:nowrap;overflow:hidden}
 #sidebar.collapsed .sidebar-section-label{opacity:0}
 .sidebar-item{display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer;transition:var(--transition);color:rgba(255,255,255,0.75);white-space:nowrap;position:relative;border-left:3px solid transparent}
 .sidebar-item:hover{background:rgba(255,255,255,0.08);color:#fff}
 .sidebar-item.active{background:rgba(255,255,255,0.12);color:#fff;border-left-color:var(--accent-gold)}
-.sidebar-item-icon{width:20px;height:20px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px}
-.sidebar-item-text{font-size:13px;font-weight:500;overflow:hidden;transition:opacity var(--transition)}
+.sidebar-item-icon{width:20px;height:20px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:calc(16px * var(--font-scale))}
+.sidebar-item-text{font-size:calc(13px * var(--font-scale));font-weight:500;overflow:hidden;transition:opacity var(--transition)}
 #sidebar.collapsed .sidebar-item-text{opacity:0;width:0}
-.sidebar-item-arrow{margin-left:auto;font-size:10px;transition:transform var(--transition);flex-shrink:0}
+.sidebar-item-arrow{margin-left:auto;font-size:calc(10px * var(--font-scale));transition:transform var(--transition);flex-shrink:0}
 #sidebar.collapsed .sidebar-item-arrow{display:none}
 .sidebar-item.expanded .sidebar-item-arrow{transform:rotate(90deg)}
 .sidebar-submenu{overflow:hidden;max-height:0;transition:max-height 0.3s ease}
 .sidebar-submenu.open{max-height:300px}
-.sidebar-sub-item{display:flex;align-items:center;gap:8px;padding:7px 16px 7px 46px;cursor:pointer;transition:var(--transition);color:rgba(255,255,255,0.6);font-size:12.5px;white-space:nowrap;border-left:3px solid transparent}
+.sidebar-sub-item{display:flex;align-items:center;gap:8px;padding:7px 16px 7px 46px;cursor:pointer;transition:var(--transition);color:rgba(255,255,255,0.6);font-size:calc(12.5px * var(--font-scale));white-space:nowrap;border-left:3px solid transparent}
 .sidebar-sub-item:hover{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.9)}
 .sidebar-sub-item.active{color:var(--accent-gold);background:rgba(201,168,76,0.08);border-left-color:var(--accent-gold)}
 #sidebar.collapsed .sidebar-submenu{display:none}
@@ -157,7 +186,7 @@ table{border-collapse:collapse;width:100%}
 #main.sim-offset{margin-top:calc(var(--header-h) + 40px)}
 
 /* BREADCRUMB */
-.breadcrumb{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-secondary);margin-bottom:20px}
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:calc(13px * var(--font-scale));color:var(--text-secondary);margin-bottom:20px}
 .breadcrumb-item{cursor:pointer;transition:var(--transition)}
 .breadcrumb-item:hover{color:var(--secondary)}
 .breadcrumb-item.current{color:var(--text-primary);font-weight:600;cursor:default}
@@ -165,18 +194,18 @@ table{border-collapse:collapse;width:100%}
 
 /* PAGE HEADER */
 .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
-.page-title{font-size:20px;font-weight:700;color:var(--primary)}
-.page-subtitle{font-size:13px;color:var(--text-secondary);margin-top:2px}
+.page-title{font-size:calc(20px * var(--font-scale));font-weight:700;color:var(--primary)}
+.page-subtitle{font-size:calc(13px * var(--font-scale));color:var(--text-secondary);margin-top:2px}
 .page-actions{display:flex;gap:8px;align-items:center}
 
 /* CARDS */
 .card{background:var(--card);border-radius:var(--radius-card);box-shadow:var(--shadow-sm);padding:20px}
 .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-.card-title{font-size:15px;font-weight:700;color:var(--primary)}
-.card-subtitle{font-size:12px;color:var(--text-secondary);margin-top:2px}
+.card-title{font-size:calc(15px * var(--font-scale));font-weight:700;color:var(--primary)}
+.card-subtitle{font-size:calc(12px * var(--font-scale));color:var(--text-secondary);margin-top:2px}
 
 /* BUTTONS */
-.btn{padding:8px 16px;border-radius:var(--radius-btn);font-weight:600;border:none;transition:var(--transition);display:inline-flex;align-items:center;gap:6px;font-size:13px}
+.btn{padding:8px 16px;border-radius:var(--radius-btn);font-weight:600;border:none;transition:var(--transition);display:inline-flex;align-items:center;gap:6px;font-size:calc(13px * var(--font-scale))}
 .btn:hover{transform:translateY(-1px);box-shadow:0 3px 8px rgba(0,0,0,0.15)}
 .btn:active{transform:translateY(0)}
 .btn-primary{background:var(--primary);color:#fff}
@@ -193,22 +222,22 @@ table{border-collapse:collapse;width:100%}
 .btn-outline:hover{border-color:var(--secondary);color:var(--secondary);background:#f0f4ff}
 .btn-outline-primary{background:transparent;border:1.5px solid var(--primary);color:var(--primary)}
 .btn-outline-primary:hover{background:var(--primary);color:#fff}
-.btn-sm{padding:5px 10px;font-size:12px}
-.btn-lg{padding:11px 22px;font-size:15px}
+.btn-sm{padding:5px 10px;font-size:calc(12px * var(--font-scale))}
+.btn-lg{padding:11px 22px;font-size:calc(15px * var(--font-scale))}
 .btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;box-shadow:none}
 
 /* FORM ELEMENTS */
 .form-group{margin-bottom:16px}
-.form-label{display:block;font-size:12px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px}
+.form-label{display:block;font-size:calc(12px * var(--font-scale));font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px}
 .form-label .required{color:var(--danger);margin-left:2px}
-.form-control{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-input);font-size:14px;transition:var(--transition);outline:none;background:#fff;color:var(--text-primary)}
+.form-control{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-input);font-size:calc(14px * var(--font-scale));transition:var(--transition);outline:none;background:#fff;color:var(--text-primary)}
 .form-control:focus{border-color:var(--secondary);box-shadow:0 0 0 3px rgba(20,66,114,0.08)}
 .form-control:disabled{background:#f5f7fa;color:var(--text-secondary)}
 .form-control.error{border-color:var(--danger)}
 .form-control.success{border-color:var(--success)}
-.form-hint{font-size:12px;color:var(--text-secondary);margin-top:4px}
-.form-error{font-size:12px;color:var(--danger);margin-top:4px;display:flex;align-items:center;gap:4px}
-.form-success{font-size:12px;color:var(--success);margin-top:4px;display:flex;align-items:center;gap:4px}
+.form-hint{font-size:calc(12px * var(--font-scale));color:var(--text-secondary);margin-top:4px}
+.form-error{font-size:calc(12px * var(--font-scale));color:var(--danger);margin-top:4px;display:flex;align-items:center;gap:4px}
+.form-success{font-size:calc(12px * var(--font-scale));color:var(--success);margin-top:4px;display:flex;align-items:center;gap:4px}
 .form-row{display:grid;gap:16px}
 .form-row.cols-2{grid-template-columns:1fr 1fr}
 .form-row.cols-3{grid-template-columns:1fr 1fr 1fr}
@@ -217,20 +246,20 @@ table{border-collapse:collapse;width:100%}
 .input-group .form-control{flex:1}
 select.form-control{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:32px}
 .checkbox-group{display:flex;flex-wrap:wrap;gap:12px}
-.checkbox-item{display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px}
+.checkbox-item{display:flex;align-items:center;gap:6px;cursor:pointer;font-size:calc(13px * var(--font-scale))}
 .checkbox-item input[type=checkbox]{width:15px;height:15px;accent-color:var(--primary);cursor:pointer}
 
 /* SECTION DIVIDER */
 .section-divider{border:none;border-top:1px solid var(--border);margin:20px 0}
-.section-title{font-size:14px;font-weight:700;color:var(--primary);padding:10px 14px;background:#f5f8ff;border-radius:6px;border-left:3px solid var(--primary);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.section-title{font-size:calc(14px * var(--font-scale));font-weight:700;color:var(--primary);padding:10px 14px;background:#f5f8ff;border-radius:6px;border-left:3px solid var(--primary);margin-bottom:16px;display:flex;align-items:center;gap:8px}
 
 /* TABLES */
 .table-wrapper{overflow-x:auto;border-radius:var(--radius-card)}
 table.data-table{width:100%;border-collapse:collapse}
-table.data-table th{background:#f5f7fa;padding:10px 14px;text-align:left;font-size:12px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;border-bottom:2px solid var(--border);white-space:nowrap}
+table.data-table th{background:#f5f7fa;padding:10px 14px;text-align:left;font-size:calc(12px * var(--font-scale));font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;border-bottom:2px solid var(--border);white-space:nowrap}
 table.data-table th.sortable{cursor:pointer}
 table.data-table th.sortable:hover{background:#eef2ff;color:var(--primary)}
-table.data-table td{padding:11px 14px;border-bottom:1px solid var(--border);font-size:13px;color:var(--text-primary)}
+table.data-table td{padding:11px 14px;border-bottom:1px solid var(--border);font-size:calc(13px * var(--font-scale));color:var(--text-primary)}
 table.data-table tr:last-child td{border-bottom:none}
 table.data-table tr:hover td{background:#fafbff}
 table.data-table td.masked{font-family:monospace;letter-spacing:0.05em}
@@ -238,15 +267,15 @@ table.data-table td.masked{font-family:monospace;letter-spacing:0.05em}
 
 /* PAGINATION */
 .pagination{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--border);background:#fafbfc;border-radius:0 0 var(--radius-card) var(--radius-card)}
-.pagination-info{font-size:12px;color:var(--text-secondary)}
+.pagination-info{font-size:calc(12px * var(--font-scale));color:var(--text-secondary)}
 .pagination-controls{display:flex;align-items:center;gap:4px}
-.page-btn{padding:5px 10px;border:1px solid var(--border);border-radius:4px;background:#fff;font-size:12px;cursor:pointer;transition:var(--transition);color:var(--text-primary)}
+.page-btn{padding:5px 10px;border:1px solid var(--border);border-radius:4px;background:#fff;font-size:calc(12px * var(--font-scale));cursor:pointer;transition:var(--transition);color:var(--text-primary)}
 .page-btn:hover{border-color:var(--secondary);color:var(--secondary)}
 .page-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
 .page-btn:disabled{opacity:0.4;cursor:not-allowed}
 
 /* BADGES / STATUS */
-.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:0.03em;white-space:nowrap}
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:calc(11px * var(--font-scale));font-weight:700;letter-spacing:0.03em;white-space:nowrap}
 .badge-success{background:#d4edda;color:#155724}
 .badge-danger{background:#f8d7da;color:#721c24}
 .badge-warning{background:#fff3cd;color:#856404}
@@ -261,14 +290,14 @@ table.data-table td.masked{font-family:monospace;letter-spacing:0.05em}
 .toast.success{border-left-color:var(--success)}
 .toast.error{border-left-color:var(--danger)}
 .toast.warning{border-left-color:var(--warning)}
-.toast-icon{font-size:18px;flex-shrink:0;margin-top:1px;color:var(--info)}
+.toast-icon{font-size:calc(18px * var(--font-scale));flex-shrink:0;margin-top:1px;color:var(--info)}
 .toast.success .toast-icon{color:var(--success)}
 .toast.error .toast-icon{color:var(--danger)}
 .toast.warning .toast-icon{color:var(--warning)}
 .toast-content{flex:1}
-.toast-title{font-size:13px;font-weight:700;margin-bottom:2px}
-.toast-msg{font-size:12px;color:var(--text-secondary)}
-.toast-close{cursor:pointer;color:var(--text-secondary);font-size:16px;flex-shrink:0;background:none;border:none;padding:0}
+.toast-title{font-size:calc(13px * var(--font-scale));font-weight:700;margin-bottom:2px}
+.toast-msg{font-size:calc(12px * var(--font-scale));color:var(--text-secondary)}
+.toast-close{cursor:pointer;color:var(--text-secondary);font-size:calc(16px * var(--font-scale));flex-shrink:0;background:none;border:none;padding:0}
 @keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
 @keyframes fadeOut{from{opacity:1}to{opacity:0;transform:translateX(20px)}}
 .toast.removing{animation:fadeOut 0.3s ease forwards}
@@ -283,8 +312,8 @@ table.data-table td.masked{font-family:monospace;letter-spacing:0.05em}
 .modal-xl{max-width:1000px}
 @keyframes modalIn{from{transform:scale(0.95);opacity:0}to{transform:scale(1);opacity:1}}
 .modal-header{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.modal-title{font-size:16px;font-weight:700;color:var(--primary)}
-.modal-close{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:6px;cursor:pointer;color:var(--text-secondary);transition:var(--transition);background:none;border:none;font-size:18px}
+.modal-title{font-size:calc(16px * var(--font-scale));font-weight:700;color:var(--primary)}
+.modal-close{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:6px;cursor:pointer;color:var(--text-secondary);transition:var(--transition);background:none;border:none;font-size:calc(18px * var(--font-scale))}
 .modal-close:hover{background:#f5f7fa;color:var(--text-primary)}
 .modal-body{padding:20px 24px}
 .modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
@@ -294,7 +323,7 @@ table.data-table td.masked{font-family:monospace;letter-spacing:0.05em}
 .progress-bar-fill{height:100%;border-radius:20px;transition:width 0.5s ease;background:linear-gradient(90deg,var(--secondary),var(--accent-teal))}
 .progress-bar-fill.success{background:linear-gradient(90deg,var(--success),#4caf50)}
 .progress-bar-fill.warning{background:linear-gradient(90deg,var(--warning),#f39c12)}
-.progress-label{display:flex;justify-content:space-between;font-size:12px;color:var(--text-secondary);margin-top:4px}
+.progress-label{display:flex;justify-content:space-between;font-size:calc(12px * var(--font-scale));color:var(--text-secondary);margin-top:4px}
 
 /* STATS CARDS */
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px}
@@ -306,26 +335,26 @@ table.data-table td.masked{font-family:monospace;letter-spacing:0.05em}
 .stat-card.danger{border-left-color:var(--danger)}
 .stat-card.warning{border-left-color:var(--warning)}
 .stat-card.info{border-left-color:var(--info)}
-.stat-label{font-size:12px;color:var(--text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px}
-.stat-value{font-size:26px;font-weight:800;color:var(--primary);line-height:1}
+.stat-label{font-size:calc(12px * var(--font-scale));color:var(--text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px}
+.stat-value{font-size:calc(26px * var(--font-scale));font-weight:800;color:var(--primary);line-height:1}
 .stat-value.gold{color:var(--accent-gold)}
 .stat-value.danger{color:var(--danger)}
 .stat-value.success{color:var(--success)}
-.stat-sub{font-size:12px;color:var(--text-secondary);margin-top:4px}
-.stat-trend{font-size:12px;margin-top:6px;display:flex;align-items:center;gap:4px}
+.stat-sub{font-size:calc(12px * var(--font-scale));color:var(--text-secondary);margin-top:4px}
+.stat-trend{font-size:calc(12px * var(--font-scale));margin-top:6px;display:flex;align-items:center;gap:4px}
 .stat-trend.up{color:var(--success)}
 .stat-trend.down{color:var(--danger)}
 
 /* UPLOAD ZONE */
 .upload-zone{border:2px dashed var(--border);border-radius:var(--radius-card);padding:40px;text-align:center;cursor:pointer;transition:var(--transition);background:#fafbfc}
 .upload-zone:hover,.upload-zone.drag-over{border-color:var(--secondary);background:#f0f4ff}
-.upload-zone-icon{font-size:48px;margin-bottom:12px;opacity:0.5}
-.upload-zone-text{font-size:15px;font-weight:600;color:var(--text-primary);margin-bottom:4px}
-.upload-zone-hint{font-size:12px;color:var(--text-secondary)}
+.upload-zone-icon{font-size:calc(48px * var(--font-scale));margin-bottom:12px;opacity:0.5}
+.upload-zone-text{font-size:calc(15px * var(--font-scale));font-weight:600;color:var(--text-primary);margin-bottom:4px}
+.upload-zone-hint{font-size:calc(12px * var(--font-scale));color:var(--text-secondary)}
 
 /* TABS */
 .tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:20px;gap:0}
-.tab-item{padding:10px 20px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-secondary);border-bottom:2px solid transparent;margin-bottom:-2px;transition:var(--transition)}
+.tab-item{padding:10px 20px;cursor:pointer;font-size:calc(13px * var(--font-scale));font-weight:600;color:var(--text-secondary);border-bottom:2px solid transparent;margin-bottom:-2px;transition:var(--transition)}
 .tab-item:hover{color:var(--primary)}
 .tab-item.active{color:var(--primary);border-bottom-color:var(--primary)}
 .tab-content{display:none}
@@ -335,8 +364,8 @@ table.data-table td.masked{font-family:monospace;letter-spacing:0.05em}
 .filter-bar{background:var(--card);border-radius:var(--radius-card);padding:16px 20px;box-shadow:var(--shadow-sm);margin-bottom:20px}
 .filter-row{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end}
 .filter-group{display:flex;flex-direction:column;gap:4px;min-width:140px}
-.filter-label{font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em}
-.filter-control{padding:7px 10px;border:1.5px solid var(--border);border-radius:4px;font-size:13px;outline:none;transition:var(--transition);background:#fff}
+.filter-label{font-size:calc(11px * var(--font-scale));font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em}
+.filter-control{padding:7px 10px;border:1.5px solid var(--border);border-radius:4px;font-size:calc(13px * var(--font-scale));outline:none;transition:var(--transition);background:#fff}
 .filter-control:focus{border-color:var(--secondary)}
 select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;padding-right:26px}
 
@@ -346,18 +375,18 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 .bar-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
 .bar-fill{width:100%;border-radius:4px 4px 0 0;transition:height 0.5s ease;min-width:20px;cursor:pointer;position:relative}
 .bar-fill:hover{opacity:0.85}
-.bar-fill::after{content:attr(data-val);position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:700;color:var(--text-primary);white-space:nowrap}
-.bar-label{font-size:11px;color:var(--text-secondary);text-align:center}
+.bar-fill::after{content:attr(data-val);position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-size:calc(11px * var(--font-scale));font-weight:700;color:var(--text-primary);white-space:nowrap}
+.bar-label{font-size:calc(11px * var(--font-scale));color:var(--text-secondary);text-align:center}
 .pie-chart{width:120px;height:120px;border-radius:50%;position:relative;overflow:hidden}
 
 /* PHASE INDICATOR */
 .phase-indicator{display:flex;align-items:center;gap:0;margin-bottom:24px}
-.phase-step{display:flex;align-items:center;gap:8px;padding:10px 20px;background:var(--card);border:1px solid var(--border);font-size:13px;font-weight:600;color:var(--text-secondary);flex:1;justify-content:center}
+.phase-step{display:flex;align-items:center;gap:8px;padding:10px 20px;background:var(--card);border:1px solid var(--border);font-size:calc(13px * var(--font-scale));font-weight:600;color:var(--text-secondary);flex:1;justify-content:center}
 .phase-step:first-child{border-radius:var(--radius-btn) 0 0 var(--radius-btn)}
 .phase-step:last-child{border-radius:0 var(--radius-btn) var(--radius-btn) 0}
 .phase-step.active{background:var(--primary);color:#fff;border-color:var(--primary)}
 .phase-step.done{background:#d4edda;color:#155724;border-color:#c3e6cb}
-.phase-step-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;background:rgba(255,255,255,0.2);flex-shrink:0}
+.phase-step-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:calc(11px * var(--font-scale));font-weight:800;background:rgba(255,255,255,0.2);flex-shrink:0}
 .phase-step.active .phase-step-num{background:var(--accent-gold);color:#fff}
 .phase-step.done .phase-step-num{background:var(--success);color:#fff}
 
@@ -369,35 +398,35 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 .program-card.error{border-top-color:var(--danger)}
 .program-card.pending{border-top-color:var(--border)}
 .program-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.program-card-title{font-size:14px;font-weight:700;color:var(--primary)}
-.program-card-meta{font-size:12px;color:var(--text-secondary);margin-top:4px}
+.program-card-title{font-size:calc(14px * var(--font-scale));font-weight:700;color:var(--primary)}
+.program-card-meta{font-size:calc(12px * var(--font-scale));color:var(--text-secondary);margin-top:4px}
 .program-card-stats{display:flex;gap:16px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
 .program-stat{text-align:center}
-.program-stat-val{font-size:18px;font-weight:800;color:var(--primary)}
-.program-stat-label{font-size:11px;color:var(--text-secondary)}
+.program-stat-val{font-size:calc(18px * var(--font-scale));font-weight:800;color:var(--primary)}
+.program-stat-label{font-size:calc(11px * var(--font-scale));color:var(--text-secondary)}
 
 /* VALIDATION MESSAGES */
 .validation-area{background:#f8f9fa;border-radius:var(--radius-card);padding:14px 16px;border:1px solid var(--border)}
-.validation-item{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:13px}
+.validation-item{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:calc(13px * var(--font-scale))}
 .validation-item.ok{color:var(--success)}
 .validation-item.fail{color:var(--danger)}
 .validation-item.warn{color:var(--warning)}
-.validation-icon{font-size:15px;flex-shrink:0}
+.validation-icon{font-size:calc(15px * var(--font-scale));flex-shrink:0}
 
 /* INFO CARD */
 .info-card{background:#f0f4ff;border:1px solid #c8d8f8;border-radius:var(--radius-card);padding:14px 16px}
 .info-card.success{background:#f0fff4;border-color:#b2dfdb}
 .info-card.warning{background:#fff8f0;border-color:#ffe0b2}
 .info-card.danger{background:#fff5f5;border-color:#ffcdd2}
-.info-row{display:flex;gap:8px;padding:4px 0;font-size:13px;border-bottom:1px solid rgba(0,0,0,0.05)}
+.info-row{display:flex;gap:8px;padding:4px 0;font-size:calc(13px * var(--font-scale));border-bottom:1px solid rgba(0,0,0,0.05)}
 .info-row:last-child{border-bottom:none}
 .info-key{font-weight:600;color:var(--text-secondary);min-width:100px;flex-shrink:0}
 .info-val{color:var(--text-primary)}
 
 /* ANNOUNCEMENT */
 .announcement-banner{background:linear-gradient(135deg,#fff8e1,#fff3cd);border:1px solid #ffe082;border-radius:var(--radius-card);padding:12px 16px;margin-bottom:20px;display:flex;align-items:center;gap:10px}
-.announcement-icon{font-size:18px;flex-shrink:0}
-.announcement-text{font-size:13px;color:#5d4037}
+.announcement-icon{font-size:calc(18px * var(--font-scale));flex-shrink:0}
+.announcement-text{font-size:calc(13px * var(--font-scale));color:#5d4037}
 .announcement-text strong{color:#e65100}
 
 /* EMPTY STATE */
@@ -413,18 +442,18 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 .param-history-dot{width:10px;height:10px;border-radius:50%;background:var(--border);margin-top:5px;flex-shrink:0}
 .param-history-item.current .param-history-dot{background:var(--success);box-shadow:0 0 0 3px rgba(45,139,78,0.15)}
 .param-history-content{flex:1}
-.param-formula-box{background:#f5f8ff;border:1px solid var(--border);border-radius:6px;padding:14px 16px;font-family:"Consolas","Courier New",monospace;font-size:13px;color:var(--primary);line-height:1.8;overflow-x:auto}
-.conn-test-result{margin-top:12px;padding:10px 14px;border-radius:6px;font-size:13px;display:none;align-items:center;gap:8px}
+.param-formula-box{background:#f5f8ff;border:1px solid var(--border);border-radius:6px;padding:14px 16px;font-family:"Consolas","Courier New",monospace;font-size:calc(13px * var(--font-scale));color:var(--primary);line-height:1.8;overflow-x:auto}
+.conn-test-result{margin-top:12px;padding:10px 14px;border-radius:6px;font-size:calc(13px * var(--font-scale));display:none;align-items:center;gap:8px}
 .conn-test-result.show{display:flex}
 .conn-test-result.ok{background:#d4edda;color:#155724}
 .conn-test-result.fail{background:#f8d7da;color:#721c24}
 .empty-state{text-align:center;padding:48px 20px;color:var(--text-secondary)}
-.empty-state-icon{font-size:48px;margin-bottom:12px;opacity:0.4}
-.empty-state-text{font-size:15px;font-weight:600;margin-bottom:4px}
-.empty-state-hint{font-size:13px}
+.empty-state-icon{font-size:calc(48px * var(--font-scale));margin-bottom:12px;opacity:0.4}
+.empty-state-text{font-size:calc(15px * var(--font-scale));font-weight:600;margin-bottom:4px}
+.empty-state-hint{font-size:calc(13px * var(--font-scale))}
 
 /* FOOTER */
-#footer{background:var(--primary);color:rgba(255,255,255,0.5);text-align:center;padding:14px;font-size:12px;margin-left:var(--sidebar-w);transition:margin-left var(--transition)}
+#footer{background:var(--primary);color:rgba(255,255,255,0.5);text-align:center;padding:14px;font-size:calc(12px * var(--font-scale));margin-left:var(--sidebar-w);transition:margin-left var(--transition)}
 #footer.sidebar-collapsed{margin-left:var(--sidebar-collapsed)}
 
 /* VIEWS */
@@ -436,27 +465,27 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 .dashboard-card{background:var(--card);border-radius:var(--radius-card);padding:20px;box-shadow:var(--shadow-sm);transition:var(--transition);cursor:pointer}
 .dashboard-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md)}
 .dashboard-card-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
-.dashboard-card-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;color:#fff}
+.dashboard-card-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:calc(22px * var(--font-scale));flex-shrink:0;color:#fff}
 .dashboard-card-icon.navy{background:linear-gradient(135deg,var(--primary),var(--secondary))}
 .dashboard-card-icon.gold{background:linear-gradient(135deg,var(--accent-gold),#b8922a)}
 .dashboard-card-icon.teal{background:linear-gradient(135deg,var(--accent-teal),#0a5c5f)}
 .dashboard-card-icon.success{background:linear-gradient(135deg,var(--success),#1e6b3a)}
 .dashboard-card-icon.info{background:linear-gradient(135deg,var(--info),#1a6fa0)}
 .dashboard-card-icon.warning{background:linear-gradient(135deg,var(--warning),#c0680e)}
-.dashboard-card-title{font-size:14px;font-weight:700;color:var(--primary)}
-.dashboard-card-sub{font-size:12px;color:var(--text-secondary)}
+.dashboard-card-title{font-size:calc(14px * var(--font-scale));font-weight:700;color:var(--primary)}
+.dashboard-card-sub{font-size:calc(12px * var(--font-scale));color:var(--text-secondary)}
 .dashboard-metrics{display:flex;gap:16px}
 .dashboard-metric{flex:1}
-.dashboard-metric-val{font-size:22px;font-weight:800;color:var(--primary)}
-.dashboard-metric-label{font-size:11px;color:var(--text-secondary);margin-top:2px}
+.dashboard-metric-val{font-size:calc(22px * var(--font-scale));font-weight:800;color:var(--primary)}
+.dashboard-metric-label{font-size:calc(11px * var(--font-scale));color:var(--text-secondary);margin-top:2px}
 .quick-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
 
 /* REPORT ITEMS */
 .report-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);transition:var(--transition)}
 .report-item:last-child{border-bottom:none}
 .report-item:hover{background:#fafbff}
-.report-item-name{font-size:13px;color:var(--text-primary);font-weight:500}
-.report-item-meta{font-size:11px;color:var(--text-secondary);margin-top:2px}
+.report-item-name{font-size:calc(13px * var(--font-scale));color:var(--text-primary);font-weight:500}
+.report-item-meta{font-size:calc(11px * var(--font-scale));color:var(--text-secondary);margin-top:2px}
 .report-item-actions{display:flex;gap:6px;align-items:center}
 
 /* EXPANDABLE ROW */
@@ -510,8 +539,8 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 
   /* Header */
   .header-user-info{display:none}
-  .header-title{font-size:13px}
-  .header-title small{font-size:10px}
+  .header-title{font-size:calc(13px * var(--font-scale))}
+  .header-title small{font-size:calc(10px * var(--font-scale))}
   .header-logo{gap:6px}
 
   /* Dashboard */
@@ -564,16 +593,16 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
   .pagination{flex-direction:column}
   .program-card-stats{flex-wrap:wrap}
   .rich-text-toolbar{flex-wrap:wrap}
-  #sim-bar{padding:6px 12px;font-size:12px;flex-wrap:wrap;gap:6px}
+  #sim-bar{padding:6px 12px;font-size:calc(12px * var(--font-scale));flex-wrap:wrap;gap:6px}
   .sim-bar-left{flex:1;min-width:0}
   #sim-bar .btn-exit-sim{flex-shrink:0}
-  #footer{margin-left:0 !important;text-align:center;font-size:11px;padding:10px}
+  #footer{margin-left:0 !important;text-align:center;font-size:calc(11px * var(--font-scale));padding:10px}
   [style*="grid-template-columns:1fr 1fr"],[style*="grid-template-columns: 1fr 1fr"]{grid-template-columns:1fr !important}
   [style*="grid-template-columns:repeat(3,1fr)"],[style*="grid-template-columns: repeat(3,1fr)"]{grid-template-columns:1fr 1fr !important}
   [style*="grid-template-columns:repeat(4,1fr)"],[style*="grid-template-columns: repeat(4,1fr)"]{grid-template-columns:repeat(2,1fr) !important}
   [style*="grid-template-columns:1fr 320px"],[style*="grid-template-columns:1fr 300px"],[style*="grid-template-columns:2fr 1fr"],[style*="grid-template-columns:480px 1fr"]{grid-template-columns:1fr !important}
   .announcement-banner{flex-direction:column;align-items:flex-start;gap:6px}
-  .announcement-banner .announcement-text{font-size:12px}
+  .announcement-banner .announcement-text{font-size:calc(12px * var(--font-scale))}
   .bar-chart{height:120px;gap:4px}
   #toast-container{top:auto;bottom:0;right:0;left:0;padding:8px;max-width:100vw}
   .toast{animation:slideInUp 0.3s ease}
@@ -585,63 +614,107 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
   .stats-grid{grid-template-columns:1fr}
   .login-card{padding:20px 14px}
   .card{padding:14px}
-  .page-actions .btn{font-size:12px}
-  .stat-value{font-size:22px}
+  .page-actions .btn{font-size:calc(12px * var(--font-scale))}
+  .stat-value{font-size:calc(22px * var(--font-scale))}
   .header-logo-icon{width:30px;height:30px}
-  .header-title{font-size:12px}
+  .header-title{font-size:calc(12px * var(--font-scale))}
   .header-title small{display:none}
   .col-selector{grid-template-columns:1fr}
   .perm-items{grid-template-columns:1fr}
   #main{padding:12px}
   [style*="grid-template-columns:repeat(3,1fr)"],[style*="grid-template-columns: repeat(3,1fr)"]{grid-template-columns:1fr !important}
   [style*="grid-template-columns:repeat(4,1fr)"],[style*="grid-template-columns: repeat(4,1fr)"]{grid-template-columns:1fr !important}
-  .rich-text-toolbar button{padding:3px 6px;font-size:11px}
-  .sim-bar-left{font-size:11px}
+  .rich-text-toolbar button{padding:3px 6px;font-size:calc(11px * var(--font-scale))}
+  .sim-bar-left{font-size:calc(11px * var(--font-scale))}
 }
 
 /* SCROLLABLE TABLE CONTAINER */
 .table-card{background:var(--card);border-radius:var(--radius-card);box-shadow:var(--shadow-sm);overflow:hidden}
 
 /* RICH TEXT AREA */
-.rich-text-area{width:100%;min-height:200px;padding:12px;border:1.5px solid var(--border);border-radius:var(--radius-input);font-size:14px;line-height:1.6;resize:vertical;outline:none;transition:var(--transition)}
+.rich-text-area{width:100%;min-height:200px;padding:12px;border:1.5px solid var(--border);border-radius:var(--radius-input);font-size:calc(14px * var(--font-scale));line-height:1.6;resize:vertical;outline:none;transition:var(--transition)}
 .rich-text-area:focus{border-color:var(--secondary);box-shadow:0 0 0 3px rgba(20,66,114,0.08)}
 .rich-text-toolbar{display:flex;gap:4px;padding:8px;background:#f5f7fa;border:1.5px solid var(--border);border-bottom:none;border-radius:var(--radius-input) var(--radius-input) 0 0}
-.rich-text-toolbar button{padding:4px 8px;border:1px solid var(--border);border-radius:3px;background:#fff;font-size:12px;cursor:pointer;font-weight:600;transition:var(--transition)}
+.rich-text-toolbar button{padding:4px 8px;border:1px solid var(--border);border-radius:3px;background:#fff;font-size:calc(12px * var(--font-scale));cursor:pointer;font-weight:600;transition:var(--transition)}
 .rich-text-toolbar button:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
 
 /* COLUMN SELECTOR */
 .col-selector{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.col-selector-item{display:flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--border);border-radius:4px;cursor:pointer;transition:var(--transition);font-size:12px}
+.col-selector-item{display:flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--border);border-radius:4px;cursor:pointer;transition:var(--transition);font-size:calc(12px * var(--font-scale))}
 .col-selector-item:hover{border-color:var(--secondary);background:#f0f4ff}
 .col-selector-item.selected{border-color:var(--primary);background:#eef2ff;color:var(--primary);font-weight:600}
 .col-selector-item input{accent-color:var(--primary)}
 
 /* AUDIT LOG */
-.audit-diff{font-family:monospace;font-size:12px;background:#f8f9fa;padding:8px;border-radius:4px;border:1px solid var(--border)}
+.audit-diff{font-family:monospace;font-size:calc(12px * var(--font-scale));background:#f8f9fa;padding:8px;border-radius:4px;border:1px solid var(--border)}
 .audit-diff .before{color:var(--danger)}
 .audit-diff .after{color:var(--success)}
 
 /* PERMISSION TREE */
 .perm-module{margin-bottom:12px}
-.perm-module-header{display:flex;align-items:center;gap:8px;padding:8px 12px;background:#f5f7fa;border-radius:4px;cursor:pointer;font-size:13px;font-weight:700;color:var(--primary)}
+.perm-module-header{display:flex;align-items:center;gap:8px;padding:8px 12px;background:#f5f7fa;border-radius:4px;cursor:pointer;font-size:calc(13px * var(--font-scale));font-weight:700;color:var(--primary)}
 .perm-items{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:8px 12px}
-.perm-item{display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer}
+.perm-item{display:flex;align-items:center;gap:6px;font-size:calc(12px * var(--font-scale));cursor:pointer}
 .perm-item input{accent-color:var(--primary)}
 
 /* MASKING TOGGLE */
-.mask-toggle{display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:var(--info);text-decoration:underline;background:none;border:none;padding:0}
+.mask-toggle{display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:calc(12px * var(--font-scale));color:var(--info);text-decoration:underline;background:none;border:none;padding:0}
 
 /* ANNOUNCEMENT CAROUSEL */
 .announcement-list{list-style:none}
-.announcement-list li{padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;display:flex;align-items:center;gap:8px}
+.announcement-list li{padding:8px 0;border-bottom:1px solid var(--border);font-size:calc(13px * var(--font-scale));display:flex;align-items:center;gap:8px}
 .announcement-list li:last-child{border-bottom:none}
-.announcement-date{font-size:11px;color:var(--text-secondary);white-space:nowrap}
-.announcement-tag{font-size:10px;padding:2px 6px;border-radius:10px;font-weight:700;flex-shrink:0}
+.announcement-date{font-size:calc(11px * var(--font-scale));color:var(--text-secondary);white-space:nowrap}
+.announcement-tag{font-size:calc(10px * var(--font-scale));padding:2px 6px;border-radius:10px;font-weight:700;flex-shrink:0}
 .announcement-tag.urgent{background:#fde8e8;color:var(--danger)}
 .announcement-tag.info{background:#d1ecf1;color:#0c5460}
 .announcement-tag.normal{background:#e2e3e5;color:#383d41}
 @keyframes slideInUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+/* ===== ROC DATE PICKER ===== */
+.date-field-wrap{position:relative;display:flex;align-items:center;width:100%}
+.date-field-wrap input{padding-right:36px!important;width:100%}
+.date-picker-toggle{position:absolute;right:5px;top:50%;transform:translateY(-50%);width:26px;height:26px;display:flex;align-items:center;justify-content:center;background:none;border:none;color:var(--text-secondary);cursor:pointer;border-radius:4px;transition:var(--transition);padding:0}
+.date-picker-toggle svg{width:15px;height:15px}
+.date-picker-toggle:hover{background:#eef2ff;color:var(--primary)}
+.date-picker-backdrop{position:fixed;inset:0;z-index:5990;display:none}
+.date-picker-backdrop.open{display:block}
+.date-picker-popup{position:absolute;top:calc(100% + 6px);left:0;z-index:5999;background:var(--card);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow-md);padding:12px;width:264px;display:none}
+.date-picker-popup.open{display:block}
+.date-picker-head{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:10px}
+.date-picker-head select{padding:5px 6px;border:1px solid var(--border);border-radius:6px;font-size:12.5px;font-weight:700;color:var(--primary);background:#fff;flex:1}
+.date-picker-weekdays{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:11px;color:var(--text-secondary);margin-bottom:4px;font-weight:600}
+.date-picker-days{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.date-picker-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:12px;cursor:pointer;color:var(--text-primary)}
+.date-picker-day:hover{background:#eef2ff}
+.date-picker-day.selected{background:var(--primary);color:#fff;font-weight:700}
+.date-picker-day.today:not(.selected){border:1px solid var(--accent-gold);font-weight:700}
+.date-picker-day.empty{visibility:hidden;cursor:default}
+.date-picker-footer{display:flex;justify-content:space-between;margin-top:10px;padding-top:8px;border-top:1px solid var(--border)}
+.date-picker-footer button{font-size:12px;color:var(--info);background:none;border:none;cursor:pointer;font-weight:700;padding:4px 6px;border-radius:4px}
+.date-picker-footer button:hover{background:#eef2ff}
+.date-picker-footer button.dp-close{color:var(--text-secondary)}
+
+/* ===== DOWNLOAD / GENERATION PROGRESS ===== */
+.dl-progress-overlay{position:fixed;inset:0;background:rgba(10,38,71,0.55);z-index:6500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s ease}
+.dl-progress-overlay.open{opacity:1;pointer-events:auto}
+.dl-progress-card{background:var(--card);border-radius:14px;padding:30px 28px;width:360px;max-width:90vw;box-shadow:0 24px 70px rgba(0,0,0,0.4);text-align:center}
+.dl-progress-icon{width:52px;height:52px;border-radius:50%;background:#eef2ff;color:var(--primary);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;animation:dlSpin 1.4s linear infinite}
+.dl-progress-icon svg{width:24px;height:24px}
+.dl-progress-icon.done{background:#e8f6ec;color:var(--success);animation:none}
+.dl-progress-title{font-weight:700;color:var(--primary);font-size:15px;margin-bottom:4px}
+.dl-progress-sub{font-size:12.5px;color:var(--text-secondary);margin-bottom:18px;word-break:break-all}
+.dl-progress-track{height:8px;background:#eef1f6;border-radius:4px;overflow:hidden;margin-bottom:8px}
+.dl-progress-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--secondary),var(--accent-gold));border-radius:4px;transition:width 0.12s linear}
+.dl-progress-pct{font-size:12px;color:var(--text-secondary);font-weight:700}
+.dl-progress-close{margin-top:16px;display:none}
+@keyframes dlSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+/* ===== GENERIC DETAIL MODAL EXTRAS ===== */
+.detail-block{margin-bottom:16px}
+.detail-block:last-child{margin-bottom:0}
+.detail-block-title{font-size:calc(13px * var(--font-scale));font-weight:700;color:var(--primary);margin-bottom:8px;display:flex;align-items:center;gap:6px}
 </style>
+
 </head>
 <body>
 
@@ -717,7 +790,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><circle cx="12" cy="16" r="1.3" fill="currentColor" stroke="none"/></svg> 登入系統
     </button>
     
-    <div style="text-align:center;margin-top:12px;font-size:12px;color:var(--text-secondary)">
+    <div style="text-align:center;margin-top:12px;font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">
       本系統介接內政部 FIDO 驗證平台，Session 有效期限 30 分鐘
     </div>
     
@@ -772,6 +845,11 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
     </div>
     <div class="header-spacer"></div>
     <div class="header-actions">
+      <div class="font-size-toggle" id="font-size-toggle" role="group" aria-label="網頁字體大小切換">
+        <button class="font-size-btn" data-size="small" onclick="setFontSize('small')" title="小">A-</button>
+        <button class="font-size-btn" data-size="medium" onclick="setFontSize('medium')" title="中">A</button>
+        <button class="font-size-btn" data-size="large" onclick="setFontSize('large')" title="大">A+</button>
+      </div>
       <button class="header-btn" onclick="showToast('info','系統通知','您有 3 則未讀通知')">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         <span class="notif-badge"></span>
@@ -957,7 +1035,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           <div class="page-subtitle">歡迎回來，王大明 ｜ 單位：給付科 ｜ 角色：承辦人 ｜ 最後登入：113/12/10 09:23</div>
         </div>
         <div class="page-actions">
-          <span style="font-size:13px;color:var(--text-secondary)">113年12月10日 (一)</span>
+          <span style="font-size:calc(13px * var(--font-scale));color:var(--text-secondary)">113年12月10日 (一)</span>
         </div>
       </div>
       
@@ -1223,26 +1301,26 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div class="info-card" style="margin-bottom:16px">
           <div class="form-row cols-4">
             <div>
-              <div class="info-key" style="font-size:11px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em">姓名</div>
-              <div style="font-size:15px;font-weight:700;color:var(--primary);margin-top:4px">陳美麗</div>
+              <div class="info-key" style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em">姓名</div>
+              <div style="font-size:calc(15px * var(--font-scale));font-weight:700;color:var(--primary);margin-top:4px">陳美麗</div>
             </div>
             <div>
-              <div class="info-key" style="font-size:11px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em">身分證字號</div>
-              <div style="font-size:15px;font-weight:700;color:var(--primary);margin-top:4px" id="recipient-id">B234***789</div>
+              <div class="info-key" style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em">身分證字號</div>
+              <div style="font-size:calc(15px * var(--font-scale));font-weight:700;color:var(--primary);margin-top:4px" id="recipient-id">B234***789</div>
               <button class="mask-toggle" onclick="toggleMask('recipient-id','B234567890')">顯示完整</button>
             </div>
             <div>
-              <div class="info-key" style="font-size:11px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em">服務機關</div>
-              <div style="font-size:15px;font-weight:700;color:var(--primary);margin-top:4px">臺北市政府教育局</div>
+              <div class="info-key" style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em">服務機關</div>
+              <div style="font-size:calc(15px * var(--font-scale));font-weight:700;color:var(--primary);margin-top:4px">臺北市政府教育局</div>
             </div>
             <div>
-              <div class="info-key" style="font-size:11px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em">退休類別</div>
-              <div style="font-size:15px;font-weight:700;color:var(--primary);margin-top:4px">公務人員月退</div>
+              <div class="info-key" style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em">退休類別</div>
+              <div style="font-size:calc(15px * var(--font-scale));font-weight:700;color:var(--primary);margin-top:4px">公務人員月退</div>
             </div>
           </div>
         </div>
         
-        <div style="font-size:13px;font-weight:700;color:var(--primary);margin-bottom:10px">歷史撥付紀錄</div>
+        <div style="font-size:calc(13px * var(--font-scale));font-weight:700;color:var(--primary);margin-bottom:10px">歷史撥付紀錄</div>
         <div class="table-card">
           <div class="table-wrapper">
           <table class="data-table">
@@ -1391,9 +1469,9 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
               </table>
             </div>
             <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
-              <div style="font-size:13px;color:var(--text-secondary)">已勾選 5 筆，合計溢領金額：<strong style="color:var(--primary)">NT$ 781,000</strong></div>
+              <div style="font-size:calc(13px * var(--font-scale));color:var(--text-secondary)">已勾選 5 筆，合計溢領金額：<strong style="color:var(--primary)">NT$ 781,000</strong></div>
               <div style="display:flex;gap:8px">
-                <button class="btn btn-outline btn-sm">下載異常清冊</button>
+                <button class="btn btn-outline btn-sm" onclick="runDownload('溢領批次異常清冊','xlsx')">下載異常清冊</button>
                 <button class="btn btn-gold" onclick="runBatchCalc()">▶ 執行批次計算</button>
               </div>
             </div>
@@ -1418,16 +1496,16 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
               </div>
               <div class="stat-card gold" style="padding:14px">
                 <div class="stat-label">溢領總額</div>
-                <div class="stat-value gold" style="font-size:18px">781,000</div>
+                <div class="stat-value gold" style="font-size:calc(18px * var(--font-scale))">781,000</div>
               </div>
               <div class="stat-card info" style="padding:14px">
                 <div class="stat-label">執行時間</div>
-                <div class="stat-value" style="font-size:18px">3.2s</div>
+                <div class="stat-value" style="font-size:calc(18px * var(--font-scale))">3.2s</div>
               </div>
             </div>
             <div style="margin-top:16px;display:flex;gap:8px">
-              <button class="btn btn-success btn-sm"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 下載計算結果清冊</button>
-              <button class="btn btn-outline btn-sm"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 下載異常清冊</button>
+              <button class="btn btn-success btn-sm" onclick="runDownload('溢領批次計算結果清冊','xlsx')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 下載計算結果清冊</button>
+              <button class="btn btn-outline btn-sm" onclick="runDownload('溢領批次異常清冊','xlsx')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 下載異常清冊</button>
             </div>
           </div>
         </div>
@@ -1435,7 +1513,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div>
           <div class="card">
             <div class="card-title" style="margin-bottom:12px"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="4" width="12" height="17" rx="2"/><rect x="9" y="2" width="6" height="4" rx="1"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="15" y2="15"/></svg> 檔案格式說明</div>
-            <div style="font-size:12px;color:var(--text-secondary);line-height:1.8">
+            <div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary);line-height:1.8">
               <div style="font-weight:700;color:var(--primary);margin-bottom:8px">必要欄位：</div>
               <div style="padding:4px 0;border-bottom:1px solid var(--border)">A欄：姓名</div>
               <div style="padding:4px 0;border-bottom:1px solid var(--border)">B欄：身分證字號</div>
@@ -1508,7 +1586,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       
       <div class="table-card">
         <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
-          <div style="font-size:13px;font-weight:700;color:var(--primary)">待處理案件清單 (共 8 筆)</div>
+          <div style="font-size:calc(13px * var(--font-scale));font-weight:700;color:var(--primary)">待處理案件清單 (共 8 筆)</div>
           <div style="display:flex;gap:8px">
             <button class="btn btn-outline btn-sm" onclick="selectAllDocs()">全選</button>
             <button class="btn btn-gold" onclick="generateDocs()"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><line x1="8" y1="13" x2="14" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg> 產製選定文件</button>
@@ -1532,7 +1610,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           <tbody>
             <tr><td><input type="checkbox" class="table-checkbox doc-cb" checked></td><td>OVF-113-0888</td><td>林志明</td><td class="masked">C345***678</td><td>113/10~113/11</td><td>NT$ 142,000</td><td>亡故後繼續撥付</td><td><span class="badge badge-warning">待產製</span></td><td><button class="btn btn-sm btn-outline">預覽</button></td></tr>
             <tr><td><input type="checkbox" class="table-checkbox doc-cb" checked></td><td>OVF-113-0889</td><td>張淑芬</td><td class="masked">D456***789</td><td>113/09~113/11</td><td>NT$ 213,000</td><td>亡故後繼續撥付</td><td><span class="badge badge-warning">待產製</span></td><td><button class="btn btn-sm btn-outline">預覽</button></td></tr>
-            <tr><td><input type="checkbox" class="table-checkbox doc-cb"></td><td>OVF-113-0890</td><td>黃建國</td><td class="masked">E567***890</td><td>113/10~113/11</td><td>NT$ 71,000</td><td>亡故後繼續撥付</td><td><span class="badge badge-success">已產製</span></td><td><button class="btn btn-sm btn-outline">下載</button></td></tr>
+            <tr><td><input type="checkbox" class="table-checkbox doc-cb"></td><td>OVF-113-0890</td><td>黃建國</td><td class="masked">E567***890</td><td>113/10~113/11</td><td>NT$ 71,000</td><td>亡故後繼續撥付</td><td><span class="badge badge-success">已產製</span></td><td><button class="btn btn-sm btn-outline" onclick="runDownload('OVF-113-0890_追繳函表','pdf')">下載</button></td></tr>
             <tr><td><input type="checkbox" class="table-checkbox doc-cb" checked></td><td>OVF-113-0891</td><td>李秀蘭</td><td class="masked">F678***901</td><td>113/08~113/11</td><td>NT$ 284,000</td><td>亡故後繼續撥付</td><td><span class="badge badge-warning">待產製</span></td><td><button class="btn btn-sm btn-outline">預覽</button></td></tr>
             <tr><td><input type="checkbox" class="table-checkbox doc-cb" checked></td><td>OVF-113-0892</td><td>陳美麗</td><td class="masked">B234***789</td><td>113/10~113/11</td><td>NT$ 137,000</td><td>亡故後繼續撥付</td><td><span class="badge badge-warning">待產製</span></td><td><button class="btn btn-sm btn-outline">預覽</button></td></tr>
           </tbody>
@@ -1557,28 +1635,28 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         </div>
         <div style="display:flex;gap:12px;flex-wrap:wrap">
           <div style="border:1px solid var(--border);border-radius:8px;padding:14px 18px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:var(--transition)" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">
-            <span style="font-size:28px"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg></span>
+            <span style="font-size:calc(28px * var(--font-scale))"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg></span>
             <div>
-              <div style="font-size:13px;font-weight:700">銀行圈存傳真表</div>
-              <div style="font-size:11px;color:var(--text-secondary)">4 筆 · PDF格式</div>
+              <div style="font-size:calc(13px * var(--font-scale));font-weight:700">銀行圈存傳真表</div>
+              <div style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary)">4 筆 · PDF格式</div>
             </div>
-            <button class="btn btn-sm btn-primary" style="margin-left:8px">下載</button>
+            <button class="btn btn-sm btn-primary" style="margin-left:8px" onclick="event.stopPropagation();runDownload('銀行圈存傳真表','pdf')">下載</button>
           </div>
           <div style="border:1px solid var(--border);border-radius:8px;padding:14px 18px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:var(--transition)" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">
-            <span style="font-size:28px"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span>
+            <span style="font-size:calc(28px * var(--font-scale))"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span>
             <div>
-              <div style="font-size:13px;font-weight:700">銀行圈存DI檔</div>
-              <div style="font-size:11px;color:var(--text-secondary)">4 筆 · TXT格式</div>
+              <div style="font-size:calc(13px * var(--font-scale));font-weight:700">銀行圈存DI檔</div>
+              <div style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary)">4 筆 · TXT格式</div>
             </div>
-            <button class="btn btn-sm btn-primary" style="margin-left:8px">下載</button>
+            <button class="btn btn-sm btn-primary" style="margin-left:8px" onclick="event.stopPropagation();runDownload('銀行圈存DI檔','txt')">下載</button>
           </div>
           <div style="border:1px solid var(--border);border-radius:8px;padding:14px 18px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:var(--transition)" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">
-            <span style="font-size:28px"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2h12v19l-2-1-2 1-2-1-2 1-2-1-2 1V2z"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/></svg></span>
+            <span style="font-size:calc(28px * var(--font-scale))"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2h12v19l-2-1-2 1-2-1-2 1-2-1-2 1V2z"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/></svg></span>
             <div>
-              <div style="font-size:13px;font-weight:700">繳款單</div>
-              <div style="font-size:11px;color:var(--text-secondary)">4 筆 · PDF格式</div>
+              <div style="font-size:calc(13px * var(--font-scale));font-weight:700">繳款單</div>
+              <div style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary)">4 筆 · PDF格式</div>
             </div>
-            <button class="btn btn-sm btn-primary" style="margin-left:8px">下載</button>
+            <button class="btn btn-sm btn-primary" style="margin-left:8px" onclick="event.stopPropagation();runDownload('繳款單','pdf')">下載</button>
           </div>
         </div>
       </div>
@@ -1682,8 +1760,8 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
             <div class="filter-label">承辦人</div>
             <select class="filter-control"><option>全部</option><option>王大明</option><option>李小華</option><option>陳志明</option></select>
           </div>
-          <button class="btn btn-primary btn-sm" style="align-self:flex-end"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> 查詢</button>
-          <button class="btn btn-outline btn-sm" style="align-self:flex-end">重設</button>
+          <button class="btn btn-primary btn-sm" style="align-self:flex-end" onclick="showToast('success','查詢完成','已依篩選條件查詢，共 39 頁、386 筆資料')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> 查詢</button>
+          <button class="btn btn-outline btn-sm" style="align-self:flex-end" onclick="this.closest('.filter-bar').querySelectorAll('input').forEach(i=>i.value='');this.closest('.filter-bar').querySelectorAll('select').forEach(s=>s.selectedIndex=0);showToast('info','已重設','篩選條件已清空')">重設</button>
         </div>
       </div>
       
@@ -1718,15 +1796,15 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           <div class="card-title" style="margin-bottom:16px">案件狀態分布</div>
           <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px">
             <div>
-              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--success);font-weight:600">已收回</span><span>128 件 (82.1%)</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:calc(12px * var(--font-scale));margin-bottom:4px"><span style="color:var(--success);font-weight:600">已收回</span><span>128 件 (82.1%)</span></div>
               <div class="progress-bar-wrap"><div class="progress-bar-fill success" style="width:82.1%"></div></div>
             </div>
             <div>
-              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--warning);font-weight:600">部分/分期</span><span>23 件 (14.7%)</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:calc(12px * var(--font-scale));margin-bottom:4px"><span style="color:var(--warning);font-weight:600">部分/分期</span><span>23 件 (14.7%)</span></div>
               <div class="progress-bar-wrap"><div class="progress-bar-fill warning" style="width:14.7%"></div></div>
             </div>
             <div>
-              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--danger);font-weight:600">未收回</span><span>5 件 (3.2%)</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:calc(12px * var(--font-scale));margin-bottom:4px"><span style="color:var(--danger);font-weight:600">未收回</span><span>5 件 (3.2%)</span></div>
               <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:3.2%;background:var(--danger)"></div></div>
             </div>
           </div>
@@ -1737,8 +1815,8 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
           <div class="card-title">停發人員溢領狀態查核表</div>
           <div style="display:flex;gap:8px">
-            <button class="btn btn-success btn-sm"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="20" x2="4" y2="12"/><line x1="10" y1="20" x2="10" y2="6"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="20" y1="20" x2="4" y2="20"/></svg> 匯出Excel</button>
-            <button class="btn btn-danger btn-sm"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><line x1="8" y1="13" x2="14" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg> 匯出PDF</button>
+            <button class="btn btn-success btn-sm" onclick="runDownload('溢領統計報表','xlsx')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="20" x2="4" y2="12"/><line x1="10" y1="20" x2="10" y2="6"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="20" y1="20" x2="4" y2="20"/></svg> 匯出Excel</button>
+            <button class="btn btn-danger btn-sm" onclick="runDownload('溢領統計報表','pdf')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><line x1="8" y1="13" x2="14" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg> 匯出PDF</button>
           </div>
         </div>
         <div class="table-wrapper">
@@ -1763,7 +1841,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
             <button class="page-btn active">1</button>
             <button class="page-btn">2</button>
             <button class="page-btn">3</button>
-            <span style="font-size:12px;padding:0 4px">...</span>
+            <span style="font-size:calc(12px * var(--font-scale));padding:0 4px">...</span>
             <button class="page-btn">39</button>
             <button class="page-btn">下一頁</button>
           </div>
@@ -1823,7 +1901,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
             <button class="page-btn active">1</button>
             <button class="page-btn">2</button>
             <button class="page-btn">3</button>
-            <span style="font-size:12px;padding:0 4px">...</span>
+            <span style="font-size:calc(12px * var(--font-scale));padding:0 4px">...</span>
             <button class="page-btn">250</button>
             <button class="page-btn">下一頁</button>
           </div>
@@ -1851,7 +1929,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           <div class="filter-group"><div class="filter-label">止付日期迄</div><input type="text" class="filter-control" value="113/12/10"></div>
           <div class="filter-group"><div class="filter-label">承辦人</div><select class="filter-control"><option>全部</option><option>王大明</option><option>李小華</option></select></div>
           <div class="filter-group"><div class="filter-label">止付結果</div><select class="filter-control"><option>全部</option><option>成功</option><option>失敗</option></select></div>
-          <button class="btn btn-primary btn-sm" style="align-self:flex-end"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> 查詢</button>
+          <button class="btn btn-primary btn-sm" style="align-self:flex-end" onclick="showToast('success','查詢完成','已查詢符合條件之止付案件，共 3 筆')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> 查詢</button>
         </div>
       </div>
       
@@ -1859,8 +1937,8 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
           <div class="card-title">止付案件追蹤表</div>
           <div style="display:flex;gap:8px">
-            <button class="btn btn-success btn-sm"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="20" x2="4" y2="12"/><line x1="10" y1="20" x2="10" y2="6"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="20" y1="20" x2="4" y2="20"/></svg> 匯出Excel</button>
-            <button class="btn btn-danger btn-sm"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><line x1="8" y1="13" x2="14" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg> 匯出PDF</button>
+            <button class="btn btn-success btn-sm" onclick="runDownload('止付案件追蹤表','xlsx')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="20" x2="4" y2="12"/><line x1="10" y1="20" x2="10" y2="6"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="20" y1="20" x2="4" y2="20"/></svg> 匯出Excel</button>
+            <button class="btn btn-danger btn-sm" onclick="runDownload('止付案件追蹤表','pdf')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><line x1="8" y1="13" x2="14" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg> 匯出PDF</button>
           </div>
         </div>
         <div class="table-wrapper">
@@ -1938,25 +2016,25 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
             </div>
             <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
               <div style="background:#f0f4ff;border-radius:6px;padding:12px;text-align:center">
-                <div style="font-size:11px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px">應稅所得</div>
-                <div style="font-size:22px;font-weight:800;color:var(--primary)">NT$ 493,200</div>
+                <div style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px">應稅所得</div>
+                <div style="font-size:calc(22px * var(--font-scale));font-weight:800;color:var(--primary)">NT$ 493,200</div>
               </div>
               <div style="background:#f0fff4;border-radius:6px;padding:12px;text-align:center">
-                <div style="font-size:11px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px">應納稅額</div>
-                <div style="font-size:22px;font-weight:800;color:var(--success)">NT$ 73,980</div>
+                <div style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px">應納稅額</div>
+                <div style="font-size:calc(22px * var(--font-scale));font-weight:800;color:var(--success)">NT$ 73,980</div>
               </div>
               <div style="background:#fff8f0;border-radius:6px;padding:12px;text-align:center">
-                <div style="font-size:11px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px">課稅比例</div>
-                <div style="font-size:22px;font-weight:800;color:var(--warning)">60%</div>
+                <div style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px">課稅比例</div>
+                <div style="font-size:calc(22px * var(--font-scale));font-weight:800;color:var(--warning)">60%</div>
               </div>
               <div style="background:#f5f5f5;border-radius:6px;padding:12px;text-align:center">
-                <div style="font-size:11px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px">差額</div>
-                <div style="font-size:22px;font-weight:800;color:var(--text-primary)">NT$ 0</div>
+                <div style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px">差額</div>
+                <div style="font-size:calc(22px * var(--font-scale));font-weight:800;color:var(--text-primary)">NT$ 0</div>
               </div>
             </div>
             <div style="margin-top:12px;display:flex;align-items:center;gap:8px">
               <span class="badge badge-success">無需重審</span>
-              <span style="font-size:12px;color:var(--text-secondary)">計算結果與前次相符</span>
+              <span style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">計算結果與前次相符</span>
             </div>
             <div style="margin-top:12px;display:flex;gap:8px">
               <button class="btn btn-primary btn-sm"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="4" width="12" height="17" rx="2"/><rect x="9" y="2" width="6" height="4" rx="1"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="15" y2="15"/></svg> 預覽計算單</button>
@@ -1973,11 +2051,11 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
               <tr><th>文號</th><th>姓名</th><th>應稅所得</th><th>應納稅額</th><th>重審</th><th>操作</th></tr>
             </thead>
             <tbody>
-              <tr><td style="font-size:11px">府退二字第1130009876號</td><td>李秀蘭</td><td>493,200</td><td>73,980</td><td><span class="badge badge-success">否</span></td><td><button class="btn btn-sm btn-outline">查看</button></td></tr>
-              <tr><td style="font-size:11px">府退二字第1130009875號</td><td>王志明</td><td>612,000</td><td>91,800</td><td><span class="badge badge-warning">是</span></td><td><button class="btn btn-sm btn-outline">查看</button></td></tr>
-              <tr><td style="font-size:11px">府退二字第1130009874號</td><td>陳淑華</td><td>384,000</td><td>57,600</td><td><span class="badge badge-success">否</span></td><td><button class="btn btn-sm btn-outline">查看</button></td></tr>
-              <tr><td style="font-size:11px">府退二字第1130009873號</td><td>林建志</td><td>528,000</td><td>79,200</td><td><span class="badge badge-success">否</span></td><td><button class="btn btn-sm btn-outline">查看</button></td></tr>
-              <tr><td style="font-size:11px">府退二字第1130009872號</td><td>張美玲</td><td>456,000</td><td>68,400</td><td><span class="badge badge-danger">差異</span></td><td><button class="btn btn-sm btn-outline">查看</button></td></tr>
+              <tr><td style="font-size:calc(11px * var(--font-scale))">府退二字第1130009876號</td><td>李秀蘭</td><td>493,200</td><td>73,980</td><td><span class="badge badge-success">否</span></td><td><button class="btn btn-sm btn-outline">查看</button></td></tr>
+              <tr><td style="font-size:calc(11px * var(--font-scale))">府退二字第1130009875號</td><td>王志明</td><td>612,000</td><td>91,800</td><td><span class="badge badge-warning">是</span></td><td><button class="btn btn-sm btn-outline">查看</button></td></tr>
+              <tr><td style="font-size:calc(11px * var(--font-scale))">府退二字第1130009874號</td><td>陳淑華</td><td>384,000</td><td>57,600</td><td><span class="badge badge-success">否</span></td><td><button class="btn btn-sm btn-outline">查看</button></td></tr>
+              <tr><td style="font-size:calc(11px * var(--font-scale))">府退二字第1130009873號</td><td>林建志</td><td>528,000</td><td>79,200</td><td><span class="badge badge-success">否</span></td><td><button class="btn btn-sm btn-outline">查看</button></td></tr>
+              <tr><td style="font-size:calc(11px * var(--font-scale))">府退二字第1130009872號</td><td>張美玲</td><td>456,000</td><td>68,400</td><td><span class="badge badge-danger">差異</span></td><td><button class="btn btn-sm btn-outline">查看</button></td></tr>
             </tbody>
           </table>
           </div>
@@ -2018,8 +2096,8 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
             <select class="filter-control"><option>全年</option><option>1月</option><option>2月</option><option>3月</option><option>4月</option><option>5月</option><option>6月</option><option>7月</option><option>8月</option><option>9月</option><option>10月</option><option>11月</option><option selected>12月</option></select>
           </div>
           <button class="btn btn-primary btn-sm" style="align-self:flex-end"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> 查詢</button>
-          <button class="btn btn-success btn-sm" style="align-self:flex-end"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="20" x2="4" y2="12"/><line x1="10" y1="20" x2="10" y2="6"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="20" y1="20" x2="4" y2="20"/></svg> 匯出Excel</button>
-          <button class="btn btn-danger btn-sm" style="align-self:flex-end"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><line x1="8" y1="13" x2="14" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg> 匯出PDF</button>
+          <button class="btn btn-success btn-sm" style="align-self:flex-end" onclick="runDownload('課稅報表彙整統計','xlsx')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="20" x2="4" y2="12"/><line x1="10" y1="20" x2="10" y2="6"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="20" y1="20" x2="4" y2="20"/></svg> 匯出Excel</button>
+          <button class="btn btn-danger btn-sm" style="align-self:flex-end" onclick="runDownload('課稅報表彙整統計','pdf')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><line x1="8" y1="13" x2="14" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg> 匯出PDF</button>
         </div>
       </div>
       
@@ -2032,11 +2110,11 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
             </tr>
           </thead>
           <tbody>
-            <tr><td style="font-size:11px">府退二字第1130009876號</td><td>李秀蘭</td><td class="masked">F678***901</td><td>822,000</td><td>493,200</td><td>73,980</td><td>60%</td><td>臺北市中正區...</td><td>王大明</td></tr>
-            <tr><td style="font-size:11px">府退二字第1130009875號</td><td>王志明</td><td class="masked">A123***456</td><td>1,020,000</td><td>612,000</td><td>91,800</td><td>60%</td><td>新北市板橋區...</td><td>王大明</td></tr>
-            <tr><td style="font-size:11px">府退二字第1130009874號</td><td>陳淑華</td><td class="masked">B234***567</td><td>640,000</td><td>384,000</td><td>57,600</td><td>60%</td><td>臺中市西屯區...</td><td>李小華</td></tr>
-            <tr><td style="font-size:11px">府退二字第1130009873號</td><td>林建志</td><td class="masked">C345***678</td><td>880,000</td><td>528,000</td><td>79,200</td><td>60%</td><td>高雄市前鎮區...</td><td>李小華</td></tr>
-            <tr><td style="font-size:11px">府退二字第1130009872號</td><td>張美玲</td><td class="masked">D456***789</td><td>760,000</td><td>456,000</td><td>68,400</td><td>60%</td><td>桃園市中壢區...</td><td>陳志明</td></tr>
+            <tr><td style="font-size:calc(11px * var(--font-scale))">府退二字第1130009876號</td><td>李秀蘭</td><td class="masked">F678***901</td><td>822,000</td><td>493,200</td><td>73,980</td><td>60%</td><td>臺北市中正區...</td><td>王大明</td></tr>
+            <tr><td style="font-size:calc(11px * var(--font-scale))">府退二字第1130009875號</td><td>王志明</td><td class="masked">A123***456</td><td>1,020,000</td><td>612,000</td><td>91,800</td><td>60%</td><td>新北市板橋區...</td><td>王大明</td></tr>
+            <tr><td style="font-size:calc(11px * var(--font-scale))">府退二字第1130009874號</td><td>陳淑華</td><td class="masked">B234***567</td><td>640,000</td><td>384,000</td><td>57,600</td><td>60%</td><td>臺中市西屯區...</td><td>李小華</td></tr>
+            <tr><td style="font-size:calc(11px * var(--font-scale))">府退二字第1130009873號</td><td>林建志</td><td class="masked">C345***678</td><td>880,000</td><td>528,000</td><td>79,200</td><td>60%</td><td>高雄市前鎮區...</td><td>李小華</td></tr>
+            <tr><td style="font-size:calc(11px * var(--font-scale))">府退二字第1130009872號</td><td>張美玲</td><td class="masked">D456***789</td><td>760,000</td><td>456,000</td><td>68,400</td><td>60%</td><td>桃園市中壢區...</td><td>陳志明</td></tr>
           </tbody>
         </table>
         </div>
@@ -2072,8 +2150,8 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       <div class="card" style="margin-bottom:16px">
         <div class="card-title" style="margin-bottom:16px">申報文件產製</div>
         <div style="display:flex;gap:12px;flex-wrap:wrap">
-          <button class="btn btn-primary" onclick="showToast('success','產製完成','扣繳明細表已產製，共 1,847 筆')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="4" width="12" height="17" rx="2"/><rect x="9" y="2" width="6" height="4" rx="1"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="15" y2="15"/></svg> 產製扣繳明細表</button>
-          <button class="btn btn-secondary" onclick="showToast('success','產製完成','扣繳憑單已產製，共 1,847 份')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><line x1="8" y1="13" x2="14" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg> 產製扣繳憑單</button>
+          <button class="btn btn-primary" onclick="runDownload('扣繳明細表','xlsx')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="4" width="12" height="17" rx="2"/><rect x="9" y="2" width="6" height="4" rx="1"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="15" y2="15"/></svg> 產製扣繳明細表</button>
+          <button class="btn btn-secondary" onclick="runDownload('扣繳憑單','pdf')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><line x1="8" y1="13" x2="14" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg> 產製扣繳憑單</button>
           <button class="btn btn-warning" onclick="runTaxAudit()"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> 執行異常檢核</button>
         </div>
       </div>
@@ -2089,14 +2167,14 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
             <tr><th>文號</th><th>姓名</th><th>身分證字號</th><th>異常類型</th><th>說明</th><th>狀態</th><th>操作</th></tr>
           </thead>
           <tbody>
-            <tr><td style="font-size:11px">府退二字第1130009870號</td><td>趙志遠</td><td class="masked">E567***890</td><td><span class="badge badge-danger">地址缺漏</span></td><td>通訊地址未填寫，無法寄發憑單</td><td><span class="badge badge-warning">待處理</span></td><td><button class="btn btn-sm btn-gold">修正</button></td></tr>
-            <tr><td style="font-size:11px">府退二字第1130009869號</td><td>吳淑珍</td><td class="masked">F678***901</td><td><span class="badge badge-warning">金額差異</span></td><td>計算金額與撥付系統差異 NT$500</td><td><span class="badge badge-warning">待確認</span></td><td><button class="btn btn-sm btn-gold">確認</button></td></tr>
-            <tr><td style="font-size:11px">府退二字第1130009868號</td><td>鄭建宏</td><td class="masked">G789***012</td><td><span class="badge badge-danger">重複申報</span></td><td>同一身分證字號已有申報紀錄</td><td><span class="badge badge-danger">需處理</span></td><td><button class="btn btn-sm btn-danger">刪除重複</button></td></tr>
+            <tr><td style="font-size:calc(11px * var(--font-scale))">府退二字第1130009870號</td><td>趙志遠</td><td class="masked">E567***890</td><td><span class="badge badge-danger">地址缺漏</span></td><td>通訊地址未填寫，無法寄發憑單</td><td><span class="badge badge-warning">待處理</span></td><td><button class="btn btn-sm btn-gold" onclick="showManualFix('趙志遠','ERR-ADDR-001','通訊地址未填寫，無法寄發憑單，請補齊通訊地址')">修正</button></td></tr>
+            <tr><td style="font-size:calc(11px * var(--font-scale))">府退二字第1130009869號</td><td>吳淑珍</td><td class="masked">F678***901</td><td><span class="badge badge-warning">金額差異</span></td><td>計算金額與撥付系統差異 NT$500</td><td><span class="badge badge-warning">待確認</span></td><td><button class="btn btn-sm btn-gold" onclick="showManualFix('吳淑珍','ERR-AMT-003','計算金額與撥付系統差異 NT$500，請確認正確金額')">確認</button></td></tr>
+            <tr><td style="font-size:calc(11px * var(--font-scale))">府退二字第1130009868號</td><td>鄭建宏</td><td class="masked">G789***012</td><td><span class="badge badge-danger">重複申報</span></td><td>同一身分證字號已有申報紀錄</td><td><span class="badge badge-danger">需處理</span></td><td><button class="btn btn-sm btn-danger" onclick="if(confirm('確定要刪除鄭建宏的重複申報紀錄嗎？')){this.closest('tr').remove();showToast('success','刪除完成','已刪除鄭建宏的重複申報紀錄')}">刪除重複</button></td></tr>
           </tbody>
         </table>
         </div>
         <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px">
-          <button class="btn btn-outline btn-sm"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 下載異常清單</button>
+          <button class="btn btn-outline btn-sm" onclick="runDownload('課稅異常清單','xlsx')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 下載異常清單</button>
           <button class="btn btn-primary btn-sm" onclick="showToast('success','完成','已處理 4 筆異常，剩餘 3 筆待人工確認')">批次處理可自動修正項目</button>
         </div>
       </div>
@@ -2202,7 +2280,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       
       <div style="display:flex;gap:12px;justify-content:space-between;align-items:center">
         <div style="display:flex;align-items:center;gap:10px">
-          <span style="font-size:13px;color:var(--text-secondary)">科長核符狀態：</span>
+          <span style="font-size:calc(13px * var(--font-scale));color:var(--text-secondary)">科長核符狀態：</span>
           <span class="badge badge-warning" id="supervisor-badge">⏳ 待核符</span>
           <button class="btn btn-sm btn-outline" onclick="simulateSupervisorApproval()">模擬科長核符</button>
         </div>
@@ -2249,20 +2327,20 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       
       <div class="card" style="display:flex;gap:12px;flex-wrap:wrap">
         <div style="border:1px solid var(--border);border-radius:8px;padding:14px 18px;display:flex;align-items:center;gap:10px">
-          <span style="font-size:28px"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><line x1="8" y1="13" x2="14" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg></span>
+          <span style="font-size:calc(28px * var(--font-scale))"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><line x1="8" y1="13" x2="14" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg></span>
           <div>
-            <div style="font-size:13px;font-weight:700">直撥通知書函</div>
-            <div style="font-size:11px;color:var(--text-secondary)">2 筆 · PDF格式</div>
+            <div style="font-size:calc(13px * var(--font-scale));font-weight:700">直撥通知書函</div>
+            <div style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary)">2 筆 · PDF格式</div>
           </div>
-          <button class="btn btn-sm btn-primary" style="margin-left:8px" onclick="showToast('info','下載中','正在下載直撥通知書函...')">下載PDF</button>
+          <button class="btn btn-sm btn-primary" style="margin-left:8px" onclick="runDownload('直撥通知書函','pdf')">下載PDF</button>
         </div>
         <div style="border:1px solid var(--border);border-radius:8px;padding:14px 18px;display:flex;align-items:center;gap:10px">
-          <span style="font-size:28px"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span>
+          <span style="font-size:calc(28px * var(--font-scale))"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span>
           <div>
-            <div style="font-size:13px;font-weight:700">公文DI檔</div>
-            <div style="font-size:11px;color:var(--text-secondary)">2 筆 · TXT格式</div>
+            <div style="font-size:calc(13px * var(--font-scale));font-weight:700">公文DI檔</div>
+            <div style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary)">2 筆 · TXT格式</div>
           </div>
-          <button class="btn btn-sm btn-primary" style="margin-left:8px" onclick="showToast('info','下載中','正在下載公文DI檔...')">下載DI</button>
+          <button class="btn btn-sm btn-primary" style="margin-left:8px" onclick="runDownload('公文DI檔','txt')">下載DI</button>
         </div>
       </div>
     </div>
@@ -2347,8 +2425,8 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
             <div class="info-row"><div class="info-key">耗時</div><div class="info-val">4分32秒</div></div>
           </div>
           <div style="margin-top:12px;display:flex;gap:8px">
-            <button class="btn btn-outline btn-sm">查看詳細</button>
-            <button class="btn btn-outline btn-sm">下載結果</button>
+            <button class="btn btn-outline btn-sm" onclick="showTask1Detail()">查看詳細</button>
+            <button class="btn btn-outline btn-sm" onclick="runDownload('名冊查核結果','xlsx')">下載結果</button>
           </div>
         </div>
         
@@ -2371,16 +2449,16 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
             <div class="info-row"><div class="info-key">耗時</div><div class="info-val">6分18秒</div></div>
           </div>
           <div style="margin-top:12px;display:flex;gap:8px">
-            <button class="btn btn-warning btn-sm">查看差異清單 (7)</button>
-            <button class="btn btn-outline btn-sm">下載結果</button>
+            <button class="btn btn-warning btn-sm" onclick="showTask2Diff()">查看差異清單 (7)</button>
+            <button class="btn btn-outline btn-sm" onclick="runDownload('平台差異比對結果','xlsx')">下載結果</button>
           </div>
         </div>
       </div>
       
       <div style="margin-top:20px;display:flex;justify-content:flex-end;gap:12px">
         <div class="info-card" style="flex:1;display:flex;align-items:center;gap:10px">
-          <span style="font-size:20px"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="8 12.5 11 15.5 16 9"/></svg></span>
-          <span style="font-size:13px">前置作業已全部完成，可進行核心定撥執行。差異筆數 7 筆已記錄，請在執行前確認是否需要人工處理。</span>
+          <span style="font-size:calc(20px * var(--font-scale))"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="8 12.5 11 15.5 16 9"/></svg></span>
+          <span style="font-size:calc(13px * var(--font-scale))">前置作業已全部完成，可進行核心定撥執行。差異筆數 7 筆已記錄，請在執行前確認是否需要人工處理。</span>
         </div>
         <button class="btn btn-gold btn-lg" onclick="navigateTo('monthly-exec')">前往核心定撥執行 <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
       </div>
@@ -2423,9 +2501,9 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           <div class="program-card-stats">
             <div class="program-stat"><div class="program-stat-val" style="color:var(--success)">234</div><div class="program-stat-label">處理筆數</div></div>
             <div class="program-stat"><div class="program-stat-val" style="color:var(--success)">0</div><div class="program-stat-label">異常數</div></div>
-            <div class="program-stat"><div class="program-stat-val" style="font-size:13px">1m 23s</div><div class="program-stat-label">耗時</div></div>
+            <div class="program-stat"><div class="program-stat-val" style="font-size:calc(13px * var(--font-scale))">1m 23s</div><div class="program-stat-label">耗時</div></div>
           </div>
-          <div style="margin-top:10px;font-size:12px;color:var(--text-secondary)">完成時間：113/12/15 09:24:15</div>
+          <div style="margin-top:10px;font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">完成時間：113/12/15 09:24:15</div>
         </div>
         
         <div class="program-card running">
@@ -2443,9 +2521,9 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           <div class="program-card-stats">
             <div class="program-stat"><div class="program-stat-val" style="color:var(--warning)" id="exec-count">7,823</div><div class="program-stat-label">已處理</div></div>
             <div class="program-stat"><div class="program-stat-val">11,682</div><div class="program-stat-label">總筆數</div></div>
-            <div class="program-stat"><div class="program-stat-val" style="font-size:13px">進行中</div><div class="program-stat-label">耗時</div></div>
+            <div class="program-stat"><div class="program-stat-val" style="font-size:calc(13px * var(--font-scale))">進行中</div><div class="program-stat-label">耗時</div></div>
           </div>
-          <div style="margin-top:10px;font-size:12px;color:var(--text-secondary)">開始時間：113/12/15 09:25:30</div>
+          <div style="margin-top:10px;font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">開始時間：113/12/15 09:25:30</div>
         </div>
         
         <div class="program-card pending">
@@ -2463,7 +2541,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           <div class="program-card-stats">
             <div class="program-stat"><div class="program-stat-val" style="color:var(--text-secondary)">-</div><div class="program-stat-label">處理筆數</div></div>
             <div class="program-stat"><div class="program-stat-val">3,456</div><div class="program-stat-label">總筆數</div></div>
-            <div class="program-stat"><div class="program-stat-val" style="font-size:13px;color:var(--text-secondary)">-</div><div class="program-stat-label">耗時</div></div>
+            <div class="program-stat"><div class="program-stat-val" style="font-size:calc(13px * var(--font-scale));color:var(--text-secondary)">-</div><div class="program-stat-label">耗時</div></div>
           </div>
           <div style="margin-top:10px">
             <button class="btn btn-secondary btn-sm" disabled>等待前序完成</button>
@@ -2485,7 +2563,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           <div class="program-card-stats">
             <div class="program-stat"><div class="program-stat-val" style="color:var(--text-secondary)">-</div><div class="program-stat-label">處理筆數</div></div>
             <div class="program-stat"><div class="program-stat-val">1,234</div><div class="program-stat-label">總筆數</div></div>
-            <div class="program-stat"><div class="program-stat-val" style="font-size:13px;color:var(--text-secondary)">-</div><div class="program-stat-label">耗時</div></div>
+            <div class="program-stat"><div class="program-stat-val" style="font-size:calc(13px * var(--font-scale));color:var(--text-secondary)">-</div><div class="program-stat-label">耗時</div></div>
           </div>
           <div style="margin-top:10px">
             <button class="btn btn-secondary btn-sm" disabled>等待前序完成</button>
@@ -2500,20 +2578,20 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         </div>
         <div class="form-row cols-4">
           <div style="text-align:center;padding:12px;background:#f5f7fa;border-radius:6px">
-            <div style="font-size:22px;font-weight:800;color:var(--success)">1</div>
-            <div style="font-size:11px;color:var(--text-secondary)">已完成程式</div>
+            <div style="font-size:calc(22px * var(--font-scale));font-weight:800;color:var(--success)">1</div>
+            <div style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary)">已完成程式</div>
           </div>
           <div style="text-align:center;padding:12px;background:#fff8f0;border-radius:6px">
-            <div style="font-size:22px;font-weight:800;color:var(--warning)">1</div>
-            <div style="font-size:11px;color:var(--text-secondary)">執行中程式</div>
+            <div style="font-size:calc(22px * var(--font-scale));font-weight:800;color:var(--warning)">1</div>
+            <div style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary)">執行中程式</div>
           </div>
           <div style="text-align:center;padding:12px;background:#f5f7fa;border-radius:6px">
-            <div style="font-size:22px;font-weight:800;color:var(--text-secondary)">2</div>
-            <div style="font-size:11px;color:var(--text-secondary)">待執行程式</div>
+            <div style="font-size:calc(22px * var(--font-scale));font-weight:800;color:var(--text-secondary)">2</div>
+            <div style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary)">待執行程式</div>
           </div>
           <div style="text-align:center;padding:12px;background:#f0fff4;border-radius:6px">
-            <div style="font-size:22px;font-weight:800;color:var(--success)">8,057</div>
-            <div style="font-size:11px;color:var(--text-secondary)">已處理筆數</div>
+            <div style="font-size:calc(22px * var(--font-scale));font-weight:800;color:var(--success)">8,057</div>
+            <div style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary)">已處理筆數</div>
           </div>
         </div>
       </div>
@@ -2569,7 +2647,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
             <div class="report-item-actions"><span class="badge badge-secondary" id="r005-status">待執行</span><button class="btn btn-sm btn-outline" onclick="runSingleReport('r005')">執行</button></div>
           </div>
         </div>
-        <div style="padding:14px 16px;border-top:1px solid var(--border);background:#f8f9fa;text-align:center;font-size:13px;color:var(--text-secondary)">
+        <div style="padding:14px 16px;border-top:1px solid var(--border);background:#f8f9fa;text-align:center;font-size:calc(13px * var(--font-scale));color:var(--text-secondary)">
           尚有 36 項報表 (R006 ~ R041)，點擊「執行全部報表」可一次產製
         </div>
       </div>
@@ -2607,7 +2685,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
               <td><span class="badge badge-danger">未處理</span></td>
               <td>
                 <button class="btn btn-sm btn-warning" onclick="event.stopPropagation();showToast('info','重新執行','正在重新執行趙麗華的定撥作業...')">重新執行</button>
-                <button class="btn btn-sm btn-outline" onclick="event.stopPropagation()">人工修正</button>
+                <button class="btn btn-sm btn-outline" onclick="event.stopPropagation();showManualFix('趙麗華','ERR-BANK-001','帳號格式不符，帳號長度應為14碼')">人工修正</button>
               </td>
             </tr>
             <tr class="expanded-detail">
@@ -2622,7 +2700,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
                   </div>
                   <div>
                     <div style="font-weight:700;margin-bottom:8px">處理建議</div>
-                    <div style="font-size:13px;color:var(--text-secondary);line-height:1.8">
+                    <div style="font-size:calc(13px * var(--font-scale));color:var(--text-secondary);line-height:1.8">
                       1. 確認領受人正確銀行帳號<br>
                       2. 更新帳號資料後重新執行<br>
                       3. 或改以支票方式撥付
@@ -2639,7 +2717,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
               <td><span class="badge badge-warning">確認中</span></td>
               <td>
                 <button class="btn btn-sm btn-warning" onclick="showToast('info','重新執行','正在重新執行鄭建宏的定撥作業...')">重新執行</button>
-                <button class="btn btn-sm btn-outline">人工修正</button>
+                <button class="btn btn-sm btn-outline" onclick="showManualFix('鄭建宏','ERR-AMT-002','計算金額與基準資料差異 NT$500，請確認後修正')">人工修正</button>
               </td>
             </tr>
           </tbody>
@@ -2669,8 +2747,8 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
             <div class="form-group">
               <label class="form-label">轉檔類型 <span class="required">*</span></label>
               <div style="display:flex;gap:16px">
-                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="radio" name="file-type" value="P" checked> P檔（人員基本資料）</label>
-                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="radio" name="file-type" value="R"> R檔（退伍經歷資料）</label>
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:calc(13px * var(--font-scale))"><input type="radio" name="file-type" value="P" checked> P檔（人員基本資料）</label>
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:calc(13px * var(--font-scale))"><input type="radio" name="file-type" value="R"> R檔（退伍經歷資料）</label>
               </div>
             </div>
             <div class="form-group">
@@ -2692,21 +2770,21 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
             <div class="section-title"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="20" x2="4" y2="12"/><line x1="10" y1="20" x2="10" y2="6"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="20" y1="20" x2="4" y2="20"/></svg> 比對結果</div>
             <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px">
               <div style="text-align:center;padding:12px;background:#f0fff4;border-radius:6px">
-                <div style="font-size:22px;font-weight:800;color:var(--success)">1,234</div>
-                <div style="font-size:11px;color:var(--text-secondary)">新增筆數</div>
+                <div style="font-size:calc(22px * var(--font-scale));font-weight:800;color:var(--success)">1,234</div>
+                <div style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary)">新增筆數</div>
               </div>
               <div style="text-align:center;padding:12px;background:#f0f4ff;border-radius:6px">
-                <div style="font-size:22px;font-weight:800;color:var(--info)">456</div>
-                <div style="font-size:11px;color:var(--text-secondary)">異動筆數</div>
+                <div style="font-size:calc(22px * var(--font-scale));font-weight:800;color:var(--info)">456</div>
+                <div style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary)">異動筆數</div>
               </div>
               <div style="text-align:center;padding:12px;background:#fff5f5;border-radius:6px">
-                <div style="font-size:22px;font-weight:800;color:var(--danger)">12</div>
-                <div style="font-size:11px;color:var(--text-secondary)">異常筆數</div>
+                <div style="font-size:calc(22px * var(--font-scale));font-weight:800;color:var(--danger)">12</div>
+                <div style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary)">異常筆數</div>
               </div>
             </div>
             <div style="display:flex;gap:8px">
               <button class="btn btn-gold" onclick="showToast('success','轉檔完成','軍職資料已成功轉入系統，共處理 1,690 筆')">▶ 執行轉檔</button>
-              <button class="btn btn-outline btn-sm">下載異常清單</button>
+              <button class="btn btn-outline btn-sm" onclick="runDownload('軍職資料比對異常清單','xlsx')">下載異常清單</button>
             </div>
           </div>
         </div>
@@ -2770,23 +2848,23 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div class="section-title"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="20" x2="4" y2="12"/><line x1="10" y1="20" x2="10" y2="6"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="20" y1="20" x2="4" y2="20"/></svg> 比對結果預覽</div>
         <div class="form-row cols-3">
           <div style="text-align:center;padding:16px;background:#f0fff4;border-radius:6px">
-            <div style="font-size:26px;font-weight:800;color:var(--success)">8,456</div>
-            <div style="font-size:12px;color:var(--text-secondary)">本期資料筆數</div>
+            <div style="font-size:calc(26px * var(--font-scale));font-weight:800;color:var(--success)">8,456</div>
+            <div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">本期資料筆數</div>
           </div>
           <div style="text-align:center;padding:16px;background:#f0f4ff;border-radius:6px">
-            <div style="font-size:26px;font-weight:800;color:var(--info)">123</div>
-            <div style="font-size:12px;color:var(--text-secondary)">與上期差異</div>
+            <div style="font-size:calc(26px * var(--font-scale));font-weight:800;color:var(--info)">123</div>
+            <div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">與上期差異</div>
           </div>
           <div style="text-align:center;padding:16px;background:#fff5f5;border-radius:6px">
-            <div style="font-size:26px;font-weight:800;color:var(--danger)">3</div>
-            <div style="font-size:12px;color:var(--text-secondary)">異常筆數</div>
+            <div style="font-size:calc(26px * var(--font-scale));font-weight:800;color:var(--danger)">3</div>
+            <div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">異常筆數</div>
           </div>
         </div>
       </div>
       
       <div style="display:flex;gap:12px">
-        <button class="btn btn-gold" onclick="showToast('success','產製完成','勞保局資料TXT檔已產製完成，共 8,456 筆')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><line x1="8" y1="13" x2="14" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg> 產製TXT檔</button>
-        <button class="btn btn-outline" onclick="showToast('info','下載中','正在下載勞保局資料檔...')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 下載檔案</button>
+        <button class="btn btn-gold" onclick="runDownload('勞保局資料檔','txt')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><line x1="8" y1="13" x2="14" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg> 產製TXT檔</button>
+        <button class="btn btn-outline" onclick="runDownload('勞保局資料檔','txt')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 下載檔案</button>
         <button class="btn btn-outline"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="20" x2="4" y2="12"/><line x1="10" y1="20" x2="10" y2="6"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="20" y1="20" x2="4" y2="20"/></svg> 查看差異明細</button>
       </div>
     </div>
@@ -2829,19 +2907,19 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div class="section-title"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="20" x2="4" y2="12"/><line x1="10" y1="20" x2="10" y2="6"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="20" y1="20" x2="4" y2="20"/></svg> 資料統計</div>
         <div class="form-row cols-2">
           <div style="text-align:center;padding:16px;background:#f0fff4;border-radius:6px">
-            <div style="font-size:26px;font-weight:800;color:var(--success)">234</div>
-            <div style="font-size:12px;color:var(--text-secondary)">符合資格人數</div>
+            <div style="font-size:calc(26px * var(--font-scale));font-weight:800;color:var(--success)">234</div>
+            <div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">符合資格人數</div>
           </div>
           <div style="text-align:center;padding:16px;background:#f0f4ff;border-radius:6px">
-            <div style="font-size:26px;font-weight:800;color:var(--info)">NT$ 2,808,000</div>
-            <div style="font-size:12px;color:var(--text-secondary)">助學金總額</div>
+            <div style="font-size:calc(26px * var(--font-scale));font-weight:800;color:var(--info)">NT$ 2,808,000</div>
+            <div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">助學金總額</div>
           </div>
         </div>
       </div>
       
       <div style="display:flex;gap:12px">
-        <button class="btn btn-gold" onclick="showToast('success','產製完成','退輔會資料TXT檔已產製完成，共 234 筆')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><line x1="8" y1="13" x2="14" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg> 產製TXT檔</button>
-        <button class="btn btn-outline" onclick="showToast('info','下載中','正在下載退輔會資料檔...')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 下載檔案</button>
+        <button class="btn btn-gold" onclick="runDownload('退輔會資料檔','txt')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><line x1="8" y1="13" x2="14" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg> 產製TXT檔</button>
+        <button class="btn btn-outline" onclick="runDownload('退輔會資料檔','txt')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 下載檔案</button>
       </div>
     </div>
 
@@ -2891,21 +2969,21 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           <div class="card" style="margin-bottom:16px">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
               <div>
-                <span style="font-size:15px;font-weight:700;color:var(--primary)">王建民</span>
-                <span style="margin-left:8px;font-size:13px;color:var(--text-secondary)">A123***789</span>
+                <span style="font-size:calc(15px * var(--font-scale));font-weight:700;color:var(--primary)">王建民</span>
+                <span style="margin-left:8px;font-size:calc(13px * var(--font-scale));color:var(--text-secondary)">A123***789</span>
                 <button class="mask-toggle" style="margin-left:4px" onclick="toggleMask('query-id-display','A123456789')">顯示完整</button>
               </div>
               <div style="display:flex;gap:8px">
-                <button class="btn btn-success btn-sm"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="20" x2="4" y2="12"/><line x1="10" y1="20" x2="10" y2="6"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="20" y1="20" x2="4" y2="20"/></svg> 匯出Excel</button>
-                <button class="btn btn-danger btn-sm"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><line x1="8" y1="13" x2="14" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg> 匯出PDF</button>
+                <button class="btn btn-success btn-sm" onclick="runDownload('個人支領查詢結果','xlsx')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="20" x2="4" y2="12"/><line x1="10" y1="20" x2="10" y2="6"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="20" y1="20" x2="4" y2="20"/></svg> 匯出Excel</button>
+                <button class="btn btn-danger btn-sm" onclick="runDownload('個人支領查詢結果','pdf')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><line x1="8" y1="13" x2="14" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg> 匯出PDF</button>
               </div>
             </div>
             <div class="info-card" style="margin-bottom:16px">
               <div class="form-row cols-4" style="gap:12px">
-                <div><div class="info-key" style="font-size:11px">退撫類別</div><div style="font-weight:600;margin-top:2px">公務人員月退</div></div>
-                <div><div class="info-key" style="font-size:11px">服務機關</div><div style="font-weight:600;margin-top:2px">臺北市政府</div></div>
-                <div><div class="info-key" style="font-size:11px">月退金額</div><div style="font-weight:600;margin-top:2px">NT$ 68,500</div></div>
-                <div><div class="info-key" style="font-size:11px">撥付帳號</div><div style="font-weight:600;margin-top:2px">台灣銀行 ***4521</div></div>
+                <div><div class="info-key" style="font-size:calc(11px * var(--font-scale))">退撫類別</div><div style="font-weight:600;margin-top:2px">公務人員月退</div></div>
+                <div><div class="info-key" style="font-size:calc(11px * var(--font-scale))">服務機關</div><div style="font-weight:600;margin-top:2px">臺北市政府</div></div>
+                <div><div class="info-key" style="font-size:calc(11px * var(--font-scale))">月退金額</div><div style="font-weight:600;margin-top:2px">NT$ 68,500</div></div>
+                <div><div class="info-key" style="font-size:calc(11px * var(--font-scale))">撥付帳號</div><div style="font-weight:600;margin-top:2px">台灣銀行 ***4521</div></div>
               </div>
             </div>
           </div>
@@ -2927,7 +3005,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
               </tbody>
             </table>
             </div>
-            <div style="padding:12px 16px;border-top:1px solid var(--border);background:#f8f9fa;display:flex;justify-content:space-between;font-size:13px">
+            <div style="padding:12px 16px;border-top:1px solid var(--border);background:#f8f9fa;display:flex;justify-content:space-between;font-size:calc(13px * var(--font-scale))">
               <span>查詢期間合計：<strong>NT$ 479,500</strong></span>
               <span>溢領金額：<strong style="color:var(--danger)">NT$ 137,000</strong></span>
             </div>
@@ -2960,8 +3038,8 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div class="form-group">
           <label class="form-label">輸入方式</label>
           <div style="display:flex;gap:16px;margin-bottom:12px">
-            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="radio" name="batch-input" checked> 手動輸入（逗號分隔）</label>
-            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="radio" name="batch-input"> Excel上傳</label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:calc(13px * var(--font-scale))"><input type="radio" name="batch-input" checked> 手動輸入（逗號分隔）</label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:calc(13px * var(--font-scale))"><input type="radio" name="batch-input"> Excel上傳</label>
           </div>
           <textarea class="form-control" rows="3" placeholder="請輸入身分證字號，以逗號分隔，例如：A123456789,B234567890,C345678901">A123456789,B234567890,C345678901,D456789012</textarea>
         </div>
@@ -2977,13 +3055,13 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           <div class="form-group">
             <label class="form-label">跨身分別查詢</label>
             <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
-              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="checkbox"> 啟用跨身分別查詢</label>
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:calc(13px * var(--font-scale))"><input type="checkbox"> 啟用跨身分別查詢</label>
             </div>
           </div>
         </div>
         <div style="display:flex;gap:8px">
           <button class="btn btn-primary" onclick="showToast('success','查詢完成','已查詢 4 位人員，共 48 筆紀錄')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> 執行批次查詢</button>
-          <button class="btn btn-outline">清除</button>
+          <button class="btn btn-outline" onclick="this.closest('.card').querySelector('textarea').value='';showToast('info','已清除','查詢條件已清空')">清除</button>
         </div>
       </div>
       
@@ -2991,7 +3069,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
           <div class="card-title">批次查詢結果</div>
           <div style="display:flex;gap:8px">
-            <button class="btn btn-success btn-sm"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="20" x2="4" y2="12"/><line x1="10" y1="20" x2="10" y2="6"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="20" y1="20" x2="4" y2="20"/></svg> 匯出Excel</button>
+            <button class="btn btn-success btn-sm" onclick="runDownload('批次查詢結果','xlsx')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="20" x2="4" y2="12"/><line x1="10" y1="20" x2="10" y2="6"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="20" y1="20" x2="4" y2="20"/></svg> 匯出Excel</button>
           </div>
         </div>
         <div class="table-wrapper">
@@ -3050,8 +3128,8 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
               <div class="form-group">
                 <label class="form-label">身分證字號遮罩</label>
                 <div style="display:flex;gap:12px;margin-top:8px">
-                  <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="radio" name="mask" checked> 遮罩顯示 (A123***789)</label>
-                  <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="radio" name="mask"> 完整顯示</label>
+                  <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:calc(13px * var(--font-scale))"><input type="radio" name="mask" checked> 遮罩顯示 (A123***789)</label>
+                  <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:calc(13px * var(--font-scale))"><input type="radio" name="mask"> 完整顯示</label>
                 </div>
               </div>
               <div class="form-group">
@@ -3063,20 +3141,20 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           
           <div style="display:flex;gap:8px">
             <button class="btn btn-outline-primary" onclick="showToast('info','預覽中','正在產製報表預覽...')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg> 預覽報表</button>
-            <button class="btn btn-success" onclick="showToast('success','下載中','Excel報表下載中...')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="20" x2="4" y2="12"/><line x1="10" y1="20" x2="10" y2="6"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="20" y1="20" x2="4" y2="20"/></svg> 下載Excel</button>
-            <button class="btn btn-danger" onclick="showToast('success','下載中','PDF報表下載中...')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><line x1="8" y1="13" x2="14" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg> 下載PDF</button>
+            <button class="btn btn-success" onclick="runDownload('彈性查詢報表','xlsx')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="20" x2="4" y2="12"/><line x1="10" y1="20" x2="10" y2="6"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="20" y1="20" x2="4" y2="20"/></svg> 下載Excel</button>
+            <button class="btn btn-danger" onclick="runDownload('彈性查詢報表','pdf')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><line x1="8" y1="13" x2="14" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg> 下載PDF</button>
           </div>
         </div>
         
         <div class="card">
           <div class="card-title" style="margin-bottom:12px">已選欄位預覽</div>
-          <div style="font-size:12px;color:var(--text-secondary);margin-bottom:8px">已選 5 個欄位：</div>
+          <div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary);margin-bottom:8px">已選 5 個欄位：</div>
           <div style="display:flex;flex-direction:column;gap:4px">
-            <div style="padding:6px 10px;background:#eef2ff;border-radius:4px;font-size:12px;font-weight:600;color:var(--primary);display:flex;align-items:center;justify-content:space-between">姓名 <span style="cursor:pointer;color:var(--text-secondary)">×</span></div>
-            <div style="padding:6px 10px;background:#eef2ff;border-radius:4px;font-size:12px;font-weight:600;color:var(--primary);display:flex;align-items:center;justify-content:space-between">身分證字號 <span style="cursor:pointer;color:var(--text-secondary)">×</span></div>
-            <div style="padding:6px 10px;background:#eef2ff;border-radius:4px;font-size:12px;font-weight:600;color:var(--primary);display:flex;align-items:center;justify-content:space-between">退撫類別 <span style="cursor:pointer;color:var(--text-secondary)">×</span></div>
-            <div style="padding:6px 10px;background:#eef2ff;border-radius:4px;font-size:12px;font-weight:600;color:var(--primary);display:flex;align-items:center;justify-content:space-between">撥付期間 <span style="cursor:pointer;color:var(--text-secondary)">×</span></div>
-            <div style="padding:6px 10px;background:#eef2ff;border-radius:4px;font-size:12px;font-weight:600;color:var(--primary);display:flex;align-items:center;justify-content:space-between">撥付金額 <span style="cursor:pointer;color:var(--text-secondary)">×</span></div>
+            <div style="padding:6px 10px;background:#eef2ff;border-radius:4px;font-size:calc(12px * var(--font-scale));font-weight:600;color:var(--primary);display:flex;align-items:center;justify-content:space-between">姓名 <span style="cursor:pointer;color:var(--text-secondary)">×</span></div>
+            <div style="padding:6px 10px;background:#eef2ff;border-radius:4px;font-size:calc(12px * var(--font-scale));font-weight:600;color:var(--primary);display:flex;align-items:center;justify-content:space-between">身分證字號 <span style="cursor:pointer;color:var(--text-secondary)">×</span></div>
+            <div style="padding:6px 10px;background:#eef2ff;border-radius:4px;font-size:calc(12px * var(--font-scale));font-weight:600;color:var(--primary);display:flex;align-items:center;justify-content:space-between">退撫類別 <span style="cursor:pointer;color:var(--text-secondary)">×</span></div>
+            <div style="padding:6px 10px;background:#eef2ff;border-radius:4px;font-size:calc(12px * var(--font-scale));font-weight:600;color:var(--primary);display:flex;align-items:center;justify-content:space-between">撥付期間 <span style="cursor:pointer;color:var(--text-secondary)">×</span></div>
+            <div style="padding:6px 10px;background:#eef2ff;border-radius:4px;font-size:calc(12px * var(--font-scale));font-weight:600;color:var(--primary);display:flex;align-items:center;justify-content:space-between">撥付金額 <span style="cursor:pointer;color:var(--text-secondary)">×</span></div>
           </div>
         </div>
       </div>
@@ -3133,35 +3211,35 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           </thead>
           <tbody>
             <tr>
-              <td style="font-size:11px;white-space:nowrap">銓敘部退字第1130123456號</td>
+              <td style="font-size:calc(11px * var(--font-scale));white-space:nowrap">銓敘部退字第1130123456號</td>
               <td style="cursor:pointer;color:var(--info)" onclick="openRulingModal()">有關公務人員月退休金停止支領規定疑義</td>
               <td>113/08/15</td>
               <td><span class="badge badge-primary">公務人員</span></td>
               <td><button class="btn btn-sm btn-outline" onclick="openRulingModal()">查看</button></td>
             </tr>
             <tr>
-              <td style="font-size:11px;white-space:nowrap">銓敘部退字第1130098765號</td>
+              <td style="font-size:calc(11px * var(--font-scale));white-space:nowrap">銓敘部退字第1130098765號</td>
               <td style="cursor:pointer;color:var(--info)" onclick="openRulingModal()">月退休金計算基準說明</td>
               <td>113/06/20</td>
               <td><span class="badge badge-primary">公務人員</span></td>
               <td><button class="btn btn-sm btn-outline" onclick="openRulingModal()">查看</button></td>
             </tr>
             <tr>
-              <td style="font-size:11px;white-space:nowrap">銓敘部退字第1120087654號</td>
+              <td style="font-size:calc(11px * var(--font-scale));white-space:nowrap">銓敘部退字第1120087654號</td>
               <td style="cursor:pointer;color:var(--info)" onclick="openRulingModal()">教職人員月退休金相關規定</td>
               <td>112/11/30</td>
               <td><span class="badge badge-gold">教職人員</span></td>
               <td><button class="btn btn-sm btn-outline" onclick="openRulingModal()">查看</button></td>
             </tr>
             <tr>
-              <td style="font-size:11px;white-space:nowrap">國防部人次字第1120076543號</td>
+              <td style="font-size:calc(11px * var(--font-scale));white-space:nowrap">國防部人次字第1120076543號</td>
               <td style="cursor:pointer;color:var(--info)" onclick="openRulingModal()">軍職人員月退俸支領疑義</td>
               <td>112/09/10</td>
               <td><span class="badge badge-secondary">軍職人員</span></td>
               <td><button class="btn btn-sm btn-outline" onclick="openRulingModal()">查看</button></td>
             </tr>
             <tr>
-              <td style="font-size:11px;white-space:nowrap">銓敘部退字第1110065432號</td>
+              <td style="font-size:calc(11px * var(--font-scale));white-space:nowrap">銓敘部退字第1110065432號</td>
               <td style="cursor:pointer;color:var(--info)" onclick="openRulingModal()">月退休金溢領追繳相關規定</td>
               <td>111/05/18</td>
               <td><span class="badge badge-primary">公務人員</span></td>
@@ -3210,7 +3288,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           </thead>
           <tbody>
             <tr>
-              <td style="font-size:11px">銓敘部退字第1130123456號</td>
+              <td style="font-size:calc(11px * var(--font-scale))">銓敘部退字第1130123456號</td>
               <td>有關公務人員月退休金停止支領規定疑義</td>
               <td>113/08/15</td>
               <td><span class="badge badge-primary">公務人員</span></td>
@@ -3222,7 +3300,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
               </td>
             </tr>
             <tr>
-              <td style="font-size:11px">銓敘部退字第1130098765號</td>
+              <td style="font-size:calc(11px * var(--font-scale))">銓敘部退字第1130098765號</td>
               <td>月退休金計算基準說明</td>
               <td>113/06/20</td>
               <td><span class="badge badge-primary">公務人員</span></td>
@@ -3234,7 +3312,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
               </td>
             </tr>
             <tr>
-              <td style="font-size:11px">銓敘部退字第1120087654號</td>
+              <td style="font-size:calc(11px * var(--font-scale))">銓敘部退字第1120087654號</td>
               <td>教職人員月退休金相關規定</td>
               <td>112/11/30</td>
               <td><span class="badge badge-gold">教職人員</span></td>
@@ -3385,15 +3463,15 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           <div style="display:flex;flex-direction:column;gap:8px">
             <label style="display:flex;align-items:flex-start;gap:10px;padding:10px;border:1.5px solid var(--border);border-radius:6px;cursor:pointer;transition:var(--transition)" onmouseover="this.style.borderColor='var(--secondary)'" onmouseout="this.style.borderColor='var(--border)'">
               <input type="radio" name="role" style="margin-top:2px">
-              <div><div style="font-weight:700;font-size:13px">最高管理者</div><div style="font-size:12px;color:var(--text-secondary)">可存取所有功能，包含系統設定與稽核日誌</div></div>
+              <div><div style="font-weight:700;font-size:calc(13px * var(--font-scale))">最高管理者</div><div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">可存取所有功能，包含系統設定與稽核日誌</div></div>
             </label>
             <label style="display:flex;align-items:flex-start;gap:10px;padding:10px;border:1.5px solid var(--border);border-radius:6px;cursor:pointer;transition:var(--transition)" onmouseover="this.style.borderColor='var(--secondary)'" onmouseout="this.style.borderColor='var(--border)'">
               <input type="radio" name="role" style="margin-top:2px">
-              <div><div style="font-weight:700;font-size:13px">單位管理者</div><div style="font-size:12px;color:var(--text-secondary)">可管理本單位使用者，具備核符功能</div></div>
+              <div><div style="font-weight:700;font-size:calc(13px * var(--font-scale))">單位管理者</div><div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">可管理本單位使用者，具備核符功能</div></div>
             </label>
             <label style="display:flex;align-items:flex-start;gap:10px;padding:10px;border:1.5px solid var(--primary);border-radius:6px;cursor:pointer;background:#eef2ff">
               <input type="radio" name="role" checked style="margin-top:2px">
-              <div><div style="font-weight:700;font-size:13px;color:var(--primary)">一般使用者</div><div style="font-size:12px;color:var(--text-secondary)">依功能權限設定存取業務功能</div></div>
+              <div><div style="font-weight:700;font-size:calc(13px * var(--font-scale));color:var(--primary)">一般使用者</div><div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">依功能權限設定存取業務功能</div></div>
             </label>
           </div>
         </div>
@@ -3485,7 +3563,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
             <input type="password" class="form-control" id="sim-admin-pwd" placeholder="請再次輸入管理者密碼">
           </div>
           <div class="info-card warning" style="margin-bottom:16px">
-            <div style="font-size:13px;color:#5d4037">
+            <div style="font-size:calc(13px * var(--font-scale));color:#5d4037">
               <strong><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a1 1 0 0 0 .86 1.5h18.64a1 1 0 0 0 .86-1.5L13.71 3.86a1 1 0 0 0-1.72 0z"/><line x1="12" y1="9" x2="12" y2="13"/><circle cx="12" cy="16.5" r="0.9" fill="currentColor" stroke="none"/></svg> 注意事項：</strong><br>
               1. 模擬登入期間，所有操作均以「模擬模式」記錄於稽核日誌<br>
               2. 模擬模式下的操作將顯示橘色提示列<br>
@@ -3559,8 +3637,8 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
               <td>王大明</td>
               <td><span class="badge badge-success">新增</span></td>
               <td>溢領控管 (OVF-113-0892)</td>
-              <td><span style="color:var(--text-secondary);font-size:12px">-</span></td>
-              <td><span style="font-size:12px;color:var(--success)">已建立</span></td>
+              <td><span style="color:var(--text-secondary);font-size:calc(12px * var(--font-scale))">-</span></td>
+              <td><span style="font-size:calc(12px * var(--font-scale));color:var(--success)">已建立</span></td>
               <td>192.168.1.101</td>
               <td>113/12/10 10:45:23</td>
               <td><button class="btn btn-sm btn-outline" onclick="event.stopPropagation()">展開</button></td>
@@ -3581,8 +3659,8 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
               <td>王大明</td>
               <td><span class="badge badge-info">查詢</span></td>
               <td>支領紀錄查詢</td>
-              <td><span style="color:var(--text-secondary);font-size:12px">-</span></td>
-              <td><span style="font-size:12px">A123456789</span></td>
+              <td><span style="color:var(--text-secondary);font-size:calc(12px * var(--font-scale))">-</span></td>
+              <td><span style="font-size:calc(12px * var(--font-scale))">A123456789</span></td>
               <td>192.168.1.101</td>
               <td>113/12/10 09:52:11</td>
               <td><button class="btn btn-sm btn-outline">展開</button></td>
@@ -3591,8 +3669,8 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
               <td>王大明</td>
               <td><span class="badge badge-primary">登入</span></td>
               <td>系統登入</td>
-              <td><span style="color:var(--text-secondary);font-size:12px">-</span></td>
-              <td><span style="font-size:12px;color:var(--success)">登入成功</span></td>
+              <td><span style="color:var(--text-secondary);font-size:calc(12px * var(--font-scale))">-</span></td>
+              <td><span style="font-size:calc(12px * var(--font-scale));color:var(--success)">登入成功</span></td>
               <td>192.168.1.101</td>
               <td>113/12/10 09:23:05</td>
               <td><button class="btn btn-sm btn-outline">展開</button></td>
@@ -3601,8 +3679,8 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
               <td>李小華</td>
               <td><span class="badge badge-warning">修改</span></td>
               <td>溢領控管 (OVF-113-0882)</td>
-              <td><span style="font-size:12px;color:var(--danger)">未收回</span></td>
-              <td><span style="font-size:12px;color:var(--warning)">部分收回</span></td>
+              <td><span style="font-size:calc(12px * var(--font-scale));color:var(--danger)">未收回</span></td>
+              <td><span style="font-size:calc(12px * var(--font-scale));color:var(--warning)">部分收回</span></td>
               <td>192.168.1.102</td>
               <td>113/12/09 16:30:44</td>
               <td><button class="btn btn-sm btn-outline">展開</button></td>
@@ -3611,8 +3689,8 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
               <td>系統管理員</td>
               <td><span class="badge badge-secondary">模擬登入</span></td>
               <td>模擬 <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg> 王大明</td>
-              <td><span style="color:var(--text-secondary);font-size:12px">-</span></td>
-              <td><span style="font-size:12px;color:var(--warning)">模擬中</span></td>
+              <td><span style="color:var(--text-secondary);font-size:calc(12px * var(--font-scale))">-</span></td>
+              <td><span style="font-size:calc(12px * var(--font-scale));color:var(--warning)">模擬中</span></td>
               <td>192.168.1.200</td>
               <td>113/12/08 14:30:00</td>
               <td><button class="btn btn-sm btn-outline">展開</button></td>
@@ -3921,7 +3999,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
               <strong>113/01/01 生效</strong>
               <span class="badge badge-success">現行版次</span>
             </div>
-            <div style="font-size:13px;color:var(--text-secondary);margin-top:4px">定期免稅額 NT$ 32,700／月；一次免稅額 NT$ 198,000／年　｜　修改人：陳志明　｜　113/12/05 14:20</div>
+            <div style="font-size:calc(13px * var(--font-scale));color:var(--text-secondary);margin-top:4px">定期免稅額 NT$ 32,700／月；一次免稅額 NT$ 198,000／年　｜　修改人：陳志明　｜　113/12/05 14:20</div>
           </div>
         </div>
         <div class="param-history-item">
@@ -3931,7 +4009,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
               <strong>112/01/01 ～ 112/12/31</strong>
               <span class="badge badge-secondary">歷史版次</span>
             </div>
-            <div style="font-size:13px;color:var(--text-secondary);margin-top:4px">定期免稅額 NT$ 31,800／月；一次免稅額 NT$ 191,000／年　｜　修改人：系統管理員　｜　111/12/20 09:10</div>
+            <div style="font-size:calc(13px * var(--font-scale));color:var(--text-secondary);margin-top:4px">定期免稅額 NT$ 31,800／月；一次免稅額 NT$ 191,000／年　｜　修改人：系統管理員　｜　111/12/20 09:10</div>
           </div>
         </div>
         <div class="param-history-item">
@@ -3941,7 +4019,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
               <strong>111/01/01 ～ 111/12/31</strong>
               <span class="badge badge-secondary">歷史版次</span>
             </div>
-            <div style="font-size:13px;color:var(--text-secondary);margin-top:4px">定期免稅額 NT$ 31,100／月；一次免稅額 NT$ 187,000／年　｜　修改人：系統管理員　｜　110/12/18 11:05</div>
+            <div style="font-size:calc(13px * var(--font-scale));color:var(--text-secondary);margin-top:4px">定期免稅額 NT$ 31,100／月；一次免稅額 NT$ 187,000／年　｜　修改人：系統管理員　｜　110/12/18 11:05</div>
           </div>
         </div>
       </div>
@@ -3966,7 +4044,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
     </div>
     <div class="modal-body">
       <div class="info-card danger" style="margin-bottom:16px">
-        <div style="font-size:13px;font-weight:700;color:var(--danger);margin-bottom:8px"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a1 1 0 0 0 .86 1.5h18.64a1 1 0 0 0 .86-1.5L13.71 3.86a1 1 0 0 0-1.72 0z"/><line x1="12" y1="9" x2="12" y2="13"/><circle cx="12" cy="16.5" r="0.9" fill="currentColor" stroke="none"/></svg> 請確認以下止付資訊</div>
+        <div style="font-size:calc(13px * var(--font-scale));font-weight:700;color:var(--danger);margin-bottom:8px"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a1 1 0 0 0 .86 1.5h18.64a1 1 0 0 0 .86-1.5L13.71 3.86a1 1 0 0 0-1.72 0z"/><line x1="12" y1="9" x2="12" y2="13"/><circle cx="12" cy="16.5" r="0.9" fill="currentColor" stroke="none"/></svg> 請確認以下止付資訊</div>
         <div class="info-row"><div class="info-key">領受人姓名</div><div class="info-val" id="stop-name">-</div></div>
         <div class="info-row"><div class="info-key">身分證字號</div><div class="info-val" id="stop-id">-</div></div>
         <div class="info-row"><div class="info-key">預計撥付期間</div><div class="info-val" id="stop-period">-</div></div>
@@ -4045,12 +4123,12 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div class="info-row"><div class="info-key">發文日期</div><div class="info-val">中華民國113年8月15日</div></div>
         <div class="info-row"><div class="info-key">適用身分別</div><div class="info-val"><span class="badge badge-primary">公務人員</span></div></div>
       </div>
-      <div style="font-size:14px;font-weight:700;color:var(--primary);margin-bottom:8px">主旨</div>
-      <div style="font-size:13px;padding:12px;background:#f8f9fa;border-radius:6px;margin-bottom:16px;line-height:1.8">
+      <div style="font-size:calc(14px * var(--font-scale));font-weight:700;color:var(--primary);margin-bottom:8px">主旨</div>
+      <div style="font-size:calc(13px * var(--font-scale));padding:12px;background:#f8f9fa;border-radius:6px;margin-bottom:16px;line-height:1.8">
         有關公務人員月退休金停止支領規定疑義，說明如下。
       </div>
-      <div style="font-size:14px;font-weight:700;color:var(--primary);margin-bottom:8px">說明</div>
-      <div style="font-size:13px;padding:12px;background:#f8f9fa;border-radius:6px;line-height:1.8">
+      <div style="font-size:calc(14px * var(--font-scale));font-weight:700;color:var(--primary);margin-bottom:8px">說明</div>
+      <div style="font-size:calc(13px * var(--font-scale));padding:12px;background:#f8f9fa;border-radius:6px;line-height:1.8">
         一、依公務人員退休資遣撫卹法第77條規定，月退休金領受人有下列情形之一者，停止支領月退休金：<br>
         （一）死亡。<br>
         （二）喪失中華民國國籍。<br>
@@ -4063,7 +4141,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="closeModal('ruling-modal')">關閉</button>
       <button class="btn btn-outline-primary" onclick="showToast('info','列印中','正在準備列印...')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> 列印</button>
-      <button class="btn btn-primary" onclick="showToast('success','下載中','函釋文件下載中...')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 下載PDF</button>
+      <button class="btn btn-primary" onclick="runDownload('函釋文件','pdf')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 下載PDF</button>
     </div>
   </div>
 </div>
@@ -4265,7 +4343,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
               <input type="checkbox" id="interface-status-toggle" checked>
               <span class="toggle-slider"></span>
             </label>
-            <span style="font-size:13px" id="interface-status-text">啟用</span>
+            <span style="font-size:calc(13px * var(--font-scale))" id="interface-status-text">啟用</span>
           </div>
         </div>
       </div>
@@ -4330,7 +4408,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
     </div>
     <div class="modal-body">
       <div class="info-card" style="margin-bottom:16px;background:#fff8e1;border-left:3px solid var(--accent-gold);padding:12px 16px;border-radius:6px">
-        <div style="font-size:13px;color:#8a6d00"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-right:4px"><path d="M10.29 3.86L1.82 18a1 1 0 0 0 .86 1.5h18.64a1 1 0 0 0 .86-1.5L13.71 3.86a1 1 0 0 0-1.72 0z"/><line x1="12" y1="9" x2="12" y2="13"/><circle cx="12" cy="16.5" r="0.9" fill="currentColor" stroke="none"/></svg>新版次生效後，系統將自動套用於生效日之後計算的退職所得課稅案件，歷史案件不受影響</div>
+        <div style="font-size:calc(13px * var(--font-scale));color:#8a6d00"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-right:4px"><path d="M10.29 3.86L1.82 18a1 1 0 0 0 .86 1.5h18.64a1 1 0 0 0 .86-1.5L13.71 3.86a1 1 0 0 0-1.72 0z"/><line x1="12" y1="9" x2="12" y2="13"/><circle cx="12" cy="16.5" r="0.9" fill="currentColor" stroke="none"/></svg>新版次生效後，系統將自動套用於生效日之後計算的退職所得課稅案件，歷史案件不受影響</div>
       </div>
       <div class="form-row cols-2">
         <div class="form-group">
@@ -4354,7 +4432,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       </div>
       <div class="form-group">
         <label class="form-label">退職所得課稅公式 <span class="required">*</span></label>
-        <textarea class="form-control" rows="4" style="font-family:'Consolas','Courier New',monospace;font-size:13px" placeholder="請輸入課稅計算公式，可使用變數如：退職所得、免稅額、適用稅率、累進差額">應課稅所得額 = (退職所得 − 免稅額) × 50%
+        <textarea class="form-control" rows="4" style="font-family:'Consolas','Courier New',monospace;font-size:calc(13px * var(--font-scale))" placeholder="請輸入課稅計算公式，可使用變數如：退職所得、免稅額、適用稅率、累進差額">應課稅所得額 = (退職所得 − 免稅額) × 50%
 應納稅額 = 應課稅所得額 × 適用稅率 − 累進差額</textarea>
         <div class="form-hint">公式將用於系統自動試算，請確認語法後再儲存</div>
       </div>
@@ -4379,7 +4457,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
     </div>
     <div class="modal-body">
       <div class="info-card danger">
-        <div style="font-size:13px;color:#721c24">
+        <div style="font-size:calc(13px * var(--font-scale));color:#721c24">
           您確定要刪除此函釋資料嗎？<br>
           <strong>此操作為軟刪除，資料將標記為停用狀態，不會永久刪除。</strong>
         </div>
@@ -4413,6 +4491,35 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       <button class="btn btn-outline" onclick="closeModal('sim-modal')">取消</button>
       <button class="btn btn-warning" onclick="closeModal('sim-modal');startSimMode()"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="5"/><circle cx="15" cy="15" r="5"/></svg> 開始模擬</button>
     </div>
+  </div>
+</div>
+
+<!-- Generic Detail Modal (查看詳細 / 差異清單 / 異常清單 等) -->
+<div class="modal-overlay" id="detail-modal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div class="modal-title" id="detail-modal-title"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><line x1="8" y1="13" x2="14" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg> <span>詳細內容</span></div>
+      <button class="modal-close" onclick="closeModal('detail-modal')">×</button>
+    </div>
+    <div class="modal-body" id="detail-modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('detail-modal')">關閉</button>
+      <button class="btn btn-primary" id="detail-modal-dl-btn" onclick="runDownload('明細清單','xlsx')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 下載清單</button>
+    </div>
+  </div>
+</div>
+
+<!-- Download / Report-generation progress overlay -->
+<div class="dl-progress-overlay" id="dl-progress-overlay">
+  <div class="dl-progress-card">
+    <div class="dl-progress-icon" id="dl-progress-icon">
+      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 0 1 8-8V2.5"/><path d="M20 12a8 8 0 0 1-8 8v1.5"/><path d="M4 12h4m8 0h4"/></svg>
+    </div>
+    <div class="dl-progress-title" id="dl-progress-title">正在產製檔案...</div>
+    <div class="dl-progress-sub" id="dl-progress-sub">請稍候，系統正在為您準備檔案</div>
+    <div class="dl-progress-track"><div class="dl-progress-bar" id="dl-progress-bar"></div></div>
+    <div class="dl-progress-pct" id="dl-progress-pct">0%</div>
+    <button class="btn btn-outline btn-sm dl-progress-close" id="dl-progress-close" onclick="closeDownloadProgress()">關閉</button>
   </div>
 </div>
 
@@ -5115,11 +5222,33 @@ function animateExec() {
 }
 setInterval(animateExec, 200);
 
+// ===== FONT SIZE TOGGLE =====
+function applyFontSize(size, persist) {
+  document.documentElement.setAttribute('data-font-size', size);
+  document.querySelectorAll('.font-size-btn').forEach(function(btn) {
+    btn.classList.toggle('active', btn.getAttribute('data-size') === size);
+  });
+  if (persist) {
+    try { localStorage.setItem('fontSizePref', size); } catch (e) {}
+  }
+}
+
+function setFontSize(size) {
+  applyFontSize(size, true);
+}
+
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', function() {
   // Show login page by default (already visible)
   // Initialize report stats
   updateReportStats();
+
+  // 同步字體大小切換按鈕狀態（實際大小已於 head 提早套用避免閃爍）
+  var savedFontSize = document.documentElement.getAttribute('data-font-size') || 'medium';
+  applyFontSize(savedFontSize, false);
+
+  // 所有頁面（含隱藏的頁籤與彈窗）在載入時即存在於 DOM，於此統一掃描並掛載日期選單
+  initDatePickers();
 });
 
 // ===== SIDEBAR BACKDROP CLICK (stop sidebar bubbling) =====
@@ -5133,6 +5262,323 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 })();
+
+// ===== ROC (民國) DATE PICKER =====
+// 凡輸入格式符合「113/10」或「113/10/05」等民國年格式之文字欄位，
+// 皆自動掛載日期選單圖示，點擊後可用選單方式選取年、月、日，取代手動輸入。
+const ROC_DATE_RE = /^(\d{2,3})\/(\d{1,2})(?:\/(\d{1,2}))?$/;
+let activeDatePicker = null;
+const ROC_TODAY = { y: 113, m: 12, d: 10 }; // 原型系統之基準「今天」
+
+function isRocDateField(input) {
+  if (!input || input.tagName !== 'INPUT' || input.type !== 'text') return false;
+  if (input.disabled || input.readOnly) return false;
+  const v = (input.value || '').trim();
+  const p = (input.getAttribute('placeholder') || '').trim();
+  return ROC_DATE_RE.test(v) || ROC_DATE_RE.test(p);
+}
+
+function initDatePickers(scope) {
+  const root = scope || document;
+  root.querySelectorAll('input[type="text"]').forEach(input => {
+    if (input.dataset.dpInit) return;
+    if (!isRocDateField(input)) return;
+    input.dataset.dpInit = '1';
+    mountDatePicker(input);
+  });
+}
+
+function mountDatePicker(input) {
+  const sample = (input.value || input.getAttribute('placeholder') || '').trim();
+  const m = ROC_DATE_RE.exec(sample);
+  const hasDay = !!(m && m[3]);
+
+  const wrap = document.createElement('div');
+  wrap.className = 'date-field-wrap';
+  input.parentNode.insertBefore(wrap, input);
+  wrap.appendChild(input);
+
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'date-picker-toggle';
+  btn.title = '開啟日期選單';
+  btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>';
+  btn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    if (activeDatePicker && activeDatePicker.wrap === wrap) { closeDatePicker(); return; }
+    openDatePicker(input, wrap, hasDay);
+  });
+  wrap.appendChild(btn);
+}
+
+function daysInRocMonth(rocYear, month) {
+  return new Date(rocYear + 1911, month, 0).getDate();
+}
+function firstWeekdayOfRocMonth(rocYear, month) {
+  return new Date(rocYear + 1911, month - 1, 1).getDay();
+}
+
+function openDatePicker(input, wrap, hasDay) {
+  closeDatePicker();
+
+  const raw = (input.value || input.getAttribute('placeholder') || '').trim();
+  const m = ROC_DATE_RE.exec(raw);
+  let y = m ? parseInt(m[1], 10) : ROC_TODAY.y;
+  let mo = m ? parseInt(m[2], 10) : ROC_TODAY.m;
+  let d = (m && m[3]) ? parseInt(m[3], 10) : (hasDay ? ROC_TODAY.d : null);
+
+  const backdrop = document.createElement('div');
+  backdrop.className = 'date-picker-backdrop open';
+  backdrop.addEventListener('click', closeDatePicker);
+  document.body.appendChild(backdrop);
+
+  const pop = document.createElement('div');
+  pop.className = 'date-picker-popup open';
+  wrap.appendChild(pop);
+
+  activeDatePicker = { pop, backdrop, wrap };
+
+  function applyDate(close) {
+    const pad = n => String(n).padStart(2, '0');
+    input.value = hasDay ? (y + '/' + pad(mo) + '/' + pad(d || 1)) : (y + '/' + pad(mo));
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+    if (close) closeDatePicker();
+  }
+
+  function render() {
+    let yearOptions = '';
+    for (let yy = ROC_TODAY.y - 15; yy <= ROC_TODAY.y + 5; yy++) {
+      yearOptions += '<option value="' + yy + '"' + (yy === y ? ' selected' : '') + '>民國 ' + yy + ' 年</option>';
+    }
+    let monthOptions = '';
+    for (let mm = 1; mm <= 12; mm++) {
+      monthOptions += '<option value="' + mm + '"' + (mm === mo ? ' selected' : '') + '>' + mm + ' 月</option>';
+    }
+
+    let daysHtml = '';
+    if (hasDay) {
+      const totalDays = daysInRocMonth(y, mo);
+      const firstDow = firstWeekdayOfRocMonth(y, mo);
+      let cells = '';
+      for (let i = 0; i < firstDow; i++) cells += '<div class="date-picker-day empty"></div>';
+      for (let dd = 1; dd <= totalDays; dd++) {
+        const isToday = (y === ROC_TODAY.y && mo === ROC_TODAY.m && dd === ROC_TODAY.d);
+        const isSel = dd === d;
+        cells += '<div class="date-picker-day' + (isSel ? ' selected' : '') + (isToday ? ' today' : '') + '" data-day="' + dd + '">' + dd + '</div>';
+      }
+      daysHtml = '<div class="date-picker-weekdays"><div>日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div></div>' +
+                 '<div class="date-picker-days">' + cells + '</div>';
+    }
+
+    pop.innerHTML =
+      '<div class="date-picker-head">' +
+        '<select class="dp-year"></select>' +
+        '<select class="dp-month"></select>' +
+      '</div>' +
+      daysHtml +
+      '<div class="date-picker-footer">' +
+        '<button type="button" class="dp-today">回今天</button>' +
+        '<button type="button" class="dp-close">關閉</button>' +
+      '</div>';
+
+    pop.querySelector('.dp-year').innerHTML = yearOptions;
+    pop.querySelector('.dp-month').innerHTML = monthOptions;
+
+    pop.querySelector('.dp-year').addEventListener('change', function(e) {
+      y = parseInt(e.target.value, 10);
+      if (!hasDay) applyDate(false); else if (d && d > daysInRocMonth(y, mo)) d = daysInRocMonth(y, mo);
+      if (hasDay) applyDate(false);
+      render();
+    });
+    pop.querySelector('.dp-month').addEventListener('change', function(e) {
+      mo = parseInt(e.target.value, 10);
+      if (d && d > daysInRocMonth(y, mo)) d = daysInRocMonth(y, mo);
+      applyDate(false);
+      render();
+    });
+    pop.querySelector('.dp-close').addEventListener('click', closeDatePicker);
+    pop.querySelector('.dp-today').addEventListener('click', function() {
+      y = ROC_TODAY.y; mo = ROC_TODAY.m; d = hasDay ? ROC_TODAY.d : null;
+      applyDate(true);
+    });
+    if (hasDay) {
+      pop.querySelectorAll('.date-picker-day:not(.empty)').forEach(el => {
+        el.addEventListener('click', function() {
+          d = parseInt(el.dataset.day, 10);
+          applyDate(true);
+        });
+      });
+    }
+  }
+
+  render();
+  if (!hasDay) applyDate(false);
+}
+
+function closeDatePicker() {
+  if (!activeDatePicker) return;
+  activeDatePicker.pop.remove();
+  activeDatePicker.backdrop.remove();
+  activeDatePicker = null;
+}
+
+// ===== DOWNLOAD / REPORT-GENERATION PROGRESS OVERLAY =====
+// 統一套用於所有「下載／匯出／產製」按鈕，呈現產製中進度與完成狀態，
+// 取代原先僅顯示 Toast 訊息、瞬間完成的行為。
+let dlProgressTimer = null;
+
+function runDownload(fileLabel, ext, opts) {
+  opts = opts || {};
+  const overlay = document.getElementById('dl-progress-overlay');
+  const icon = document.getElementById('dl-progress-icon');
+  const title = document.getElementById('dl-progress-title');
+  const sub = document.getElementById('dl-progress-sub');
+  const bar = document.getElementById('dl-progress-bar');
+  const pct = document.getElementById('dl-progress-pct');
+  const closeBtn = document.getElementById('dl-progress-close');
+
+  if (dlProgressTimer) { clearInterval(dlProgressTimer); dlProgressTimer = null; }
+
+  icon.className = 'dl-progress-icon';
+  icon.innerHTML = '<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 0 1 8-8V2.5"/><path d="M20 12a8 8 0 0 1-8 8v1.5"/><path d="M4 12h4m8 0h4"/></svg>';
+  title.textContent = (opts.verb || '正在產製檔案');
+  sub.textContent = fileLabel + (ext ? ('.' + ext) : '');
+  bar.style.width = '0%';
+  pct.textContent = '0%';
+  closeBtn.style.display = 'none';
+  overlay.classList.add('open');
+
+  let progress = 0;
+  const step = opts.step || (6 + Math.random() * 4);
+  dlProgressTimer = setInterval(() => {
+    progress += step;
+    if (progress >= 100) {
+      progress = 100;
+      clearInterval(dlProgressTimer);
+      dlProgressTimer = null;
+      icon.className = 'dl-progress-icon done';
+      icon.innerHTML = '<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="8 12.5 11 15.5 16 9"/></svg>';
+      title.textContent = '檔案已產製完成';
+      sub.textContent = fileLabel + (ext ? ('.' + ext) : '') + '　已就緒';
+      closeBtn.style.display = 'inline-flex';
+      showToast('success', '下載完成', fileLabel + ' 已產製完成，可於下載紀錄中查看');
+      if (opts.onDone) opts.onDone();
+      if (!opts.keepOpen) {
+        setTimeout(() => { closeDownloadProgress(); }, 1100);
+      }
+    }
+    bar.style.width = progress + '%';
+    pct.textContent = Math.round(progress) + '%';
+  }, 90);
+}
+
+function closeDownloadProgress() {
+  const overlay = document.getElementById('dl-progress-overlay');
+  overlay.classList.remove('open');
+  if (dlProgressTimer) { clearInterval(dlProgressTimer); dlProgressTimer = null; }
+}
+
+// ===== MONTHLY-PREP / MONTHLY-ANOMALY DETAIL CONTENT =====
+function showTask1Detail() {
+  const html = `
+    <div class="detail-block">
+      <div class="detail-block-title">任務一：名冊資格查核結果（共 12,847 筆，3 筆異常）</div>
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead><tr><th>序號</th><th>姓名</th><th>身分證字號</th><th>異常原因</th><th>建議處理方式</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>周美玲</td><td class="masked">B234***567</td><td>資格已於 113/11 終止，仍列於撥付名冊</td><td>移除本期撥付名冊</td></tr>
+            <tr><td>2</td><td>徐國安</td><td class="masked">C345***678</td><td>銀行帳號與上期不符，疑似異動未更新</td><td>請領受人確認並更新帳戶</td></tr>
+            <tr><td>3</td><td>簡淑貞</td><td class="masked">D456***789</td><td>身分別代碼與退撫給與種類不一致</td><td>回覆原承辦單位確認身分別</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="detail-block">
+      <div class="detail-block-title">查核摘要</div>
+      <div class="info-card success">
+        <div class="info-row"><div class="info-key">查核筆數</div><div class="info-val">12,847 筆</div></div>
+        <div class="info-row"><div class="info-key">通過筆數</div><div class="info-val" style="color:var(--success)">12,844 筆</div></div>
+        <div class="info-row"><div class="info-key">異常筆數</div><div class="info-val" style="color:var(--warning)">3 筆</div></div>
+      </div>
+    </div>`;
+  openDetailModal('任務一：名冊資格查核結果', html, '名冊查核結果', 'xlsx');
+}
+
+function showTask2Diff() {
+  const rows = [
+    ['A123***789','王建民','撥付金額','NT$ 68,500','NT$ 68,000','平台尾差未更新'],
+    ['C345***678','徐國安','銀行帳號','1234-***-789','1234-***-790','帳號末碼異動未同步'],
+    ['D456***789','簡淑貞','撥付狀態','正常撥付','暫停撥付','平台端顯示止付中'],
+    ['E567***890','黃建國','退撫類別','公務月退','兼領月退','身分別代碼版本不同'],
+    ['F678***901','李秀蘭','撥付金額','NT$ 91,200','NT$ 91,700','稅額試算版次不同'],
+    ['G789***012','吳文雄','服務機關','臺北市政府','行政院','機關代碼對應表未更新'],
+    ['H890***123','趙麗華','銀行帳號','012345678901','—','平台端查無此帳號資料']
+  ];
+  let trs = rows.map((r,i)=>`<tr><td>${i+1}</td><td>${r[1]}</td><td class="masked">${r[0]}</td><td>${r[2]}</td><td>${r[3]}</td><td style="color:var(--danger);font-weight:600">${r[4]}</td><td>${r[5]}</td></tr>`).join('');
+  const html = `
+    <div class="detail-block">
+      <div class="detail-block-title">任務二：基金管理系統與撥付平台差異清單（共 7 筆）</div>
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead><tr><th>序號</th><th>姓名</th><th>身分證字號</th><th>差異欄位</th><th>基金系統值</th><th>撥付平台值</th><th>研判原因</th></tr></thead>
+          <tbody>${trs}</tbody>
+        </table>
+      </div>
+    </div>
+    <div class="detail-block">
+      <div class="info-card danger">
+        <div style="font-size:calc(13px * var(--font-scale));color:var(--danger)"><strong>建議：</strong>請於執行核心定撥前，先確認上述 7 筆差異並完成校正，避免撥款金額錯誤。</div>
+      </div>
+    </div>`;
+  openDetailModal('任務二：平台差異比對清單', html, '平台差異比對結果', 'xlsx');
+}
+
+function showManualFix(name, errCode, errMsg) {
+  const html = `
+    <div class="detail-block">
+      <div class="detail-block-title">異常案件：${name}</div>
+      <div class="info-card danger" style="margin-bottom:16px">
+        <div class="info-row"><div class="info-key">錯誤代碼</div><div class="info-val">${errCode}</div></div>
+        <div class="info-row"><div class="info-key">錯誤說明</div><div class="info-val">${errMsg}</div></div>
+      </div>
+    </div>
+    <div class="detail-block">
+      <div class="form-group">
+        <label class="form-label">修正後銀行帳號</label>
+        <input type="text" class="form-control" placeholder="請輸入正確之14碼銀行帳號">
+      </div>
+      <div class="form-group">
+        <label class="form-label">修正後撥付金額</label>
+        <input type="text" class="form-control" placeholder="請輸入修正後金額">
+      </div>
+      <div class="form-group" style="margin-bottom:0">
+        <label class="form-label">修正說明</label>
+        <textarea class="form-control" rows="2" placeholder="請輸入修正原因與依據"></textarea>
+      </div>
+    </div>`;
+  openDetailModal('人工修正：' + name, html);
+  const dlBtn = document.getElementById('detail-modal-dl-btn');
+  dlBtn.style.display = 'inline-flex';
+  dlBtn.innerHTML = '<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> 儲存修正';
+  dlBtn.setAttribute('onclick', "closeModal('detail-modal');showToast('success','修正完成','" + name + " 的異常案件已修正，將於下次執行時重新處理')");
+}
+
+// ===== GENERIC DETAIL MODAL =====
+// 供各頁「查看詳細」「差異清單」「異常清單」等重要按鈕開啟，顯示對應的資料內容。
+function openDetailModal(titleText, bodyHtml, dlLabel, dlExt) {
+  document.querySelector('#detail-modal-title span').textContent = titleText;
+  document.getElementById('detail-modal-body').innerHTML = bodyHtml;
+  const dlBtn = document.getElementById('detail-modal-dl-btn');
+  if (dlLabel) {
+    dlBtn.style.display = 'inline-flex';
+    dlBtn.setAttribute('onclick', "runDownload('" + dlLabel + "','" + (dlExt || 'xlsx') + "')");
+  } else {
+    dlBtn.style.display = 'none';
+  }
+  openModal('detail-modal');
+}
 </script>
 </body>
 </html>
