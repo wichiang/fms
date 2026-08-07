@@ -222,6 +222,8 @@ table{border-collapse:collapse;width:100%}
 .btn-outline:hover{border-color:var(--secondary);color:var(--secondary);background:#f0f4ff}
 .btn-outline-primary{background:transparent;border:1.5px solid var(--primary);color:var(--primary)}
 .btn-outline-primary:hover{background:var(--primary);color:#fff}
+.btn-outline-danger{background:transparent;border:1.5px solid var(--danger);color:var(--danger)}
+.btn-outline-danger:hover{background:var(--danger);color:#fff}
 .btn-sm{padding:5px 10px;font-size:calc(12px * var(--font-scale))}
 .btn-lg{padding:11px 22px;font-size:calc(15px * var(--font-scale))}
 .btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;box-shadow:none}
@@ -248,6 +250,26 @@ select.form-control{appearance:none;background-image:url("data:image/svg+xml,%3C
 .checkbox-group{display:flex;flex-wrap:wrap;gap:12px}
 .checkbox-item{display:flex;align-items:center;gap:6px;cursor:pointer;font-size:calc(13px * var(--font-scale))}
 .checkbox-item input[type=checkbox]{width:15px;height:15px;accent-color:var(--primary);cursor:pointer}
+
+/* UPLOAD DROPZONE */
+.upload-dropzone{border:2px dashed var(--border);border-radius:var(--radius-card);padding:28px 20px;text-align:center;cursor:pointer;transition:var(--transition);background:#fafbfc}
+.upload-dropzone:hover{border-color:var(--secondary);background:#f8faff}
+.upload-dropzone.dragover{border-color:var(--primary);background:#eef2ff}
+.upload-dropzone-icon{color:var(--secondary);margin-bottom:8px}
+.upload-dropzone-title{font-size:calc(13px * var(--font-scale));font-weight:700;color:var(--primary)}
+.upload-dropzone-hint{font-size:calc(12px * var(--font-scale));color:var(--text-secondary);margin-top:4px}
+.upload-file-chip{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;background:#eef2ff;border-radius:6px;font-size:calc(12px * var(--font-scale));font-weight:600;color:var(--primary);margin-top:10px}
+
+/* CASE TIMELINE (課稅案件 / 直撥 歷程) */
+.case-timeline{position:relative;padding-left:24px}
+.case-timeline::before{content:'';position:absolute;left:6px;top:4px;bottom:4px;width:2px;background:var(--border)}
+.case-timeline-item{position:relative;padding-bottom:16px}
+.case-timeline-item::before{content:'';position:absolute;left:-24px;top:3px;width:10px;height:10px;border-radius:50%;background:var(--secondary);border:2px solid #fff;box-shadow:0 0 0 1px var(--border)}
+.case-timeline-item.void::before{background:var(--danger)}
+.case-timeline-item.create::before{background:var(--success)}
+.case-timeline-time{font-size:calc(11px * var(--font-scale));color:var(--text-secondary)}
+.case-timeline-title{font-size:calc(13px * var(--font-scale));font-weight:700;color:var(--text-primary);margin:2px 0}
+.case-timeline-desc{font-size:calc(12px * var(--font-scale));color:var(--text-secondary)}
 
 /* SECTION DIVIDER */
 .section-divider{border:none;border-top:1px solid var(--border);margin:20px 0}
@@ -932,6 +954,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       </div>
       <div class="sidebar-submenu" id="submenu-tax">
         <div class="sidebar-sub-item" onclick="navigateTo('tax-calc')">課稅計算</div>
+        <div class="sidebar-sub-item" onclick="navigateTo('tax-case')">課稅案件管理</div>
         <div class="sidebar-sub-item" onclick="navigateTo('tax-report')">報表彙整統計</div>
         <div class="sidebar-sub-item" onclick="navigateTo('tax-audit')">稅務申報檢核</div>
       </div>
@@ -945,6 +968,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       <div class="sidebar-submenu" id="submenu-direct">
         <div class="sidebar-sub-item" onclick="navigateTo('direct-register')">手動直撥建置</div>
         <div class="sidebar-sub-item" onclick="navigateTo('direct-letter')">書函產製</div>
+        <div class="sidebar-sub-item" onclick="navigateTo('direct-query')">查詢與統計</div>
       </div>
       
       <!-- 定撥作業 -->
@@ -1010,6 +1034,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div class="sidebar-sub-item" onclick="navigateTo('admin-simulate')">模擬登入</div>
         <div class="sidebar-sub-item" onclick="navigateTo('admin-audit')">稽核日誌</div>
         <div class="sidebar-sub-item" onclick="navigateTo('admin-announcements')">公告管理</div>
+        <div class="sidebar-sub-item" onclick="navigateTo('admin-workday')">工作日管理</div>
         <div class="sidebar-sub-item" onclick="navigateTo('admin-interface')">介接管理</div>
         <div class="sidebar-sub-item" onclick="navigateTo('admin-tax-params')">課稅參數設定</div>
       </div>
@@ -1423,14 +1448,16 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div>
           <div class="card" style="margin-bottom:16px">
             <div class="section-title"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg> 上傳停發報表</div>
-            <div class="upload-zone" id="batch-upload-zone" onclick="simulateBatchUpload()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')">
+            <div class="upload-zone" id="batch-upload-zone" onclick="triggerFileInput('batch-file-input')" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleFileDrop(event,'batch-file-input')">
               <div class="upload-zone-icon"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="20" x2="4" y2="12"/><line x1="10" y1="20" x2="10" y2="6"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="20" y1="20" x2="4" y2="20"/></svg></div>
               <div class="upload-zone-text">拖曳檔案至此處，或點擊選擇檔案</div>
               <div class="upload-zone-hint">支援格式：Excel (.xlsx, .xls)、CSV (.csv) ｜ 檔案大小上限：10MB</div>
+              <div class="upload-file-chip" id="batch-file-chip" style="display:none;margin-top:12px"></div>
               <div style="margin-top:16px">
-                <button class="btn btn-outline-primary btn-sm" onclick="event.stopPropagation();simulateBatchUpload()">選擇檔案</button>
+                <button class="btn btn-outline-primary btn-sm" onclick="event.stopPropagation();triggerFileInput('batch-file-input')">選擇檔案</button>
               </div>
             </div>
+            <input type="file" id="batch-file-input" accept=".xlsx,.xls,.csv" style="display:none" onchange="displayChosenFile(this,'batch-file-chip');simulateBatchUpload()">
           </div>
           
           <div class="card" id="batch-preview" style="display:none;margin-bottom:16px">
@@ -1673,11 +1700,33 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       </div>
       <div class="page-header">
         <div class="page-title">溢領收回與轉檔</div>
-        <div class="page-subtitle">處理銀行退回款項，更新溢領收回狀態</div>
+        <div class="page-subtitle">處理銀行退回款項、繳款單／行政執行入帳，更新溢領收回狀態</div>
       </div>
-      
+
+      <div class="tabs">
+        <div class="tab-item active" onclick="switchTab(this,'recovery-bank')">銀行圈回入帳</div>
+        <div class="tab-item" onclick="switchTab(this,'recovery-payslip')">繳款單入帳</div>
+        <div class="tab-item" onclick="switchTab(this,'recovery-exec')">行政執行入帳</div>
+        <div class="tab-item" onclick="switchTab(this,'recovery-cancel')">錯帳取消</div>
+      </div>
+
+      <div class="tab-content active" id="recovery-bank">
       <div class="card" style="margin-bottom:16px">
-        <div class="card-title" style="margin-bottom:16px">銀行退回金額彙整表</div>
+        <div class="card-header">
+          <div>
+            <div class="card-title">自動化入帳勾稽</div>
+            <div class="card-subtitle">每日定時介接本局銀行入帳資料，自動進行身分、入帳金額及案號等資訊檢核</div>
+          </div>
+          <button class="btn btn-outline-primary btn-sm" onclick="showToast('success','勾稽完成','本日銀行入帳資料已完成勾稽，正確 27 筆，異常 2 筆')">立即執行勾稽</button>
+        </div>
+        <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-top:8px">
+          <div class="stat-card success"><div class="stat-label">勾稽正確</div><div class="stat-value success">27</div></div>
+          <div class="stat-card danger"><div class="stat-label">勾稽異常</div><div class="stat-value danger">2</div></div>
+          <div class="stat-card gold"><div class="stat-label">本日入帳總額</div><div class="stat-value gold" style="font-size:calc(18px * var(--font-scale))">NT$ 1,842,000</div></div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title" style="margin-bottom:16px">銀行圈回金額彙整表</div>
         <div class="table-wrapper">
           <table class="data-table">
             <thead>
@@ -1723,7 +1772,72 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         </div>
         <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px">
           <button class="btn btn-outline btn-sm"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="20" x2="4" y2="12"/><line x1="10" y1="20" x2="10" y2="6"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="20" y1="20" x2="4" y2="20"/></svg> 下載彙整表</button>
-          <button class="btn btn-primary btn-sm" onclick="showToast('success','轉檔成功','繳回金額已成功轉入溢領控管系統')">執行繳回金額轉檔</button>
+          <button class="btn btn-primary btn-sm" onclick="showToast('success','轉檔成功','繳回金額已成功轉入溢領控管系統，每日圈回入帳明細表及溢領明細彙整表已產製')">執行繳回金額轉檔</button>
+        </div>
+      </div>
+      </div>
+
+      <!-- 繳款單入帳 -->
+      <div class="tab-content" id="recovery-payslip">
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-title" style="margin-bottom:16px">繳款單入帳登錄</div>
+          <div class="form-row cols-3">
+            <div class="form-group"><label class="form-label">繳款單編號 <span class="required">*</span></label><input type="text" class="form-control" value="PAY-113-0231"></div>
+            <div class="form-group"><label class="form-label">案件編號</label><input type="text" class="form-control" value="OVF-113-0882"></div>
+            <div class="form-group"><label class="form-label">入帳金額 <span class="required">*</span></label><input type="text" class="form-control" placeholder="請輸入入帳金額"></div>
+          </div>
+          <div class="validation-area" style="margin-bottom:12px">
+            <div class="validation-item ok"><span class="validation-icon"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="8 12.5 11 15.5 16 9"/></svg></span> 繳款單編號與案件比對相符</div>
+            <div class="validation-item warn"><span class="validation-icon"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a1 1 0 0 0 .86 1.5h18.64a1 1 0 0 0 .86-1.5L13.71 3.86a1 1 0 0 0-1.72 0z"/><line x1="12" y1="9" x2="12" y2="13"/><circle cx="12" cy="16.5" r="0.9" fill="currentColor" stroke="none"/></svg></span> 請確認入帳金額與繳款單金額差異</div>
+          </div>
+          <button class="btn btn-gold" onclick="showToast('success','入帳完成','繳款單入帳已完成，入帳公文及溢領明細已產製')">確認入帳並產製公文</button>
+        </div>
+      </div>
+
+      <!-- 行政執行入帳 -->
+      <div class="tab-content" id="recovery-exec">
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-title" style="margin-bottom:16px">行政執行入帳作業</div>
+          <div class="form-row cols-2">
+            <div class="form-group"><label class="form-label">資料來源</label>
+              <div style="display:flex;gap:16px;margin-top:8px">
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:calc(13px * var(--font-scale))"><input type="radio" name="exec-source" checked> 介接關貿資料</label>
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:calc(13px * var(--font-scale))"><input type="radio" name="exec-source"> 人工輸入金額</label>
+              </div>
+            </div>
+            <div class="form-group"><label class="form-label">案件編號</label><input type="text" class="form-control" value="OVF-113-0883"></div>
+          </div>
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead><tr><th>案件編號</th><th>姓名</th><th>未收回金額</th><th>行政執行利息</th><th>本次執行入帳</th><th>狀態</th></tr></thead>
+              <tbody>
+                <tr><td>OVF-113-0883</td><td>張文山</td><td>213,000</td><td>3,842</td><td>50,000</td><td><span class="badge badge-info">執行中</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button class="btn btn-outline btn-sm" onclick="runDownload('行政執行利息計算單','pdf')">產製利息計算單</button>
+            <button class="btn btn-gold btn-sm" onclick="showToast('success','入帳完成','行政執行入帳已完成，公文、執行明細表及執行案件歷程總覽已產製，並同步回寫撥付系統支領紀錄')">確認入帳</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 錯帳取消 -->
+      <div class="tab-content" id="recovery-cancel">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">錯帳取消</div>
+            <span class="badge badge-warning">需權限核准</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">選擇欲取消之入帳紀錄 <span class="required">*</span></label>
+            <select class="form-control"><option>OVF-113-0880 · 王建民 · NT$68,500 · 113/11/20 入帳</option><option>OVF-113-0881 · 陳志偉 · NT$68,500 · 113/11/20 入帳</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">取消原因 <span class="required">*</span></label>
+            <textarea class="form-control" rows="2" placeholder="請輸入錯帳取消原因，將完整記錄異動內容以確保可追溯性"></textarea>
+          </div>
+          <button class="btn btn-danger" onclick="if(confirm('確定要取消本筆入帳紀錄嗎？此操作將完整記錄異動內容及責任歸屬。')){showToast('success','取消完成','已取消該筆入帳紀錄，案件狀態已回復為未收回，異動已記錄於稽核日誌')}">確認取消入帳</button>
         </div>
       </div>
     </div>
@@ -1862,6 +1976,14 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div class="page-title">止付文件生成</div>
         <div class="page-subtitle">查詢領受人並執行止付作業，自動產製止付相關文件</div>
       </div>
+
+      <!-- 建置止付案件作業入口：集中呈現待辦、回饋及異常資訊 -->
+      <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
+        <div class="stat-card warning"><div class="stat-label">待辦止付案件</div><div class="stat-value" style="color:var(--warning)">8</div><div class="stat-sub">尚未登錄或待覆核</div></div>
+        <div class="stat-card danger"><div class="stat-label">銀行回饋失敗</div><div class="stat-value danger">2</div><div class="stat-sub">需重新聯繫銀行</div></div>
+        <div class="stat-card danger"><div class="stat-label">追蹤未回（逾時限）</div><div class="stat-value danger">1</div><div class="stat-sub">超過設定聯繫時限</div></div>
+        <div class="stat-card success"><div class="stat-label">本月止付成功</div><div class="stat-value success">14</div><div class="stat-sub">已同步溢領管理子系統</div></div>
+      </div>
       
       <div class="filter-bar">
         <div class="filter-row">
@@ -1876,21 +1998,30 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           <button class="btn btn-primary btn-sm" style="align-self:flex-end"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> 查詢</button>
         </div>
       </div>
+
+      <div class="card" style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+        <div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">勾選多筆案件後可批次產製文書，減少逐案整理與重複輸入作業</div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-outline btn-sm" onclick="showToast('info','批次產製','已依勾選案件批次產製電話紀錄表，依銀行別彙整供傳真作業使用')">批次產製銀行電話紀錄表</button>
+          <button class="btn btn-outline btn-sm" onclick="showToast('info','批次產製','已依勾選案件批次產製止付明細及公文，並已介接公文系統取號')">批次產製公文及止付明細</button>
+        </div>
+      </div>
       
       <div class="table-card">
         <div class="table-wrapper">
         <table class="data-table">
           <thead>
             <tr>
-              <th>姓名</th><th>身分證字號</th><th>退撫類別</th><th>服務機關</th><th>月退金額</th><th>撥付帳號</th><th>狀態</th><th>操作</th>
+              <th style="width:32px"><input type="checkbox" onclick="document.querySelectorAll('#view-stop-payment tbody input[type=checkbox]').forEach(c=>c.checked=this.checked)"></th><th>姓名</th><th>身分證字號</th><th>退撫類別</th><th>服務機關</th><th>月退金額</th><th>撥付帳號</th><th>狀態</th><th>操作</th>
             </tr>
           </thead>
           <tbody>
-            <tr><td>王建民</td><td class="masked">A123***789</td><td>公務月退</td><td>臺北市政府</td><td>NT$ 68,500</td><td>台灣銀行 ***4521</td><td><span class="badge badge-success">正常撥付</span></td><td><button class="btn btn-sm btn-danger" onclick="openStopModal('王建民','A123456789','68,500','113/12')">執行止付</button></td></tr>
-            <tr><td>陳美麗</td><td class="masked">B234***789</td><td>公務月退</td><td>臺北市政府教育局</td><td>NT$ 68,500</td><td>台灣銀行 ***4521</td><td><span class="badge badge-danger">止付中</span></td><td><button class="btn btn-sm btn-outline" disabled>已止付</button></td></tr>
-            <tr><td>林志明</td><td class="masked">C345***678</td><td>公務月退</td><td>新北市政府</td><td>NT$ 71,000</td><td>合作金庫 ***7823</td><td><span class="badge badge-success">正常撥付</span></td><td><button class="btn btn-sm btn-danger" onclick="openStopModal('林志明','C345678901','71,000','113/12')">執行止付</button></td></tr>
-            <tr><td>張淑芬</td><td class="masked">D456***789</td><td>教職月退</td><td>行政院</td><td>NT$ 142,000</td><td>第一銀行 ***2341</td><td><span class="badge badge-success">正常撥付</span></td><td><button class="btn btn-sm btn-danger" onclick="openStopModal('張淑芬','D456789012','142,000','113/12')">執行止付</button></td></tr>
-            <tr><td>黃建國</td><td class="masked">E567***890</td><td>軍職月退</td><td>國防部</td><td>NT$ 55,000</td><td>郵局 ***9012</td><td><span class="badge badge-warning">處理中</span></td><td><button class="btn btn-sm btn-outline" disabled>處理中</button></td></tr>
+            <tr><td><input type="checkbox"></td><td>王建民</td><td class="masked">A123***789</td><td>公務月退</td><td>臺北市政府</td><td>NT$ 68,500</td><td>台灣銀行 ***4521</td><td><span class="badge badge-success">正常撥付</span></td><td><button class="btn btn-sm btn-danger" onclick="openStopModal('王建民','A123456789','68,500','113/12')">執行止付</button></td></tr>
+            <tr><td><input type="checkbox"></td><td>孫大偉 <span class="badge badge-warning" style="margin-left:4px" title="同一身分證字號查得2筆以上尚未撥付之支領紀錄">2筆待撥</span></td><td class="masked">K234***567</td><td>軍職月退</td><td>國防部</td><td>NT$ 55,000</td><td>郵局 ***9012</td><td><span class="badge badge-success">正常撥付</span></td><td><button class="btn btn-sm btn-danger" onclick="showToast('warning','請注意','系統偵測到孫大偉尚有 2 筆以上未撥付支領紀錄，請先確認對應紀錄後再執行止付，以避免案件誤建或資料對應錯誤');openStopModal('孫大偉','K234567890','55,000','113/12')">執行止付</button></td></tr>
+            <tr><td><input type="checkbox"></td><td>陳美麗</td><td class="masked">B234***789</td><td>公務月退</td><td>臺北市政府教育局</td><td>NT$ 68,500</td><td>台灣銀行 ***4521</td><td><span class="badge badge-danger">止付中</span></td><td><button class="btn btn-sm btn-outline" disabled>已止付</button></td></tr>
+            <tr><td><input type="checkbox"></td><td>林志明</td><td class="masked">C345***678</td><td>公務月退</td><td>新北市政府</td><td>NT$ 71,000</td><td>合作金庫 ***7823</td><td><span class="badge badge-success">正常撥付</span></td><td><button class="btn btn-sm btn-danger" onclick="openStopModal('林志明','C345678901','71,000','113/12')">執行止付</button></td></tr>
+            <tr><td><input type="checkbox"></td><td>張淑芬</td><td class="masked">D456***789</td><td>教職月退</td><td>行政院</td><td>NT$ 142,000</td><td>第一銀行 ***2341</td><td><span class="badge badge-success">正常撥付</span></td><td><button class="btn btn-sm btn-danger" onclick="openStopModal('張淑芬','D456789012','142,000','113/12')">執行止付</button></td></tr>
+            <tr><td><input type="checkbox"></td><td>黃建國</td><td class="masked">E567***890</td><td>軍職月退</td><td>國防部</td><td>NT$ 55,000</td><td>郵局 ***9012</td><td><span class="badge badge-warning">處理中</span></td><td><button class="btn btn-sm btn-outline" disabled>處理中</button></td></tr>
           </tbody>
         </table>
         </div>
@@ -1920,7 +2051,24 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       </div>
       <div class="page-header">
         <div class="page-title">止付案件追蹤統計</div>
-        <div class="page-subtitle">追蹤止付案件執行結果，勾稽銀行回饋資料</div>
+        <div class="page-subtitle">追蹤止付案件執行結果，勾稽銀行回饋資料及聯繫時限</div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px;border-left:4px solid var(--danger)">
+        <div class="card-header">
+          <div>
+            <div class="card-title">銀行回饋時限監控</div>
+            <div class="card-subtitle">逾設定作業時限（3個工作日）未回傳確認受理狀態者，系統主動推送警示</div>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead><tr><th>姓名</th><th>身分證字號</th><th>銀行別</th><th>登錄時間</th><th>設定時限</th><th>目前狀態</th></tr></thead>
+            <tbody>
+              <tr><td>吳建成</td><td class="masked">G789***012</td><td>合作金庫</td><td>113/12/03 10:20</td><td>113/12/06</td><td><span class="badge badge-danger">已逾時限，尚未回饋</span></td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
       
       <div class="filter-bar">
@@ -1945,18 +2093,19 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <table class="data-table">
           <thead>
             <tr>
-              <th>姓名</th><th>身分證字號</th><th>止付期間</th><th>止付金額</th><th>承辦人</th><th>止付時間</th><th>撥付狀態</th><th>止付結果</th><th>銀行回饋代碼</th>
+              <th>姓名</th><th>身分證字號</th><th>止付期間</th><th>止付金額</th><th>承辦人</th><th>止付時間</th><th>撥付狀態</th><th>止付結果</th><th>銀行回饋代碼</th><th>後續處理</th>
             </tr>
           </thead>
           <tbody>
-            <tr><td>陳美麗</td><td class="masked">B234***789</td><td>113/12</td><td>NT$ 68,500</td><td>王大明</td><td>113/12/05 14:23</td><td><span class="badge badge-danger">撥付失敗</span></td><td><span class="badge badge-success">止付成功</span></td><td>R001</td></tr>
-            <tr><td>王建民</td><td class="masked">A123***789</td><td>113/11</td><td>NT$ 68,500</td><td>王大明</td><td>113/11/28 09:15</td><td><span class="badge badge-danger">撥付失敗</span></td><td><span class="badge badge-success">止付成功</span></td><td>R001</td></tr>
-            <tr><td>張淑芬</td><td class="masked">D456***789</td><td>113/11</td><td>NT$ 142,000</td><td>李小華</td><td>113/11/25 16:42</td><td><span class="badge badge-success">撥付成功</span></td><td><span class="badge badge-danger">止付失敗</span></td><td>E003</td></tr>
-            <tr><td>林志明</td><td class="masked">C345***678</td><td>113/11</td><td>NT$ 71,000</td><td>王大明</td><td>113/11/20 10:08</td><td><span class="badge badge-danger">撥付失敗</span></td><td><span class="badge badge-success">止付成功</span></td><td>R001</td></tr>
-            <tr><td>黃建國</td><td class="masked">E567***890</td><td>113/11</td><td>NT$ 55,000</td><td>陳志明</td><td>113/11/18 11:30</td><td><span class="badge badge-danger">撥付失敗</span></td><td><span class="badge badge-success">止付成功</span></td><td>R001</td></tr>
+            <tr><td>陳美麗</td><td class="masked">B234***789</td><td>113/12</td><td>NT$ 68,500</td><td>王大明</td><td>113/12/05 14:23</td><td><span class="badge badge-danger">撥付失敗</span></td><td><span class="badge badge-success">止付成功</span></td><td>R001</td><td><span style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary)">已排除溢領流程</span></td></tr>
+            <tr><td>王建民</td><td class="masked">A123***789</td><td>113/11</td><td>NT$ 68,500</td><td>王大明</td><td>113/11/28 09:15</td><td><span class="badge badge-danger">撥付失敗</span></td><td><span class="badge badge-success">止付成功</span></td><td>R001</td><td><span style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary)">已排除溢領流程</span></td></tr>
+            <tr><td>張淑芬</td><td class="masked">D456***789</td><td>113/11</td><td>NT$ 142,000</td><td>李小華</td><td>113/11/25 16:42</td><td><span class="badge badge-success">撥付成功</span></td><td><span class="badge badge-danger">止付失敗</span></td><td>E003</td><td><button class="btn btn-sm btn-outline-primary" onclick="navigateTo('overflow-single')">轉入溢領管理 →</button></td></tr>
+            <tr><td>林志明</td><td class="masked">C345***678</td><td>113/11</td><td>NT$ 71,000</td><td>王大明</td><td>113/11/20 10:08</td><td><span class="badge badge-danger">撥付失敗</span></td><td><span class="badge badge-success">止付成功</span></td><td>R001</td><td><span style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary)">已排除溢領流程</span></td></tr>
+            <tr><td>黃建國</td><td class="masked">E567***890</td><td>113/11</td><td>NT$ 55,000</td><td>陳志明</td><td>113/11/18 11:30</td><td><span class="badge badge-danger">撥付失敗</span></td><td><span class="badge badge-success">止付成功</span></td><td>R001</td><td><span style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary)">已排除溢領流程</span></td></tr>
           </tbody>
         </table>
         </div>
+        <div style="padding:10px 16px;border-top:1px solid var(--border);font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">說明：止付失敗（即撥付成功）案件將自動提供予溢領管理子系統，作為後續追繳作業之起點；止付成功案件則排除於溢領處理流程之外。針對無法預先註記停發之直撥案件，系統於偵測撥付結果回饋後，將主動通知承辦人返回業務系統補登停發註記。</div>
         <div class="pagination">
           <div class="pagination-info">顯示 1-5 / 共 12 筆</div>
           <div class="pagination-controls">
@@ -1982,6 +2131,34 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       <div class="page-header">
         <div class="page-title">退職所得課稅計算</div>
         <div class="page-subtitle">輸入公文文號，系統自動計算應稅所得及應納稅額</div>
+        <div class="page-actions">
+          <button class="btn btn-outline-primary btn-sm" onclick="navigateTo('tax-case')">案件全景查詢 →</button>
+        </div>
+      </div>
+
+      <!-- 未計算稅額案件主動通知（介接撥付系統，比對110/1/1後年資之撥付案） -->
+      <div class="card" id="tax-pending-notice" style="margin-bottom:16px;border-left:4px solid var(--warning)">
+        <div class="card-header">
+          <div>
+            <div class="card-title">待登錄計算案件通知</div>
+            <div class="card-subtitle">系統每日定時比對撥付系統中具110/01/01後年資之撥付案，尚未於本子系統完成登錄計算者將推送於此</div>
+          </div>
+          <span class="badge badge-warning">9 筆待處理</span>
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead><tr><th>撥付文號</th><th>姓名</th><th>身分證字號</th><th>撥付日期</th><th>110年後年資</th><th>逾未登錄天數</th><th>操作</th></tr></thead>
+            <tbody>
+              <tr><td style="font-size:calc(11px * var(--font-scale))">府退一字第1130012410號</td><td>楊淑娟</td><td class="masked">H901***234</td><td>113/12/05</td><td>3年6個月</td><td><span class="badge badge-warning">5天</span></td><td><button class="btn btn-sm btn-gold" onclick="document.getElementById('tax-doc-num').value='府退一字第1130012410號';calcTax();document.getElementById('tax-pending-notice').scrollIntoView({behavior:'smooth'})">登錄計算</button></td></tr>
+              <tr><td style="font-size:calc(11px * var(--font-scale))">府退一字第1130012408號</td><td>蔡文彬</td><td class="masked">I012***345</td><td>113/12/03</td><td>7年2個月</td><td><span class="badge badge-danger">逾期 12天</span></td><td><button class="btn btn-sm btn-gold" onclick="document.getElementById('tax-doc-num').value='府退一字第1130012408號';calcTax()">登錄計算</button></td></tr>
+              <tr><td style="font-size:calc(11px * var(--font-scale))">府退一字第1130012401號</td><td>許志豪</td><td class="masked">J123***456</td><td>113/11/28</td><td>1年9個月</td><td><span class="badge badge-danger">逾期 17天</span></td><td><button class="btn btn-sm btn-gold" onclick="document.getElementById('tax-doc-num').value='府退一字第1130012401號';calcTax()">登錄計算</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="padding:10px 16px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">顯示 1-3 / 共 9 筆　｜　資料來源：介接撥付系統</span>
+          <button class="btn btn-outline btn-sm" onclick="navigateTo('tax-case')">查看全部待處理案件</button>
+        </div>
       </div>
       
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
@@ -2036,10 +2213,27 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
               <span class="badge badge-success">無需重審</span>
               <span style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">計算結果與前次相符</span>
             </div>
-            <div style="margin-top:12px;display:flex;gap:8px">
+            <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
               <button class="btn btn-primary btn-sm"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="4" width="12" height="17" rx="2"/><rect x="9" y="2" width="6" height="4" rx="1"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="15" y2="15"/></svg> 預覽計算單</button>
               <button class="btn btn-outline btn-sm"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 下載計算單</button>
+              <button class="btn btn-outline btn-sm" onclick="showToast('info','公文介接','課稅計算單已隨案介接公文系統，可於公文系統續辦發文作業')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><polyline points="9 15 12 12 9 9"/><line x1="12" y1="12" x2="3" y2="12"/></svg> 拋轉公文系統</button>
             </div>
+          </div>
+
+          <div class="card" style="margin-top:16px">
+            <div class="card-header">
+              <div class="card-title">重審差異管理</div>
+              <span class="badge badge-warning">1 筆待處理</span>
+            </div>
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead><tr><th>文號</th><th>姓名</th><th>原應稅所得</th><th>重審後應稅所得</th><th>稅額差異</th><th>操作</th></tr></thead>
+                <tbody>
+                  <tr><td style="font-size:calc(11px * var(--font-scale))">府退二字第1130009875號</td><td>王志明</td><td>612,000</td><td>598,500</td><td style="color:var(--danger)">-2,025</td><td><button class="btn btn-sm btn-gold" onclick="showToast('success','已更新','稅額差異明細表已產製，系統資料已更新，異動人員：王大明')">重新計算並更新</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div style="padding:10px 16px;border-top:1px solid var(--border);font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">說明：因主管機關重新審定撥付案，領取金額有所變動時，系統將自動介接撥付系統重新計算並產製稅額差異明細表；資料更新將完整記錄異動內容、異動人員及異動時間。</div>
           </div>
         </div>
         
@@ -2074,31 +2268,49 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       </div>
       <div class="page-header">
         <div class="page-title">課稅報表彙整統計</div>
-        <div class="page-subtitle">月彙整、年彙整及統計報表產製</div>
+        <div class="page-subtitle">依規範產製 4 類法定報表，支援造字檔顯示及個人資料遮罩</div>
       </div>
-      
+
+      <div class="tabs">
+        <div class="tab-item active" onclick="switchTab(this,'taxreport-a')">扣繳稅額明細表</div>
+        <div class="tab-item" onclick="switchTab(this,'taxreport-b')">扣繳稅額統計表</div>
+        <div class="tab-item" onclick="switchTab(this,'taxreport-c')">退撫給與明細表</div>
+        <div class="tab-item" onclick="switchTab(this,'taxreport-d')">扣繳件數統計表</div>
+      </div>
+
+      <div class="tab-content active" id="taxreport-a">
       <div class="card" style="margin-bottom:16px">
-        <div class="filter-row" style="display:flex;gap:16px;align-items:flex-end">
+        <div class="card-subtitle" style="margin-bottom:12px">退職所得扣繳稅額明細表：依銀行別、指定期間、退撫給與種類及身分別產製</div>
+        <div class="filter-row" style="display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap">
           <div class="filter-group">
-            <div class="filter-label">報表類型</div>
-            <select class="filter-control">
-              <option>月彙整</option>
-              <option>年彙整</option>
-              <option>統計報表</option>
-            </select>
+            <div class="filter-label">期間起</div>
+            <input type="text" class="filter-control" value="113/12/01">
           </div>
           <div class="filter-group">
-            <div class="filter-label">年度</div>
-            <select class="filter-control"><option>113年</option><option>112年</option><option>111年</option></select>
+            <div class="filter-label">期間迄</div>
+            <input type="text" class="filter-control" value="113/12/31">
           </div>
           <div class="filter-group">
-            <div class="filter-label">月份</div>
-            <select class="filter-control"><option>全年</option><option>1月</option><option>2月</option><option>3月</option><option>4月</option><option>5月</option><option>6月</option><option>7月</option><option>8月</option><option>9月</option><option>10月</option><option>11月</option><option selected>12月</option></select>
+            <div class="filter-label">銀行別</div>
+            <select class="filter-control"><option>全部</option><option>臺灣銀行</option><option>合作金庫</option><option>第一銀行</option><option>郵局</option></select>
+          </div>
+          <div class="filter-group">
+            <div class="filter-label">退撫給與種類</div>
+            <select class="filter-control"><option>全部</option><option>月退休(職)金</option><option>一次退休(職、伍)金</option><option>遺屬年金</option><option>遺屬一次金</option></select>
+          </div>
+          <div class="filter-group">
+            <div class="filter-label">身分別</div>
+            <select class="filter-control"><option>全部</option><option>公務人員</option><option>教育人員</option><option>軍職人員</option></select>
+          </div>
+          <div class="filter-group">
+            <div class="filter-label">個資顯示</div>
+            <select class="filter-control"><option>遮罩（隱碼）</option><option>完整顯示</option></select>
           </div>
           <button class="btn btn-primary btn-sm" style="align-self:flex-end"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> 查詢</button>
-          <button class="btn btn-success btn-sm" style="align-self:flex-end" onclick="runDownload('課稅報表彙整統計','xlsx')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="20" x2="4" y2="12"/><line x1="10" y1="20" x2="10" y2="6"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="20" y1="20" x2="4" y2="20"/></svg> 匯出Excel</button>
-          <button class="btn btn-danger btn-sm" style="align-self:flex-end" onclick="runDownload('課稅報表彙整統計','pdf')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><line x1="8" y1="13" x2="14" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg> 匯出PDF</button>
+          <button class="btn btn-success btn-sm" style="align-self:flex-end" onclick="runDownload('退職所得扣繳稅額明細表','xlsx')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="20" x2="4" y2="12"/><line x1="10" y1="20" x2="10" y2="6"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="20" y1="20" x2="4" y2="20"/></svg> 匯出Excel</button>
+          <button class="btn btn-danger btn-sm" style="align-self:flex-end" onclick="runDownload('退職所得扣繳稅額明細表','pdf')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><line x1="8" y1="13" x2="14" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg> 匯出PDF</button>
         </div>
+        <div class="form-hint" style="margin-top:8px">本報表支援機關提供之造字檔，以確保特殊字元或罕見字之正確顯示；報表列印格式支援 PDF 與 Excel。</div>
       </div>
       
       <div class="table-card">
@@ -2106,15 +2318,15 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <table class="data-table">
           <thead>
             <tr>
-              <th>文號</th><th>姓名</th><th>身分證字號</th><th>領受金額</th><th>應稅所得</th><th>應納稅額</th><th>課稅比例</th><th>地址</th><th>承辦人</th>
+              <th>文號</th><th>姓名</th><th>身分證字號</th><th>身分別</th><th>銀行別</th><th>領受金額</th><th>應稅所得</th><th>應納稅額</th><th>課稅比例</th><th>承辦人</th>
             </tr>
           </thead>
           <tbody>
-            <tr><td style="font-size:calc(11px * var(--font-scale))">府退二字第1130009876號</td><td>李秀蘭</td><td class="masked">F678***901</td><td>822,000</td><td>493,200</td><td>73,980</td><td>60%</td><td>臺北市中正區...</td><td>王大明</td></tr>
-            <tr><td style="font-size:calc(11px * var(--font-scale))">府退二字第1130009875號</td><td>王志明</td><td class="masked">A123***456</td><td>1,020,000</td><td>612,000</td><td>91,800</td><td>60%</td><td>新北市板橋區...</td><td>王大明</td></tr>
-            <tr><td style="font-size:calc(11px * var(--font-scale))">府退二字第1130009874號</td><td>陳淑華</td><td class="masked">B234***567</td><td>640,000</td><td>384,000</td><td>57,600</td><td>60%</td><td>臺中市西屯區...</td><td>李小華</td></tr>
-            <tr><td style="font-size:calc(11px * var(--font-scale))">府退二字第1130009873號</td><td>林建志</td><td class="masked">C345***678</td><td>880,000</td><td>528,000</td><td>79,200</td><td>60%</td><td>高雄市前鎮區...</td><td>李小華</td></tr>
-            <tr><td style="font-size:calc(11px * var(--font-scale))">府退二字第1130009872號</td><td>張美玲</td><td class="masked">D456***789</td><td>760,000</td><td>456,000</td><td>68,400</td><td>60%</td><td>桃園市中壢區...</td><td>陳志明</td></tr>
+            <tr><td style="font-size:calc(11px * var(--font-scale))">府退二字第1130009876號</td><td>李秀蘭</td><td class="masked">F678***901</td><td>公務人員</td><td>臺灣銀行</td><td>822,000</td><td>493,200</td><td>73,980</td><td>60%</td><td>王大明</td></tr>
+            <tr><td style="font-size:calc(11px * var(--font-scale))">府退二字第1130009875號</td><td>王志明</td><td class="masked">A123***456</td><td>公務人員</td><td>合作金庫</td><td>1,020,000</td><td>612,000</td><td>91,800</td><td>60%</td><td>王大明</td></tr>
+            <tr><td style="font-size:calc(11px * var(--font-scale))">府退二字第1130009874號</td><td>陳淑華</td><td class="masked">B234***567</td><td>教育人員</td><td>第一銀行</td><td>640,000</td><td>384,000</td><td>57,600</td><td>60%</td><td>李小華</td></tr>
+            <tr><td style="font-size:calc(11px * var(--font-scale))">府退二字第1130009873號</td><td>林建志</td><td class="masked">C345***678</td><td>軍職人員</td><td>郵局</td><td>880,000</td><td>528,000</td><td>79,200</td><td>60%</td><td>李小華</td></tr>
+            <tr><td style="font-size:calc(11px * var(--font-scale))">府退二字第1130009872號</td><td>張美玲</td><td class="masked">D456***789</td><td>公務人員</td><td>臺灣銀行</td><td>760,000</td><td>456,000</td><td>68,400</td><td>60%</td><td>陳志明</td></tr>
           </tbody>
         </table>
         </div>
@@ -2131,6 +2343,89 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           </div>
         </div>
       </div>
+      </div>
+
+      <!-- b. 退職所得扣繳稅額統計表 -->
+      <div class="tab-content" id="taxreport-b">
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-subtitle" style="margin-bottom:12px">退職所得扣繳稅額統計表：依身分別及指定期間，產製已達扣繳件數、應課稅金額及扣繳稅額</div>
+          <div class="filter-row" style="display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap">
+            <div class="filter-group"><div class="filter-label">期間起</div><input type="text" class="filter-control" value="113/01"></div>
+            <div class="filter-group"><div class="filter-label">期間迄</div><input type="text" class="filter-control" value="113/12"></div>
+            <button class="btn btn-primary btn-sm" style="align-self:flex-end">查詢</button>
+            <button class="btn btn-success btn-sm" style="align-self:flex-end" onclick="runDownload('退職所得扣繳稅額統計表','xlsx')">匯出Excel</button>
+            <button class="btn btn-danger btn-sm" style="align-self:flex-end" onclick="runDownload('退職所得扣繳稅額統計表','pdf')">匯出PDF</button>
+          </div>
+        </div>
+        <div class="table-card">
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead><tr><th>身分別</th><th>已達扣繳件數</th><th>應課稅金額合計</th><th>扣繳稅額合計</th></tr></thead>
+              <tbody>
+                <tr><td>公務人員</td><td>1,102</td><td>NT$ 612,480,000</td><td>NT$ 36,748,800</td></tr>
+                <tr><td>教育人員</td><td>498</td><td>NT$ 276,240,000</td><td>NT$ 16,574,400</td></tr>
+                <tr><td>軍職人員</td><td>247</td><td>NT$ 138,320,000</td><td>NT$ 8,299,200</td></tr>
+                <tr style="font-weight:700;background:#f8f9fa"><td>合計</td><td>1,847</td><td>NT$ 1,027,040,000</td><td>NT$ 61,622,400</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- c. 退撫給與明細表 -->
+      <div class="tab-content" id="taxreport-c">
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-subtitle" style="margin-bottom:12px">退撫給與明細表：依退撫給與種類，按指定期間產製所有領受人給付總金額及應稅所得額</div>
+          <div class="filter-row" style="display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap">
+            <div class="filter-group"><div class="filter-label">退撫給與種類</div><select class="filter-control"><option>全部</option><option>月退休(職)金</option><option>一次退休(職、伍)金</option><option>遺屬年金</option></select></div>
+            <div class="filter-group"><div class="filter-label">期間起</div><input type="text" class="filter-control" value="113/01"></div>
+            <div class="filter-group"><div class="filter-label">期間迄</div><input type="text" class="filter-control" value="113/12"></div>
+            <button class="btn btn-primary btn-sm" style="align-self:flex-end">查詢</button>
+            <button class="btn btn-success btn-sm" style="align-self:flex-end" onclick="runDownload('退撫給與明細表','xlsx')">匯出Excel</button>
+            <button class="btn btn-danger btn-sm" style="align-self:flex-end" onclick="runDownload('退撫給與明細表','pdf')">匯出PDF</button>
+          </div>
+        </div>
+        <div class="table-card">
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead><tr><th>退撫給與種類</th><th>領受人數</th><th>給付總金額</th><th>應稅所得額合計</th></tr></thead>
+              <tbody>
+                <tr><td>月退休(職)金</td><td>1,320</td><td>NT$ 812,400,000</td><td>NT$ 487,440,000</td></tr>
+                <tr><td>一次退休(職、伍)金</td><td>312</td><td>NT$ 168,200,000</td><td>NT$ 84,100,000</td></tr>
+                <tr><td>遺屬年金</td><td>158</td><td>NT$ 39,880,000</td><td>NT$ 19,940,000</td></tr>
+                <tr><td>遺屬一次金</td><td>57</td><td>NT$ 6,560,000</td><td>NT$ 3,280,000</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- d. 退職所得扣繳件數統計表 -->
+      <div class="tab-content" id="taxreport-d">
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-subtitle" style="margin-bottom:12px">退職所得扣繳件數統計表：可按退撫給與種類、身分別、（免）扣繳彙整，依指定期間統計</div>
+          <div class="filter-row" style="display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap">
+            <div class="filter-group"><div class="filter-label">彙整方式</div><select class="filter-control"><option>應扣繳</option><option>免扣繳</option><option>全部</option></select></div>
+            <div class="filter-group"><div class="filter-label">期間</div><select class="filter-control"><option>113年度</option><option>112年度</option></select></div>
+            <button class="btn btn-primary btn-sm" style="align-self:flex-end">查詢</button>
+            <button class="btn btn-success btn-sm" style="align-self:flex-end" onclick="runDownload('退職所得扣繳件數統計表','xlsx')">匯出Excel</button>
+            <button class="btn btn-danger btn-sm" style="align-self:flex-end" onclick="runDownload('退職所得扣繳件數統計表','pdf')">匯出PDF</button>
+          </div>
+        </div>
+        <div class="table-card">
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead><tr><th>退撫給與種類</th><th>身分別</th><th>應扣繳件數</th><th>免扣繳件數</th></tr></thead>
+              <tbody>
+                <tr><td>月退休(職)金</td><td>公務人員</td><td>892</td><td>34</td></tr>
+                <tr><td>月退休(職)金</td><td>教育人員</td><td>356</td><td>18</td></tr>
+                <tr><td>一次退休(職、伍)金</td><td>公務人員</td><td>198</td><td>12</td></tr>
+                <tr><td>遺屬年金</td><td>公務人員</td><td>104</td><td>7</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- ===== TAX AUDIT ===== -->
@@ -2144,7 +2439,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       </div>
       <div class="page-header">
         <div class="page-title">稅務申報檢核</div>
-        <div class="page-subtitle">產製扣繳明細表、扣繳憑單，執行異常檢核</div>
+        <div class="page-subtitle">產製扣繳明細表、扣繳憑單，執行異常檢核及定期給與預扣稅額檢核</div>
       </div>
       
       <div class="card" style="margin-bottom:16px">
@@ -2152,7 +2447,32 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div style="display:flex;gap:12px;flex-wrap:wrap">
           <button class="btn btn-primary" onclick="runDownload('扣繳明細表','xlsx')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="4" width="12" height="17" rx="2"/><rect x="9" y="2" width="6" height="4" rx="1"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="15" y2="15"/></svg> 產製扣繳明細表</button>
           <button class="btn btn-secondary" onclick="runDownload('扣繳憑單','pdf')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><line x1="8" y1="13" x2="14" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg> 產製扣繳憑單</button>
+          <button class="btn btn-secondary" onclick="runDownload('各類所得扣繳暨免扣繳憑單_電子申報','txt')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> 產製電子申報格式檔</button>
           <button class="btn btn-warning" onclick="runTaxAudit()"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> 執行異常檢核</button>
+        </div>
+        <div class="form-hint" style="margin-top:8px">扣繳憑單紙本與電子檔格式符合稅捐主管機關規範；居住者每次扣繳稅額不超過 NT$2,000（含）者，應申報但免扣繳稅款。</div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-header">
+          <div>
+            <div class="card-title">定期給與預扣稅額檢核</div>
+            <div class="card-subtitle">按月定時就定期給與達預扣稅額門檻進行檢核（每月排程自動執行）</div>
+          </div>
+          <button class="btn btn-outline-primary btn-sm" onclick="showToast('info','檢核中','正在依現行課稅參數執行本月定期給與預扣稅額檢核...')">立即執行本月檢核</button>
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead><tr><th>姓名</th><th>身分證字號</th><th>退撫給與種類</th><th>月領金額</th><th>累計課稅所得</th><th>是否達預扣門檻</th><th>建議預扣稅額</th></tr></thead>
+            <tbody>
+              <tr><td>李秀蘭</td><td class="masked">F678***901</td><td>月退休金</td><td>68,500</td><td>493,200</td><td><span class="badge badge-danger">已達門檻</span></td><td>NT$ 2,158</td></tr>
+              <tr><td>王志明</td><td class="masked">A123***456</td><td>月退休金</td><td>85,000</td><td>612,000</td><td><span class="badge badge-danger">已達門檻</span></td><td>NT$ 2,678</td></tr>
+              <tr><td>陳淑華</td><td class="masked">B234***567</td><td>月退休金</td><td>53,300</td><td>384,000</td><td><span class="badge badge-secondary">未達門檻</span></td><td>-</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="padding:10px 16px;border-top:1px solid var(--border);display:flex;gap:8px">
+          <button class="btn btn-outline btn-sm" onclick="runDownload('定期給與預扣稅額檢核報表','xlsx')">下載檢核報表</button>
         </div>
       </div>
       
@@ -2180,6 +2500,249 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       </div>
     </div>
 
+    <!-- ===== TAX CASE MANAGEMENT ===== -->
+    <div class="view" id="view-tax-case">
+      <div class="breadcrumb">
+        <span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item">課稅管理</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item current">課稅案件管理</span>
+      </div>
+      <div class="page-header">
+        <div class="page-title">課稅案件管理</div>
+        <div class="page-subtitle">人工建檔、修改註銷、歷史案件批次匯入及案件全景查詢</div>
+      </div>
+
+      <div class="tabs">
+        <div class="tab-item active" onclick="switchTab(this,'taxcase-tab-search')">案件查詢</div>
+        <div class="tab-item" onclick="switchTab(this,'taxcase-tab-manual')">人工建檔</div>
+        <div class="tab-item" onclick="switchTab(this,'taxcase-tab-edit')">修改／註銷</div>
+        <div class="tab-item" onclick="switchTab(this,'taxcase-tab-import')">歷史案件匯入</div>
+      </div>
+
+      <!-- 案件查詢（全景視圖） -->
+      <div class="tab-content active" id="taxcase-tab-search">
+        <div class="card" style="margin-bottom:16px">
+          <div class="filter-row" style="display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap">
+            <div class="filter-group">
+              <div class="filter-label">身分證字號</div>
+              <input type="text" class="filter-control" placeholder="請輸入身分證字號">
+            </div>
+            <div class="filter-group">
+              <div class="filter-label">姓名</div>
+              <input type="text" class="filter-control" placeholder="請輸入姓名" value="李秀蘭">
+            </div>
+            <div class="filter-group">
+              <div class="filter-label">年度</div>
+              <select class="filter-control"><option selected>113年度</option><option>112年度</option><option>111年度</option><option>全部</option></select>
+            </div>
+            <button class="btn btn-primary btn-sm" style="align-self:flex-end" onclick="showToast('success','查詢完成','已查詢符合條件之課稅案件，共 1 筆')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> 查詢</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+            <div>
+              <span style="font-size:calc(15px * var(--font-scale));font-weight:700;color:var(--primary)">李秀蘭</span>
+              <span style="margin-left:8px;font-size:calc(13px * var(--font-scale));color:var(--text-secondary)">F678***901</span>
+              <button class="mask-toggle" style="margin-left:4px" onclick="toggleMask('taxcase-id','F678901234')">顯示完整</button>
+              <span class="badge badge-primary" style="margin-left:8px">公務人員月退</span>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-outline btn-sm" onclick="runDownload('課稅案件全景資料','pdf')">下載案件全景</button>
+              <button class="btn btn-outline btn-sm" onclick="showToast('info','列印中','正在準備列印...')">列印</button>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px">
+            <div class="info-card">
+              <div class="card-title" style="font-size:calc(12px * var(--font-scale));margin-bottom:8px">人員資料</div>
+              <div class="info-row"><div class="info-key">出生年月日</div><div class="info-val">47/03/12</div></div>
+              <div class="info-row"><div class="info-key">通訊地址</div><div class="info-val">臺北市中正區...</div></div>
+              <div class="info-row"><div class="info-key">服務機關</div><div class="info-val">臺北市政府</div></div>
+            </div>
+            <div class="info-card">
+              <div class="card-title" style="font-size:calc(12px * var(--font-scale));margin-bottom:8px">關聯退撫給與</div>
+              <div class="info-row"><div class="info-key">退撫給與種類</div><div class="info-val">月退休金</div></div>
+              <div class="info-row"><div class="info-key">領受期間</div><div class="info-val">113/01~113/12</div></div>
+              <div class="info-row"><div class="info-key">領受總額</div><div class="info-val" style="font-weight:700">NT$ 822,000</div></div>
+            </div>
+            <div class="info-card success">
+              <div class="card-title" style="font-size:calc(12px * var(--font-scale));margin-bottom:8px">課稅計算結果</div>
+              <div class="info-row"><div class="info-key">應稅所得</div><div class="info-val">NT$ 493,200</div></div>
+              <div class="info-row"><div class="info-key">應納稅額</div><div class="info-val" style="font-weight:700;color:var(--success)">NT$ 73,980</div></div>
+              <div class="info-row"><div class="info-key">案件狀態</div><div class="info-val"><span class="badge badge-success">已計算</span></div></div>
+            </div>
+          </div>
+          <div class="card-title" style="margin-bottom:8px">案件異動歷程</div>
+          <div class="case-timeline">
+            <div class="case-timeline-item create">
+              <div class="case-timeline-time">113/12/10 10:45</div>
+              <div class="case-timeline-title">系統自動計算建檔</div>
+              <div class="case-timeline-desc">介接撥付系統資料，自動產製課稅計算結果 · 操作人：系統排程</div>
+            </div>
+            <div class="case-timeline-item">
+              <div class="case-timeline-time">113/12/10 11:02</div>
+              <div class="case-timeline-title">公文及應課稅所得試算表產製</div>
+              <div class="case-timeline-desc">已隨案介接公文系統產製公文 · 操作人：王大明</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 人工建檔 -->
+      <div class="tab-content" id="taxcase-tab-manual">
+        <div class="tabs" style="margin-bottom:16px">
+          <div class="tab-item active" onclick="switchTab(this,'manual-single')">單筆建檔</div>
+          <div class="tab-item" onclick="switchTab(this,'manual-batch')">批次建檔</div>
+        </div>
+        <div class="tab-content active" id="manual-single">
+          <div class="card" style="margin-bottom:16px">
+            <div class="section-title"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg> 領受人資料</div>
+            <div class="form-row cols-3">
+              <div class="form-group"><label class="form-label">姓名 <span class="required">*</span></label><input type="text" class="form-control" placeholder="請輸入姓名"></div>
+              <div class="form-group"><label class="form-label">身分證字號 <span class="required">*</span></label><input type="text" class="form-control" placeholder="請輸入身分證字號"></div>
+              <div class="form-group"><label class="form-label">退撫給與種類 <span class="required">*</span></label>
+                <select class="form-control"><option>月退休(職)金</option><option>一次退休(職、伍)金</option><option>遺屬年金</option><option>遺屬一次金</option><option>資遣給與</option></select>
+              </div>
+            </div>
+            <div class="form-row cols-3">
+              <div class="form-group"><label class="form-label">領受期間</label><input type="text" class="form-control" placeholder="113/01~113/12"></div>
+              <div class="form-group"><label class="form-label">領受總額 (元)</label><input type="text" class="form-control" placeholder="請輸入領受總額"></div>
+              <div class="form-group"><label class="form-label">關聯撥付案文號</label><input type="text" class="form-control" placeholder="府退一字第..."></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">建檔原因說明 <span class="required">*</span></label>
+              <textarea class="form-control" rows="2" placeholder="請輸入人工建檔原因（如：扣繳相關案件建檔、系統介接前個案補登等）"></textarea>
+            </div>
+            <div class="form-hint" style="margin-top:4px">系統將依欄位檢核、提示及資料合理性檢查機制驗證所輸入資料。</div>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:flex-end">
+            <button class="btn btn-outline">取消</button>
+            <button class="btn btn-gold" onclick="showToast('success','建檔成功','課稅案件已人工建立，案件編號：TAX-113-2041')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> 儲存建檔</button>
+          </div>
+        </div>
+        <div class="tab-content" id="manual-batch">
+          <div class="card" style="margin-bottom:16px">
+            <div class="section-title"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="4" width="12" height="17" rx="2"/><rect x="9" y="2" width="6" height="4" rx="1"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="15" y2="15"/></svg> 批次建檔上傳</div>
+            <div class="upload-dropzone" onclick="triggerFileInput('taxcase-batch-file-input')" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="handleFileDrop(event,'taxcase-batch-file-input')">
+              <div class="upload-dropzone-icon"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:32px;height:32px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+              <div class="upload-dropzone-title">點擊或拖曳檔案至此上傳</div>
+              <div class="upload-dropzone-hint">支援 .xlsx 格式，請依範本欄位格式填寫</div>
+              <div class="upload-file-chip" id="taxcase-batch-file-chip">課稅案件批次建檔_1213.xlsx（38筆）</div>
+              <div style="margin-top:12px">
+                <button class="btn btn-outline-primary btn-sm" onclick="event.stopPropagation();triggerFileInput('taxcase-batch-file-input')">選擇檔案</button>
+              </div>
+            </div>
+            <input type="file" id="taxcase-batch-file-input" accept=".xlsx" style="display:none" onchange="displayChosenFile(this,'taxcase-batch-file-chip')">
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <button class="btn btn-outline btn-sm" onclick="runDownload('課稅案件批次建檔範本','xlsx')">下載範本檔</button>
+              <button class="btn btn-primary btn-sm" onclick="showToast('success','檢核完成','已檢核 38 筆資料，35 筆通過、3 筆待確認')">執行欄位檢核</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title" style="margin-bottom:12px">檢核結果</div>
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead><tr><th>列次</th><th>姓名</th><th>身分證字號</th><th>檢核結果</th><th>說明</th></tr></thead>
+                <tbody>
+                  <tr><td>1</td><td>周美玲</td><td class="masked">B234***567</td><td><span class="badge badge-success">通過</span></td><td>-</td></tr>
+                  <tr><td>2</td><td>徐國安</td><td class="masked">C345***678</td><td><span class="badge badge-warning">待確認</span></td><td>領受期間與撥付紀錄不完全重疊</td></tr>
+                  <tr><td>3</td><td>簡淑貞</td><td class="masked">D456***789</td><td><span class="badge badge-success">通過</span></td><td>-</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div style="padding:10px 16px;border-top:1px solid var(--border)">
+              <button class="btn btn-gold btn-sm" onclick="showToast('success','批次建檔完成','已成功建立 35 筆課稅案件，3 筆待人工確認')">確認並批次建檔</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 修改／註銷 -->
+      <div class="tab-content" id="taxcase-tab-edit">
+        <div class="card" style="margin-bottom:16px">
+          <div class="filter-row" style="display:flex;gap:16px;align-items:flex-end">
+            <div class="filter-group" style="flex:1;max-width:280px"><div class="filter-label">案件編號 / 身分證字號</div><input type="text" class="filter-control" value="TAX-113-1987" style="width:100%"></div>
+            <button class="btn btn-primary btn-sm" style="align-self:flex-end">查詢案件</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">案件：TAX-113-1987 · 吳淑珍</div>
+            <span class="badge badge-success">已計算</span>
+          </div>
+          <div class="form-row cols-3">
+            <div class="form-group"><label class="form-label">應稅所得</label><input type="text" class="form-control" value="356,000"></div>
+            <div class="form-group"><label class="form-label">應納稅額</label><input type="text" class="form-control" value="53,400"></div>
+            <div class="form-group"><label class="form-label">案件狀態</label><select class="form-control"><option selected>正常</option><option>暫緩</option></select></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">異動或註銷原因 <span class="required">*</span></label>
+            <textarea class="form-control" rows="2" placeholder="請輸入異動或註銷原因，將完整保留異動歷程以利稽核"></textarea>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:flex-end">
+            <button class="btn btn-danger" onclick="if(confirm('確定要註銷本筆課稅案件嗎？此操作將完整記錄註銷原因及異動人員。')){showToast('success','已註銷','案件 TAX-113-1987 已註銷，異動歷程已保留')}">註銷案件</button>
+            <button class="btn btn-gold" onclick="showToast('success','修改成功','案件 TAX-113-1987 已更新，異動人員：王大明，異動時間：113/12/10 15:20')">儲存修改</button>
+          </div>
+          <div class="card-title" style="margin:16px 0 8px">異動歷程</div>
+          <div class="case-timeline">
+            <div class="case-timeline-item create">
+              <div class="case-timeline-time">113/11/02 09:10</div>
+              <div class="case-timeline-title">案件建立</div>
+              <div class="case-timeline-desc">系統自動計算建檔 · 操作人：系統排程</div>
+            </div>
+            <div class="case-timeline-item">
+              <div class="case-timeline-time">113/11/15 14:02</div>
+              <div class="case-timeline-title">金額修正</div>
+              <div class="case-timeline-desc">應稅所得由 NT$360,000 修正為 NT$356,000，原因：撥付系統回饋金額差異 · 操作人：李小華</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 歷史案件匯入 -->
+      <div class="tab-content" id="taxcase-tab-import">
+        <div class="card" style="margin-bottom:16px">
+          <div class="section-title"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> 舊系統歷史案件批次匯入</div>
+          <div class="form-row cols-3">
+            <div class="form-group"><label class="form-label">匯入範圍年度</label><select class="form-control"><option>109年度~112年度</option><option>110年度</option><option>111年度</option><option>112年度</option></select></div>
+            <div class="form-group"><label class="form-label">案件狀態篩選</label><select class="form-control"><option>全部（含尚未完成申報）</option><option>僅已完成申報</option><option>僅未完成申報</option></select></div>
+            <div class="form-group"><label class="form-label">身分別</label><select class="form-control"><option>全部</option><option>公務人員</option><option>教育人員</option><option>軍職人員</option></select></div>
+          </div>
+          <div class="upload-dropzone" style="margin-top:8px" onclick="triggerFileInput('taxcase-hist-file-input')" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="handleFileDrop(event,'taxcase-hist-file-input')">
+            <div class="upload-dropzone-icon"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:32px;height:32px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+            <div class="upload-dropzone-title">上傳舊系統歷史案件資料檔</div>
+            <div class="upload-dropzone-hint">支援 .csv／.xlsx，系統將自動進行欄位對應及匯入檢核</div>
+            <div class="upload-file-chip" id="taxcase-hist-file-chip">歷史課稅案件_109-112.csv（12,406筆）</div>
+            <div style="margin-top:12px">
+              <button class="btn btn-outline-primary btn-sm" onclick="event.stopPropagation();triggerFileInput('taxcase-hist-file-input')">選擇檔案</button>
+            </div>
+          </div>
+          <input type="file" id="taxcase-hist-file-input" accept=".csv,.xlsx" style="display:none" onchange="displayChosenFile(this,'taxcase-hist-file-chip')">
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button class="btn btn-outline btn-sm" onclick="runDownload('歷史案件匯入欄位對應表','xlsx')">下載欄位對應表</button>
+            <button class="btn btn-primary btn-sm" onclick="showToast('success','匯入檢核完成','共 12,406 筆，通過 12,388 筆，異常 18 筆，請確認後執行匯入')">執行匯入檢核</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">匯入檢核結果</div>
+            <span class="badge badge-warning">18 筆待確認</span>
+          </div>
+          <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:16px">
+            <div class="stat-card gold"><div class="stat-label">總筆數</div><div class="stat-value gold">12,406</div></div>
+            <div class="stat-card success"><div class="stat-label">通過欄位對應檢核</div><div class="stat-value success">12,388</div></div>
+            <div class="stat-card danger"><div class="stat-label">欄位缺漏／格式異常</div><div class="stat-value danger">18</div></div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-outline btn-sm" onclick="runDownload('歷史案件匯入異常清單','xlsx')">下載異常清單</button>
+            <button class="btn btn-gold" onclick="showToast('success','匯入完成','12,388 筆歷史課稅案件已成功接續管理，18 筆異常案件請人工確認後補登')">執行批次匯入</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ===== DIRECT REGISTER ===== -->
     <div class="view" id="view-direct-register">
       <div class="breadcrumb">
@@ -2196,6 +2759,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           <span class="badge badge-warning" id="supervisor-status">⏳ 待科長核符</span>
         </div>
       </div>
+      <div class="form-hint" style="margin:-8px 0 16px">系統就已登錄未核符案件每日定時排程檢核，逾期未核符者將以系統訊息及電子郵件主動通知承辦人員與所屬業務主管。</div>
       
       <div class="card" style="margin-bottom:16px">
         <div class="section-title"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg> 領受人基本資料</div>
@@ -2283,6 +2847,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           <span style="font-size:calc(13px * var(--font-scale));color:var(--text-secondary)">科長核符狀態：</span>
           <span class="badge badge-warning" id="supervisor-badge">⏳ 待核符</span>
           <button class="btn btn-sm btn-outline" onclick="simulateSupervisorApproval()">模擬科長核符</button>
+          <button class="btn btn-sm btn-outline-danger" id="cancel-approval-btn" style="display:none" onclick="cancelSupervisorApproval()">科長取消核准</button>
         </div>
         <div style="display:flex;gap:8px">
           <button class="btn btn-outline">取消</button>
@@ -2341,6 +2906,68 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
             <div style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary)">2 筆 · TXT格式</div>
           </div>
           <button class="btn btn-sm btn-primary" style="margin-left:8px" onclick="runDownload('公文DI檔','txt')">下載DI</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== DIRECT QUERY & STATS ===== -->
+    <div class="view" id="view-direct-query">
+      <div class="breadcrumb">
+        <span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item">直撥登錄</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item current">查詢與統計</span>
+      </div>
+      <div class="page-header">
+        <div class="page-title">直撥案件查詢與統計</div>
+        <div class="page-subtitle">依區間及身分別查詢直撥案件，並產製按件統計表</div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="filter-row">
+          <div class="filter-group"><div class="filter-label">查詢區間起</div><input type="text" class="filter-control" value="113/01"></div>
+          <div class="filter-group"><div class="filter-label">查詢區間迄</div><input type="text" class="filter-control" value="113/12"></div>
+          <div class="filter-group"><div class="filter-label">身分別</div><select class="filter-control"><option>全部</option><option>公務人員</option><option>教育人員</option><option>軍職人員</option></select></div>
+          <div class="filter-group"><div class="filter-label">核符狀態</div><select class="filter-control"><option>全部</option><option>待核符</option><option>已核符</option><option>已取消</option></select></div>
+          <button class="btn btn-primary btn-sm" style="align-self:flex-end" onclick="showToast('success','查詢完成','已查詢符合條件之直撥案件，共 45 筆')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> 查詢</button>
+        </div>
+      </div>
+
+      <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
+        <div class="stat-card gold"><div class="stat-label">本年度直撥件數</div><div class="stat-value gold">45</div><div class="stat-sub">公38／教5／軍2</div></div>
+        <div class="stat-card success"><div class="stat-label">已核符</div><div class="stat-value success">41</div><div class="stat-sub">NT$ 3,215,800</div></div>
+        <div class="stat-card warning"><div class="stat-label">待科長核符</div><div class="stat-value" style="color:var(--warning)">3</div><div class="stat-sub">需盡速確認</div></div>
+        <div class="stat-card danger"><div class="stat-label">科長取消核准</div><div class="stat-value danger">1</div><div class="stat-sub">已刪除支領紀錄</div></div>
+      </div>
+
+      <div class="table-card">
+        <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+          <div class="card-title">直撥案件按件統計表</div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-success btn-sm" onclick="runDownload('直撥案件統計表','xlsx')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="20" x2="4" y2="12"/><line x1="10" y1="20" x2="10" y2="6"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="20" y1="20" x2="4" y2="20"/></svg> 匯出Excel</button>
+            <button class="btn btn-danger btn-sm" onclick="runDownload('直撥案件統計表','pdf')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><line x1="8" y1="13" x2="14" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg> 匯出PDF</button>
+          </div>
+        </div>
+        <div class="table-wrapper">
+        <table class="data-table">
+          <thead><tr><th>案件編號</th><th>姓名</th><th>身分別</th><th>撥付期間</th><th>撥付金額</th><th>核符人</th><th>核符時間</th><th>狀態</th><th>操作</th></tr></thead>
+          <tbody>
+            <tr><td>DIR-113-0045</td><td>林建志</td><td>公務人員</td><td>113/12</td><td>NT$ 71,000</td><td>科長 陳主任</td><td>113/12/09 14:30</td><td><span class="badge badge-success">已核符</span></td><td><button class="btn btn-sm btn-outline">明細</button></td></tr>
+            <tr><td>DIR-113-0044</td><td>張美玲</td><td>教育人員</td><td>113/11</td><td>NT$ 68,500</td><td>科長 陳主任</td><td>113/12/08 10:15</td><td><span class="badge badge-success">已核符</span></td><td><button class="btn btn-sm btn-outline">明細</button></td></tr>
+            <tr><td>DIR-113-0046</td><td>吳文雄</td><td>公務人員</td><td>113/12</td><td>NT$ 71,000</td><td>-</td><td>-</td><td><span class="badge badge-warning">待核符</span></td><td><button class="btn btn-sm btn-outline">明細</button></td></tr>
+            <tr><td>DIR-113-0042</td><td>孫大偉</td><td>軍職人員</td><td>113/10</td><td>NT$ 55,000</td><td>-</td><td>科長取消：113/11/02</td><td><span class="badge badge-secondary">已取消</span></td><td><button class="btn btn-sm btn-outline">明細</button></td></tr>
+          </tbody>
+        </table>
+        </div>
+        <div class="pagination">
+          <div class="pagination-info">顯示 1-4 / 共 45 筆</div>
+          <div class="pagination-controls">
+            <button class="page-btn" disabled>上一頁</button>
+            <button class="page-btn active">1</button>
+            <button class="page-btn">2</button>
+            <button class="page-btn">下一頁</button>
+          </div>
         </div>
       </div>
     </div>
@@ -2759,11 +3386,16 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           
           <div class="card" style="margin-bottom:16px">
             <div class="section-title"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg> 上傳檔案</div>
-            <div class="upload-zone" onclick="simulateMilUpload()">
+            <div class="upload-zone" onclick="triggerFileInput('mil-file-input')" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleFileDrop(event,'mil-file-input')">
               <div class="upload-zone-icon"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2H3z"/><path d="M3 9l1.5 9a2 2 0 0 0 2 1.7h11a2 2 0 0 0 2-1.7L21 9"/></svg></div>
               <div class="upload-zone-text">拖曳或點擊上傳軍職資料檔案</div>
               <div class="upload-zone-hint">支援格式：TXT (.txt) ｜ 檔案大小上限：50MB</div>
+              <div class="upload-file-chip" id="mil-file-chip" style="display:none;margin-top:12px"></div>
+              <div style="margin-top:16px">
+                <button class="btn btn-outline-primary btn-sm" onclick="event.stopPropagation();triggerFileInput('mil-file-input')">選擇檔案</button>
+              </div>
             </div>
+            <input type="file" id="mil-file-input" accept=".txt" style="display:none" onchange="displayChosenFile(this,'mil-file-chip');simulateMilUpload()">
           </div>
           
           <div class="card" id="mil-compare-result" style="display:none">
@@ -3038,10 +3670,11 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div class="form-group">
           <label class="form-label">輸入方式</label>
           <div style="display:flex;gap:16px;margin-bottom:12px">
-            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:calc(13px * var(--font-scale))"><input type="radio" name="batch-input" checked> 手動輸入（逗號分隔）</label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:calc(13px * var(--font-scale))"><input type="radio" name="batch-input" checked> 手動輸入（逗號分隔，最多30組）</label>
             <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:calc(13px * var(--font-scale))"><input type="radio" name="batch-input"> Excel上傳</label>
           </div>
-          <textarea class="form-control" rows="3" placeholder="請輸入身分證字號，以逗號分隔，例如：A123456789,B234567890,C345678901">A123456789,B234567890,C345678901,D456789012</textarea>
+          <textarea class="form-control" rows="3" placeholder="請輸入身分證字號，以逗號分隔，例如：A123456789,B234567890,C345678901" maxlength="330">A123456789,B234567890,C345678901,D456789012</textarea>
+          <div class="form-hint" style="margin-top:4px">單次查詢上限 30 組身分證字號；如查詢跨年度或跨身分別資料量較大，系統將採非同步分批處理以確保穩定運作。</div>
         </div>
         <div class="form-row cols-3">
           <div class="form-group">
@@ -3602,9 +4235,15 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       </div>
       <div class="page-header">
         <div class="page-title">系統稽核日誌</div>
-        <div class="page-subtitle">記錄所有使用者操作行為，確保系統安全性</div>
+        <div class="page-subtitle">記錄所有使用者操作行為與系統錯誤，確保系統安全性並利於問題追蹤</div>
       </div>
-      
+
+      <div class="tabs">
+        <div class="tab-item active" onclick="switchTab(this,'audit-tab-user')">使用者操作稽核</div>
+        <div class="tab-item" onclick="switchTab(this,'audit-tab-error')">系統錯誤日誌</div>
+      </div>
+
+      <div class="tab-content active" id="audit-tab-user">
       <div class="filter-bar">
         <div class="filter-row">
           <div class="filter-group"><div class="filter-label">使用者</div><input type="text" class="filter-control" placeholder="姓名或帳號"></div>
@@ -3708,6 +4347,44 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
             <span>...</span>
             <button class="page-btn">570</button>
             <button class="page-btn">下一頁</button>
+          </div>
+        </div>
+      </div>
+      </div>
+
+      <!-- 系統錯誤日誌 -->
+      <div class="tab-content" id="audit-tab-error">
+        <div class="filter-bar">
+          <div class="filter-row">
+            <div class="filter-group"><div class="filter-label">錯誤等級</div>
+              <select class="filter-control"><option>全部</option><option>Critical</option><option>Error</option><option>Warning</option></select>
+            </div>
+            <div class="filter-group"><div class="filter-label">所屬子系統</div>
+              <select class="filter-control"><option>全部</option><option>課稅管理</option><option>溢領管理</option><option>直撥登錄</option><option>止付作業</option><option>介接服務</option></select>
+            </div>
+            <div class="filter-group"><div class="filter-label">發生日期起</div><input type="text" class="filter-control" value="113/12/01"></div>
+            <div class="filter-group"><div class="filter-label">發生日期迄</div><input type="text" class="filter-control" value="113/12/10"></div>
+            <button class="btn btn-primary btn-sm" style="align-self:flex-end">查詢</button>
+            <button class="btn btn-success btn-sm" style="align-self:flex-end" onclick="runDownload('系統錯誤日誌','xlsx')">匯出</button>
+          </div>
+        </div>
+        <div class="table-card">
+          <div class="table-wrapper">
+          <table class="data-table">
+            <thead><tr><th>發生時間</th><th>錯誤等級</th><th>所屬子系統</th><th>錯誤代碼</th><th>錯誤訊息</th><th>受影響使用者/案件</th><th>處理狀態</th></tr></thead>
+            <tbody>
+              <tr><td>113/12/10 03:00:12</td><td><span class="badge badge-danger">Critical</span></td><td>介接服務</td><td>ERR-IF-5023</td><td>介接撥付系統逾時無回應（timeout 30s）</td><td>批次排程 #20241210-01</td><td><span class="badge badge-warning">處理中</span></td></tr>
+              <tr><td>113/12/09 14:22:47</td><td><span class="badge badge-warning">Warning</span></td><td>課稅管理</td><td>WRN-TAX-1187</td><td>課稅計算金額與前次差異超過±10%，已標記待複核</td><td>案件 TAX-113-1987</td><td><span class="badge badge-success">已處理</span></td></tr>
+              <tr><td>113/12/09 09:05:33</td><td><span class="badge badge-danger">Error</span></td><td>溢領管理</td><td>ERR-OVF-3341</td><td>撥付系統回寫支領紀錄失敗，欄位「批號」不可為空</td><td>案件 OVF-113-0879</td><td><span class="badge badge-danger">待處理</span></td></tr>
+              <tr><td>113/12/08 18:40:02</td><td><span class="badge badge-warning">Warning</span></td><td>止付作業</td><td>WRN-STP-0876</td><td>銀行端逾時限未回饋止付結果</td><td>吳建成 (G789***012)</td><td><span class="badge badge-warning">處理中</span></td></tr>
+              <tr><td>113/12/08 10:12:59</td><td><span class="badge badge-danger">Critical</span></td><td>直撥登錄</td><td>ERR-DIR-2290</td><td>公文系統介接失敗，無法取得發文字號（HTTP 503）</td><td>案件 DIR-113-0044</td><td><span class="badge badge-success">已處理</span></td></tr>
+            </tbody>
+          </table>
+          </div>
+          <div style="padding:10px 16px;border-top:1px solid var(--border);font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">系統提供完整錯誤處理與日誌機制，記錄各子系統異常發生時間、等級、影響範圍及處理狀態，以利系統維運、問題追蹤與稽核需求。</div>
+          <div class="pagination">
+            <div class="pagination-info">顯示 1-5 / 共 63 筆</div>
+            <div class="pagination-controls"><button class="page-btn" disabled>上一頁</button><button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">下一頁</button></div>
           </div>
         </div>
       </div>
@@ -3828,6 +4505,102 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
             <button class="page-btn" disabled>上一頁</button>
             <button class="page-btn active">1</button>
             <button class="page-btn" disabled>下一頁</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ADMIN WORKDAY MANAGEMENT ===== -->
+    <div class="view" id="view-admin-workday">
+      <div class="breadcrumb">
+        <span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item">系統管理</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item current">工作日管理</span>
+      </div>
+      <div class="page-header">
+        <div class="page-title">工作日管理</div>
+        <div class="page-subtitle">批次匯入國定假日、彈性放假日及調班日，僅系統管理員或指定同仁可操作</div>
+        <div class="page-actions">
+          <span class="badge badge-danger">限管理員權限</span>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div>
+          <div class="card" style="margin-bottom:16px">
+            <div class="section-title"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> 批次匯入工作日曆</div>
+            <div class="form-row cols-2">
+              <div class="form-group">
+                <label class="form-label">適用年度 <span class="required">*</span></label>
+                <select class="form-control"><option>113年度</option><option>114年度</option><option selected>115年度</option><option>116年度</option></select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">重複日期處理方式 <span class="required">*</span></label>
+                <select class="form-control"><option>提示後覆蓋</option><option>跳過重複日期</option><option>發現重複即報錯中止</option></select>
+              </div>
+            </div>
+            <div class="upload-dropzone" onclick="triggerFileInput('workday-file-input')" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="handleFileDrop(event,'workday-file-input')">
+              <div class="upload-dropzone-icon"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:32px;height:32px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+              <div class="upload-dropzone-title">點擊或拖曳 CSV 檔案至此上傳</div>
+              <div class="upload-dropzone-hint">欄位需含：日期、類型（國定假日／彈性放假／調班日）、說明</div>
+              <div class="upload-file-chip" id="workday-file-chip">115年度工作日曆.csv（118筆）</div>
+              <div style="margin-top:12px">
+                <button class="btn btn-outline-primary btn-sm" onclick="event.stopPropagation();triggerFileInput('workday-file-input')">選擇檔案</button>
+              </div>
+            </div>
+            <input type="file" id="workday-file-input" accept=".csv" style="display:none" onchange="displayChosenFile(this,'workday-file-chip')">
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <button class="btn btn-outline btn-sm" onclick="runDownload('工作日曆匯入範本','csv')">下載CSV範本</button>
+              <button class="btn btn-primary btn-sm" onclick="showToast('warning','檢核完成','格式校驗通過 115 筆，發現 3 筆日期重複，請確認處理方式')">執行格式校驗</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title" style="margin-bottom:12px">校驗結果</div>
+            <div class="validation-area" style="margin-bottom:12px">
+              <div class="validation-item ok"><span class="validation-icon"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="8 12.5 11 15.5 16 9"/></svg></span> 日期格式正確：118 / 118 筆</div>
+              <div class="validation-item ok"><span class="validation-icon"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="8 12.5 11 15.5 16 9"/></svg></span> 欄位名稱正確</div>
+              <div class="validation-item warn"><span class="validation-icon"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a1 1 0 0 0 .86 1.5h18.64a1 1 0 0 0 .86-1.5L13.71 3.86a1 1 0 0 0-1.72 0z"/><line x1="12" y1="9" x2="12" y2="13"/><circle cx="12" cy="16.5" r="0.9" fill="currentColor" stroke="none"/></svg></span> 115/01/01、115/02/28、115/10/10 已存在於系統，將依所選方式處理</div>
+            </div>
+            <button class="btn btn-gold" style="width:100%" onclick="showToast('success','匯入完成','115年度工作日曆已成功匯入，共處理 118 筆（新增 115 筆、覆蓋 3 筆），已記錄本次匯入紀錄')">確認匯入</button>
+          </div>
+        </div>
+
+        <div>
+          <div class="card" style="margin-bottom:16px">
+            <div class="card-title" style="margin-bottom:12px">115年度工作日曆（節錄）</div>
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead><tr><th>日期</th><th>星期</th><th>類型</th><th>說明</th></tr></thead>
+                <tbody>
+                  <tr><td>115/01/01</td><td>四</td><td><span class="badge badge-primary">國定假日</span></td><td>中華民國開國紀念日</td></tr>
+                  <tr><td>115/02/14</td><td>六</td><td><span class="badge badge-info">彈性放假</span></td><td>小年夜彈性放假</td></tr>
+                  <tr><td>115/02/16</td><td>一</td><td><span class="badge badge-warning">調班日</span></td><td>調整放假之上班日</td></tr>
+                  <tr><td>115/02/28</td><td>六</td><td><span class="badge badge-primary">國定假日</span></td><td>和平紀念日</td></tr>
+                  <tr><td>115/04/03</td><td>五</td><td><span class="badge badge-primary">國定假日</span></td><td>民族掃墓節（清明節）</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="pagination">
+              <div class="pagination-info">顯示 1-5 / 共 118 筆</div>
+              <div class="pagination-controls"><button class="page-btn" disabled>上一頁</button><button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">下一頁</button></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title" style="margin-bottom:12px">匯入紀錄追蹤</div>
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead><tr><th>匯入時間</th><th>操作人</th><th>適用年度</th><th>異動內容</th></tr></thead>
+                <tbody>
+                  <tr><td>114/12/10 09:15</td><td>系統管理員</td><td>115年度</td><td>新增 115 筆、覆蓋 3 筆</td></tr>
+                  <tr><td>113/12/18 14:02</td><td>系統管理員</td><td>114年度</td><td>新增 116 筆</td></tr>
+                  <tr><td>112/12/20 10:30</td><td>系統管理員</td><td>113年度</td><td>新增 114 筆</td></tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -4526,6 +5299,42 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 <script>
 // ===== STATE =====
 let currentView = 'dashboard';
+
+// ===== FILE UPLOAD HELPERS (real file picker for high-fidelity interaction) =====
+function triggerFileInput(inputId) {
+  const el = document.getElementById(inputId);
+  if (el) el.click();
+}
+
+function handleFileDrop(event, inputId) {
+  event.preventDefault();
+  event.currentTarget.classList.remove('drag-over');
+  event.currentTarget.classList.remove('dragover');
+  const input = document.getElementById(inputId);
+  if (input && event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length) {
+    input.files = event.dataTransfer.files;
+    input.dispatchEvent(new Event('change'));
+  }
+}
+
+function formatFileSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+// Reads the chosen file from an <input type="file">, updates the given chip element
+// to show the real file name/size, and returns the File object (or null if cancelled).
+function displayChosenFile(inputEl, chipId) {
+  if (!inputEl.files || !inputEl.files.length) return null;
+  const file = inputEl.files[0];
+  const chip = document.getElementById(chipId);
+  if (chip) {
+    chip.style.display = 'inline-flex';
+    chip.textContent = file.name + '（' + formatFileSize(file.size) + '）';
+  }
+  return file;
+}
 let sidebarCollapsed = false;
 let simMode = false;
 let maskStates = {};
@@ -4640,15 +5449,15 @@ function navigateTo(viewId) {
     'overflow-single': 'overflow', 'overflow-batch': 'overflow', 'overflow-docs': 'overflow',
     'overflow-recovery': 'overflow', 'overflow-stats': 'overflow',
     'stop-payment': 'stop', 'stop-tracking': 'stop',
-    'tax-calc': 'tax', 'tax-report': 'tax', 'tax-audit': 'tax',
-    'direct-register': 'direct', 'direct-letter': 'direct',
+    'tax-calc': 'tax', 'tax-case': 'tax', 'tax-report': 'tax', 'tax-audit': 'tax',
+    'direct-register': 'direct', 'direct-letter': 'direct', 'direct-query': 'direct',
     'monthly-dashboard': 'monthly', 'monthly-prep': 'monthly', 'monthly-exec': 'monthly',
     'monthly-report': 'monthly', 'monthly-anomaly': 'monthly',
     'ext-military': 'external', 'ext-labor': 'external', 'ext-veterans': 'external',
     'query-individual': 'query', 'query-batch': 'query', 'query-flexible': 'query',
     'ruling-search': 'ruling', 'ruling-maintain': 'ruling',
     'admin-users': 'admin', 'admin-permissions': 'admin', 'admin-simulate': 'admin', 'admin-audit': 'admin',
-    'admin-announcements': 'admin', 'admin-interface': 'admin', 'admin-tax-params': 'admin'
+    'admin-announcements': 'admin', 'admin-workday': 'admin', 'admin-interface': 'admin', 'admin-tax-params': 'admin'
   };
   
   if (menuMap[viewId]) {
@@ -5082,7 +5891,35 @@ function simulateSupervisorApproval() {
     approveBtn.textContent = '已核符';
   }
 
+  const cancelBtn = document.getElementById('cancel-approval-btn');
+  if (cancelBtn) cancelBtn.style.display = 'inline-flex';
+
   showToast('success', '科長核符', '陳主任已核符本筆直撥案件，資料已鎖定');
+}
+
+function cancelSupervisorApproval() {
+  if (!confirm('確定要取消原核准作業嗎？系統將自動介接撥付系統，刪除已登錄之支領紀錄與批號，並保留相關異動紀錄。')) return;
+
+  const badge = document.getElementById('supervisor-badge');
+  const status = document.getElementById('supervisor-status');
+  const saveBtn = document.getElementById('direct-save-btn');
+  const approveBtn = document.querySelector('button[onclick="simulateSupervisorApproval()"]');
+  const cancelBtn = document.getElementById('cancel-approval-btn');
+
+  badge.className = 'badge badge-danger';
+  badge.textContent = '✕ 已取消核准';
+  status.className = 'badge badge-danger';
+  status.textContent = '✕ 已取消核准';
+
+  document.querySelectorAll('#view-direct-register .form-control').forEach(el => el.disabled = false);
+
+  saveBtn.disabled = false;
+  saveBtn.innerHTML = '重新送審';
+
+  if (approveBtn) { approveBtn.disabled = false; approveBtn.textContent = '模擬科長核符'; }
+  cancelBtn.style.display = 'none';
+
+  showToast('success', '取消核准完成', '已介接撥付系統刪除原登錄之支領紀錄與批號，異動紀錄已保留供查核追蹤');
 }
 
 function simulateMilUpload() {
@@ -5152,12 +5989,16 @@ function switchTab(tabEl, contentId) {
   const tabContainer = tabEl.closest('.tabs');
   tabContainer.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
   tabEl.classList.add('active');
-  
-  const parent = tabContainer.nextElementSibling;
-  if (parent) {
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-    const target = document.getElementById(contentId);
-    if (target) target.classList.add('active');
+
+  const target = document.getElementById(contentId);
+  if (target && target.parentElement) {
+    // Scope to sibling .tab-content elements within the SAME parent only,
+    // so nested tab groups (e.g. a tab-content containing its own sub-tabs)
+    // don't accidentally hide/show unrelated sections elsewhere on the page.
+    Array.from(target.parentElement.children).forEach(c => {
+      if (c.classList.contains('tab-content')) c.classList.remove('active');
+    });
+    target.classList.add('active');
   }
 }
 
