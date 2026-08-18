@@ -908,10 +908,10 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
   
   <!-- USER DROPDOWN -->
   <div class="user-dropdown" id="user-dropdown">
-    <div class="user-dropdown-item">
+    <div class="user-dropdown-item" onclick="closeUserDropdown();openProfileModal()">
       <span><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg></span> 個人資料
     </div>
-    <div class="user-dropdown-item">
+    <div class="user-dropdown-item" onclick="closeUserDropdown();openPasswordModal()">
       <span><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="15" r="4"/><line x1="10.5" y1="11.5" x2="20" y2="2"/><line x1="16" y1="6" x2="19" y2="9"/></svg></span> 變更密碼
     </div>
     <div class="user-dropdown-divider"></div>
@@ -1429,7 +1429,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       
       <div style="display:flex;gap:12px;justify-content:flex-end">
         <button class="btn btn-outline" onclick="navigateTo('dashboard')">取消</button>
-        <button class="btn btn-outline-primary">暫存草稿</button>
+        <button class="btn btn-outline-primary" onclick="showToast('success','暫存成功','溢領控管資料已儲存為草稿，可稍後繼續編輯')">暫存草稿</button>
         <button class="btn btn-gold" onclick="showToast('success','儲存成功','溢領控管資料已建置完成，案件編號：OVF-113-0892')">
           <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> 儲存並建置
         </button>
@@ -1563,7 +1563,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
               </div>
             </div>
             <div style="margin-top:12px">
-              <button class="btn btn-outline btn-sm" style="width:100%"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 下載範本檔案</button>
+              <button class="btn btn-outline btn-sm" style="width:100%" onclick="runDownload('溢領控管批次匯入範本','xlsx')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 下載範本檔案</button>
             </div>
           </div>
         </div>
@@ -1641,11 +1641,11 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
             </tr>
           </thead>
           <tbody>
-            <tr><td><input type="checkbox" class="table-checkbox doc-cb" checked></td><td>OVF-113-0888</td><td>林志明</td><td class="masked">C345***678</td><td>113/10~113/11</td><td>NT$ 142,000</td><td>亡故後繼續撥付</td><td><span class="badge badge-warning">待產製</span></td><td><button class="btn btn-sm btn-outline">預覽</button></td></tr>
-            <tr><td><input type="checkbox" class="table-checkbox doc-cb" checked></td><td>OVF-113-0889</td><td>張淑芬</td><td class="masked">D456***789</td><td>113/09~113/11</td><td>NT$ 213,000</td><td>亡故後繼續撥付</td><td><span class="badge badge-warning">待產製</span></td><td><button class="btn btn-sm btn-outline">預覽</button></td></tr>
+            <tr><td><input type="checkbox" class="table-checkbox doc-cb" checked></td><td>OVF-113-0888</td><td>林志明</td><td class="masked">C345***678</td><td>113/10~113/11</td><td>NT$ 142,000</td><td>亡故後繼續撥付</td><td><span class="badge badge-warning">待產製</span></td><td><button class="btn btn-sm btn-outline" onclick="previewOverdueDoc('OVF-113-0888','林志明','C345***678','113/10~113/11','142,000')">預覽</button></td></tr>
+            <tr><td><input type="checkbox" class="table-checkbox doc-cb" checked></td><td>OVF-113-0889</td><td>張淑芬</td><td class="masked">D456***789</td><td>113/09~113/11</td><td>NT$ 213,000</td><td>亡故後繼續撥付</td><td><span class="badge badge-warning">待產製</span></td><td><button class="btn btn-sm btn-outline" onclick="previewOverdueDoc('OVF-113-0889','張淑芬','D456***789','113/09~113/11','213,000')">預覽</button></td></tr>
             <tr><td><input type="checkbox" class="table-checkbox doc-cb"></td><td>OVF-113-0890</td><td>黃建國</td><td class="masked">E567***890</td><td>113/10~113/11</td><td>NT$ 71,000</td><td>亡故後繼續撥付</td><td><span class="badge badge-success">已產製</span></td><td><button class="btn btn-sm btn-outline" onclick="runDownload('OVF-113-0890_追繳函表','pdf')">下載</button></td></tr>
-            <tr><td><input type="checkbox" class="table-checkbox doc-cb" checked></td><td>OVF-113-0891</td><td>李秀蘭</td><td class="masked">F678***901</td><td>113/08~113/11</td><td>NT$ 284,000</td><td>亡故後繼續撥付</td><td><span class="badge badge-warning">待產製</span></td><td><button class="btn btn-sm btn-outline">預覽</button></td></tr>
-            <tr><td><input type="checkbox" class="table-checkbox doc-cb" checked></td><td>OVF-113-0892</td><td>陳美麗</td><td class="masked">B234***789</td><td>113/10~113/11</td><td>NT$ 137,000</td><td>亡故後繼續撥付</td><td><span class="badge badge-warning">待產製</span></td><td><button class="btn btn-sm btn-outline">預覽</button></td></tr>
+            <tr><td><input type="checkbox" class="table-checkbox doc-cb" checked></td><td>OVF-113-0891</td><td>李秀蘭</td><td class="masked">F678***901</td><td>113/08~113/11</td><td>NT$ 284,000</td><td>亡故後繼續撥付</td><td><span class="badge badge-warning">待產製</span></td><td><button class="btn btn-sm btn-outline" onclick="previewOverdueDoc('OVF-113-0891','李秀蘭','F678***901','113/08~113/11','284,000')">預覽</button></td></tr>
+            <tr><td><input type="checkbox" class="table-checkbox doc-cb" checked></td><td>OVF-113-0892</td><td>陳美麗</td><td class="masked">B234***789</td><td>113/10~113/11</td><td>NT$ 137,000</td><td>亡故後繼續撥付</td><td><span class="badge badge-warning">待產製</span></td><td><button class="btn btn-sm btn-outline" onclick="previewOverdueDoc('OVF-113-0892','陳美麗','B234***789','113/10~113/11','137,000')">預覽</button></td></tr>
           </tbody>
         </table>
         </div>
@@ -1753,7 +1753,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
                 <td>OVF-113-0880</td><td>王建民</td><td class="masked">A123***789</td>
                 <td>NT$ 68,500</td><td>NT$ 68,500</td><td>NT$ 0</td>
                 <td>113/11/20</td><td><span class="badge badge-success">已收回</span></td>
-                <td><button class="btn btn-sm btn-outline">明細</button></td>
+                <td><button class="btn btn-sm btn-outline" onclick="showOverflowDetail('OVF-113-0880','王建民','A123***789','68,500','68,500','0','113/11/20','已收回')">明細</button></td>
               </tr>
               <tr>
                 <td>OVF-113-0881</td><td>陳志偉</td><td class="masked">B234***890</td>
@@ -1771,13 +1771,13 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
                 <td>OVF-113-0883</td><td>張文山</td><td class="masked">D456***012</td>
                 <td>NT$ 284,000</td><td>NT$ 71,000</td><td>NT$ 213,000</td>
                 <td>113/10/15</td><td><span class="badge badge-info">分期繳回中</span></td>
-                <td><button class="btn btn-sm btn-outline">查看分期</button></td>
+                <td><button class="btn btn-sm btn-outline" onclick="showInstallmentDetail('OVF-113-0883','張文山','D456***012','284,000','71,000','213,000')">查看分期</button></td>
               </tr>
             </tbody>
           </table>
         </div>
         <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px">
-          <button class="btn btn-outline btn-sm"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="20" x2="4" y2="12"/><line x1="10" y1="20" x2="10" y2="6"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="20" y1="20" x2="4" y2="20"/></svg> 下載彙整表</button>
+          <button class="btn btn-outline btn-sm" onclick="runDownload('銀行圈回金額彙整表','xlsx')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="20" x2="4" y2="12"/><line x1="10" y1="20" x2="10" y2="6"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="20" y1="20" x2="4" y2="20"/></svg> 下載彙整表</button>
           <button class="btn btn-primary btn-sm" onclick="showToast('success','轉檔成功','繳回金額已成功轉入溢領控管系統，每日圈回入帳明細表及溢領明細彙整表已產製')">執行繳回金額轉檔</button>
         </div>
       </div>
@@ -3034,7 +3034,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         </div>
         <div style="display:flex;gap:8px">
           <button class="btn btn-outline" onclick="resetDirectRegisterForm()">取消</button>
-          <button class="btn btn-outline-primary">暫存</button>
+          <button class="btn btn-outline-primary" onclick="showToast('success','暫存成功','資料已儲存為草稿，可稍後繼續編輯')">暫存</button>
           <button class="btn btn-gold" id="direct-save-btn" onclick="saveDirectRecord()"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> 儲存送審</button>
         </div>
       </div>
@@ -4760,7 +4760,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
               <td><span class="badge badge-secondary">已停用</span></td>
               <td>
                 <button class="btn btn-sm btn-outline" onclick="openRulingEditModal()">編輯</button>
-                <button class="btn btn-sm btn-success btn-sm">啟用</button>
+                <button class="btn btn-sm btn-success btn-sm" onclick="toggleRulingStatus(this)">啟用</button>
               </td>
             </tr>
           </tbody>
@@ -4811,7 +4811,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
               <td>
                 <button class="btn btn-sm btn-outline" onclick="openUserEditModal()">編輯</button>
                 <button class="btn btn-sm btn-outline" onclick="navigateTo('admin-permissions')">權限</button>
-                <button class="btn btn-sm btn-danger">停用</button>
+                <button class="btn btn-sm btn-danger" onclick="toggleUserStatus(this,'王大明')">停用</button>
               </td>
             </tr>
             <tr>
@@ -4822,7 +4822,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
               <td>
                 <button class="btn btn-sm btn-outline" onclick="openUserEditModal()">編輯</button>
                 <button class="btn btn-sm btn-outline" onclick="navigateTo('admin-permissions')">權限</button>
-                <button class="btn btn-sm btn-danger">停用</button>
+                <button class="btn btn-sm btn-danger" onclick="toggleUserStatus(this,'李小華')">停用</button>
               </td>
             </tr>
             <tr>
@@ -4833,7 +4833,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
               <td>
                 <button class="btn btn-sm btn-outline" onclick="openUserEditModal()">編輯</button>
                 <button class="btn btn-sm btn-outline" onclick="navigateTo('admin-permissions')">權限</button>
-                <button class="btn btn-sm btn-danger">停用</button>
+                <button class="btn btn-sm btn-danger" onclick="toggleUserStatus(this,'陳志明')">停用</button>
               </td>
             </tr>
             <tr>
@@ -4967,7 +4967,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       </div>
       
       <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px">
-        <button class="btn btn-outline">取消</button>
+        <button class="btn btn-outline" onclick="navigateTo('admin-users')">取消</button>
         <button class="btn btn-gold" onclick="showToast('success','儲存成功','使用者權限設定已更新，下次登入生效')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> 儲存權限設定</button>
       </div>
     </div>
@@ -5101,7 +5101,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
                 </div>
               </td>
             </tr>
-            <tr>
+            <tr class="expandable-row" onclick="toggleExpandRow(this)">
               <td>王大明</td>
               <td><span class="badge badge-info">查詢</span></td>
               <td>支領紀錄查詢</td>
@@ -5109,9 +5109,19 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
               <td><span style="font-size:calc(12px * var(--font-scale))">A123456789</span></td>
               <td>192.168.1.101</td>
               <td>113/12/10 09:52:11</td>
-              <td><button class="btn btn-sm btn-outline">展開</button></td>
+              <td><button class="btn btn-sm btn-outline" onclick="event.stopPropagation()">展開</button></td>
             </tr>
-            <tr>
+            <tr class="expanded-detail">
+              <td colspan="8">
+                <div class="audit-diff">
+                  <div class="after">查詢對象身分證字號: A123456789</div>
+                  <div class="after">查詢項目: 支領紀錄、給付明細</div>
+                  <div class="after">查詢結果: 共 12 筆紀錄</div>
+                  <div class="after">查詢時間: 113/12/10 09:52:11</div>
+                </div>
+              </td>
+            </tr>
+            <tr class="expandable-row" onclick="toggleExpandRow(this)">
               <td>王大明</td>
               <td><span class="badge badge-primary">登入</span></td>
               <td>系統登入</td>
@@ -5119,9 +5129,19 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
               <td><span style="font-size:calc(12px * var(--font-scale));color:var(--success)">登入成功</span></td>
               <td>192.168.1.101</td>
               <td>113/12/10 09:23:05</td>
-              <td><button class="btn btn-sm btn-outline">展開</button></td>
+              <td><button class="btn btn-sm btn-outline" onclick="event.stopPropagation()">展開</button></td>
             </tr>
-            <tr>
+            <tr class="expanded-detail">
+              <td colspan="8">
+                <div class="audit-diff">
+                  <div class="after">登入方式: 自然人憑證 + 帳號密碼</div>
+                  <div class="after">登入結果: 成功</div>
+                  <div class="after">瀏覽器: Chrome 131 (Windows 11)</div>
+                  <div class="after">登入時間: 113/12/10 09:23:05</div>
+                </div>
+              </td>
+            </tr>
+            <tr class="expandable-row" onclick="toggleExpandRow(this)">
               <td>李小華</td>
               <td><span class="badge badge-warning">修改</span></td>
               <td>溢領控管 (OVF-113-0882)</td>
@@ -5129,9 +5149,19 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
               <td><span style="font-size:calc(12px * var(--font-scale));color:var(--warning)">部分收回</span></td>
               <td>192.168.1.102</td>
               <td>113/12/09 16:30:44</td>
-              <td><button class="btn btn-sm btn-outline">展開</button></td>
+              <td><button class="btn btn-sm btn-outline" onclick="event.stopPropagation()">展開</button></td>
             </tr>
-            <tr>
+            <tr class="expanded-detail">
+              <td colspan="8">
+                <div class="audit-diff">
+                  <div class="before">- 案件狀態: 未收回</div>
+                  <div class="after">+ 案件狀態: 部分收回</div>
+                  <div class="after">+ 本次收回金額: NT$ 68,500</div>
+                  <div class="after">+ 異動時間: 113/12/09 16:30:44</div>
+                </div>
+              </td>
+            </tr>
+            <tr class="expandable-row" onclick="toggleExpandRow(this)">
               <td>系統管理員</td>
               <td><span class="badge badge-secondary">模擬登入</span></td>
               <td>模擬 <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg> 王大明</td>
@@ -5139,7 +5169,17 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
               <td><span style="font-size:calc(12px * var(--font-scale));color:var(--warning)">模擬中</span></td>
               <td>192.168.1.200</td>
               <td>113/12/08 14:30:00</td>
-              <td><button class="btn btn-sm btn-outline">展開</button></td>
+              <td><button class="btn btn-sm btn-outline" onclick="event.stopPropagation()">展開</button></td>
+            </tr>
+            <tr class="expanded-detail">
+              <td colspan="8">
+                <div class="audit-diff">
+                  <div class="after">模擬發起人: 系統管理員 (Z999***999)</div>
+                  <div class="after">模擬目標: 王大明 (A123***789)</div>
+                  <div class="after">模擬原因: 客服協助排除操作問題</div>
+                  <div class="after">開始時間: 113/12/08 14:30:00</div>
+                </div>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -5774,9 +5814,9 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       <div class="form-group">
         <label class="form-label">函釋內容 <span class="required">*</span></label>
         <div class="rich-text-toolbar">
-          <button>B</button><button><i>I</i></button><button><u>U</u></button>
-          <button>H1</button><button>H2</button>
-          <button>≡</button><button>•</button>
+          <button type="button" onclick="this.classList.toggle('active');document.execCommand&&showToast('info','格式化','已套用粗體格式（原型示意）')" style="font-weight:700">B</button><button type="button" onclick="this.classList.toggle('active');showToast('info','格式化','已套用斜體格式（原型示意）')"><i>I</i></button><button type="button" onclick="this.classList.toggle('active');showToast('info','格式化','已套用底線格式（原型示意）')"><u>U</u></button>
+          <button type="button" onclick="showToast('info','格式化','已套用標題 1 樣式（原型示意）')">H1</button><button type="button" onclick="showToast('info','格式化','已套用標題 2 樣式（原型示意）')">H2</button>
+          <button type="button" onclick="showToast('info','格式化','已插入編號清單（原型示意）')">≡</button><button type="button" onclick="showToast('info','格式化','已插入項目符號清單（原型示意）')">•</button>
         </div>
         <textarea class="rich-text-area" style="border-top:none;border-radius:0 0 4px 4px">一、依公務人員退休資遣撫卹法第77條規定，月退休金領受人有下列情形之一者，停止支領月退休金：
 （一）死亡。
@@ -6083,6 +6123,93 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="closeModal('sim-modal')">取消</button>
       <button class="btn btn-warning" onclick="closeModal('sim-modal');startSimMode()"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="5"/><circle cx="15" cy="15" r="5"/></svg> 開始模擬</button>
+    </div>
+  </div>
+</div>
+
+<!-- Profile Modal (個人資料) -->
+<div class="modal-overlay" id="profile-modal">
+  <div class="modal modal-md">
+    <div class="modal-header">
+      <div class="modal-title"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg> 個人資料</div>
+      <button class="modal-close" onclick="closeModal('profile-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)">
+        <div style="width:64px;height:64px;flex-shrink:0;background:linear-gradient(135deg,var(--accent-gold),#b8922a);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:calc(24px * var(--font-scale));font-weight:700;color:#fff">王</div>
+        <div>
+          <div style="font-size:calc(16px * var(--font-scale));font-weight:700;color:var(--text-primary)">王大明</div>
+          <div style="font-size:calc(13px * var(--font-scale));color:var(--text-secondary);margin-top:2px">給付科 · 承辦人</div>
+          <div style="margin-top:6px"><span class="badge badge-info">一般使用者</span></div>
+        </div>
+      </div>
+      <div class="info-card" style="margin-bottom:16px">
+        <div class="info-row"><div class="info-key">帳號（身分證字號）</div><div class="info-val">A123456789</div></div>
+        <div class="info-row"><div class="info-key">所屬單位</div><div class="info-val">給付科</div></div>
+        <div class="info-row"><div class="info-key">職稱</div><div class="info-val">承辦人</div></div>
+        <div class="info-row"><div class="info-key">帳號狀態</div><div class="info-val"><span class="badge badge-success">啟用</span></div></div>
+        <div class="info-row"><div class="info-key">帳號建立日期</div><div class="info-val">112/02/14</div></div>
+        <div class="info-row"><div class="info-key">最後登入時間</div><div class="info-val">113/12/10 08:32:15</div></div>
+      </div>
+      <div class="form-row cols-2">
+        <div class="form-group">
+          <label class="form-label">電子郵件</label>
+          <input type="text" class="form-control" id="profile-email" value="wang.daming@pension.gov.tw">
+        </div>
+        <div class="form-group">
+          <label class="form-label">聯絡電話（分機）</label>
+          <input type="text" class="form-control" id="profile-phone" value="02-1234-5678 #620">
+        </div>
+      </div>
+      <div class="form-hint">如需異動姓名、身分證字號或所屬單位，請洽系統管理者於「使用者管理」修改。</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('profile-modal')">取消</button>
+      <button class="btn btn-gold" onclick="saveProfile()"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> 儲存</button>
+    </div>
+  </div>
+</div>
+
+<!-- Change Password Modal (變更密碼) -->
+<div class="modal-overlay" id="password-modal">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <div class="modal-title"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="15" r="4"/><line x1="10.5" y1="11.5" x2="20" y2="2"/><line x1="16" y1="6" x2="19" y2="9"/></svg> 變更密碼</div>
+      <button class="modal-close" onclick="closeModal('password-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">目前密碼 <span class="required">*</span></label>
+        <div class="input-group">
+          <input type="password" class="form-control" id="pwd-current" placeholder="請輸入目前密碼">
+          <button type="button" class="btn btn-outline btn-sm" onclick="togglePwdVisibility('pwd-current')">顯示</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">新密碼 <span class="required">*</span></label>
+        <div class="input-group">
+          <input type="password" class="form-control" id="pwd-new" placeholder="請輸入新密碼" oninput="checkPwdStrength(this.value)">
+          <button type="button" class="btn btn-outline btn-sm" onclick="togglePwdVisibility('pwd-new')">顯示</button>
+        </div>
+        <div style="display:flex;gap:4px;margin-top:8px" id="pwd-strength-bars">
+          <div style="height:4px;flex:1;border-radius:2px;background:var(--border)" id="pwd-bar-1"></div>
+          <div style="height:4px;flex:1;border-radius:2px;background:var(--border)" id="pwd-bar-2"></div>
+          <div style="height:4px;flex:1;border-radius:2px;background:var(--border)" id="pwd-bar-3"></div>
+        </div>
+        <div class="form-hint" id="pwd-strength-text">密碼強度：尚未輸入</div>
+        <div class="form-hint">密碼需至少 8 碼，並包含英文大小寫字母、數字及特殊符號，不可與帳號相同。</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">確認新密碼 <span class="required">*</span></label>
+        <div class="input-group">
+          <input type="password" class="form-control" id="pwd-confirm" placeholder="請再次輸入新密碼">
+          <button type="button" class="btn btn-outline btn-sm" onclick="togglePwdVisibility('pwd-confirm')">顯示</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('password-modal')">取消</button>
+      <button class="btn btn-gold" onclick="changePassword()"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> 確認變更</button>
     </div>
   </div>
 </div>
@@ -6605,6 +6732,40 @@ function saveInterfaceSystem() {
   showToast('success', '儲存成功', '介接系統設定已儲存');
 }
 
+function toggleRulingStatus(btn) {
+  const row = btn.closest('tr');
+  const statusCell = row.children[5];
+  const isEnabling = btn.textContent.trim() === '啟用';
+  if (isEnabling) {
+    statusCell.innerHTML = '<span class="badge badge-success">正常</span>';
+    btn.className = 'btn btn-sm btn-danger';
+    btn.textContent = '停用';
+    showToast('success', '已啟用', '該函釋已重新啟用，將於相關試算作業中套用');
+  } else {
+    statusCell.innerHTML = '<span class="badge badge-secondary">已停用</span>';
+    btn.className = 'btn btn-sm btn-success';
+    btn.textContent = '啟用';
+    showToast('success', '已停用', '該函釋已停用，將不再於相關試算作業中套用');
+  }
+}
+
+function toggleUserStatus(btn, name) {
+  const row = btn.closest('tr');
+  const statusCell = row.children[5];
+  const isDisabling = btn.textContent.trim() === '停用';
+  if (isDisabling) {
+    statusCell.innerHTML = '<span class="badge badge-danger">停用</span>';
+    btn.className = 'btn btn-sm btn-success';
+    btn.textContent = '啟用';
+    showToast('success', '已停用帳號', name + ' 的帳號已停用，該使用者將無法登入系統');
+  } else {
+    statusCell.innerHTML = '<span class="badge badge-success">啟用</span>';
+    btn.className = 'btn btn-sm btn-danger';
+    btn.textContent = '停用';
+    showToast('success', '已啟用帳號', name + ' 的帳號已重新啟用');
+  }
+}
+
 function toggleInterfaceStatus(btn, action) {
   const row = btn.closest('tr');
   const statusCell = row.children[5];
@@ -6634,6 +6795,80 @@ function openTaxParamModal(isEditCurrent) {
 function saveTaxParam() {
   closeModal('tax-param-modal');
   showToast('success', '版次已儲存', '新課稅參數版次已建立，將於指定生效日期自動套用');
+}
+
+// ===== PROFILE / PASSWORD (使用者個人資料 / 變更密碼) =====
+function openProfileModal() {
+  openModal('profile-modal');
+}
+
+function saveProfile() {
+  const email = document.getElementById('profile-email').value.trim();
+  const phone = document.getElementById('profile-phone').value.trim();
+  if (!email) {
+    showToast('error', '儲存失敗', '請輸入電子郵件');
+    return;
+  }
+  closeModal('profile-modal');
+  showToast('success', '儲存成功', '個人資料已更新');
+}
+
+function openPasswordModal() {
+  ['pwd-current', 'pwd-new', 'pwd-confirm'].forEach(id => {
+    const el = document.getElementById(id);
+    el.value = '';
+    el.setAttribute('type', 'password');
+  });
+  document.querySelectorAll('#password-modal .btn-outline.btn-sm').forEach(b => b.textContent = '顯示');
+  ['pwd-bar-1', 'pwd-bar-2', 'pwd-bar-3'].forEach(id => document.getElementById(id).style.background = 'var(--border)');
+  document.getElementById('pwd-strength-text').textContent = '密碼強度：尚未輸入';
+  openModal('password-modal');
+}
+
+function togglePwdVisibility(id) {
+  const input = document.getElementById(id);
+  const btn = input.parentElement.querySelector('button');
+  if (input.getAttribute('type') === 'password') {
+    input.setAttribute('type', 'text');
+    btn.textContent = '隱藏';
+  } else {
+    input.setAttribute('type', 'password');
+    btn.textContent = '顯示';
+  }
+}
+
+function checkPwdStrength(val) {
+  let score = 0;
+  if (val.length >= 8) score++;
+  if (/[a-z]/.test(val) && /[A-Z]/.test(val)) score++;
+  if (/\d/.test(val) && /[^A-Za-z0-9]/.test(val)) score++;
+  const bars = ['pwd-bar-1', 'pwd-bar-2', 'pwd-bar-3'];
+  const colors = ['var(--danger)', 'var(--warning)', 'var(--success)'];
+  const labels = ['密碼強度：尚未輸入', '密碼強度：弱', '密碼強度：中', '密碼強度：強'];
+  bars.forEach((id, i) => {
+    document.getElementById(id).style.background = (val.length > 0 && i < score) ? colors[score - 1] : 'var(--border)';
+  });
+  document.getElementById('pwd-strength-text').textContent = val.length === 0 ? labels[0] : labels[score];
+}
+
+function changePassword() {
+  const cur = document.getElementById('pwd-current').value;
+  const pwd = document.getElementById('pwd-new').value;
+  const confirm = document.getElementById('pwd-confirm').value;
+  if (!cur || !pwd || !confirm) {
+    showToast('error', '變更失敗', '請完整填寫目前密碼、新密碼及確認新密碼');
+    return;
+  }
+  if (pwd.length < 8 || !(/[a-z]/.test(pwd) && /[A-Z]/.test(pwd) && /\d/.test(pwd) && /[^A-Za-z0-9]/.test(pwd))) {
+    showToast('error', '變更失敗', '新密碼需至少 8 碼，並包含英文大小寫字母、數字及特殊符號');
+    return;
+  }
+  if (pwd !== confirm) {
+    showToast('error', '變更失敗', '新密碼與確認新密碼不一致，請重新輸入');
+    return;
+  }
+  closeModal('password-modal');
+  showToast('success', '密碼變更成功', '您的登入密碼已更新，下次登入請使用新密碼');
 }
 
 // ===== SIMULATE MODE =====
@@ -7661,6 +7896,71 @@ const directCaseDB = {
   'DIR-113-0046': { name:'吳文雄', id:'G789***345', idType:'公務人員', period:'113/12', amount:'71,000', docNum:'府退一字第1130012399號', status:'待核符', approver:'-', approveTime:'-', reason:'補發短少金額' },
   'DIR-113-0042': { name:'孫大偉', id:'K234***567', idType:'軍職人員', period:'113/10', amount:'55,000', docNum:'府退一字第1130012380號', status:'已取消', approver:'-', approveTime:'科長取消：113/11/02', reason:'人工更正撥付' }
 };
+// ===== 溢領管理：明細 / 分期查看 =====
+function previewOverdueDoc(caseNo, name, idMasked, period, amount) {
+  const html = `
+    <div class="info-card" style="margin-bottom:16px">
+      <div class="info-row"><div class="info-key">案件編號</div><div class="info-val">${caseNo}</div></div>
+      <div class="info-row"><div class="info-key">姓名</div><div class="info-val">${name}</div></div>
+      <div class="info-row"><div class="info-key">身分證字號</div><div class="info-val masked">${idMasked}</div></div>
+      <div class="info-row"><div class="info-key">溢領期間</div><div class="info-val">${period}</div></div>
+      <div class="info-row"><div class="info-key">溢領金額</div><div class="info-val" style="font-weight:700">NT$ ${amount}</div></div>
+      <div class="info-row"><div class="info-key">溢領原因</div><div class="info-val">亡故後繼續撥付</div></div>
+    </div>
+    <div style="border:1px solid var(--border);border-radius:var(--radius-card);padding:20px;background:#fff;font-size:calc(13px * var(--font-scale));line-height:1.9">
+      <div style="text-align:center;font-weight:700;font-size:calc(15px * var(--font-scale));margin-bottom:16px">溢領金額追繳函（暨繳款單）</div>
+      <p>受文者：${name} 台端</p>
+      <p>主旨：台端 ${period} 期間因亡故後繼續撥付，計溢領年金給付 NT$ ${amount} 元，請於文到 30 日內繳回，逾期將依法追繳，請查照。</p>
+      <p>說明：一、旨揭溢領款項業經本機關查核確認。<br>二、請台端持本函至指定銀行帳戶繳款，或以匯款方式繳回，並註明案件編號 ${caseNo}。</p>
+      <p style="text-align:right;margin-top:24px">承辦人：王大明</p>
+    </div>`;
+  openDetailModal('追繳函預覽 · ' + name, html, caseNo + '_追繳函', 'pdf');
+}
+
+function showOverflowDetail(caseNo, name, idMasked, overAmt, recovered, remain, recoverDate, status) {
+  const statusBadge = status === '已收回' ? '<span class="badge badge-success">已收回</span>' : (status === '部分收回' ? '<span class="badge badge-warning">部分收回</span>' : (status === '分期繳回中' ? '<span class="badge badge-info">分期繳回中</span>' : '<span class="badge badge-secondary">未收回</span>'));
+  const html = `
+    <div class="info-card">
+      <div class="info-row"><div class="info-key">案件編號</div><div class="info-val">${caseNo}</div></div>
+      <div class="info-row"><div class="info-key">姓名</div><div class="info-val">${name}</div></div>
+      <div class="info-row"><div class="info-key">身分證字號</div><div class="info-val masked">${idMasked}</div></div>
+      <div class="info-row"><div class="info-key">溢領金額</div><div class="info-val" style="font-weight:700">NT$ ${overAmt}</div></div>
+      <div class="info-row"><div class="info-key">已收回金額</div><div class="info-val">NT$ ${recovered}</div></div>
+      <div class="info-row"><div class="info-key">剩餘金額</div><div class="info-val">NT$ ${remain}</div></div>
+      <div class="info-row"><div class="info-key">收回日期</div><div class="info-val">${recoverDate}</div></div>
+      <div class="info-row"><div class="info-key">案件狀態</div><div class="info-val">${statusBadge}</div></div>
+      <div class="info-row"><div class="info-key">收回方式</div><div class="info-val">銀行圈存扣回</div></div>
+      <div class="info-row"><div class="info-key">承辦人</div><div class="info-val">王大明</div></div>
+    </div>`;
+  openDetailModal('溢領案件明細 · ' + name, html, '溢領案件明細_' + caseNo, 'pdf');
+}
+
+function showInstallmentDetail(caseNo, name, idMasked, overAmt, recovered, remain) {
+  const plan = [
+    { no: 1, due: '113/10/15', amount: '71,000', status: '已繳回' },
+    { no: 2, due: '113/11/15', amount: '71,000', status: '已繳回' },
+    { no: 3, due: '113/12/15', amount: '71,000', status: '待繳回' },
+    { no: 4, due: '114/01/15', amount: '71,000', status: '待繳回' },
+  ];
+  const rows = plan.map(p => `<tr><td>第 ${p.no} 期</td><td>${p.due}</td><td>NT$ ${p.amount}</td><td>${p.status === '已繳回' ? '<span class="badge badge-success">已繳回</span>' : '<span class="badge badge-secondary">待繳回</span>'}</td></tr>`).join('');
+  const html = `
+    <div class="info-card" style="margin-bottom:16px">
+      <div class="info-row"><div class="info-key">案件編號</div><div class="info-val">${caseNo}</div></div>
+      <div class="info-row"><div class="info-key">姓名</div><div class="info-val">${name}</div></div>
+      <div class="info-row"><div class="info-key">身分證字號</div><div class="info-val masked">${idMasked}</div></div>
+      <div class="info-row"><div class="info-key">溢領總額</div><div class="info-val" style="font-weight:700">NT$ ${overAmt}</div></div>
+      <div class="info-row"><div class="info-key">已收回金額</div><div class="info-val">NT$ ${recovered}</div></div>
+      <div class="info-row"><div class="info-key">剩餘金額</div><div class="info-val">NT$ ${remain}</div></div>
+    </div>
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead><tr><th>期別</th><th>應繳日期</th><th>應繳金額</th><th>狀態</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+  openDetailModal('分期繳回明細 · ' + name, html, '分期繳回明細_' + caseNo, 'pdf');
+}
+
 function showDirectCaseDetail(caseNo) {
   const c = directCaseDB[caseNo];
   if (!c) return;
@@ -8487,6 +8787,32 @@ function showManualFix(name, errCode, errMsg) {
   dlBtn.innerHTML = '<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> 儲存修正';
   dlBtn.setAttribute('onclick', "closeModal('detail-modal');showToast('success','修正完成','" + name + " 的異常案件已修正，將於下次執行時重新處理')");
 }
+
+// ===== GENERIC UI FEEDBACK：分頁 / 查詢 / 搜尋按鈕（無獨立商業邏輯者，統一給予示意回饋）=====
+document.addEventListener('click', function(e) {
+  const btn = e.target.closest('button');
+  if (!btn || btn.disabled) return;
+  const txt = btn.textContent.trim();
+
+  // Pagination buttons without a specific handler
+  if (btn.classList.contains('page-btn') && !btn.getAttribute('onclick')) {
+    if (txt === '上一頁' || txt === '下一頁') {
+      showToast('info', '換頁', '正在載入' + (txt === '上一頁' ? '上一頁' : '下一頁') + '資料（原型示意）');
+    } else if (/^\d+$/.test(txt)) {
+      const controls = btn.closest('.pagination-controls');
+      if (controls) controls.querySelectorAll('.page-btn.active').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      showToast('info', '換頁', '已切換至第 ' + txt + ' 頁');
+    }
+    return;
+  }
+
+  // Query / search buttons without a specific handler
+  if ((txt === '查詢' || txt === '搜尋') && !btn.getAttribute('onclick')) {
+    showToast('success', '查詢完成', '已依篩選條件重新查詢資料');
+    return;
+  }
+});
 
 // ===== GENERIC DETAIL MODAL =====
 // 供各頁「查看詳細」「差異清單」「異常清單」等重要按鈕開啟，顯示對應的資料內容。
