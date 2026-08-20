@@ -1000,7 +1000,19 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div class="sidebar-sub-item" onclick="navigateTo('monthly-exec')">核心定撥執行</div>
         <div class="sidebar-sub-item" onclick="navigateTo('monthly-report')">報表產製</div>
         <div class="sidebar-sub-item" onclick="navigateTo('monthly-anomaly')">異常處理</div>
-        <div class="sidebar-sub-item" onclick="navigateTo('monthly-external')">外部資料交換</div>
+      </div>
+
+      <!-- 外部資料交換 -->
+      <div class="sidebar-item" id="menu-extdata" onclick="toggleMenu('extdata')">
+        <div class="sidebar-item-icon"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></div>
+        <div class="sidebar-item-text">外部資料交換</div>
+        <div class="sidebar-item-arrow">▶</div>
+      </div>
+      <div class="sidebar-submenu" id="submenu-extdata">
+        <div class="sidebar-sub-item" onclick="navigateTo('extdata-military')">軍職資料</div>
+        <div class="sidebar-sub-item" onclick="navigateTo('extdata-labor')">勞保局資料</div>
+        <div class="sidebar-sub-item" onclick="navigateTo('extdata-veterans')">退輔會資料</div>
+        <div class="sidebar-sub-item" onclick="navigateTo('extdata-mohw')">衛生福利部資料</div>
       </div>
       
       <!-- 給與支領紀錄查詢 -->
@@ -1043,6 +1055,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div class="sidebar-sub-item" onclick="navigateTo('admin-workday')">工作日管理</div>
         <div class="sidebar-sub-item" onclick="navigateTo('admin-interface')">介接管理</div>
         <div class="sidebar-sub-item" onclick="navigateTo('admin-tax-params')">課稅參數設定</div>
+        <div class="sidebar-sub-item" onclick="navigateTo('admin-monthly-audit-perm')">定撥作業查核權限設定</div>
       </div>
     </div>
   </div>
@@ -3366,14 +3379,14 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       </div>
       <div class="page-header">
         <div class="page-title">定撥前準備作業</div>
-        <div class="page-subtitle">113年12月定撥 - 每月10日外部機關資料比對查核（9項）與每月20日退撫平台查驗作業</div>
+        <div class="page-subtitle">113年12月定撥 - 每月10日外部機關資料比對查核（9項）與每月20日退撫平台會驗作業</div>
       </div>
       
       <div class="card" style="margin-bottom:20px">
         <div class="card-header">
           <div>
             <div class="card-title">任務一：外部機關資料比對查核</div>
-            <div class="card-subtitle">每月10日定撥前，與勞保局、衛福部、退輔會等外部機關進行 9 項資料比對查核</div>
+            <div class="card-subtitle">每月10日起，資訊室將領受人資料送平台，並接收銓敘部提供之 9 個 View，將各外部查驗機關的查驗結果轉入系統進行比對</div>
           </div>
           <span class="badge badge-success" id="extcheck-summary-badge">已完成 9 / 9</span>
         </div>
@@ -3396,33 +3409,28 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
             </select>
           </div>
           <div class="form-group" style="grid-column:span 2">
-            <label class="form-label">比對查核項目</label>
+            <label class="form-label">比對查核項目（銓敘部提供之 View）</label>
             <select class="form-control" id="extcheck-item">
-              <optgroup label="勞保局">
-                <option value="labor1">國民年金資料比對</option>
-                <option value="labor2">勞工保險老年給付比對</option>
-                <option value="labor3">勞工保險年金給付比對</option>
-              </optgroup>
-              <optgroup label="衛生福利部">
-                <option value="mohw1">死亡資料比對</option>
-                <option value="mohw2">低收入戶／中低收入戶資料比對</option>
-                <option value="mohw3">身心障礙資料比對</option>
-              </optgroup>
-              <optgroup label="退輔會">
-                <option value="vet1">清寒榮民子女獎助金資料比對</option>
-                <option value="vet2">榮民就養給與資料比對</option>
-                <option value="vet3">榮民身分異動資料比對</option>
-              </optgroup>
+              <option value="moi">內政部 - 戶役政資料查核</option>
+              <option value="nia">移民署 - 入出境資料查核</option>
+              <option value="boct">臺灣銀行（公保處） - 公保身分查驗</option>
+              <option value="bli">勞動部勞工保險局 - 勞保身分查驗</option>
+              <option value="moj">法務部 - 通緝／偵查／監所收容查核</option>
+              <option value="judicial">司法院 - 裁判查詢及通緝偵查查核</option>
+              <option value="police">警政署 - 通緝與協尋資料查核</option>
+              <option value="mohw">衛生福利部 - 死亡登記資料比對</option>
+              <option value="nhi">中央健保署 - 健保投保狀態查核</option>
             </select>
           </div>
         </div>
 
         <div class="form-group">
-          <label class="form-label">資料上傳檔案路徑</label>
+          <label class="form-label">View 資料轉入來源</label>
           <div style="display:flex;gap:8px;align-items:center">
-            <input type="text" class="form-control" id="extcheck-file-path" readonly placeholder="尚未選擇比對來源檔案" style="flex:1;background:#f5f7fa">
-            <button class="btn btn-outline btn-sm" onclick="triggerFileInput('extcheck-file-input')">瀏覽檔案</button>
+            <input type="text" class="form-control" id="extcheck-file-path" readonly placeholder="尚未匯入銓敘部提供之 View 資料" style="flex:1;background:#f5f7fa">
+            <button class="btn btn-outline btn-sm" onclick="triggerFileInput('extcheck-file-input')">選擇 View 檔案</button>
           </div>
+          <div class="form-hint">系統將接收銓敘部提供之 9 個 View，逐項轉入對應外部查驗機關的查驗結果進行比對。</div>
           <input type="file" id="extcheck-file-input" accept=".txt,.csv,.xlsx" style="display:none" onchange="displayExtCheckFile(this)">
         </div>
 
@@ -3439,15 +3447,15 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           <table class="data-table">
             <thead><tr><th>序號</th><th>比對查核項目</th><th>所屬機關</th><th>總筆數</th><th>異常筆數</th><th>狀態</th><th>操作</th></tr></thead>
             <tbody id="extcheck-list">
-              <tr data-item="labor1"><td>1</td><td>國民年金資料比對</td><td>勞保局</td><td>12,847</td><td style="color:var(--warning)">3</td><td><span class="badge badge-success">已完成</span></td><td><button class="btn btn-sm btn-outline" onclick="showExtCheckError('國民年金資料比對','勞保局',3)">錯誤清單</button> <button class="btn btn-sm btn-outline" onclick="runDownload('國民年金資料比對結果','xlsx')">下載</button></td></tr>
-              <tr data-item="labor2"><td>2</td><td>勞工保險老年給付比對</td><td>勞保局</td><td>9,204</td><td style="color:var(--warning)">1</td><td><span class="badge badge-success">已完成</span></td><td><button class="btn btn-sm btn-outline" onclick="showExtCheckError('勞工保險老年給付比對','勞保局',1)">錯誤清單</button> <button class="btn btn-sm btn-outline" onclick="runDownload('勞工保險老年給付比對結果','xlsx')">下載</button></td></tr>
-              <tr data-item="labor3"><td>3</td><td>勞工保險年金給付比對</td><td>勞保局</td><td>7,568</td><td style="color:var(--warning)">0</td><td><span class="badge badge-success">已完成</span></td><td><button class="btn btn-sm btn-outline" onclick="showExtCheckError('勞工保險年金給付比對','勞保局',0)">錯誤清單</button> <button class="btn btn-sm btn-outline" onclick="runDownload('勞工保險年金給付比對結果','xlsx')">下載</button></td></tr>
-              <tr data-item="mohw1"><td>4</td><td>死亡資料比對</td><td>衛生福利部</td><td>12,847</td><td style="color:var(--danger)">2</td><td><span class="badge badge-success">已完成</span></td><td><button class="btn btn-sm btn-outline" onclick="showExtCheckError('死亡資料比對','衛生福利部',2)">錯誤清單</button> <button class="btn btn-sm btn-outline" onclick="runDownload('死亡資料比對結果','xlsx')">下載</button></td></tr>
-              <tr data-item="mohw2"><td>5</td><td>低收入戶／中低收入戶資料比對</td><td>衛生福利部</td><td>4,318</td><td style="color:var(--warning)">1</td><td><span class="badge badge-success">已完成</span></td><td><button class="btn btn-sm btn-outline" onclick="showExtCheckError('低收入戶／中低收入戶資料比對','衛生福利部',1)">錯誤清單</button> <button class="btn btn-sm btn-outline" onclick="runDownload('低收入戶資料比對結果','xlsx')">下載</button></td></tr>
-              <tr data-item="mohw3"><td>6</td><td>身心障礙資料比對</td><td>衛生福利部</td><td>2,105</td><td style="color:var(--warning)">0</td><td><span class="badge badge-success">已完成</span></td><td><button class="btn btn-sm btn-outline" onclick="showExtCheckError('身心障礙資料比對','衛生福利部',0)">錯誤清單</button> <button class="btn btn-sm btn-outline" onclick="runDownload('身心障礙資料比對結果','xlsx')">下載</button></td></tr>
-              <tr data-item="vet1"><td>7</td><td>清寒榮民子女獎助金資料比對</td><td>退輔會</td><td>856</td><td style="color:var(--warning)">1</td><td><span class="badge badge-success">已完成</span></td><td><button class="btn btn-sm btn-outline" onclick="showExtCheckError('清寒榮民子女獎助金資料比對','退輔會',1)">錯誤清單</button> <button class="btn btn-sm btn-outline" onclick="runDownload('清寒榮民子女獎助金資料比對結果','xlsx')">下載</button></td></tr>
-              <tr data-item="vet2"><td>8</td><td>榮民就養給與資料比對</td><td>退輔會</td><td>3,972</td><td style="color:var(--danger)">2</td><td><span class="badge badge-success">已完成</span></td><td><button class="btn btn-sm btn-outline" onclick="showExtCheckError('榮民就養給與資料比對','退輔會',2)">錯誤清單</button> <button class="btn btn-sm btn-outline" onclick="runDownload('榮民就養給與資料比對結果','xlsx')">下載</button></td></tr>
-              <tr data-item="vet3"><td>9</td><td>榮民身分異動資料比對</td><td>退輔會</td><td>3,972</td><td style="color:var(--warning)">0</td><td><span class="badge badge-success">已完成</span></td><td><button class="btn btn-sm btn-outline" onclick="showExtCheckError('榮民身分異動資料比對','退輔會',0)">錯誤清單</button> <button class="btn btn-sm btn-outline" onclick="runDownload('榮民身分異動資料比對結果','xlsx')">下載</button></td></tr>
+              <tr data-item="moi"><td>1</td><td>戶役政資料查核</td><td>內政部</td><td>12,847</td><td style="color:var(--warning)">2</td><td><span class="badge badge-success">已完成</span></td><td><button class="btn btn-sm btn-outline" onclick="showExtCheckError('戶役政資料查核','內政部',2)">錯誤清單</button> <button class="btn btn-sm btn-outline" onclick="runDownload('戶役政資料查核結果','xlsx')">下載</button></td></tr>
+              <tr data-item="nia"><td>2</td><td>入出境資料查核</td><td>移民署</td><td>12,847</td><td style="color:var(--warning)">1</td><td><span class="badge badge-success">已完成</span></td><td><button class="btn btn-sm btn-outline" onclick="showExtCheckError('入出境資料查核','移民署',1)">錯誤清單</button> <button class="btn btn-sm btn-outline" onclick="runDownload('入出境資料查核結果','xlsx')">下載</button></td></tr>
+              <tr data-item="boct"><td>3</td><td>公保身分查驗</td><td>臺灣銀行（公保處）</td><td>12,847</td><td style="color:var(--warning)">4</td><td><span class="badge badge-success">已完成</span></td><td><button class="btn btn-sm btn-outline" onclick="showExtCheckError('公保身分查驗','臺灣銀行（公保處）',4)">錯誤清單</button> <button class="btn btn-sm btn-outline" onclick="runDownload('公保身分查驗結果','xlsx')">下載</button></td></tr>
+              <tr data-item="bli"><td>4</td><td>勞保身分查驗</td><td>勞動部勞工保險局</td><td>12,847</td><td style="color:var(--warning)">3</td><td><span class="badge badge-success">已完成</span></td><td><button class="btn btn-sm btn-outline" onclick="showExtCheckError('勞保身分查驗','勞動部勞工保險局',3)">錯誤清單</button> <button class="btn btn-sm btn-outline" onclick="runDownload('勞保身分查驗結果','xlsx')">下載</button></td></tr>
+              <tr data-item="moj"><td>5</td><td>通緝／偵查／監所收容查核</td><td>法務部</td><td>12,847</td><td style="color:var(--danger)">1</td><td><span class="badge badge-success">已完成</span></td><td><button class="btn btn-sm btn-outline" onclick="showExtCheckError('通緝／偵查／監所收容查核','法務部',1)">錯誤清單</button> <button class="btn btn-sm btn-outline" onclick="runDownload('法務部查核結果','xlsx')">下載</button></td></tr>
+              <tr data-item="judicial"><td>6</td><td>裁判查詢及通緝偵查查核</td><td>司法院</td><td>12,847</td><td style="color:var(--warning)">0</td><td><span class="badge badge-success">已完成</span></td><td><button class="btn btn-sm btn-outline" onclick="showExtCheckError('裁判查詢及通緝偵查查核','司法院',0)">錯誤清單</button> <button class="btn btn-sm btn-outline" onclick="runDownload('司法院查核結果','xlsx')">下載</button></td></tr>
+              <tr data-item="police"><td>7</td><td>通緝與協尋資料查核</td><td>警政署</td><td>12,847</td><td style="color:var(--danger)">1</td><td><span class="badge badge-success">已完成</span></td><td><button class="btn btn-sm btn-outline" onclick="showExtCheckError('通緝與協尋資料查核','警政署',1)">錯誤清單</button> <button class="btn btn-sm btn-outline" onclick="runDownload('警政署查核結果','xlsx')">下載</button></td></tr>
+              <tr data-item="mohw"><td>8</td><td>死亡登記資料比對</td><td>衛生福利部</td><td>12,847</td><td style="color:var(--danger)">2</td><td><span class="badge badge-success">已完成</span></td><td><button class="btn btn-sm btn-outline" onclick="showExtCheckError('死亡登記資料比對','衛生福利部',2)">錯誤清單</button> <button class="btn btn-sm btn-outline" onclick="runDownload('死亡登記資料比對結果','xlsx')">下載</button></td></tr>
+              <tr data-item="nhi"><td>9</td><td>健保投保狀態查核</td><td>中央健保署</td><td>12,847</td><td style="color:var(--warning)">0</td><td><span class="badge badge-success">已完成</span></td><td><button class="btn btn-sm btn-outline" onclick="showExtCheckError('健保投保狀態查核','中央健保署',0)">錯誤清單</button> <button class="btn btn-sm btn-outline" onclick="runDownload('健保投保狀態查核結果','xlsx')">下載</button></td></tr>
             </tbody>
           </table>
         </div>
@@ -3458,8 +3466,8 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
             <table class="data-table">
               <thead><tr><th>比對日期</th><th>年度期別</th><th>比對查核項目</th><th>總筆數</th><th>異常筆數</th><th>執行人</th><th>下載</th></tr></thead>
               <tbody id="extcheck-history">
-                <tr><td>113/12/12 09:15</td><td>113年12月</td><td>國民年金資料比對</td><td>12,801</td><td>4</td><td>系統排程</td><td><button class="btn btn-sm btn-outline" onclick="runDownload('國民年金資料比對結果_1112','xlsx')">下載</button></td></tr>
-                <tr><td>113/11/10 09:20</td><td>113年11月</td><td>死亡資料比對</td><td>12,790</td><td>1</td><td>系統排程</td><td><button class="btn btn-sm btn-outline" onclick="runDownload('死亡資料比對結果_1111','xlsx')">下載</button></td></tr>
+                <tr><td>113/12/12 09:15</td><td>113年12月</td><td>戶役政資料查核</td><td>12,801</td><td>3</td><td>系統排程</td><td><button class="btn btn-sm btn-outline" onclick="runDownload('戶役政資料查核結果_1112','xlsx')">下載</button></td></tr>
+                <tr><td>113/11/10 09:20</td><td>113年11月</td><td>死亡登記資料比對</td><td>12,790</td><td>1</td><td>系統排程</td><td><button class="btn btn-sm btn-outline" onclick="runDownload('死亡登記資料比對結果_1111','xlsx')">下載</button></td></tr>
               </tbody>
             </table>
           </div>
@@ -3469,26 +3477,37 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       <div class="card">
         <div class="card-header">
           <div>
-            <div class="card-title">任務二：退撫平台查驗作業</div>
-            <div class="card-subtitle">每月20日執行，比對領受人「退休狀態」及「止付日期」等關鍵欄位，篩選資格已變更、應停止發放月退休金之人員</div>
+            <div class="card-title">任務二：退撫平台會驗作業</div>
+            <div class="card-subtitle">每月20日主要對接行政院人事行政總處之資料，透過存託程序確認領受人是否喪失公權或有法定停發事由</div>
           </div>
           <span class="badge badge-success">已完成</span>
         </div>
+
+        <div class="table-wrapper" style="margin-bottom:16px">
+          <table class="data-table">
+            <thead><tr><th>序號</th><th>比對查核項目</th><th>比對方式</th><th>總筆數</th><th>異常筆數</th><th>狀態</th><th>操作</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>退撫平台資料會驗</td><td>資料庫存託比對</td><td>12,847</td><td style="color:var(--warning)">5</td><td><span class="badge badge-success">已完成</span></td><td><button class="btn btn-sm btn-outline" onclick="showTask2Diff()">差異清單</button> <button class="btn btn-sm btn-outline" onclick="runDownload('退撫平台資料會驗結果','xlsx')">下載</button></td></tr>
+              <tr><td>2</td><td>退休停俸資料比對</td><td>存託比對（褫奪公權／刑事案件等法定停發事由）</td><td>12,847</td><td style="color:var(--danger)">2</td><td><span class="badge badge-success">已完成</span></td><td><button class="btn btn-sm btn-outline" onclick="showTask2Diff()">差異清單</button> <button class="btn btn-sm btn-outline" onclick="runDownload('退休停俸資料比對結果','xlsx')">下載</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+
         <div style="margin-bottom:12px">
           <div class="progress-label"><span>查驗進度</span><span>100%</span></div>
           <div class="progress-bar-wrap"><div class="progress-bar-fill success" style="width:100%"></div></div>
         </div>
         <div class="info-card success">
           <div class="info-row"><div class="info-key">查驗筆數</div><div class="info-val">12,847 筆</div></div>
-          <div class="info-row"><div class="info-key">退休狀態異動筆數</div><div class="info-val" style="color:var(--warning)">5 筆</div></div>
-          <div class="info-row"><div class="info-key">止付日期異動筆數</div><div class="info-val" style="color:var(--warning)">2 筆</div></div>
+          <div class="info-row"><div class="info-key">退撫平台資料會驗異動筆數</div><div class="info-val" style="color:var(--warning)">5 筆</div></div>
+          <div class="info-row"><div class="info-key">退休停俸資料比對異動筆數</div><div class="info-val" style="color:var(--danger)">2 筆</div></div>
           <div class="info-row"><div class="info-key">應止付／應調整人數</div><div class="info-val" style="color:var(--danger);font-weight:700">7 人</div></div>
           <div class="info-row"><div class="info-key">執行時間</div><div class="info-val">113/12/20 09:10</div></div>
           <div class="info-row"><div class="info-key">耗時</div><div class="info-val">6分18秒</div></div>
         </div>
         <div style="margin-top:12px;display:flex;gap:8px">
           <button class="btn btn-warning btn-sm" onclick="showTask2Diff()">查看應止付／調整名單 (7)</button>
-          <button class="btn btn-outline btn-sm" onclick="runDownload('退撫平台查驗結果','xlsx')">下載結果</button>
+          <button class="btn btn-outline btn-sm" onclick="runDownload('退撫平台會驗結果','xlsx')">下載結果</button>
         </div>
       </div>
       
@@ -3512,18 +3531,58 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       </div>
       <div class="page-header">
         <div class="page-title">核心定撥執行</div>
-        <div class="page-subtitle">113年12月定撥 - 執行四大類核算程式</div>
+        <div class="page-subtitle">113年12月定撥 - 依序完成「第一次試算（一算）」與「第二次試算（二算，正式定案）」之清查、核算與驗收作業</div>
       </div>
-      
+
       <div class="announcement-banner">
         <span class="announcement-icon"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a1 1 0 0 0 .86 1.5h18.64a1 1 0 0 0 .86-1.5L13.71 3.86a1 1 0 0 0-1.72 0z"/><line x1="12" y1="9" x2="12" y2="13"/><circle cx="12" cy="16.5" r="0.9" fill="currentColor" stroke="none"/></svg></span>
         <div class="announcement-text">
-          <strong>注意：</strong>核心定撥執行為不可逆操作，請確認前置作業已完成，且差異筆數已處理完畢後再執行。請先選擇定撥年月，再依序點選各類程式之「執行」按鈕。
+          <strong>注意：</strong>定撥試算涉及龐大資料庫之複雜 JOIN 運算，若未先完成「試算前資料清查」即直接執行，極易因資料格式或欄位異常導致程式於計算中途崩潰。請務必先完成清查（確認無異常）後，再執行試算預存程序，且核心定撥執行為不可逆操作。
         </div>
       </div>
 
+      <div class="tabs" id="exec-stage-tabs" style="margin-bottom:16px">
+        <div class="tab-item active" id="exec-stage-btn-calc1" onclick="switchExecStage('calc1')">① 第一次試算（一算）</div>
+        <div class="tab-item" id="exec-stage-btn-calc2" onclick="switchExecStage('calc2')">② 第二次試算（二算，正式定案）</div>
+      </div>
+
+      <!-- 二算專屬：更新機關承辦人資訊 -->
+      <div class="card" id="exec-moj-update-card" style="display:none;margin-bottom:20px;border-left:4px solid var(--warning)">
+        <div class="section-title" style="color:var(--warning)"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="5"/><circle cx="15" cy="15" r="5"/></svg> 步驟 0：更新定撥查核機關承辦人資訊</div>
+        <div class="form-hint" style="margin-bottom:10px">二算當日，資訊室作業人員須先更新機關與承辦人之比對關係。若未及時執行，將導致後續產出之報表承辦人資訊出錯。</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+          <span class="badge badge-warning" id="exec-moj-update-status">尚未更新</span>
+          <button class="btn btn-outline btn-sm" onclick="updateDeptHandlerInfo(this)">更新機關承辦人資訊</button>
+        </div>
+      </div>
+
+      <!-- 步驟 1：試算前清查資料 -->
       <div class="card" style="margin-bottom:20px">
-        <div class="section-title" style="margin-bottom:12px">定撥年月選擇</div>
+        <div class="card-header">
+          <div>
+            <div class="card-title" id="exec-precheck-title">步驟 1：試算前清查資料</div>
+            <div class="card-subtitle">由資訊室承辦人員執行系統內建 7～8 支檢核 SQL 程式，全面掃描即將參與試算之領受人資料，避免因空值與空格不一致、重複欄位或異常格式導致試算中途崩潰</div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="runPrecheck()">▶ 執行清查檢核</button>
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead><tr><th style="width:34%">檢核項目</th><th>說明</th><th style="width:90px">異常筆數</th><th style="width:110px">狀態</th><th style="width:90px">操作</th></tr></thead>
+            <tbody id="precheck-list"></tbody>
+          </table>
+        </div>
+        <div id="precheck-banner" style="margin-top:12px"></div>
+      </div>
+
+      <!-- 步驟 2：備份並清空重審金額對照表 -->
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-title" id="exec-backup-title" style="margin-bottom:4px">步驟 2：備份並清空「重審金額對照表」</div>
+        <div class="card-subtitle" id="exec-backup-subtitle" style="margin-bottom:12px">備份上期歷史對照資料，驗證筆數無誤後，清空暫存表以利本次試算寫入新對照資料</div>
+        <div id="exec-backup-steps" style="display:flex;gap:12px;flex-wrap:wrap"></div>
+      </div>
+
+      <div class="card" style="margin-bottom:20px">
+        <div class="section-title" style="margin-bottom:12px">步驟 3：定撥年月選擇</div>
         <div class="form-row cols-3">
           <div class="form-group">
             <label class="form-label">定撥年度</label>
@@ -3547,7 +3606,11 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           </div>
         </div>
       </div>
-      
+
+      <div class="card" style="margin-bottom:12px">
+        <div class="section-title" style="margin-bottom:4px">執行試算預存程序（PL/SQL Developer）</div>
+        <div class="form-hint" style="margin-bottom:0">依軍、公、教不同發放類別，呼叫對應之預存程序（參數包含起日、迄日、撥付日、指定銀行別，留空字串 '' 代表不輸入指定銀行）。</div>
+      </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
         <div class="program-card done" id="exec-card-1">
           <div class="program-card-header">
@@ -3652,7 +3715,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         </div>
       </div>
       
-      <div class="card">
+      <div class="card" style="margin-bottom:20px">
         <div class="card-header">
           <div class="card-title">整體執行摘要</div>
           <span class="badge badge-warning" id="exec-summary-badge">執行中 (1/4)</span>
@@ -3676,6 +3739,62 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           </div>
         </div>
       </div>
+
+      <!-- 步驟 4：驗收與確認寫入資料 -->
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-header">
+          <div>
+            <div class="card-title" id="exec-verify-title">步驟 4：驗收與確認寫入資料</div>
+            <div class="card-subtitle">試算完成後，執行 SQL 指令確認程序正常結束並成功寫入本期定撥資料</div>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="runVerify()">執行驗收 SQL</button>
+        </div>
+        <div id="exec-verify-result" style="display:none">
+          <div class="form-row cols-2">
+            <div style="text-align:center;padding:16px;background:#f0fff4;border-radius:8px">
+              <div style="font-size:calc(26px * var(--font-scale));font-weight:800;color:var(--success)" id="exec-verify-count">-</div>
+              <div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary);margin-top:4px">驗收總筆數</div>
+            </div>
+            <div style="text-align:center;padding:16px;background:#f0fff4;border-radius:8px">
+              <div style="font-size:calc(26px * var(--font-scale));font-weight:800;color:var(--success)" id="exec-verify-amount">-</div>
+              <div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary);margin-top:4px">驗收總金額（元）</div>
+            </div>
+          </div>
+          <div class="info-card success" style="margin-top:12px">
+            <div style="font-size:calc(13px * var(--font-scale));color:var(--success)" id="exec-verify-note"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 步驟 5：建立本期新舊金額對照資料表 -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">步驟 5：建立本期新舊金額對照資料表</div>
+            <div class="card-subtitle">將本期試算結果與上期（或調薪前）歷史資料，以身分證字號等鍵值進行關聯比對，產出差異結果供業務組同仁覆核</div>
+          </div>
+          <button class="btn btn-gold btn-sm" onclick="runBuildCompareTable()">建立對照表</button>
+        </div>
+        <div id="exec-compare-result" style="display:none">
+          <div class="table-wrapper" style="margin-bottom:12px">
+            <table class="data-table">
+              <thead><tr><th>身分證字號</th><th>姓名</th><th>舊金額</th><th>新金額</th><th>差異金額</th><th>差異原因</th></tr></thead>
+              <tbody>
+                <tr><td class="masked">A123***456</td><td>林○明</td><td>NT$ 52,300</td><td>NT$ 53,120</td><td style="color:var(--success)">+820</td><td>年資增加</td></tr>
+                <tr><td class="masked">B234***567</td><td>陳○華</td><td>NT$ 48,900</td><td>NT$ 48,900</td><td>0</td><td>無異動</td></tr>
+                <tr><td class="masked">C345***678</td><td>張○芬</td><td>NT$ 61,200</td><td>NT$ 59,850</td><td style="color:var(--danger)">-1,350</td><td>課稅參數調整</td></tr>
+                <tr><td class="masked">D456***789</td><td>黃○偉</td><td>NT$ 45,600</td><td>NT$ 45,600</td><td>0</td><td>無異動</td></tr>
+                <tr><td class="masked">E567***890</td><td>周○文</td><td>NT$ 58,000</td><td>NT$ 0</td><td style="color:var(--danger)">-58,000</td><td>亡故停發</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-outline btn-sm" onclick="showFullCompareTable()">查看完整對照表（<span id="exec-compare-total">423,801</span> 筆）</button>
+            <button class="btn btn-outline btn-sm" onclick="runDownload('新舊金額對照表','xlsx')">下載對照表</button>
+            <button class="btn btn-gold btn-sm" onclick="navigateToReportTab('rpt-mil-monthly')">前往報表產製</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- ===== MONTHLY REPORT ===== -->
@@ -3689,9 +3808,28 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       </div>
       <div class="page-header">
         <div class="page-title">定撥報表產製</div>
-        <div class="page-subtitle">113年12月定撥 - 共 56 項報表，依核心定撥執行之四大類程式分別產製</div>
+        <div class="page-subtitle" id="report-stage-subtitle">113年12月定撥（一算） - 共 56 項報表，依核心定撥執行之四大類程式分別產製</div>
         <div class="page-actions">
           <button class="btn btn-gold" onclick="runAllReports()">▶ 執行全部報表</button>
+        </div>
+      </div>
+
+      <div class="tabs" id="report-stage-tabs" style="margin-bottom:16px">
+        <div class="tab-item active" id="report-stage-btn-calc1" onclick="switchReportStage('calc1')">① 一算報表（初步試算）</div>
+        <div class="tab-item" id="report-stage-btn-calc2" onclick="switchReportStage('calc2')">② 二算報表（正式定案）</div>
+      </div>
+
+      <div class="card" style="margin-bottom:20px;border-left:4px solid var(--accent-gold)">
+        <div class="card-header">
+          <div>
+            <div class="card-title">合併輸出統計表 PDF</div>
+            <div class="card-subtitle" id="report-merge-subtitle">產製 AF100010、AF100020、AF100030、AF100040（僅1月期需要）、AF100050、CAL2PAY1New 共 6 類報表，合併輸出為單一 PDF 檔案：<strong id="report-merge-filename">11412期定撥統計表(一算).pdf</strong></div>
+          </div>
+          <span class="badge badge-secondary" id="report-merge-status">待產製</span>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sm btn-gold" onclick="runMergedReport()">產製並合併輸出</button>
+          <button class="btn btn-sm btn-outline" onclick="runDownload(document.getElementById('report-merge-filename').textContent.replace('.pdf',''),'pdf')">下載合併 PDF</button>
         </div>
       </div>
       
@@ -3804,6 +3942,16 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           </div>
         </div>
       </div>
+
+      <!-- 資料封存與通知 -->
+      <div class="card" style="margin-top:20px">
+        <div class="card-title" style="margin-bottom:4px">資料封存與通知</div>
+        <div class="card-subtitle" id="report-archive-subtitle" style="margin-bottom:14px">將產出之統計表 PDF 與 41 項銀行核對清冊發送 Email 通知業務組承辦人員開始核對；並備份相關 Table 資料，確保一算資料完整備份，供後續測試與二算對照使用</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-outline btn-sm" onclick="sendReportNotifyEmail()">發送 Email 通知業務組承辦人員</button>
+          <button class="btn btn-outline btn-sm" id="report-backup-btn" onclick="backupReportTables()">備份相關 Table 資料</button>
+        </div>
+      </div>
     </div>
 
     <!-- ===== MONTHLY ANOMALY ===== -->
@@ -3879,28 +4027,20 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       </div>
     </div>
 
-    <!-- ===== 定撥作業 > 外部資料交換 ===== -->
-    <div class="view" id="view-monthly-external">
+    <!-- ===== 外部資料交換 > 軍職資料 ===== -->
+    <div class="view" id="view-extdata-military">
       <div class="breadcrumb">
         <span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span>
         <span class="breadcrumb-sep">›</span>
-        <span class="breadcrumb-item" onclick="navigateTo('monthly-dashboard')">定撥作業</span>
+        <span class="breadcrumb-item">外部資料交換</span>
         <span class="breadcrumb-sep">›</span>
-        <span class="breadcrumb-item current">外部資料交換</span>
+        <span class="breadcrumb-item current">軍職資料</span>
       </div>
       <div class="page-header">
-        <div class="page-title">外部資料交換</div>
-        <div class="page-subtitle">軍職、勞保局、退輔會、衛生福利部之資料轉入、比對及產製作業</div>
+        <div class="page-title">軍職資料</div>
+        <div class="page-subtitle">軍職人員 P檔、R檔資料轉入及補繳年資作業</div>
       </div>
 
-      <div class="tabs" id="extdata-main-tabs">
-        <div class="tab-item active" onclick="switchTab(this,'extdata-military')">軍職資料</div>
-        <div class="tab-item" onclick="switchTab(this,'extdata-labor')">勞保局資料</div>
-        <div class="tab-item" onclick="switchTab(this,'extdata-veterans')">退輔會資料</div>
-        <div class="tab-item" onclick="switchTab(this,'extdata-mohw')">衛生福利部資料</div>
-      </div>
-
-      <!-- =============== 軍職資料 =============== -->
       <div class="tab-content active" id="extdata-military">
         <div class="tabs" style="margin-bottom:16px">
           <div class="tab-item active" onclick="switchTab(this,'extdata-mil-p')">P檔（現職及育嬰自繳人員）</div>
@@ -4113,9 +4253,22 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- =============== 勞保局資料 =============== -->
-      <div class="tab-content" id="extdata-labor">
+    <div class="view" id="view-extdata-labor">
+      <div class="breadcrumb">
+        <span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item">外部資料交換</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item current">勞保局資料</span>
+      </div>
+      <div class="page-header">
+        <div class="page-title">勞保局資料</div>
+        <div class="page-subtitle">國民年金、軍職退伍金退撫金資料與勞保局資料之比對及產製作業</div>
+      </div>
+
+      <div class="tab-content active" id="extdata-labor">
         <div class="card" style="margin-bottom:16px">
           <div class="section-title"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> 比對設定</div>
           <div class="form-row cols-3">
@@ -4128,6 +4281,8 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
               <select class="form-control" id="labor-category">
                 <option value="split">國民年金 - 分月退</option>
                 <option value="lump">國民年金 - 一次退</option>
+                <option value="mil-split">軍職退伍金 - 分月退</option>
+                <option value="mil-lump">軍職退伍金 - 一次退</option>
               </select>
             </div>
             <div class="form-group">
@@ -4135,7 +4290,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
               <input type="text" class="form-control" value="勞動部勞工保險局" readonly style="background:#f5f7fa">
             </div>
           </div>
-          <div class="form-hint">每月就國民年金之分月退、一次退2種類別，進行退撫金資料與勞保局資料之比對作業。</div>
+          <div class="form-hint">每月就國民年金（分月退／一次退）及軍職退伍金（分月退／一次退）共4種類別，進行退撫金資料與勞保局資料之比對作業。</div>
           <div style="margin-top:12px">
             <button class="btn btn-gold" onclick="runLaborCompare()">▶ 執行比對</button>
           </div>
@@ -4196,9 +4351,22 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- =============== 退輔會資料 =============== -->
-      <div class="tab-content" id="extdata-veterans">
+    <div class="view" id="view-extdata-veterans">
+      <div class="breadcrumb">
+        <span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item">外部資料交換</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item current">退輔會資料</span>
+      </div>
+      <div class="page-header">
+        <div class="page-title">退輔會資料</div>
+        <div class="page-subtitle">榮民／榮民配偶身分證清單比對及清寒榮民子女助學金資料產製作業</div>
+      </div>
+
+      <div class="tab-content active" id="extdata-veterans">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
           <div>
             <div class="card" style="margin-bottom:16px">
@@ -4278,9 +4446,22 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- =============== 衛生福利部資料 =============== -->
-      <div class="tab-content" id="extdata-mohw">
+    <div class="view" id="view-extdata-mohw">
+      <div class="breadcrumb">
+        <span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item">外部資料交換</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item current">衛生福利部資料</span>
+      </div>
+      <div class="page-header">
+        <div class="page-title">衛生福利部資料</div>
+        <div class="page-subtitle">衛生福利部國民年金退撫金資料產製及補入作業</div>
+      </div>
+
+      <div class="tab-content active" id="extdata-mohw">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
           <div>
             <div class="card" style="margin-bottom:16px">
@@ -5658,6 +5839,240 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       </div>
     </div>
 
+    <!-- ===== ADMIN: 定撥作業查核權限設定 ===== -->
+    <div class="view" id="view-admin-monthly-audit-perm">
+      <div class="breadcrumb">
+        <span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item">系統管理</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item current">定撥作業查核權限設定</span>
+      </div>
+      <div class="page-header">
+        <div class="page-title">定撥作業查核權限設定</div>
+        <div class="page-subtitle">定撥作業由資訊室與業務組（軍、公、教三科）共同協作，為保護領受人隱私並遵循資安規範，系統依角色設有嚴格之查詢分權</div>
+      </div>
+
+      <!-- 1. 查詢分權說明 -->
+      <div class="card" style="margin-bottom:16px">
+        <div class="section-title"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="5"/><circle cx="15" cy="15" r="5"/></svg> 主辦人與承辦人權限差異</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div style="border:1.5px solid var(--accent-gold);border-radius:var(--radius-card);padding:16px;background:#fffbf0">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+              <span class="badge badge-warning">主辦人</span>
+              <strong style="font-size:calc(13px * var(--font-scale))">業務組主辦人</strong>
+            </div>
+            <ul style="margin:0;padding-left:18px;font-size:calc(13px * var(--font-scale));line-height:1.9;color:var(--text-primary)">
+              <li>可查詢<strong>所有</strong>查核資料</li>
+              <li>承辦人員欄位可選取「<strong>MIS</strong>」（檢視全科所有承辦人資料）</li>
+              <li>可將所有查核資料匯出為 <strong>Excel（.xls）</strong>檔案，交同仁複核</li>
+            </ul>
+          </div>
+          <div style="border:1.5px solid var(--border);border-radius:var(--radius-card);padding:16px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+              <span class="badge badge-secondary">承辦人</span>
+              <strong style="font-size:calc(13px * var(--font-scale))">一般承辦人</strong>
+            </div>
+            <ul style="margin:0;padding-left:18px;font-size:calc(13px * var(--font-scale));line-height:1.9;color:var(--text-primary)">
+              <li>僅能查詢其<strong>自身所管轄範圍</strong>之資料</li>
+              <li>承辦人員欄位<strong>鎖定為灰色</strong>，不可選取其他人員</li>
+              <li>不具備批次匯出全科查核資料之權限</li>
+            </ul>
+          </div>
+        </div>
+        <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+          <div style="font-weight:700;margin-bottom:10px;font-size:calc(13px * var(--font-scale))">操作預覽：定撥查核頁面「承辦人員」欄位（依角色顯示不同狀態）</div>
+          <div class="form-row cols-2">
+            <div class="form-group">
+              <label class="form-label">承辦人員（主辦人檢視）</label>
+              <select class="form-control">
+                <option>MIS（全部人員）</option>
+                <option>王小明</option>
+                <option>李美華</option>
+                <option>陳建國</option>
+              </select>
+              <div class="form-hint">主辦人可自由切換檢視任一承辦人或全部人員（MIS）之查核資料。</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">承辦人員（一般承辦人檢視）</label>
+              <select class="form-control" disabled style="background:#eef0f2;color:#98a2b3">
+                <option>王小明（本人）</option>
+              </select>
+              <div class="form-hint">一般承辦人之欄位鎖定為灰色且不可選取，僅能查詢本人所管轄之資料。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. MTYPE 定義 -->
+      <div class="card" style="margin-bottom:16px">
+        <div class="section-title"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> 身分類別代碼（MTYPE）定義</div>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead><tr><th>MTYPE</th><th>身分類別</th><th>對應業務組科別</th></tr></thead>
+            <tbody>
+              <tr><td><span class="badge badge-info">3</span></td><td>軍職人員</td><td>軍科</td></tr>
+              <tr><td><span class="badge badge-info">2</span></td><td>教育人員</td><td>教科</td></tr>
+              <tr><td><span class="badge badge-info">1</span></td><td>公務人員</td><td>公科</td></tr>
+              <tr><td><span class="badge badge-info">0</span></td><td>政務人員</td><td>公科</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="form-hint" style="margin-top:8px">系統以 MTYPE 代碼區分領受人身分類別，並據以判斷查核資料應歸屬軍、公、教哪一科之查詢範圍。</div>
+      </div>
+
+      <!-- 3. 本月主辦人員設定 -->
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-header">
+          <div>
+            <div class="card-title">本月（113年12月）主辦人員設定</div>
+            <div class="card-subtitle">業務組軍、公、教三科每月主辦人員均會更換並發送通知；資訊室須於每月10日外部查核前，配合當月名單動態開通對應之查詢權限</div>
+          </div>
+          <button class="btn btn-gold btn-sm" onclick="openMainHandlerModal()">+ 設定本月主辦人</button>
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead><tr><th>科別</th><th>本月主辦人</th><th>身分證字號</th><th>本科承辦人員</th><th>權限生效期間</th><th>開通狀態</th><th>操作</th></tr></thead>
+            <tbody id="main-handler-list">
+              <tr data-dept="軍科">
+                <td><span class="badge badge-secondary">軍科</span></td><td>王小明</td><td class="masked">A123***456</td>
+                <td>李大同、林淑芬</td><td>113/12/01 ～ 113/12/31</td>
+                <td><span class="badge badge-success">已開通</span></td>
+                <td><button class="btn btn-sm btn-outline" onclick="openMainHandlerModal('軍科','王小明','李大同、林淑芬')">編輯</button></td>
+              </tr>
+              <tr data-dept="公科">
+                <td><span class="badge badge-secondary">公科</span></td><td>陳建國</td><td class="masked">B234***567</td>
+                <td>張美玲、周文山、蔡宗翰</td><td>113/12/01 ～ 113/12/31</td>
+                <td><span class="badge badge-success">已開通</span></td>
+                <td><button class="btn btn-sm btn-outline" onclick="openMainHandlerModal('公科','陳建國','張美玲、周文山、蔡宗翰')">編輯</button></td>
+              </tr>
+              <tr data-dept="教科">
+                <td><span class="badge badge-secondary">教科</span></td><td>李美華</td><td class="masked">C345***678</td>
+                <td>黃志偉</td><td>113/12/01 ～ 113/12/31</td>
+                <td><span class="badge badge-success">已開通</span></td>
+                <td><button class="btn btn-sm btn-outline" onclick="openMainHandlerModal('教科','李美華','黃志偉')">編輯</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 4. 執行定撥查核前之權限設定步驟 -->
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title" style="margin-bottom:4px">執行定撥查核前與轉檔前之權限設定步驟（每月10日）</div>
+        <div class="card-subtitle" style="margin-bottom:16px">每月10日進行「定撥外部審核（共9項）」時，技術作業主要包含以下四大步驟</div>
+        <div style="display:flex;flex-direction:column;gap:0">
+          <div style="display:flex;gap:14px">
+            <div style="display:flex;flex-direction:column;align-items:center">
+              <div style="width:30px;height:30px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:calc(13px * var(--font-scale));flex-shrink:0">1</div>
+              <div style="width:2px;flex:1;background:var(--border);margin:4px 0"></div>
+            </div>
+            <div style="padding-bottom:20px">
+              <div style="font-weight:700;font-size:calc(13px * var(--font-scale))">資料轉入內部資料庫</div>
+              <div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary);margin-top:2px">將交換至雲端平台之領受人資料轉入內部資料庫。</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:14px">
+            <div style="display:flex;flex-direction:column;align-items:center">
+              <div style="width:30px;height:30px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:calc(13px * var(--font-scale));flex-shrink:0">2</div>
+              <div style="width:2px;flex:1;background:var(--border);margin:4px 0"></div>
+            </div>
+            <div style="padding-bottom:20px">
+              <div style="font-weight:700;font-size:calc(13px * var(--font-scale))">執行篩選轉檔</div>
+              <div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary);margin-top:2px">透過程式（如 PMOI.exe）執行篩選轉檔作業。</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:14px">
+            <div style="display:flex;flex-direction:column;align-items:center">
+              <div style="width:30px;height:30px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:calc(13px * var(--font-scale));flex-shrink:0">3</div>
+              <div style="width:2px;flex:1;background:var(--border);margin:4px 0"></div>
+            </div>
+            <div style="padding-bottom:20px">
+              <div style="font-weight:700;font-size:calc(13px * var(--font-scale))">兼職與身分狀態特別註記</div>
+              <div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary);margin-top:2px">針對公保、勞保等查驗結果所顯示之兼職與身分狀態進行特別註記。</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:14px">
+            <div style="display:flex;flex-direction:column;align-items:center">
+              <div style="width:30px;height:30px;border-radius:50%;background:var(--accent-gold);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:calc(13px * var(--font-scale));flex-shrink:0">4</div>
+            </div>
+            <div style="flex:1;border:1.5px solid var(--accent-gold);border-radius:var(--radius-card);padding:12px 16px;background:#fffbf0">
+              <div style="font-weight:700;font-size:calc(13px * var(--font-scale));color:var(--primary)">開啟查詢權限（關鍵步驟）</div>
+              <div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary);margin-top:2px">依當月主辦人／承辦人名單，開通對應之查詢權限，為業務組人員可正式進入系統查核資料之必要前提。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. 法務部查核特別授權 -->
+      <div class="card" style="margin-bottom:16px;border-left:4px solid var(--danger)">
+        <div class="section-title" style="color:var(--danger)"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> 法務部查核之特別授權設定</div>
+        <div class="form-hint" style="margin-bottom:8px">「法務部查核」涉及通緝、偵查與監所收容等敏感資料，執行 PayChk.exe 與轉檔查詢前須完成特別授權，否則業務組人員進入系統時「承辦人員」欄位將呈現灰色而無法執行作業。</div>
+        <div class="info-card danger" style="margin-bottom:12px">
+          <div class="info-row"><div class="info-key">現行痛點</div><div class="info-val">目錄權限（Full Control）與 MOIADVUSER 資料表存取設定分散於實體檔案系統及資料庫，高度仰賴資訊室手動更新，繁瑣且缺乏自動化軌跡，屬資安與運作效能上之技術債。</div></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+          <div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">本月（113年12月）法務部查核授權狀態：<span class="badge badge-warning" id="moj-access-badge">尚未開通</span></div>
+          <button class="btn btn-danger btn-sm" id="moj-access-btn" onclick="grantMojAccess(this)">立即開通本月法務部查核權限</button>
+        </div>
+      </div>
+
+      <!-- 6. RBAC 未來規格 -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">RBAC 角色權限管理模組（WEB平台規格建議）</div>
+            <div class="card-subtitle">未來將建立統一之 RBAC（角色權限控制）模組，取代現行手動修改資料表及檔案目錄權限之做法</div>
+          </div>
+          <span class="badge badge-secondary">規劃中</span>
+        </div>
+        <div class="table-wrapper" style="margin-bottom:16px">
+          <table class="data-table">
+            <thead><tr><th>角色</th><th>資料存取範圍</th><th>主要功能權限</th></tr></thead>
+            <tbody>
+              <tr><td>資訊室人員</td><td>全部</td><td>權限開通／關閉、名單維護、系統設定</td></tr>
+              <tr><td>業務組主辦人（軍／公／教）</td><td>本科全部承辦人資料（含 MIS 檢視）</td><td>查詢、匯出 Excel、交辦複核</td></tr>
+              <tr><td>業務組承辦人（軍／公／教）</td><td>本人所管轄範圍</td><td>查詢（不可匯出全科資料）</td></tr>
+              <tr><td>科長</td><td>本科全部承辦人資料</td><td>查詢、核決、覆核</td></tr>
+              <tr><td>覆核人員</td><td>依指派案件範圍</td><td>複核已匯出之查核資料</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="form-hint" style="margin-bottom:16px">系統將直接根據設定之角色，自動配置對應之功能與資料存取範圍，並完整留存何人、何時變更權限之異動紀錄與稽核軌跡，徹底取代手動修改 MOIADVUSER 資料表及手動設定檔案目錄 Full Control 之做法。</div>
+        <div class="card-title" style="margin-bottom:8px;font-size:calc(14px * var(--font-scale))">權限變更紀錄與稽核軌跡（示意）</div>
+        <div class="param-history-item current">
+          <div class="param-history-dot"></div>
+          <div class="param-history-content">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+              <strong>113/12/10 08:55</strong>
+              <span class="badge badge-success">已開通</span>
+            </div>
+            <div style="font-size:calc(13px * var(--font-scale));color:var(--text-secondary);margin-top:4px">開通軍科本月主辦人「王小明」及承辦人「李大同、林淑芬」之查核查詢權限　｜　操作人：資訊室 - 林士傑</div>
+          </div>
+        </div>
+        <div class="param-history-item">
+          <div class="param-history-dot"></div>
+          <div class="param-history-content">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+              <strong>113/11/10 09:02</strong>
+              <span class="badge badge-success">已開通</span>
+            </div>
+            <div style="font-size:calc(13px * var(--font-scale));color:var(--text-secondary);margin-top:4px">開通公科本月主辦人「張美玲」查核查詢權限（含法務部查核特別授權）　｜　操作人：資訊室 - 林士傑</div>
+          </div>
+        </div>
+        <div class="param-history-item">
+          <div class="param-history-dot"></div>
+          <div class="param-history-content">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+              <strong>113/11/09 17:40</strong>
+              <span class="badge badge-secondary">已關閉</span>
+            </div>
+            <div style="font-size:calc(13px * var(--font-scale));color:var(--text-secondary);margin-top:4px">關閉上月教科承辦人「吳建宏」查核查詢權限（人員異動）　｜　操作人：資訊室 - 王雅婷</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div><!-- end #main -->
 
   <!-- FOOTER -->
@@ -6214,6 +6629,57 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
   </div>
 </div>
 
+<!-- Main Handler Modal (本月主辦人員設定) -->
+<div class="modal-overlay" id="main-handler-modal">
+  <div class="modal modal-md">
+    <div class="modal-header">
+      <div class="modal-title" id="main-handler-modal-title"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="5"/><circle cx="15" cy="15" r="5"/></svg> 設定本月主辦人</div>
+      <button class="modal-close" onclick="closeModal('main-handler-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row cols-2">
+        <div class="form-group">
+          <label class="form-label">科別 <span class="required">*</span></label>
+          <select class="form-control" id="main-handler-dept">
+            <option value="軍科">軍科</option>
+            <option value="公科">公科</option>
+            <option value="教科">教科</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">本月主辦人 <span class="required">*</span></label>
+          <input type="text" class="form-control" id="main-handler-name" placeholder="請輸入主辦人姓名">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">本科承辦人員</label>
+        <input type="text" class="form-control" id="main-handler-staff" placeholder="以頓號分隔，例如：李大同、林淑芬">
+        <div class="form-hint">承辦人員僅能查詢本人所管轄範圍之資料，欄位將於查核頁面鎖定為灰色。</div>
+      </div>
+      <div class="form-row cols-2">
+        <div class="form-group">
+          <label class="form-label">權限生效日期 <span class="required">*</span></label>
+          <input type="text" class="form-control" id="main-handler-start" value="113/12/01">
+        </div>
+        <div class="form-group">
+          <label class="form-label">權限截止日期 <span class="required">*</span></label>
+          <input type="text" class="form-control" id="main-handler-end" value="113/12/31">
+        </div>
+      </div>
+      <div class="form-group">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+          <input type="checkbox" id="main-handler-moj">
+          <span style="font-size:calc(13px * var(--font-scale))">同時開通本科「法務部查核」特別授權</span>
+        </label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('main-handler-modal')">取消</button>
+      <button class="btn btn-gold" onclick="saveMainHandler()"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> 儲存並開通權限</button>
+    </div>
+  </div>
+</div>
+
 <!-- Generic Detail Modal (查看詳細 / 差異清單 / 異常清單 等) -->
 <div class="modal-overlay" id="detail-modal">
   <div class="modal modal-lg">
@@ -6426,11 +6892,13 @@ function navigateTo(viewId) {
     'tax-calc': 'tax', 'tax-case': 'tax', 'tax-report': 'tax', 'tax-audit': 'tax',
     'direct-register': 'direct', 'direct-letter': 'direct', 'direct-query': 'direct',
     'monthly-dashboard': 'monthly', 'monthly-prep': 'monthly', 'monthly-exec': 'monthly',
-    'monthly-report': 'monthly', 'monthly-anomaly': 'monthly', 'monthly-external': 'monthly',
+    'monthly-report': 'monthly', 'monthly-anomaly': 'monthly',
+    'extdata-military': 'extdata', 'extdata-labor': 'extdata', 'extdata-veterans': 'extdata', 'extdata-mohw': 'extdata',
     'query-individual': 'query', 'query-batch': 'query', 'query-flexible': 'query',
     'ruling-search': 'ruling', 'ruling-maintain': 'ruling',
     'admin-users': 'admin', 'admin-permissions': 'admin', 'admin-simulate': 'admin', 'admin-audit': 'admin',
-    'admin-announcements': 'admin', 'admin-workday': 'admin', 'admin-interface': 'admin', 'admin-tax-params': 'admin'
+    'admin-announcements': 'admin', 'admin-workday': 'admin', 'admin-interface': 'admin', 'admin-tax-params': 'admin',
+    'admin-monthly-audit-perm': 'admin'
   };
   
   if (menuMap[viewId]) {
@@ -6795,6 +7263,48 @@ function openTaxParamModal(isEditCurrent) {
 function saveTaxParam() {
   closeModal('tax-param-modal');
   showToast('success', '版次已儲存', '新課稅參數版次已建立，將於指定生效日期自動套用');
+}
+
+// ===== 定撥作業查核權限設定：本月主辦人員設定 =====
+function openMainHandlerModal(dept, handler, staff) {
+  const isEdit = !!dept;
+  document.getElementById('main-handler-modal-title').textContent = isEdit ? '編輯本月主辦人設定 - ' + dept : '設定本月主辦人';
+  document.getElementById('main-handler-dept').value = dept || '軍科';
+  document.getElementById('main-handler-dept').disabled = isEdit;
+  document.getElementById('main-handler-name').value = handler || '';
+  document.getElementById('main-handler-staff').value = staff || '';
+  document.getElementById('main-handler-start').value = '113/12/01';
+  document.getElementById('main-handler-end').value = '113/12/31';
+  document.getElementById('main-handler-moj').checked = false;
+  openModal('main-handler-modal');
+}
+
+function saveMainHandler() {
+  const dept = document.getElementById('main-handler-dept').value;
+  const name = document.getElementById('main-handler-name').value.trim();
+  const staff = document.getElementById('main-handler-staff').value.trim();
+  if (!name) {
+    showToast('error', '儲存失敗', '請輸入本月主辦人姓名');
+    return;
+  }
+  const row = document.querySelector('#main-handler-list tr[data-dept="' + dept + '"]');
+  if (row) {
+    row.children[1].textContent = name;
+    row.children[3].textContent = staff || '-';
+  }
+  closeModal('main-handler-modal');
+  showToast('success', '設定完成', dept + ' 本月主辦人已設定為「' + name + '」，對應查詢權限將依生效期間自動開通');
+}
+
+function grantMojAccess(btn) {
+  const badge = document.getElementById('moj-access-badge');
+  badge.className = 'badge badge-success';
+  badge.textContent = '已開通';
+  btn.disabled = true;
+  btn.textContent = '本月已開通';
+  btn.classList.remove('btn-danger');
+  btn.classList.add('btn-outline');
+  showToast('success', '權限已開通', '本月法務部查核（通緝／偵查／監所收容）特別授權已完成開通，業務組人員可正常執行 PayChk.exe 轉檔查詢');
 }
 
 // ===== PROFILE / PASSWORD (使用者個人資料 / 變更密碼) =====
@@ -8158,6 +8668,54 @@ function updateReportStats() {
   document.getElementById('report-pending').textContent = reportPending;
 }
 
+// ===== 報表產製：一算／二算 階段切換 =====
+let currentReportStage = 'calc1';
+const reportStageMeta = {
+  calc1: { label: '一算', filename: '11412期定撥統計表(一算).pdf', subtitle: '113年12月定撥（一算） - 共 56 項報表，依核心定撥執行之四大類程式分別產製' },
+  calc2: { label: '二算', filename: '11412期定撥統計表(二算).pdf', subtitle: '113年12月定撥（二算，正式定案） - 共 56 項報表，依核心定撥執行之四大類程式分別產製' }
+};
+
+function switchReportStage(stage) {
+  currentReportStage = stage;
+  document.getElementById('report-stage-btn-calc1').classList.toggle('active', stage === 'calc1');
+  document.getElementById('report-stage-btn-calc2').classList.toggle('active', stage === 'calc2');
+  const meta = reportStageMeta[stage];
+  document.getElementById('report-stage-subtitle').textContent = meta.subtitle;
+  document.getElementById('report-merge-filename').textContent = meta.filename;
+  document.getElementById('report-merge-status').className = 'badge badge-secondary';
+  document.getElementById('report-merge-status').textContent = '待產製';
+  const backupBtn = document.getElementById('report-backup-btn');
+  const archiveSubtitle = document.getElementById('report-archive-subtitle');
+  if (stage === 'calc1') {
+    backupBtn.style.display = 'inline-flex';
+    archiveSubtitle.textContent = '將產出之統計表 PDF 與 41 項銀行核對清冊發送 Email 通知業務組承辦人員開始核對；並備份相關 Table 資料，確保一算資料完整備份，供後續測試與二算對照使用';
+  } else {
+    backupBtn.style.display = 'none';
+    archiveSubtitle.textContent = '將產出之統計表 PDF 與 41 項銀行核對清冊發送 Email 通知業務組承辦人員，開始進行二算（正式定案）核對作業';
+  }
+}
+
+function runMergedReport() {
+  const meta = reportStageMeta[currentReportStage];
+  const badge = document.getElementById('report-merge-status');
+  badge.className = 'badge badge-warning';
+  badge.textContent = '產製中…';
+  showToast('info', '報表產製中', '正在合併 6 類統計報表為「' + meta.filename + '」…');
+  setTimeout(() => {
+    badge.className = 'badge badge-success';
+    badge.textContent = '已產製';
+    showToast('success', '產製完成', '「' + meta.filename + '」已合併輸出完成，可供下載或發送通知');
+  }, 1200);
+}
+
+function sendReportNotifyEmail() {
+  showToast('success', 'Email 已發送', '已將統計表 PDF 與 41 項銀行核對清冊發送通知予業務組承辦人員，請開始進行核對');
+}
+
+function backupReportTables() {
+  showToast('success', '備份完成', '相關 Table 資料已完整備份，供後續測試與二算對照使用');
+}
+
 function runSingleReport(id) {
   const statusEl = document.getElementById(id + '-status');
   if (!statusEl) return;
@@ -8239,15 +8797,250 @@ function runAllReports() {
   }, 8500);
 }
 
-// ===== EXEC ANIMATION（核心定撥執行：四大類程式） =====
+// ===== EXEC ANIMATION（核心定撥執行：四大類程式，區分一算／二算兩階段） =====
 const execProgramMeta = {
   1: { total: 234,   label: '軍職月退月輔（遺屬年金版）' },
   2: { total: 11682, label: '政公教月退月撫（遺屬年金版）' },
   3: { total: 3456,  label: '政公教年撫卹（按月撥付）' },
   4: { total: 1234,  label: '軍職年撫卹（每年1月執行）' }
 };
-let execProgress = { 1: 100, 2: 67, 3: 0, 4: 0 };
+let execProgressByStage = {
+  calc1: { 1: 100, 2: 67, 3: 0, 4: 0 },
+  calc2: { 1: 0, 2: 0, 3: 0, 4: 0 }
+};
+let currentExecStage = 'calc1';
 let execTimers = {};
+
+// ----- 步驟1：試算前清查資料 -----
+const precheckDataByStage = {
+  calc1: [
+    { id:'null-space', name:'空值與空格不一致檢核', desc:'檢查欄位是否顯示為空值(Null)但實際含有空格(Space)', status:'pending', failCount:2 },
+    { id:'dup-key', name:'重複欄位／主鍵重複檢核', desc:'檢查關鍵資料表是否存在重複記錄', status:'pending', failCount:0 },
+    { id:'format', name:'異常格式檢核', desc:'檢查欄位型別、日期格式是否符合定義', status:'pending', failCount:0 },
+    { id:'fk', name:'外鍵關聯完整性檢核', desc:'檢查跨資料表關聯鍵值是否完整對應', status:'pending', failCount:0 },
+    { id:'amount', name:'金額欄位負數／異常值檢核', desc:'檢查給付金額是否存在負數或異常極值', status:'pending', failCount:0 },
+    { id:'bank', name:'銀行代碼有效性檢核', desc:'檢查指定銀行代碼是否存在於銀行代碼檔', status:'pending', failCount:0 },
+    { id:'id-format', name:'身分證字號格式檢核', desc:'檢查身分證字號格式是否符合規則', status:'pending', failCount:0 },
+    { id:'dup-record', name:'重複資料筆數檢核', desc:'檢查同一領受人是否存在重複給付紀錄', status:'pending', failCount:0 }
+  ],
+  calc2: [
+    { id:'null-space', name:'空值與空格不一致檢核', desc:'檢查欄位是否顯示為空值(Null)但實際含有空格(Space)', status:'pending', failCount:0 },
+    { id:'dup-key', name:'重複欄位／主鍵重複檢核', desc:'檢查關鍵資料表是否存在重複記錄', status:'pending', failCount:0 },
+    { id:'format', name:'異常格式檢核', desc:'檢查欄位型別、日期格式是否符合定義', status:'pending', failCount:0 },
+    { id:'fk', name:'外鍵關聯完整性檢核', desc:'檢查跨資料表關聯鍵值是否完整對應', status:'pending', failCount:0 },
+    { id:'amount', name:'金額欄位負數／異常值檢核', desc:'檢查給付金額是否存在負數或異常極值', status:'pending', failCount:0 },
+    { id:'bank', name:'銀行代碼有效性檢核', desc:'檢查指定銀行代碼是否存在於銀行代碼檔', status:'pending', failCount:1 },
+    { id:'id-format', name:'身分證字號格式檢核', desc:'檢查身分證字號格式是否符合規則', status:'pending', failCount:0 },
+    { id:'dup-record', name:'重複資料筆數檢核', desc:'檢查同一領受人是否存在重複給付紀錄', status:'pending', failCount:0 }
+  ]
+};
+
+function precheckStatusBadge(status) {
+  if (status === 'pass') return '<span class="badge badge-success">通過</span>';
+  if (status === 'fail') return '<span class="badge badge-danger">異常</span>';
+  if (status === 'checking') return '<span class="badge badge-warning">檢核中…</span>';
+  return '<span class="badge badge-secondary">待執行</span>';
+}
+
+function renderPrecheckList() {
+  const items = precheckDataByStage[currentExecStage];
+  const tbody = document.getElementById('precheck-list');
+  tbody.innerHTML = items.map(it => {
+    const countCell = it.status === 'fail' ? '<span style="color:var(--danger);font-weight:700">' + it.failCount + '</span>' : (it.status === 'pass' ? '0' : '-');
+    const actionCell = it.status === 'fail'
+      ? '<button class="btn btn-sm btn-outline" onclick="resolvePrecheckItem(\'' + it.id + '\')">標記已修正</button>'
+      : '-';
+    return '<tr><td>' + it.name + '</td><td style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">' + it.desc + '</td><td>' + countCell + '</td><td>' + precheckStatusBadge(it.status) + '</td><td>' + actionCell + '</td></tr>';
+  }).join('');
+  renderPrecheckBanner();
+}
+
+function renderPrecheckBanner() {
+  const items = precheckDataByStage[currentExecStage];
+  const banner = document.getElementById('precheck-banner');
+  const allChecked = items.every(it => it.status === 'pass' || it.status === 'fail');
+  const hasFail = items.some(it => it.status === 'fail');
+  const hasPending = items.some(it => it.status === 'pending' || it.status === 'checking');
+  if (hasPending) {
+    banner.innerHTML = '';
+    return;
+  }
+  if (hasFail) {
+    banner.innerHTML = '<div class="info-card danger"><div style="font-size:calc(13px * var(--font-scale));color:var(--danger)"><strong>清查結果：發現異常資料。</strong>請先修正異常項目（可點選「標記已修正」模擬修正完成），確認全數無異常資料後，方可執行本次定撥試算。</div></div>';
+  } else if (allChecked) {
+    banner.innerHTML = '<div class="info-card success"><div style="font-size:calc(13px * var(--font-scale));color:var(--success)"><strong>清查完成，全數項目通過，未發現異常資料，可執行本次定撥試算。</strong></div></div>';
+  }
+}
+
+function runPrecheck() {
+  const items = precheckDataByStage[currentExecStage];
+  items.forEach(it => { it.status = 'pending'; });
+  renderPrecheckList();
+  let i = 0;
+  const step = () => {
+    if (i >= items.length) { renderPrecheckBanner(); return; }
+    items[i].status = 'checking';
+    renderPrecheckList();
+    setTimeout(() => {
+      items[i].status = items[i].failCount > 0 ? 'fail' : 'pass';
+      renderPrecheckList();
+      i++;
+      step();
+    }, 220);
+  };
+  step();
+  showToast('info', '清查檢核執行中', '正在依序執行 ' + items.length + ' 支檢核 SQL 程式…');
+}
+
+function resolvePrecheckItem(id) {
+  const items = precheckDataByStage[currentExecStage];
+  const it = items.find(x => x.id === id);
+  if (!it) return;
+  it.status = 'pass';
+  it.failCount = 0;
+  renderPrecheckList();
+  showToast('success', '已標記修正', '「' + it.name + '」已完成資料修正並重新確認無異常');
+}
+
+// ----- 步驟2：備份並清空重審金額對照表 -----
+const backupStepsByStage = {
+  calc1: [
+    { key:'backup', label:'備份上期歷史對照資料', done:false },
+    { key:'verify', label:'筆數驗證', done:false },
+    { key:'clear', label:'清空暫存表', done:false }
+  ],
+  calc2: [
+    { key:'verify', label:'筆數驗證', done:false },
+    { key:'clear', label:'清空暫存表', done:false }
+  ]
+};
+
+function renderBackupSteps() {
+  const steps = backupStepsByStage[currentExecStage];
+  const container = document.getElementById('exec-backup-steps');
+  container.innerHTML = steps.map((s, idx) => {
+    const prevDone = idx === 0 || steps[idx - 1].done;
+    const btnDisabled = s.done || !prevDone;
+    const btnClass = s.done ? 'btn-outline' : 'btn-primary';
+    const btnLabel = s.done ? '✓ 已完成' : '執行';
+    return '<div style="flex:1;min-width:180px;border:1.5px solid ' + (s.done ? 'var(--success)' : 'var(--border)') + ';border-radius:var(--radius-card);padding:12px;text-align:center' + (s.done ? ';background:#f0fff4' : '') + '">' +
+      '<div style="font-weight:700;font-size:calc(13px * var(--font-scale));margin-bottom:8px">' + s.label + '</div>' +
+      '<button class="btn btn-sm ' + btnClass + '" ' + (btnDisabled && !s.done ? 'disabled' : '') + ' onclick="runBackupStep(\'' + s.key + '\')">' + btnLabel + '</button>' +
+      '</div>';
+  }).join('');
+  document.getElementById('exec-backup-title').textContent = currentExecStage === 'calc1'
+    ? '步驟 2：備份並清空「重審金額對照表」'
+    : '步驟 2：清空「重審金額對照表」';
+  document.getElementById('exec-backup-subtitle').textContent = currentExecStage === 'calc1'
+    ? '備份上期歷史對照資料，驗證筆數無誤後，清空暫存表以利本次試算寫入新對照資料'
+    : '一算時已完成上期歷史對照資料備份，二算毋需再次備份，僅需驗證筆數後清空暫存表';
+}
+
+function runBackupStep(key) {
+  const steps = backupStepsByStage[currentExecStage];
+  const s = steps.find(x => x.key === key);
+  if (!s) return;
+  s.done = true;
+  renderBackupSteps();
+  showToast('success', '執行完成', '「' + s.label + '」已完成');
+}
+
+// ----- 二算：更新定撥查核機關承辦人資訊 -----
+function updateDeptHandlerInfo(btn) {
+  document.getElementById('exec-moj-update-status').className = 'badge badge-success';
+  document.getElementById('exec-moj-update-status').textContent = '已更新';
+  btn.disabled = true;
+  btn.textContent = '已完成更新';
+  showToast('success', '更新完成', '本期機關與承辦人比對關係已更新，後續報表將正確帶入承辦人資訊');
+}
+
+// ----- 階段切換 -----
+function switchExecStage(stage) {
+  currentExecStage = stage;
+  document.getElementById('exec-stage-btn-calc1').classList.toggle('active', stage === 'calc1');
+  document.getElementById('exec-stage-btn-calc2').classList.toggle('active', stage === 'calc2');
+  document.getElementById('exec-moj-update-card').style.display = stage === 'calc2' ? 'block' : 'none';
+  document.getElementById('exec-precheck-title').textContent = stage === 'calc1' ? '步驟 1：試算前清查資料（一算）' : '步驟 1：試算前清查資料（二算）';
+  document.getElementById('exec-verify-title').textContent = stage === 'calc1' ? '步驟 4：驗收與確認寫入資料（一算）' : '步驟 4：驗收與確認寫入資料（二算）';
+  renderPrecheckList();
+  renderBackupSteps();
+  renderExecCards();
+  document.getElementById('exec-verify-result').style.display = 'none';
+  document.getElementById('exec-compare-result').style.display = 'none';
+  document.getElementById('exec-compare-total').textContent = stage === 'calc1' ? '423,801' : '419,770';
+}
+
+function renderExecCards() {
+  [1,2,3,4].forEach(n => {
+    const p = execProgressByStage[currentExecStage][n];
+    const meta = execProgramMeta[n];
+    const card = document.getElementById('exec-card-' + n);
+    const badge = document.getElementById('exec-badge-' + n);
+    const bar = document.getElementById('exec-bar-' + n);
+    const pct = document.getElementById('exec-pct-' + n);
+    const cnt = document.getElementById('exec-count-' + n);
+    const timeEl = document.getElementById('exec-time-' + n);
+    const noteEl = document.getElementById('exec-note-' + n);
+    if (execTimers[n]) { clearInterval(execTimers[n]); execTimers[n] = null; }
+    if (p >= 100) {
+      card.className = 'program-card done';
+      badge.className = 'badge badge-success'; badge.textContent = '執行完成';
+      cnt.textContent = meta.total.toLocaleString(); cnt.style.color = 'var(--success)';
+      timeEl.textContent = n === 1 ? '1m 23s' : '—';
+      noteEl.textContent = '完成時間：113/12/15 09:24:15';
+    } else if (p > 0) {
+      card.className = 'program-card running';
+      badge.className = 'badge badge-warning'; badge.textContent = '執行中';
+      cnt.textContent = Math.round(p/100*meta.total).toLocaleString(); cnt.style.color = 'var(--warning)';
+      timeEl.textContent = '進行中';
+      noteEl.textContent = '開始時間：113/12/15 09:25:30';
+    } else {
+      card.className = 'program-card pending';
+      badge.className = 'badge badge-secondary'; badge.textContent = '待執行';
+      cnt.textContent = '-'; cnt.style.color = 'var(--text-secondary)';
+      timeEl.textContent = '-';
+      noteEl.textContent = '尚未執行';
+    }
+    bar.style.width = p + '%';
+    pct.textContent = Math.round(p) + '%';
+  });
+  updateExecSummary();
+  onExecMonthChange();
+}
+
+// ----- 步驟4：驗收與確認寫入資料 -----
+const verifyResultByStage = {
+  calc1: { count: '423,801', amount: '10,919,994,024', note: '確認程序正常結束並成功寫入本期（11501期）定撥資料。' },
+  calc2: { count: '419,770', amount: '10,732,195,646', note: '確認程序正常結束並成功寫入本期（11501期）定撥資料。與一算之結果存在筆數與金額落差，屬正常之期間資料異動所致，差異明細已記錄於對照表中。' }
+};
+
+function runVerify() {
+  const r = verifyResultByStage[currentExecStage];
+  document.getElementById('exec-verify-count').textContent = r.count;
+  document.getElementById('exec-verify-amount').textContent = r.amount;
+  document.getElementById('exec-verify-note').textContent = r.note;
+  document.getElementById('exec-verify-result').style.display = 'block';
+  showToast('success', '驗收完成', '已確認本期定撥資料正常寫入，共 ' + r.count + ' 筆');
+}
+
+// ----- 步驟5：建立本期新舊金額對照資料表 -----
+function runBuildCompareTable() {
+  document.getElementById('exec-compare-result').style.display = 'block';
+  showToast('success', '對照表已建立', '新舊金額對照資料表已建立完成，供業務組同仁進行差異覆核');
+}
+
+function showFullCompareTable() {
+  const total = document.getElementById('exec-compare-total').textContent;
+  const html = '<div class="form-hint" style="margin-bottom:12px">下列為新舊金額對照表之部分預覽（共 ' + total + ' 筆），完整清單請下載 Excel 檔案查閱。</div>' +
+    '<div class="table-wrapper"><table class="data-table"><thead><tr><th>身分證字號</th><th>姓名</th><th>舊金額</th><th>新金額</th><th>差異金額</th><th>差異原因</th></tr></thead><tbody>' +
+    '<tr><td class="masked">A123***456</td><td>林○明</td><td>NT$ 52,300</td><td>NT$ 53,120</td><td style="color:var(--success)">+820</td><td>年資增加</td></tr>' +
+    '<tr><td class="masked">B234***567</td><td>陳○華</td><td>NT$ 48,900</td><td>NT$ 48,900</td><td>0</td><td>無異動</td></tr>' +
+    '<tr><td class="masked">C345***678</td><td>張○芬</td><td>NT$ 61,200</td><td>NT$ 59,850</td><td style="color:var(--danger)">-1,350</td><td>課稅參數調整</td></tr>' +
+    '<tr><td class="masked">D456***789</td><td>黃○偉</td><td>NT$ 45,600</td><td>NT$ 45,600</td><td>0</td><td>無異動</td></tr>' +
+    '<tr><td class="masked">E567***890</td><td>周○文</td><td>NT$ 58,000</td><td>NT$ 0</td><td style="color:var(--danger)">-58,000</td><td>亡故停發</td></tr>' +
+    '</tbody></table></div>';
+  openDetailModal('新舊金額對照表（' + total + ' 筆，預覽）', html, '新舊金額對照表', 'xlsx');
+}
 
 function onExecMonthChange() {
   const month = document.getElementById('exec-month').value;
@@ -8272,8 +9065,9 @@ function onExecMonthChange() {
 
 function updateExecSummary() {
   let done = 0, running = 0, pending = 0, processed = 0;
+  const stageProgress = execProgressByStage[currentExecStage];
   [1,2,3,4].forEach(n => {
-    const p = execProgress[n];
+    const p = stageProgress[n];
     const total = execProgramMeta[n].total;
     if (p >= 100) { done++; processed += total; }
     else if (p > 0) { running++; processed += Math.round(p/100*total); }
@@ -8298,20 +9092,23 @@ function startExecProgram(n) {
   const cnt = document.getElementById('exec-count-' + n);
   const timeEl = document.getElementById('exec-time-' + n);
   const noteEl = document.getElementById('exec-note-' + n);
+  const stage = currentExecStage;
+  const stageProgress = execProgressByStage[stage];
 
   card.className = 'program-card running';
   badge.className = 'badge badge-warning';
   badge.textContent = '執行中';
   timeEl.textContent = '進行中';
   noteEl.textContent = '開始時間：' + execNowStr();
-  execProgress[n] = 0;
+  stageProgress[n] = 0;
   if (execTimers[n]) clearInterval(execTimers[n]);
   const startTs = Date.now();
 
   execTimers[n] = setInterval(() => {
-    execProgress[n] += 2 + Math.random() * 4;
-    if (execProgress[n] >= 100) {
-      execProgress[n] = 100;
+    if (currentExecStage !== stage) return;
+    stageProgress[n] += 2 + Math.random() * 4;
+    if (stageProgress[n] >= 100) {
+      stageProgress[n] = 100;
       clearInterval(execTimers[n]);
       card.className = 'program-card done';
       badge.className = 'badge badge-success';
@@ -8323,9 +9120,9 @@ function startExecProgram(n) {
       cnt.style.color = 'var(--success)';
       showToast('success', '執行完成', meta.label + '已執行完成，共處理 ' + meta.total.toLocaleString() + ' 筆');
     }
-    bar.style.width = execProgress[n] + '%';
-    pct.textContent = Math.round(execProgress[n]) + '%';
-    cnt.textContent = Math.round(execProgress[n]/100*meta.total).toLocaleString();
+    bar.style.width = stageProgress[n] + '%';
+    pct.textContent = Math.round(stageProgress[n]) + '%';
+    cnt.textContent = Math.round(stageProgress[n]/100*meta.total).toLocaleString();
     updateExecSummary();
   }, 200);
 }
@@ -8344,15 +9141,16 @@ function navigateToReportTab(tabId) {
 }
 
 function animateExec() {
-  if (execProgress[2] < 100) {
-    execProgress[2] += 0.5;
+  const stageProgress = execProgressByStage.calc1;
+  if (currentExecStage === 'calc1' && stageProgress[2] < 100) {
+    stageProgress[2] += 0.5;
     const bar = document.getElementById('exec-bar-2');
     const pct = document.getElementById('exec-pct-2');
     const cnt = document.getElementById('exec-count-2');
-    if (bar) bar.style.width = execProgress[2] + '%';
-    if (pct) pct.textContent = Math.round(execProgress[2]) + '%';
-    if (cnt) cnt.textContent = Math.round(execProgress[2] / 100 * 11682).toLocaleString();
-    if (execProgress[2] >= 100) {
+    if (bar) bar.style.width = stageProgress[2] + '%';
+    if (pct) pct.textContent = Math.round(stageProgress[2]) + '%';
+    if (cnt) cnt.textContent = Math.round(stageProgress[2] / 100 * 11682).toLocaleString();
+    if (stageProgress[2] >= 100) {
       const card = document.getElementById('exec-card-2');
       const badge = document.getElementById('exec-badge-2');
       const timeEl = document.getElementById('exec-time-2');
@@ -8388,6 +9186,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // 初始化科長核符作業預設清單（尚未核符）
   if (document.getElementById('sup-queue-body')) renderSupervisorQueue();
+
+  // 初始化核心定撥執行頁（一算／二算 清查與備份步驟清單）
+  if (document.getElementById('precheck-list')) { renderPrecheckList(); renderBackupSteps(); }
 
   // 同步字體大小切換按鈕狀態（實際大小已於 head 提早套用避免閃爍）
   var savedFontSize = document.documentElement.getAttribute('data-font-size') || 'medium';
@@ -8625,17 +9426,17 @@ function closeDownloadProgress() {
   if (dlProgressTimer) { clearInterval(dlProgressTimer); dlProgressTimer = null; }
 }
 
-// ===== MONTHLY-PREP TASK1: 外部機關資料比對查核（9項） =====
+// ===== MONTHLY-PREP TASK1: 外部機關資料比對查核（9項，銓敘部提供之9個View） =====
 const extCheckMeta = {
-  labor1: {name:'國民年金資料比對', agency:'勞保局'},
-  labor2: {name:'勞工保險老年給付比對', agency:'勞保局'},
-  labor3: {name:'勞工保險年金給付比對', agency:'勞保局'},
-  mohw1:  {name:'死亡資料比對', agency:'衛生福利部'},
-  mohw2:  {name:'低收入戶／中低收入戶資料比對', agency:'衛生福利部'},
-  mohw3:  {name:'身心障礙資料比對', agency:'衛生福利部'},
-  vet1:   {name:'清寒榮民子女獎助金資料比對', agency:'退輔會'},
-  vet2:   {name:'榮民就養給與資料比對', agency:'退輔會'},
-  vet3:   {name:'榮民身分異動資料比對', agency:'退輔會'}
+  moi:      {name:'戶役政資料查核', agency:'內政部'},
+  nia:      {name:'入出境資料查核', agency:'移民署'},
+  boct:     {name:'公保身分查驗', agency:'臺灣銀行（公保處）'},
+  bli:      {name:'勞保身分查驗', agency:'勞動部勞工保險局'},
+  moj:      {name:'通緝／偵查／監所收容查核', agency:'法務部'},
+  judicial: {name:'裁判查詢及通緝偵查查核', agency:'司法院'},
+  police:   {name:'通緝與協尋資料查核', agency:'警政署'},
+  mohw:     {name:'死亡登記資料比對', agency:'衛生福利部'},
+  nhi:      {name:'健保投保狀態查核', agency:'中央健保署'}
 };
 
 function displayExtCheckFile(input) {
@@ -8727,7 +9528,7 @@ function showExtCheckError(itemName, agency, errCount) {
   openDetailModal(itemName + '錯誤清單', html, itemName + '錯誤清單', 'xlsx');
 }
 
-// ===== MONTHLY-PREP TASK2: 退撫平台查驗作業 =====
+// ===== MONTHLY-PREP TASK2: 退撫平台會驗作業 =====
 function showTask2Diff() {
   const rows = [
     ['A123***789','王建民','退休狀態','支領中','應停發','113/12/05','113/12/20','退撫平台顯示資格已終止'],
@@ -8741,8 +9542,8 @@ function showTask2Diff() {
   let trs = rows.map((r,i)=>`<tr><td>${i+1}</td><td>${r[1]}</td><td class="masked">${r[0]}</td><td>${r[2]}</td><td style="color:var(--danger);font-weight:600">${r[3]}</td><td>${r[5]}</td><td>${r[6]}</td><td>${r[7]}</td></tr>`).join('');
   const html = `
     <div class="detail-block">
-      <div class="detail-block-title">任務二：退撫平台查驗－應止付／應調整人員名單（共 7 筆）</div>
-      <div class="form-hint" style="margin-bottom:12px">系統以領受人「退休狀態」及「止付日期」為關鍵欄位，與退撫平台檢視表比對後，篩選出資格已變更、應停止發放月退休金或需調整金額之人員，於正式撥款前提示以防範溢領風險。</div>
+      <div class="detail-block-title">任務二：退撫平台會驗作業－應止付／應調整人員名單（共 7 筆）</div>
+      <div class="form-hint" style="margin-bottom:12px">系統透過資料庫存託程序，將內部退撫資料與行政院人事行政總處退撫平台資料進行「退撫平台資料會驗」及「退休停俸資料比對」，篩選出因退休狀態異動、褫奪公權或其他法定停發事由，應停止發放月退休金或需調整金額之人員，於正式撥款前提示以防範溢領風險。</div>
       <div class="table-wrapper">
         <table class="data-table">
           <thead><tr><th>序號</th><th>姓名</th><th>身分證字號</th><th>異動欄位</th><th>建議處理</th><th>原止付日期</th><th>最新止付日期</th><th>研判原因</th></tr></thead>
@@ -8755,7 +9556,7 @@ function showTask2Diff() {
         <div style="font-size:calc(13px * var(--font-scale));color:var(--danger)"><strong>建議：</strong>請於執行核心定撥前，先確認上述 7 筆應止付／應調整人員並完成校正，避免撥款金額錯誤或溢領。</div>
       </div>
     </div>`;
-  openDetailModal('任務二：退撫平台查驗結果', html, '退撫平台查驗結果', 'xlsx');
+  openDetailModal('任務二：退撫平台會驗結果', html, '退撫平台會驗結果', 'xlsx');
 }
 
 function showManualFix(name, errCode, errMsg) {
