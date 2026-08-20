@@ -174,7 +174,7 @@ table{border-collapse:collapse;width:100%}
 #sidebar.collapsed .sidebar-item-arrow{display:none}
 .sidebar-item.expanded .sidebar-item-arrow{transform:rotate(90deg)}
 .sidebar-submenu{overflow:hidden;max-height:0;transition:max-height 0.3s ease}
-.sidebar-submenu.open{max-height:300px}
+.sidebar-submenu.open{max-height:600px}
 .sidebar-sub-item{display:flex;align-items:center;gap:8px;padding:7px 16px 7px 46px;cursor:pointer;transition:var(--transition);color:rgba(255,255,255,0.6);font-size:calc(12.5px * var(--font-scale));white-space:nowrap;border-left:3px solid transparent}
 .sidebar-sub-item:hover{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.9)}
 .sidebar-sub-item.active{color:var(--accent-gold);background:rgba(201,168,76,0.08);border-left-color:var(--accent-gold)}
@@ -997,6 +997,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       <div class="sidebar-submenu" id="submenu-monthly">
         <div class="sidebar-sub-item" onclick="navigateTo('monthly-dashboard')">定撥儀表板</div>
         <div class="sidebar-sub-item" onclick="navigateTo('monthly-prep')">定撥前準備</div>
+        <div class="sidebar-sub-item" onclick="navigateTo('admin-monthly-audit-perm')">定撥作業查核權限設定</div>
         <div class="sidebar-sub-item" onclick="navigateTo('monthly-exec')">核心定撥執行</div>
         <div class="sidebar-sub-item" onclick="navigateTo('monthly-report')">報表產製</div>
         <div class="sidebar-sub-item" onclick="navigateTo('monthly-anomaly')">異常處理</div>
@@ -1055,7 +1056,6 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div class="sidebar-sub-item" onclick="navigateTo('admin-workday')">工作日管理</div>
         <div class="sidebar-sub-item" onclick="navigateTo('admin-interface')">介接管理</div>
         <div class="sidebar-sub-item" onclick="navigateTo('admin-tax-params')">課稅參數設定</div>
-        <div class="sidebar-sub-item" onclick="navigateTo('admin-monthly-audit-perm')">定撥作業查核權限設定</div>
       </div>
     </div>
   </div>
@@ -5844,7 +5844,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       <div class="breadcrumb">
         <span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span>
         <span class="breadcrumb-sep">›</span>
-        <span class="breadcrumb-item">系統管理</span>
+        <span class="breadcrumb-item">定撥作業</span>
         <span class="breadcrumb-sep">›</span>
         <span class="breadcrumb-item current">定撥作業查核權限設定</span>
       </div>
@@ -6891,14 +6891,13 @@ function navigateTo(viewId) {
     'stop-payment': 'stop', 'stop-tracking': 'stop',
     'tax-calc': 'tax', 'tax-case': 'tax', 'tax-report': 'tax', 'tax-audit': 'tax',
     'direct-register': 'direct', 'direct-letter': 'direct', 'direct-query': 'direct',
-    'monthly-dashboard': 'monthly', 'monthly-prep': 'monthly', 'monthly-exec': 'monthly',
-    'monthly-report': 'monthly', 'monthly-anomaly': 'monthly',
+    'monthly-dashboard': 'monthly', 'monthly-prep': 'monthly', 'admin-monthly-audit-perm': 'monthly',
+    'monthly-exec': 'monthly', 'monthly-report': 'monthly', 'monthly-anomaly': 'monthly',
     'extdata-military': 'extdata', 'extdata-labor': 'extdata', 'extdata-veterans': 'extdata', 'extdata-mohw': 'extdata',
     'query-individual': 'query', 'query-batch': 'query', 'query-flexible': 'query',
     'ruling-search': 'ruling', 'ruling-maintain': 'ruling',
     'admin-users': 'admin', 'admin-permissions': 'admin', 'admin-simulate': 'admin', 'admin-audit': 'admin',
-    'admin-announcements': 'admin', 'admin-workday': 'admin', 'admin-interface': 'admin', 'admin-tax-params': 'admin',
-    'admin-monthly-audit-perm': 'admin'
+    'admin-announcements': 'admin', 'admin-workday': 'admin', 'admin-interface': 'admin', 'admin-tax-params': 'admin'
   };
   
   if (menuMap[viewId]) {
