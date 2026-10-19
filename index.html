@@ -5795,7 +5795,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
     <!-- ===== ADMIN TAX PARAMETERS ===== -->
     <div class="view" id="view-admin-tax-params">
       <div class="breadcrumb"><span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-item">系統管理</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-item current">課稅參數設定</span></div>
-      <div class="page-header"><div><div class="page-title">課稅參數設定</div><div class="page-subtitle">依財政部公告「計算退職所得定額免稅之金額」設定；系統依撥付入帳年度自動套用對應版次，歷史案件不受影響</div></div>
+      <div class="page-header"><div><div class="page-title">課稅參數設定</div><div class="page-subtitle">依財政部公告「計算退職所得定額免稅之金額」設定；系統依退休／領取退職所得日期自動套用對應版次，歷史案件不受影響</div></div>
         <div class="page-actions"><button class="btn btn-gold" onclick="openTaxParamModal()">+ 新增版次</button></div></div>
       <div class="card" style="margin-bottom:16px">
         <div class="card-header"><div><div class="card-title">現行適用參數：115 年度</div><div class="card-subtitle">依據：財政部 114/11/27 台財稅字第 11404664070 號公告（所得稅法第 14 條第 4 項，消費者物價指數累計上漲達 3% 以上時調整）</div></div><span class="badge badge-success">現行版次</span></div>
@@ -5805,14 +5805,15 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           <div class="form-group"><label class="form-label">分期領取：全年領取總額減除額</label><input class="form-control" value="NT$ 894,000" disabled></div>
           <div class="form-group"><label class="form-label">退職所得扣繳率（所得格式 93）</label><input class="form-control" value="居住者 6%／非居住者 18%" disabled></div>
           <div class="form-group"><label class="form-label">免扣繳門檻（居住者每次扣繳稅額）</label><input class="form-control" value="NT$ 2,000（含）以下，應申報免扣繳" disabled></div>
+          <div class="form-group"><label class="form-label">過半全課倍數（115 年度）</label><input class="form-control" value="1.50485" disabled></div>
           <div class="form-group"><label class="form-label">遺屬一次金定額免稅利率</label><input class="form-control" value="1.5%（示意值，依主管機關公告）" disabled></div>
         </div>
         <div class="form-group"><label class="form-label">課稅計算規則</label>
-          <div class="param-formula-box">一次領取：總額 ≤ 206,000×年資 → 所得額 0；超過 206,000×年資 至 414,000×年資 部分 → 取半數；超過 414,000×年資 部分 → 全數為所得額<br>分期領取：所得額 = 全年領取總額 − 894,000<br>兼領一次及分期：上述可減除金額，依一次與分期領取比例分別計算<br>扣繳稅額 = 所得額 × 6%（居住者）／18%（非居住者）；所得格式 92 者申報免扣繳憑單（所得稅法§89-3）；因公撫卹金免稅（§4-1-4）</div></div>
+          <div class="param-formula-box">一次領取退職所得比例 A =【(1)+(2)+(3)+(4)+(5)】÷【PV+(1)+(2)+(3)+(4)+(5)】；分期領取退職所得比例 B = 1 − A<br>（(1)兼領1/2、(2)現金補償金、(3)55歲加發金額、(4)服務獎章、(5)其他所得；PV 為退休金年金現值，依期數、利率、領取方式及年終獎金計算，期初／期末可選）<br>一次領取應稅金額 Atax（S＝(1)～(5) 合計）：S ≤ 20.6萬×SY×A → 0；20.6萬×SY×A &lt; S ≤ 41.4萬×SY×A → (S − 20.6萬×SY×A)×0.5；S &gt; 41.4萬×SY×A → S − 20.6萬×SY×A×1.50485<br>分期領取應稅金額 = 分期領取退職所得 − 89.4萬×B<br>扣繳稅額 = 應稅金額 × 6%（居住者）／18%（非居住者）；92 類申報免扣繳憑單；因公撫卹金免稅</div></div>
         <div class="page-actions"><button class="btn btn-outline-primary" onclick="openTaxParamModal(true)">編輯現行參數</button></div>
       </div>
-      <div class="card"><div class="section-title">歷史版次紀錄（依撥付入帳年度適用）</div>
-        <div class="param-history-item current"><div class="param-history-dot"></div><div class="param-history-content"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><strong>115 年度（自 115/01/01）</strong><span class="badge badge-success">現行版次</span></div><div style="font-size:calc(13px * var(--font-scale));color:var(--text-secondary);margin-top:4px">一次領取 206,000／414,000 ×年資；分期領取減除 894,000 ｜ 依據：財政部 114/11/27 台財稅字第 11404664070 號</div></div></div><div class="param-history-item "><div class="param-history-dot"></div><div class="param-history-content"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><strong>113～114 年度</strong><span class="badge badge-secondary">歷史版次</span></div><div style="font-size:calc(13px * var(--font-scale));color:var(--text-secondary);margin-top:4px">一次領取 198,000／398,000 ×年資；分期領取減除 859,000 ｜ 依據：財政部 112/11/23 公告 113 年度；113/11/28 台財稅字第 11304670610 號公告 114 年度（114 年度未達調整標準，維持不變）</div></div></div><div class="param-history-item "><div class="param-history-dot"></div><div class="param-history-content"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><strong>111～112 年度</strong><span class="badge badge-secondary">歷史版次</span></div><div style="font-size:calc(13px * var(--font-scale));color:var(--text-secondary);margin-top:4px">一次領取 188,000／377,000 ×年資；分期領取減除 814,000 ｜ 依據：財政部 111/12/21 台財稅字第 11100699250 號公告 112 年度（沿用 111 年度金額）</div></div></div>
+      <div class="card"><div class="section-title">歷史版次紀錄（依退休／領取日期適用）</div>
+        <div class="param-history-item current"><div class="param-history-dot"></div><div class="param-history-content"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><strong>115/01/01 起</strong><span class="badge badge-success">現行版次</span></div><div style="font-size:calc(13px * var(--font-scale));color:var(--text-secondary);margin-top:4px">全免 206,000×SY×A；半稅上限 414,000×SY×A；過半全課倍數 1.50485；分期領取減除 894,000×B ｜ 依據：財政部 114/11/27 台財稅字第 11404664070 號公告</div></div></div><div class="param-history-item "><div class="param-history-dot"></div><div class="param-history-content"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><strong>113/01/01～114/12/31</strong><span class="badge badge-secondary">歷史版次</span></div><div style="font-size:calc(13px * var(--font-scale));color:var(--text-secondary);margin-top:4px">全免 198,000×SY×A；半稅上限 398,000×SY×A；過半全課倍數 1.50505；分期領取減除 859,000×B ｜ 依據：財政部 112/11/23 公告 113 年度；113/11/28 台財稅字第 11304670610 號公告 114 年度（維持不變）</div></div></div><div class="param-history-item "><div class="param-history-dot"></div><div class="param-history-content"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><strong>111/01/01～112/12/31</strong><span class="badge badge-secondary">歷史版次</span></div><div style="font-size:calc(13px * var(--font-scale));color:var(--text-secondary);margin-top:4px">全免 188,000×SY×A；半稅上限 377,000×SY×A；過半全課倍數 1.50266；分期領取減除 814,000×B ｜ 依據：財政部 111/12/21 台財稅字第 11100699250 號公告 112 年度（沿用 111 年度金額）</div></div></div><div class="param-history-item "><div class="param-history-dot"></div><div class="param-history-content"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><strong>106/01/01～110/12/31</strong><span class="badge badge-secondary">歷史版次</span></div><div style="font-size:calc(13px * var(--font-scale));color:var(--text-secondary);margin-top:4px">全免 180,000×SY×A；半稅上限 362,000×SY×A；過半全課倍數 1.50556；分期領取減除 781,000×B ｜ 依據：依退職金公式說明</div></div></div><div class="param-history-item "><div class="param-history-dot"></div><div class="param-history-content"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><strong>102/01/01～105/12/31</strong><span class="badge badge-secondary">歷史版次</span></div><div style="font-size:calc(13px * var(--font-scale));color:var(--text-secondary);margin-top:4px">全免 175,000×SY×A；半稅上限 351,000×SY×A；過半全課倍數 1.50286；分期領取減除 758,000×B ｜ 依據：依退職金公式說明</div></div></div><div class="param-history-item "><div class="param-history-dot"></div><div class="param-history-content"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><strong>98/01/01～101/12/31</strong><span class="badge badge-secondary">歷史版次</span></div><div style="font-size:calc(13px * var(--font-scale));color:var(--text-secondary);margin-top:4px">全免 169,000×SY×A；半稅上限 339,000×SY×A；過半全課倍數 1.50295；分期領取減除 733,000×B ｜ 依據：依退職金公式說明</div></div></div><div class="param-history-item "><div class="param-history-dot"></div><div class="param-history-content"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><strong>96/01/01～97/12/31</strong><span class="badge badge-secondary">歷史版次</span></div><div style="font-size:calc(13px * var(--font-scale));color:var(--text-secondary);margin-top:4px">全免 161,000×SY×A；半稅上限 322,000×SY×A；過半全課倍數 1.5；分期領取減除 697,000×B ｜ 依據：依退職金公式說明</div></div></div><div class="param-history-item "><div class="param-history-dot"></div><div class="param-history-content"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><strong>94/01/01～95/12/31</strong><span class="badge badge-secondary">歷史版次</span></div><div style="font-size:calc(13px * var(--font-scale));color:var(--text-secondary);margin-top:4px">全免 156,000×SY×A；半稅上限 312,000×SY×A；過半全課倍數 1.5；分期領取減除 676,000×B ｜ 依據：依退職金公式說明</div></div></div><div class="param-history-item "><div class="param-history-dot"></div><div class="param-history-content"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><strong>93/12/31（含）以前</strong><span class="badge badge-secondary">歷史版次</span></div><div style="font-size:calc(13px * var(--font-scale));color:var(--text-secondary);margin-top:4px">全免 150,000×SY×A；半稅上限 300,000×SY×A；過半全課倍數 1.5；分期領取減除 650,000×B ｜ 依據：依退職金公式說明</div></div></div>
         <div class="form-hint" style="margin-top:12px">※ 免稅額與利率應以撥付入帳年度主管機關公告為準；定額免稅金額每遇消費者物價指數較上次調整年度上漲累計達 3% 以上時，按上漲程度調整。</div>
       </div>
     </div>
@@ -6432,13 +6433,13 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       <button class="modal-close" onclick="closeModal('tax-param-modal')">×</button>
     </div>
     <div class="modal-body">
-      <div class="info-card" style="margin-bottom:16px;background:#fff8e1;border-left:3px solid var(--accent-gold);padding:12px 16px;border-radius:6px"><div style="font-size:calc(13px * var(--font-scale));color:#8a6d00">新版次依「撥付入帳年度」套用，歷史案件不受影響；金額須與財政部公告「計算退職所得定額免稅之金額」一致</div></div>
+      <div class="info-card" style="margin-bottom:16px;background:#fff8e1;border-left:3px solid var(--accent-gold);padding:12px 16px;border-radius:6px"><div style="font-size:calc(13px * var(--font-scale));color:#8a6d00">新版次依「退休或領取退職所得日期」套用，歷史案件不受影響；金額須與財政部公告「計算退職所得定額免稅之金額」一致</div></div>
       <div class="form-row cols-2"><div class="form-group"><label class="form-label">適用年度（起） <span class="required">*</span></label><input class="form-control" placeholder="例：116"></div>
       <div class="form-group"><label class="form-label">公告依據（文號） <span class="required">*</span></label><input class="form-control" placeholder="例：財政部台財稅字第 OOOOOOOOOOO 號"></div></div>
       <div class="form-row cols-3"><div class="form-group"><label class="form-label">全免額度（×年資） <span class="required">*</span></label><input class="form-control" placeholder="例：206,000"></div>
       <div class="form-group"><label class="form-label">半數課稅上限（×年資） <span class="required">*</span></label><input class="form-control" placeholder="例：414,000"></div>
       <div class="form-group"><label class="form-label">分期領取全年減除額 <span class="required">*</span></label><input class="form-control" placeholder="例：894,000"></div></div>
-      <div class="form-group" style="margin-bottom:0"><label class="form-label">備註</label><input class="form-control" placeholder="例：因消費者物價指數累計上漲達 3% 調整"></div>
+      <div class="form-row cols-2"><div class="form-group" style="margin-bottom:0"><label class="form-label">過半全課倍數 <span class="required">*</span></label><input class="form-control" placeholder="例：1.50485"></div><div class="form-group" style="margin-bottom:0"><label class="form-label">備註</label><input class="form-control" placeholder="例：因消費者物價指數累計上漲達 3% 調整"></div></div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="closeModal('tax-param-modal')">取消</button>
@@ -9750,9 +9751,30 @@ navigateTo = function (id) {
 
 /* ===== V12：課稅管理（依各類新制退撫給與扣繳稅額計算彙整表） ===== */
 const TXP = {resRate: 0.06, nonRate: 0.18, minTax: 2000, i: 0.015};
-/* 財政部公告「計算退職所得定額免稅之金額」：t1＝全免額度（×年資）、t2＝半數課稅上限（×年資）、per＝分期領取全年減除額 */
-const TXPV = {111: {t1: 188000, t2: 377000, per: 814000}, 112: {t1: 188000, t2: 377000, per: 814000}, 113: {t1: 198000, t2: 398000, per: 859000}, 114: {t1: 198000, t2: 398000, per: 859000}, 115: {t1: 206000, t2: 414000, per: 894000}};
-const txP = y => Object.assign({}, TXP, TXPV[y] || TXPV[115]);
+/* 退職金公式說明：依「退休或領取退職所得日期」適用版次；t1＝全免(×SY×A)、t2＝半稅上限(×SY×A)、m＝過半全課倍數、per＝分期減除額(×B) */
+const TXPV = [
+  {from: 0, lbl: '93/12/31 以前', t1: 150000, t2: 300000, per: 650000, m: 1.5},
+  {from: 940101, lbl: '94/01/01～95/12/31', t1: 156000, t2: 312000, per: 676000, m: 1.5},
+  {from: 960101, lbl: '96/01/01～97/12/31', t1: 161000, t2: 322000, per: 697000, m: 1.5},
+  {from: 980101, lbl: '98/01/01～101/12/31', t1: 169000, t2: 339000, per: 733000, m: 1.50295},
+  {from: 1020101, lbl: '102/01/01～105/12/31', t1: 175000, t2: 351000, per: 758000, m: 1.50286},
+  {from: 1060101, lbl: '106/01/01～110/12/31', t1: 180000, t2: 362000, per: 781000, m: 1.50556},
+  {from: 1110101, lbl: '111/01/01～112/12/31', t1: 188000, t2: 377000, per: 814000, m: 1.50266},
+  {from: 1130101, lbl: '113/01/01～114/12/31', t1: 198000, t2: 398000, per: 859000, m: 1.50505},
+  {from: 1150101, lbl: '115/01/01 起', t1: 206000, t2: 414000, per: 894000, m: 1.50485}
+];
+const txDate = d => { if (typeof d === 'number') return d * 10000 + 101; const m = String(d || '').match(/^(\d+)\/(\d+)\/(\d+)/); return m ? (+m[1]) * 10000 + (+m[2]) * 100 + (+m[3]) : 1150101; };
+const txP = d => { const v = txDate(d); let r = TXPV[0]; TXPV.forEach(x => { if (v >= x.from) r = x; }); return Object.assign({}, TXP, r); };
+/* 退休金之年金現值 PV、期數 Period（依公式說明） */
+function txPVcalc(I) {
+  const pp = +I.pp || 12, r = (+I.rate || 0) / 100, rp = r / pp, by = +I.by, bm = +I.bm, ry = +I.ry, rm = +I.rm;
+  const prm = ((+I.amt || 0) / (+I.mths || 1)) * ({12: 1, 4: 3, 2: 6, 1: 12}[pp] || 1);
+  const f = 12 / pp, ayrs = 75 + by - ry + 1;
+  const period = pp === 1 ? ayrs : (75 + by - (ry + 1)) * pp + Math.ceil(bm / f) + Math.ceil((13 - rm) / f);
+  const an = (rate, n) => rate === 0 ? n : (Math.pow(1 + rate, n) - 1) / (rate * Math.pow(1 + rate, n));
+  const due = I.due === '期初', main = (due ? an(rp, period - 1) + 1 : an(rp, period)) * prm, aw = an(r, ayrs) * (+I.aw || 0);
+  return {pp, prm, period, ayrs, due, main, aw, pv: main + aw};
+}
 const TXT = [
   {id: 'once-ret', name: '一次退休(職、伍)金', nat: '一次性', fmt: 93, kind: 'once93', f: '課稅所得額×6%＝（應稅所得額－當年度免稅額）×6%'},
   {id: 'sev', name: '資遣給與', nat: '一次性', fmt: 93, kind: 'once93', f: '課稅所得額×6%＝（應稅所得額－當年度免稅額）×6%'},
@@ -9769,8 +9791,9 @@ const TXT = [
   {id: 'mix-np', name: '一次及月(年)撫卹(非因公)', nat: '一次及分期', fmt: 92, kind: 'mixNp', f: '一次：課稅所得額＝（應稅所得額－當年度免稅額×可減除比率）×50%<br>月、年撫卹：課稅所得額＝（應稅所得額－定額免稅額×可減除比率）；應申報免扣繳憑單(§所89-3)'},
   {id: 'mix-surv', name: '遺屬一次金及年金', nat: '一次及分期', fmt: 92, kind: 'mixSurv', f: '一次金：〔（遺族所領一次撫慰金及6個基數撫慰金）－定額免稅額度×可減除比率〕×50%×6%<br>年金：死亡當年度〔（全年遺屬年金＋已領分期退職所得）－定額免稅額度〕×6%；死亡後各年度〔全年月撫慰金－定額免稅額度×可減除比率〕×6%；應申報免扣繳憑單(§所89-3)'}
 ];
-const TXF = {once93: ['once', 'years'], once92: ['once', 'years', 'duty'], survOnce: ['once', 'n'], per93: ['per'], ann92: ['per', 'paid', 'death'], mix93: ['once', 'per', 'years', 'rO'], mixNp: ['once', 'per', 'years', 'rO', 'duty'], mixSurv: ['once', 'per', 'paid', 'death', 'n', 'rO']};
-const TXL = {once: '一次給與金額（含6個基數）', per: '分期給與全年金額', paid: '死亡當年度已領分期退職所得', years: '服務年資（年）', n: '期數', rO: '一次領取比例（%，空白＝依金額比例）', death: '是否為死亡當年度', duty: '是否因公撫卹'};
+const PVF = ['by', 'bm', 'ry', 'rm', 'pp', 'amt', 'mths', 'aw', 'rate', 'due'], ITF = ['i1', 'i2', 'i3', 'i4', 'i5'];
+const TXF = {once93: ['once', 'years'], once92: ['once', 'years', 'duty'], survOnce: ['once', 'n'], per93: ['per'], ann92: ['per', 'paid', 'death'], mix93: [...ITF, 'per', 'years', ...PVF], mixNp: [...ITF, 'per', 'years', ...PVF, 'duty'], mixSurv: [...ITF, 'per', 'paid', 'death', 'n', ...PVF]};
+const TXL = {once: '一次給與金額', per: '分期領取退職所得（全年）', paid: '死亡當年度已領分期退職所得', years: '服務年資 SY（年）', n: '期數', death: '是否為死亡當年度', duty: '是否因公撫卹', i1: '(1) 兼領 1/2', i2: '(2) 現金補償金', i3: '(3) 55歲加發金額', i4: '(4) 服務獎章', i5: '(5) 其他所得', by: '出生年 BY（民國）', bm: '出生月 BM', ry: '退休年 RY（民國）', rm: '退休月 RM', pp: '領取方式 PP', amt: '退休時領取之退休金金額', mths: '領取月數', aw: '年終獎金 AW（年領）', rate: '利率 Rate（%）', due: '年金現值基準'};
 const fm = n => Number(Math.round(n)).toLocaleString('en-US');
 const nt = n => (n < 0 ? '-' : '') + 'NT$ ' + fm(Math.abs(n));
 const rocNow = () => { const d = new Date(), p = x => String(x).padStart(2, '0'); return (d.getFullYear() - 1911) + '/' + p(d.getMonth() + 1) + '/' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()); };
@@ -9779,19 +9802,32 @@ const txType = id => TXT.find(t => t.id === id);
 
 /* ---- A：計算引擎 ---- */
 function txCalc(t, I) {
-  const P = txP(I.y), rate = I.resident ? P.resRate : P.nonRate;
-  const once = +I.once || 0, per = +I.per || 0, paid = +I.paid || 0, tot = once + per;
-  const rO = (I.rO != null && I.rO !== '') ? I.rO / 100 : (tot ? once / tot : 0), rP = 1 - rO, yrs = +I.years || 0, n = +I.n || 1;
+  const P = txP(I.d), rate = I.resident ? P.resRate : P.nonRate;
+  const k = t.kind, isMix = ['mix93', 'mixNp', 'mixSurv'].includes(k), IT = ['i1', 'i2', 'i3', 'i4', 'i5'];
+  const once = isMix && IT.some(x => I[x] != null && I[x] !== '') ? IT.reduce((a, x) => a + (+I[x] || 0), 0) : (+I.once || 0);
+  const per = +I.per || 0, paid = +I.paid || 0, yrs = +I.years || 0, n = +I.n || 1;
+  let rO = 1, rP = 1, pvi = null;
+  if (isMix) { pvi = txPVcalc(I); rO = (pvi.pv + once) ? once / (pvi.pv + once) : 1; rP = 1 - rO; }
   const exO = P.t1 * yrs, D = P.per, g = Math.pow(1 + P.i, n), fac = (g - 1) / (P.i * g), fixed = D * fac;
   const duty = I.duty === '是', death = I.death !== '否';
   const steps = [], parts = [];
   const S = (k, f, v) => steps.push({k, f, v});
   const add = (label, gross, ex, inc, times, ref) => { if (duty) inc = 0; parts.push({label, gross, ex, inc, times, ref}); };
-  const k = t.kind;
-  const tier = (amt, sc) => { const a = P.t1 * yrs * sc, b = P.t2 * yrs * sc; return amt <= a ? 0 : amt <= b ? (amt - a) / 2 : (b - a) / 2 + (amt - b); };
+  const pvSteps = () => {
+    S('一期之退休金 PRM', '（' + fm(I.amt) + ' ÷ ' + (I.mths || 1) + '）× ' + ({12: 1, 4: 3, 2: 6, 1: 12}[pvi.pp]), pvi.prm);
+    S('期數 Period', pvi.pp === 1 ? '75＋BY－RY＋1' : '[75＋BY－(RY＋1)]×' + pvi.pp + '＋⌈BM÷' + (12 / pvi.pp) + '⌉＋⌈(13－RM)÷' + (12 / pvi.pp) + '⌉', pvi.period);
+    S('退休金年金現值 PV（' + (pvi.due ? '期初' : '期末') + '）', '月退休金現值 ' + fm(pvi.main) + ' ＋ 年終獎金現值 ' + fm(pvi.aw) + '（年領 ' + pvi.ayrs + ' 期，期末）', pvi.pv);
+    S('一次領取退職所得比例 A', '【(1)+(2)+(3)+(4)+(5)】÷【PV＋(1)+(2)+(3)+(4)+(5)】＝' + fm(once) + ' ÷ ' + fm(pvi.pv + once), rO);
+    S('分期領取退職所得比例 B', '1－A', rP);
+  };
+  const tier = (amt, sc) => {
+    const a = P.t1 * yrs * sc, b = P.t2 * yrs * sc; let inc, z;
+    if (amt <= a) { inc = 0; z = '免稅'; } else if (amt <= b) { inc = (amt - a) * 0.5; z = '半稅'; } else { inc = amt - a * P.m; z = '過半全課'; }
+    S('免稅上限 ' + fm(P.t1) + '×SY×A', fm(P.t1) + ' × ' + yrs + ' × ' + sc.toFixed(4), a); S('半稅上限 ' + fm(P.t2) + '×SY×A', fm(P.t2) + ' × ' + yrs + ' × ' + sc.toFixed(4), b);
+    S('一次領取退職所得應稅金額 Atax（' + z + '）', z === '過半全課' ? fm(amt) + ' － ' + fm(a) + ' × ' + P.m : z === '半稅' ? '(' + fm(amt) + ' － ' + fm(a) + ') × 0.5' : '≤ 免稅上限，Atax＝0', inc); return inc;
+  };
   if (k === 'once93') {
-    S('全免額度', fm(P.t1) + ' × ' + yrs + ' 年', P.t1 * yrs); S('半數課稅上限', fm(P.t2) + ' × ' + yrs + ' 年', P.t2 * yrs);
-    const inc = tier(once, 1); S('課稅所得額（超過全免額度至上限部分取半數）', fm(once) + ' 減除免稅額', inc);
+    const inc = tier(once, 1);
     add('一次', once, once - inc, inc, 1);
   } else if (k === 'once92') {
     S('當年度免稅額', fm(P.t1) + ' × ' + yrs + ' 年', exO);
@@ -9812,13 +9848,13 @@ function txCalc(t, I) {
     const inc = Math.max(0, base - D); S('課稅所得額', fm(base) + ' － ' + fm(D), inc);
     add('分期', base, D, inc, 12, 1);
   } else if (k === 'mix93' || k === 'mixNp') {
-    S('可減除比率', '一次 ' + (rO * 100).toFixed(1) + '％：分期 ' + (rP * 100).toFixed(1) + '％', rO);
+    pvSteps();
     const ep = D * rP; let io, eo;
-    if (k === 'mixNp') { eo = exO * rO; io = Math.max(0, once - eo) * 0.5; } else { io = tier(once, rO); eo = once - io; }
-    S('一次可減除免稅額', fm(once) + ' － 課稅所得額', eo); S('分期可減除定額免稅額', fm(D) + ' × ' + (rP * 100).toFixed(1) + '％', ep);
+    if (k === 'mixNp') { eo = exO * rO; io = Math.max(0, once - eo) * 0.5; S('一次可減除免稅額（撫卹，×50%課稅）', fm(P.t1) + '×SY×A', eo); } else { io = tier(once, rO); eo = once - io; }
+    S('分期領取退職所得應稅金額', '分期領取退職所得 － ' + fm(D) + '×B ＝ ' + fm(per) + ' － ' + fm(ep), Math.max(0, per - ep));
     add('一次', once, eo, io, 1); add('分期', per, ep, Math.max(0, per - ep), 12);
   } else if (k === 'mixSurv') {
-    S('可減除比率', '一次 ' + (rO * 100).toFixed(1) + '％：分期 ' + (rP * 100).toFixed(1) + '％', rO);
+    pvSteps();
     S('定額免稅額度', fm(D) + ' × 年金現值係數 ' + fac.toFixed(4), fixed);
     add('遺屬一次金', once, fixed * rO, Math.max(0, (once - fixed * rO) * 0.5), 1, 1);
     const base = death ? per + paid : per, ex = death ? D : D * rP;
@@ -9831,13 +9867,13 @@ function txCalc(t, I) {
       if (I.resident && p.tax / p.times <= P.minTax) { p.waived = true; } else p.withhold = Math.round(p.tax);
     }
   });
-  if (k === 'once93' || k === 'mix93') notes.push(I.y + ' 年度公告：一次領取全免至 ' + fm(P.t1) + '×年資，超過部分至 ' + fm(P.t2) + '×年資取半數，再超過者全數為所得額；分期領取全年減除 ' + fm(P.per));
+  if (k === 'once93' || k === 'mix93') notes.push('依退休／領取日期 ' + (I.d || '') + ' 適用「' + P.lbl + '」版次：免稅 ' + fm(P.t1) + '×SY×A、半稅上限 ' + fm(P.t2) + '×SY×A、過半全課倍數 ' + P.m + '；分期領取減除 ' + fm(P.per) + '×B');
   if (duty) notes.push('因公撫卹金，免納所得稅（所得稅法§4-1-4）');
   if (report) notes.push('所得格式 92：應申報免扣繳憑單（所得稅法§89-3），不執行扣繳');
   if (parts.some(p => p.waived)) notes.push('居住者每次扣繳稅額不超過 2,000 元（含）：應申報但免扣繳稅款');
   if (!I.resident && !report) notes.push('非居住者適用 18% 扣繳率');
   const sum = f => parts.reduce((a, p) => a + f(p), 0);
-  return {t, rate, parts, steps, report, duty, notes, rO, rP, gross: sum(p => p.gross), exempt: sum(p => p.ex), inc: sum(p => p.inc),
+  return {t, rate, parts, steps, report, duty, notes, rO, rP, pvi, gross: sum(p => p.gross), exempt: sum(p => p.ex), inc: sum(p => p.inc),
     ref: sum(p => p.ref ? p.tax : 0), taxRaw: sum(p => p.tax), tax: sum(p => p.withhold)};
 }
 function txRecs(c, res) {
@@ -9852,7 +9888,7 @@ const TX = {step: 1, sel: -1, res: null, regs: {}, records: [], seq: 7, adj: {},
     {doc: '府退一字第1130012410號', name: '楊淑娟', pid: 'H901234567', type: 'once-ret', resident: true, I: {once: 1850000, years: 3.5}, payDate: '113/12/05', bank: '0040037', recips: [{n: '楊淑娟', r: 1}]},
     {doc: '府退二字第1130009876號', name: '李秀蘭', pid: 'F678901234', type: 'period-ret', resident: true, I: {per: 1440000}, payDate: '113/12/01', bank: '0040037', recips: [{n: '李秀蘭', r: 1}]},
     {doc: '府退一字第1130012408號', name: '蔡文彬', pid: 'I012345678', type: 'surv-ann', resident: true, I: {per: 700000, paid: 400000, death: '是'}, payDate: '113/12/03', bank: '0060016', recips: [{n: '蔡文彬', r: 0.6}, {n: '蔡美玲', r: 0.4}]},
-    {doc: '府退一字第1130012401號', name: '許志豪', pid: 'J12345678', type: 'mix-ret', resident: true, I: {once: 3000000, per: 1200000, years: null}, payDate: '113/11/28', bank: '0170014', recips: [{n: '許志豪', r: 1}], bad: true},
+    {doc: '府退一字第1130012401號', name: '許志豪', pid: 'J12345678', type: 'mix-ret', resident: true, I: {i1: 3000000, i2: 0, i3: 0, i4: 20000, i5: 0, per: 810000, years: null, by: 55, bm: 6, ry: 113, rm: 12, pp: 12, amt: 60000, mths: 1, aw: 90000, rate: 1.5, due: '期末'}, payDate: '113/11/28', bank: '0170014', recips: [{n: '許志豪', r: 1}], bad: true},
     {doc: '府退一字第1130012415號', name: '黃雅婷', pid: 'N234567890', type: 'surv-once', resident: true, I: {once: 6000000, n: 5}, payDate: '113/12/06', bank: '0090011', recips: [{n: '黃雅婷', r: 1}]}
   ],
   log: [
@@ -9866,8 +9902,8 @@ const TX = {step: 1, sel: -1, res: null, regs: {}, records: [], seq: 7, adj: {},
     {doc: '府退二字第1130009801號', name: '陳淑華', pid: 'B234567890', type: 'period-ret', resident: true, notice: '銓敘部 部退二字第1150080456號', nd: '115/10/10', recips: [{n: '陳淑華', r: 1}], o: {per: 1020000}, n: {per: 1032000}, st: '待重算'}
   ]
 };
-TX.cases.forEach(c => { c.I.resident = c.resident; c.I.y = +c.payDate.slice(0, 3); });
-TX.recalc.forEach(r => { r.o.resident = r.n.resident = r.resident; r.o.y = r.n.y = 113; });
+TX.cases.forEach(c => { c.I.resident = c.resident; c.I.d = c.payDate; });
+TX.recalc.forEach(r => { r.o.resident = r.n.resident = r.resident; r.o.d = r.n.d = '113/12/05'; });
 TX.audit = [
   {k: 'F678', n: '李秀蘭', pid: 'F678901234', m: 120000, doc: '府退二字第1130009876號'},
   {k: 'A123', n: '王志明', pid: 'A123456789', m: 110000, doc: '府退二字第1130009801號'},
@@ -9876,7 +9912,7 @@ TX.audit = [
 
 /* ---- B：介接撥付資料與欄位完整性及格式檢核 ---- */
 function txValidate(c) {
-  const t = txType(c.type), I = c.I, tot = (+I.once || 0) + (+I.per || 0);
+  const t = txType(c.type), I = c.I, tot = (I.once != null ? +I.once : ['i1', 'i2', 'i3', 'i4', 'i5'].reduce((a, x) => a + (+I[x] || 0), 0)) + (+I.per || 0), isMix = ['mix93', 'mixNp', 'mixSurv'].includes(t.kind);
   const needYr = ['once93', 'once92', 'mix93', 'mixNp'].includes(t.kind), sumR = c.recips.reduce((a, r) => a + r.r, 0);
   return [
     ['撥付文號', c.doc, '必填，格式「○○字第 n 號」', /第\d+號$/.test(c.doc)],
@@ -9886,12 +9922,13 @@ function txValidate(c) {
     ['領受人身分', c.resident ? '居住者' : '非居住者', '必填（居住者 6%／非居住者 18%）', true],
     ['給付金額', tot ? nt(tot) : '（缺漏）', '數值且大於 0', tot > 0],
     ['服務年資', I.years == null ? (needYr ? '（缺漏）' : '不適用') : I.years + ' 年', '一次性／兼領給與必填，數值 ≥ 0', !needYr || I.years != null],
+    ['退休金年金現值參數', isMix ? (['by', 'bm', 'ry', 'rm', 'amt', 'rate'].every(x => I[x] != null) ? '出生 ' + I.by + '/' + I.bm + '、退休 ' + I.ry + '/' + I.rm + '、利率 ' + I.rate + '%' : '（缺漏）') : '不適用', '兼領給與須有出生年月、退休年月、退休金金額、利率（計算 PV）', !isMix || ['by', 'bm', 'ry', 'rm', 'amt', 'rate'].every(x => I[x] != null)],
     ['撥付入帳日期', c.payDate, '格式 yyy/mm/dd（以入帳年度認定免稅額與利率）', /^\d{3}\/\d{2}\/\d{2}$/.test(c.payDate)],
     ['領受人受領比例', c.recips.map(r => r.n + ' ' + Math.round(r.r * 100) + '%').join('、'), '合計須為 100%', Math.abs(sumR - 1) < 1e-9],
     ['銀行代號', c.bank, '7 碼數字', /^\d{7}$/.test(c.bank)]
   ];
 }
-function txFix(i) { const c = TX.cases[i]; c.pid = 'J123456789'; c.I.years = 10; c.bad = false; showToast('success', '撥付系統已補正', '重新介接後欄位檢核通過'); txRender(); }
+function txFix(i) { const c = TX.cases[i]; c.pid = 'J123456789'; c.I.years = 30; c.bad = false; showToast('success', '撥付系統已補正', '重新介接後欄位檢核通過'); txRender(); }
 
 /* ---- 畫面 ---- */
 function txGo(n) {
@@ -9932,6 +9969,8 @@ function txR2() {
   const t = txType(c.type), flds = TXF[t.kind];
   const inp = k => {
     if (k === 'death') return `<select class="form-control" id="txi-death"><option ${c.I.death !== '否' ? 'selected' : ''}>是</option><option ${c.I.death === '否' ? 'selected' : ''}>否</option></select>`;
+    if (k === 'pp') return `<select class="form-control" id="txi-pp">${[[12, '按月（12）'], [4, '按季（4）'], [2, '按半年（2）'], [1, '按年（1）']].map(o => `<option value="${o[0]}" ${+c.I.pp === o[0] ? 'selected' : ''}>${o[1]}</option>`).join('')}</select>`;
+    if (k === 'due') return `<select class="form-control" id="txi-due"><option ${c.I.due !== '期初' ? 'selected' : ''}>期末</option><option ${c.I.due === '期初' ? 'selected' : ''}>期初</option></select>`;
     if (k === 'duty') return `<select class="form-control" id="txi-duty"><option ${c.I.duty !== '是' ? 'selected' : ''}>否</option><option ${c.I.duty === '是' ? 'selected' : ''}>是</option></select>`;
     return `<input class="form-control" type="number" step="${k === 'years' ? '0.5' : '1'}" id="txi-${k}" value="${c.I[k] ?? ''}">`;
   };
@@ -9942,15 +9981,15 @@ function txR2() {
       <div class="info-row"><div class="info-key">領受人</div><div class="info-val">${c.recips.map(r => r.n + ' ' + Math.round(r.r * 100) + '%').join('、')}</div></div>
       <div class="info-row"><div class="info-key">領受人身分</div><div class="info-val">${c.resident ? '居住者（6%）' : '非居住者（18%）'}</div></div></div>
       <div class="tx-formula" style="margin-top:12px"><b>扣繳稅額計算（彙整表）</b><br>${t.f}</div>
-      <div class="form-hint" style="margin-top:8px">${(() => { const P = txP(c.I.y); return '適用 ' + c.I.y + ' 年度（撥付入帳年度）公告：一次領取全免 ' + nt(P.t1) + '×年資、半數課稅上限 ' + nt(P.t2) + '×年資；分期領取全年減除 ' + nt(P.per) + '；遺屬一次金利率 ' + (TXP.i * 100) + '%（示意值，依主管機關公告）'; })()}（系統管理 › 課稅參數設定）</div></div>
+      <div class="form-hint" style="margin-top:8px">${(() => { const P = txP(c.I.d); return '依領取日期 ' + c.I.d + ' 適用「' + P.lbl + '」版次：免稅 ' + nt(P.t1) + '×SY×A、半稅上限 ' + nt(P.t2) + '×SY×A、過半全課倍數 ' + P.m + '；分期領取減除 ' + nt(P.per) + '×B；遺屬一次金利率 ' + (TXP.i * 100) + '%（示意值）'; })()}（系統管理 › 課稅參數設定）</div></div>
       <div class="card"><div class="section-title">計算輸入（由撥付系統帶入，可調整）</div>
-      <div class="form-row cols-2">${flds.map(k => `<div class="form-group"><label class="form-label">${TXL[k]}</label>${inp(k)}</div>`).join('')}</div>
+      <div class="form-row cols-2">${flds.map(k => (k === 'i1' ? '<div style="grid-column:1/-1;font-weight:700;color:var(--primary)">一次領取項目 (1)～(5)</div>' : k === 'by' ? '<div style="grid-column:1/-1;font-weight:700;color:var(--primary);margin-top:6px">退休金年金現值（PV）參數</div>' : '') + `<div class="form-group"><label class="form-label">${TXL[k]}</label>${inp(k)}</div>`).join('')}</div>
       <button class="btn btn-gold" onclick="txRun()">執行課稅計算</button></div></div>
     <div id="tx-res">${TX.res ? txResHtml(TX.res) : '<div class="card"><div class="form-hint">請按「執行課稅計算」，系統將依上述規則計算。</div></div>'}</div></div>`;
 }
 function txRun() {
   const c = TX.cur(), t = txType(c.type);
-  TXF[t.kind].forEach(k => { const el = document.getElementById('txi-' + k); if (el) c.I[k] = ['death', 'duty'].includes(k) ? el.value : (el.value === '' ? null : +el.value); });
+  TXF[t.kind].forEach(k => { const el = document.getElementById('txi-' + k); if (el) c.I[k] = ['death', 'duty', 'due'].includes(k) ? el.value : (el.value === '' ? null : +el.value); });
   TX.res = txCalc(t, c.I); document.getElementById('tx-res').innerHTML = txResHtml(TX.res);
 }
 function txResHtml(r) {
@@ -9961,7 +10000,7 @@ function txResHtml(r) {
     <div class="tx-kpi g"><small>${r.report ? '應扣繳稅額（免扣繳）' : '應扣繳稅額'}</small><b>${nt(r.tax)}</b></div></div>
     ${r.report && r.ref ? `<div class="form-hint" style="margin-top:8px">參考稅額（供申報憑單）：${nt(r.ref)}</div>` : ''}
     <div style="margin:14px 0 6px;font-weight:700;color:var(--primary)">計算過程</div>
-    <div class="table-wrapper"><table class="data-table"><thead><tr><th>項目</th><th>算式</th><th style="text-align:right">金額</th></tr></thead><tbody>${r.steps.map(x => `<tr><td>${x.k}</td><td style="color:var(--text-secondary);font-size:12px">${x.f}</td><td style="text-align:right">${x.k.includes('比率') ? (x.v * 100).toFixed(1) + '%' : fm(x.v)}</td></tr>`).join('')}</tbody></table></div>
+    <div class="table-wrapper"><table class="data-table"><thead><tr><th>項目</th><th>算式</th><th style="text-align:right">金額</th></tr></thead><tbody>${r.steps.map(x => `<tr><td>${x.k}</td><td style="color:var(--text-secondary);font-size:12px">${x.f}</td><td style="text-align:right">${/比[率例]/.test(x.k) ? (x.v * 100).toFixed(1) + '%' : fm(x.v)}</td></tr>`).join('')}</tbody></table></div>
     <div style="margin:14px 0 6px;font-weight:700;color:var(--primary)">分項與領受人分配</div>
     <div class="table-wrapper"><table class="data-table"><thead><tr><th>分項</th><th>課稅所得額</th><th>稅額 ×${(r.rate * 100)}%</th><th>應扣繳</th>${c.recips.map(x => `<th>${x.n} ${Math.round(x.r * 100)}%</th>`).join('')}</tr></thead><tbody>${r.parts.map(p => `<tr><td>${p.label}${p.times > 1 ? '（每月）' : ''}</td><td>${fm(p.inc)}</td><td>${fm(p.tax)}</td><td>${p.waived ? '<span class="badge badge-secondary">免扣繳</span>' : fm(p.withhold)}</td>${c.recips.map(x => `<td>${fm((r.report ? p.tax : p.withhold) * x.r)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
     ${r.notes.map(n => `<div class="form-hint">※ ${n}</div>`).join('')}
@@ -9979,7 +10018,7 @@ function txDocHtml(k) {
   const c = TX.cur(), g = TX.regs[c.doc], r = g.res, t = r.t;
   const info = rows => `<div class="info-card">${rows.map(x => `<div class="info-row"><div class="info-key">${x[0]}</div><div class="info-val">${x[1]}</div></div>`).join('')}</div>`;
   if (k === 'official') return `<div style="text-align:center;margin-bottom:12px"><b style="color:var(--primary)">公務人員退休撫卹基金管理局　函</b><div class="form-hint">（課稅計算完成通知）</div></div>` + info([['發文字號', g.disp ? g.disp : '（稿）' + g.no], ['受文者', c.name + '　台端'], ['主旨', `台端「${t.name}」退職所得課稅計算業經完成，${r.report ? '應申報免扣繳憑單，課稅所得額' : '應扣繳稅額'}新臺幣 ${fm(r.report ? r.inc : r.tax)} 元，請查照。`], ['說明', `一、依所得稅法及各類所得扣繳率標準辦理。<br>二、應稅所得額 ${fm(r.gross)} 元，免稅額 ${fm(r.exempt)} 元，課稅所得額 ${fm(r.inc)} 元。<br>三、檢附退職所得應課稅所得試算表及扣繳稅額明細表各 1 份。`], ['承辦人', '王大明（給付科）']]);
-  if (k === 'sheet') return `<div style="text-align:center;margin-bottom:12px"><b style="color:var(--primary)">退職所得應課稅所得試算表</b></div>` + info([['案件', `${c.doc}　${c.name}`], ['給與種類', `${t.name}（所得格式 ${t.fmt}）`], ['稅率', `${r.rate * 100}%`]]) + `<table class="data-table" style="margin-top:12px"><thead><tr><th>項目</th><th>算式</th><th>金額</th></tr></thead><tbody>${r.steps.map(x => `<tr><td>${x.k}</td><td style="font-size:12px">${x.f}</td><td>${x.k.includes('比率') ? (x.v * 100).toFixed(1) + '%' : fm(x.v)}</td></tr>`).join('')}<tr><td><b>課稅所得額</b></td><td></td><td><b>${fm(r.inc)}</b></td></tr></tbody></table>`;
+  if (k === 'sheet') return `<div style="text-align:center;margin-bottom:12px"><b style="color:var(--primary)">退職所得應課稅所得試算表</b></div>` + info([['案件', `${c.doc}　${c.name}`], ['給與種類', `${t.name}（所得格式 ${t.fmt}）`], ['稅率', `${r.rate * 100}%`]]) + `<table class="data-table" style="margin-top:12px"><thead><tr><th>項目</th><th>算式</th><th>金額</th></tr></thead><tbody>${r.steps.map(x => `<tr><td>${x.k}</td><td style="font-size:12px">${x.f}</td><td>${/比[率例]/.test(x.k) ? (x.v * 100).toFixed(1) + '%' : fm(x.v)}</td></tr>`).join('')}<tr><td><b>課稅所得額</b></td><td></td><td><b>${fm(r.inc)}</b></td></tr></tbody></table>`;
   return `<div style="text-align:center;margin-bottom:12px"><b style="color:var(--primary)">退職所得扣繳稅額明細表</b></div><table class="data-table"><thead><tr><th>領受人</th><th>身分證字號</th><th>分項</th><th>課稅所得額</th><th>應扣繳稅額</th><th>所得格式</th></tr></thead><tbody>${c.recips.flatMap(x => r.parts.map(p => `<tr><td>${x.n}（${Math.round(x.r * 100)}%）</td><td>${mskId(c.pid)}</td><td>${p.label}</td><td>${fm(p.inc * x.r)}</td><td>${r.report ? '申報免扣繳' : fm(p.withhold * x.r)}</td><td>${t.fmt}</td></tr>`)).join('')}</tbody></table>`;
 }
 function txPrev(k, nm) { const c = TX.cur(); openDetailModal(nm + '（預覽） · ' + c.name, txDocHtml(k), nm + '_' + c.name, 'pdf'); }
@@ -10058,7 +10097,7 @@ function txLogRender() { const el = document.getElementById('tx-log-body'); if (
 function txDiffRender() { const el = document.getElementById('tx-diff-body'); if (el) el.innerHTML = TX.diffs.map(d => `<tr><td style="font-size:12px">${d.c}</td><td>${d.ty}</td><td>${fm(d.a)}</td><td>${fm(d.b)}</td><td class="${d.b - d.a > 0 ? 'neg' : d.b - d.a < 0 ? 'pos' : ''}">${fm(d.b - d.a)}</td><td class="${d.adj < 0 ? 'neg' : 'pos'}">${d.adj ? fm(d.adj) : '-'}</td><td>${d.t}</td><td>${d.u}</td></tr>`).join(''); }
 /* ---- E：定期給與預扣稅額檢核 ---- */
 function txAuditRender() {
-  const I = a => ({resident: true, y: 115, per: a.m * 12});
+  const I = a => ({resident: true, d: '115/10/19', per: a.m * 12});
   document.getElementById('withhold-check-tbody').innerHTML = TX.audit.map(a => {
     const r = txCalc(txType('period-ret'), I(a)), p = r.parts[0], hit = !p.waived, has = TX.records.some(x => x.doc === a.doc && x.src === '定期檢核'), mo = Math.round(p.tax / 12);
     return `<tr><td>${a.n}</td><td>${mskId(a.pid)}</td><td>月退休(職)金(俸)</td><td>${fm(a.m)}</td><td>${fm(r.inc)}</td><td>${hit ? '<span class="badge badge-danger">已達門檻</span>' : '<span class="badge badge-secondary">未達門檻</span>'}</td><td>${hit ? 'NT$ ' + fm(mo) : '-'}</td><td>${hit ? (has ? '<span class="badge badge-success">已建置（-' + fm(mo) + '）</span>' : '<span class="badge badge-secondary">尚未建置</span>') : '<span style="color:var(--text-secondary);font-size:12px">不適用</span>'}</td><td>${hit ? `<button class="btn btn-sm ${has ? 'btn-outline' : 'btn-gold'}" ${has ? 'disabled' : ''} onclick="buildWithholdingRecord('${a.k}')">${has ? '已介接撥付系統' : '建置支領紀錄'}</button>` : '-'}</td></tr>`;
@@ -10068,11 +10107,11 @@ function txAuditRender() {
   el.innerHTML = TX.records.length ? TX.records.map(x => `<tr><td style="white-space:nowrap">${x.t}</td><td style="font-size:12px">${x.doc}</td><td>${x.who}</td><td>預扣稅額</td><td class="${x.per < 0 ? 'neg' : 'pos'}">${x.per > 0 ? '+' : ''}${fm(x.per)}</td><td>${x.times}</td><td class="${x.total < 0 ? 'neg' : 'pos'}">${x.total > 0 ? '+' : ''}${fm(x.total)}</td><td><span class="badge badge-info">${x.src}</span></td><td><span class="badge badge-success">已建置</span></td></tr>`).join('') : '<tr><td colspan="9" style="text-align:center;color:var(--text-secondary)">尚無支領紀錄</td></tr>';
 }
 function buildWithholdingRecord(k) {
-  const a = TX.audit.find(x => x.k === k), p = txCalc(txType('period-ret'), {resident: true, y: 115, per: a.m * 12}).parts[0], mo = Math.round(p.tax / 12);
+  const a = TX.audit.find(x => x.k === k), p = txCalc(txType('period-ret'), {resident: true, d: '115/10/19', per: a.m * 12}).parts[0], mo = Math.round(p.tax / 12);
   TX.records.push({t: rocNow(), doc: a.doc, who: a.n, per: -mo, times: 12, total: -mo * 12, src: '定期檢核'}); txAuditRender();
   showToast('success', '支領紀錄已建置', a.n + ' 之預扣稅額支領紀錄已介接撥付系統，金額以負數呈現（-NT$' + fm(mo) + '），格式與現行撥付系統支領紀錄相符');
 }
-function buildAllWithholdingRecords() { showToast('info', '批次介接中', '正在批次介接撥付系統...'); setTimeout(() => { let n = 0; TX.audit.forEach(a => { if (!txCalc(txType('period-ret'), {resident: true, y: 115, per: a.m * 12}).parts[0].waived && !TX.records.some(x => x.doc === a.doc && x.src === '定期檢核')) { buildWithholdingRecord(a.k); n++; } }); showToast('success', '批次建置完成', '已建置 ' + n + ' 筆預扣稅額支領紀錄'); }, 700); }
+function buildAllWithholdingRecords() { showToast('info', '批次介接中', '正在批次介接撥付系統...'); setTimeout(() => { let n = 0; TX.audit.forEach(a => { if (!txCalc(txType('period-ret'), {resident: true, d: '115/10/19', per: a.m * 12}).parts[0].waived && !TX.records.some(x => x.doc === a.doc && x.src === '定期檢核')) { buildWithholdingRecord(a.k); n++; } }); showToast('success', '批次建置完成', '已建置 ' + n + ' 筆預扣稅額支領紀錄'); }, 700); }
 
 TX.records.push({t: '115/10/05 09:10', doc: '府退二字第1130009850號', who: '張鳳英', per: -1800, times: 1, total: -1800, src: '重審差異'});
 const _navV12 = navigateTo;
