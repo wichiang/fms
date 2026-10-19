@@ -30,7 +30,7 @@ document.addEventListener('click', function(e) {
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>公務人員退休撫卹基金管理局 - 基金業務系統</title>
+<title>公務人員退休撫卹基金管理局 - 基金業務系統（V11 網站說明與功能表管理）</title>
 <style>
 :root {
   --primary: #0a2647;
@@ -751,6 +751,49 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 .detail-block{margin-bottom:16px}
 .detail-block:last-child{margin-bottom:0}
 .detail-block-title{font-size:calc(13px * var(--font-scale));font-weight:700;color:var(--primary);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+
+/* ===== V11 網站說明 / 功能表管理 ===== */
+.help-content h3{font-size:calc(16px * var(--font-scale));color:var(--primary);margin:20px 0 8px;padding-left:10px;border-left:3px solid var(--accent-gold)}
+.help-content h3:first-child{margin-top:0}
+.help-content p{margin-bottom:10px;line-height:1.8}
+.help-content ul,.help-content ol{margin:0 0 12px 22px;line-height:1.9}
+.help-layout{display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start}
+.editor-toolbar{display:flex;flex-wrap:wrap;gap:4px;padding:8px;background:#f5f7fa;border:1.5px solid var(--border);border-bottom:none;border-radius:4px 4px 0 0}
+.editor-btn{min-width:32px;height:32px;padding:0 8px;border:1px solid transparent;background:none;border-radius:4px;color:var(--primary);font-weight:700;transition:var(--transition)}
+.editor-btn:hover{background:#fff;border-color:var(--border)}
+.editor-sep{width:1px;background:var(--border);margin:4px 4px}
+.editor-area{min-height:340px;max-height:520px;overflow-y:auto;border:1.5px solid var(--border);border-radius:0 0 4px 4px;padding:16px 18px;outline:none;background:#fff}
+.editor-area:focus{border-color:var(--secondary);box-shadow:0 0 0 3px rgba(20,66,114,0.08)}
+.editor-meta{display:flex;justify-content:space-between;font-size:calc(12px * var(--font-scale));color:var(--text-secondary);margin-top:6px}
+.manual-item{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;background:#fff}
+.manual-item.current{border-color:var(--accent-gold);background:#fffdf5}
+.manual-icon{width:40px;height:40px;border-radius:8px;background:#eef2ff;color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.manual-info{flex:1;min-width:0}
+.manual-name{font-weight:700;color:var(--primary);word-break:break-all;font-size:calc(13px * var(--font-scale))}
+.manual-meta{font-size:calc(12px * var(--font-scale));color:var(--text-secondary)}
+.menu-layout{display:grid;grid-template-columns:1fr 300px;gap:20px;align-items:start}
+.mc-group-label{font-size:calc(12px * var(--font-scale));font-weight:700;color:var(--text-secondary);letter-spacing:.08em;margin:16px 0 8px;display:flex;align-items:center;gap:8px}
+.mc-group-label:first-child{margin-top:0}
+.mc-group-label::after{content:"";flex:1;height:1px;background:var(--border)}
+.mc-row{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--border);border-radius:6px;background:#fff;margin-bottom:6px;transition:var(--transition)}
+.mc-row:hover{border-color:var(--secondary);box-shadow:var(--shadow-sm)}
+.mc-row.child{margin-left:36px;background:#fafbfd}
+.mc-row.off .mc-name{opacity:.45;text-decoration:line-through}
+.mc-ico{width:22px;color:var(--secondary);display:flex;justify-content:center;font-size:16px}
+.mc-name{flex:1;font-weight:600;color:var(--primary);font-size:calc(13px * var(--font-scale));min-width:0}
+.mc-row.child .mc-name{font-weight:500;color:var(--text-primary)}
+.mc-expand{width:24px;height:24px;border:none;background:none;color:var(--text-secondary);font-size:11px;transition:var(--transition)}
+.mc-expand.open{transform:rotate(90deg)}
+.mc-move{width:28px;height:28px;border:1px solid var(--border);background:#fff;border-radius:4px;color:var(--primary);line-height:1;font-size:12px}
+.mc-move:hover:not(:disabled){border-color:var(--secondary);background:#f0f4ff}
+.mc-move:disabled{opacity:.3;cursor:not-allowed}
+.sb-preview-wrap{position:sticky;top:calc(var(--header-h) + 16px)}
+.sb-preview{background:var(--secondary);border-radius:10px;padding:6px 0 10px;max-height:70vh;overflow-y:auto}
+.sb-preview .sidebar-item,.sb-preview .sidebar-sub-item{cursor:default}
+.dirty-bar{display:none;align-items:center;gap:8px;background:#fff8e1;border:1px solid #f0d98a;color:#8a6d00;padding:8px 14px;border-radius:6px;margin-bottom:16px;font-size:calc(13px * var(--font-scale));font-weight:600}
+.dirty-bar.show{display:flex}
+@media(max-width:1100px){.help-layout,.menu-layout{grid-template-columns:1fr}.sb-preview-wrap{position:static}}
+@media(max-width:600px){.mc-row.child{margin-left:16px}.manual-item{flex-wrap:wrap}}
 </style>
 
 </head>
@@ -914,6 +957,9 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
     <div class="user-dropdown-item" onclick="closeUserDropdown();openPasswordModal()">
       <span><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="15" r="4"/><line x1="10.5" y1="11.5" x2="20" y2="2"/><line x1="16" y1="6" x2="19" y2="9"/></svg></span> 變更密碼
     </div>
+    <div class="user-dropdown-item" onclick="closeUserDropdown();navigateTo('site-help')">
+      <span><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span> 網站說明
+    </div>
     <div class="user-dropdown-divider"></div>
     <div class="user-dropdown-item" onclick="openSimModal()">
       <span><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="5"/><circle cx="15" cy="15" r="5"/></svg></span> 模擬登入
@@ -931,6 +977,10 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       <div class="sidebar-item active" onclick="navigateTo('dashboard')">
         <div class="sidebar-item-icon"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="20" x2="4" y2="12"/><line x1="10" y1="20" x2="10" y2="6"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="20" y1="20" x2="4" y2="20"/></svg></div>
         <div class="sidebar-item-text">系統儀表板</div>
+      </div>
+      <div class="sidebar-item" onclick="navigateTo('site-help')">
+        <div class="sidebar-item-icon"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+        <div class="sidebar-item-text">網站說明</div>
       </div>
     </div>
     
@@ -1056,6 +1106,8 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div class="sidebar-sub-item" onclick="navigateTo('admin-workday')">工作日管理</div>
         <div class="sidebar-sub-item" onclick="navigateTo('admin-interface')">介接管理</div>
         <div class="sidebar-sub-item" onclick="navigateTo('admin-tax-params')">課稅參數設定</div>
+        <div class="sidebar-sub-item" onclick="navigateTo('admin-site-help')">網站說明管理</div>
+        <div class="sidebar-sub-item" onclick="navigateTo('admin-menu-config')">功能表管理</div>
       </div>
     </div>
   </div>
@@ -5418,6 +5470,124 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       </div>
     </div>
 
+    
+    <!-- ===== SITE HELP (前端) ===== -->
+    <div class="view" id="view-site-help">
+      <div class="breadcrumb"><span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-item current">網站說明</span></div>
+      <div class="page-header">
+        <div><div class="page-title" id="shf-title">網站說明</div><div class="page-subtitle" id="shf-sub"></div></div>
+        <div class="page-actions"><button class="btn btn-gold" onclick="shDownloadCurrent()"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 下載系統操作手冊</button></div>
+      </div>
+      <div class="help-layout">
+        <div class="card"><div class="help-content" id="shf-content"></div></div>
+        <div class="card">
+          <div class="card-header"><div><div class="card-title">系統操作手冊</div><div class="card-subtitle">提供電子檔下載</div></div></div>
+          <div id="shf-manuals"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ADMIN SITE HELP ===== -->
+    <div class="view" id="view-admin-site-help">
+      <div class="breadcrumb">
+        <span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span><span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item">系統管理</span><span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item current">網站說明管理</span></div>
+      <div class="page-header">
+        <div><div class="page-title">網站說明管理</div><div class="page-subtitle">維護使用者前端「網站說明」頁面之說明文字，並上傳系統操作手冊供使用者下載</div></div>
+        <div class="page-actions">
+          <button class="btn btn-outline" onclick="shPreview()">預覽前端畫面</button>
+          <button class="btn btn-gold" onclick="shPublish()">儲存並發布</button>
+        </div>
+      </div>
+      <div class="tabs">
+        <div class="tab-item active" id="shtab-text" onclick="shTab('text')">說明文字編輯</div>
+        <div class="tab-item" id="shtab-manual" onclick="shTab('manual')">操作手冊管理</div>
+      </div>
+
+      <div id="shpane-text">
+        <div class="card">
+          <div class="form-row cols-3" style="margin-bottom:4px">
+            <div class="form-group" style="grid-column:span 2"><label class="form-label">說明頁標題 <span class="required">*</span></label><input class="form-control" id="sh-title" maxlength="40"></div>
+            <div class="form-group"><label class="form-label">前端顯示狀態</label>
+              <div class="toggle-row" style="height:40px"><label class="toggle-switch"><input type="checkbox" id="sh-enabled" checked><span class="toggle-slider"></span></label><span style="font-size:13px">啟用網站說明</span></div></div>
+          </div>
+          <label class="form-label">說明內容 <span class="required">*</span></label>
+          <div class="editor-toolbar">
+            <button class="editor-btn" title="粗體" onmousedown="event.preventDefault();shCmd('bold')"><b>B</b></button>
+            <button class="editor-btn" title="斜體" onmousedown="event.preventDefault();shCmd('italic')"><i>I</i></button>
+            <button class="editor-btn" title="底線" onmousedown="event.preventDefault();shCmd('underline')"><u>U</u></button>
+            <span class="editor-sep"></span>
+            <button class="editor-btn" onmousedown="event.preventDefault();shCmd('formatBlock','h3')">標題</button>
+            <button class="editor-btn" onmousedown="event.preventDefault();shCmd('formatBlock','p')">內文</button>
+            <span class="editor-sep"></span>
+            <button class="editor-btn" title="項目符號" onmousedown="event.preventDefault();shCmd('insertUnorderedList')">• 清單</button>
+            <button class="editor-btn" title="編號" onmousedown="event.preventDefault();shCmd('insertOrderedList')">1. 清單</button>
+            <span class="editor-sep"></span>
+            <button class="editor-btn" onmousedown="event.preventDefault();shCmd('undo')">↶ 復原</button>
+            <button class="editor-btn" onmousedown="event.preventDefault();shCmd('redo')">↷ 重做</button>
+            <button class="editor-btn" onmousedown="event.preventDefault();shCmd('removeFormat')">清除格式</button>
+          </div>
+          <div class="editor-area" id="sh-editor" contenteditable="true" oninput="shCount()"></div>
+          <div class="editor-meta"><span id="sh-count">0 字</span><span id="sh-pubinfo"></span></div>
+        </div>
+      </div>
+
+      <div id="shpane-manual" style="display:none">
+        <div class="card" style="margin-bottom:16px">
+          <div class="section-title"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> 上傳新版操作手冊</div>
+          <div class="form-row cols-3">
+            <div class="form-group"><label class="form-label">版本號 <span class="required">*</span></label><input class="form-control" id="sh-ver" placeholder="例：V1.3"></div>
+            <div class="form-group" style="grid-column:span 2"><label class="form-label">版本說明</label><input class="form-control" id="sh-vernote" placeholder="例：新增定撥作業章節"></div>
+          </div>
+          <div class="upload-dropzone" id="sh-drop" onclick="document.getElementById('sh-file').click()">
+            <div class="upload-dropzone-icon" style="font-size:28px"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+            <div class="upload-dropzone-title">點擊或拖曳檔案至此上傳</div>
+            <div class="upload-dropzone-hint">支援 PDF、DOC、DOCX、ODT；單檔上限 20 MB；上傳後自動設為現行版本</div>
+          </div>
+          <input type="file" id="sh-file" accept=".pdf,.doc,.docx,.odt" style="display:none" onchange="shUpload(this.files[0]);this.value=''">
+        </div>
+        <div class="table-card">
+          <div class="table-wrapper"><table class="data-table">
+            <thead><tr><th>檔案名稱</th><th>版本</th><th>大小</th><th>上傳日期</th><th>狀態</th><th>前端提供下載</th><th>操作</th></tr></thead>
+            <tbody id="sh-manual-body"></tbody>
+          </table></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ADMIN MENU CONFIG ===== -->
+    <div class="view" id="view-admin-menu-config">
+      <div class="breadcrumb">
+        <span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span><span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item">系統管理</span><span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item current">功能表管理</span></div>
+      <div class="page-header">
+        <div><div class="page-title">功能表管理</div><div class="page-subtitle">設定左側功能選單（含子選單）是否顯示，並以上下移動調整順序；儲存後即時套用至使用者前端</div></div>
+        <div class="page-actions">
+          <button class="btn btn-outline" onclick="mcReset()">還原系統預設</button>
+          <button class="btn btn-outline" onclick="mcCancel()">取消變更</button>
+          <button class="btn btn-gold" onclick="mcSave()">儲存並套用</button>
+        </div>
+      </div>
+      <div class="dirty-bar" id="mc-dirty">⚠ 尚有未儲存的變更，請按「儲存並套用」使前端選單生效</div>
+      <div class="menu-layout">
+        <div class="card">
+          <div class="card-header"><div><div class="card-title">功能清單</div><div class="card-subtitle" id="mc-stat"></div></div>
+            <div class="page-actions"><button class="btn btn-outline btn-sm" onclick="mcExpandAll(true)">全部展開</button><button class="btn btn-outline btn-sm" onclick="mcExpandAll(false)">全部收合</button></div></div>
+          <div id="mc-tree"></div>
+          <div class="form-hint" style="margin-top:12px">※ 「系統儀表板」「系統管理」及「功能表管理」為必要功能，不可隱藏；子選單全數隱藏時，上層選單將自動隱藏。</div>
+        </div>
+        <div class="sb-preview-wrap">
+          <div class="card" style="padding:14px">
+            <div class="card-title" style="margin-bottom:2px">前端選單預覽</div>
+            <div class="card-subtitle" style="margin-bottom:10px">依目前設定即時呈現使用者看到的畫面</div>
+            <div class="sb-preview" id="mc-preview"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ===== ADMIN ANNOUNCEMENTS ===== -->
     <div class="view" id="view-admin-announcements">
       <div class="breadcrumb">
@@ -9629,7 +9799,180 @@ function openDetailModal(titleText, bodyHtml, dlLabel, dlExt) {
   openModal('detail-modal');
 }
 
+
+/* ===== V11：網站說明管理 / 功能表管理 ===== */
+const SH = {
+  tab: 'text',
+  pub: {
+    title: '網站使用說明', enabled: true, updated: '115/10/12 09:30', by: '系統管理者',
+    html: '<h3>系統簡介</h3><p>本系統為公務人員退休撫卹基金管理局「基金業務系統」，提供溢領管理、止付作業、課稅管理、直撥登錄、定撥作業及給與支領紀錄查詢等功能。</p><h3>登入與權限</h3><ul><li>可使用自然人憑證、員工帳號或單一登入（SSO）方式登入。</li><li>功能選單依角色權限顯示，如需新增權限請洽系統管理者。</li><li>閒置超過 30 分鐘將自動登出。</li></ul><h3>操作流程</h3><ol><li>由左側功能選單選擇作業項目。</li><li>輸入查詢條件並確認資料。</li><li>完成作業後，依畫面提示送出或產製報表。</li></ol><h3>服務窗口</h3><p>系統使用問題請洽資訊室，服務時間：週一至週五 08:30–17:30。</p>'
+  },
+  manuals: [
+    {id: 3, name: '基金業務系統操作手冊_V1.2.pdf', ver: 'V1.2', note: '新增定撥作業章節', size: '3.4 MB', date: '115/10/12', current: true, show: true},
+    {id: 2, name: '基金業務系統操作手冊_V1.1.pdf', ver: 'V1.1', note: '新增直撥登錄章節', size: '2.9 MB', date: '115/06/03', current: false, show: true},
+    {id: 1, name: '基金業務系統操作手冊_V1.0.docx', ver: 'V1.0', note: '初版', size: '1.8 MB', date: '114/12/20', current: false, show: false}
+  ],
+  nextId: 4
+};
+const mText = m => m.name.toLowerCase().endsWith('.pdf') ? 'PDF' : 'DOC';
+function shTab(t) {
+  SH.tab = t;
+  ['text', 'manual'].forEach(k => {
+    document.getElementById('shpane-' + k).style.display = k === t ? 'block' : 'none';
+    document.getElementById('shtab-' + k).classList.toggle('active', k === t);
+  });
+}
+function shCmd(c, v) { document.getElementById('sh-editor').focus(); document.execCommand(c, false, v || null); shCount(); }
+function shCount() { document.getElementById('sh-count').textContent = document.getElementById('sh-editor').innerText.replace(/\s/g, '').length + ' 字'; }
+function shRenderAdmin() {
+  document.getElementById('sh-title').value = SH.pub.title;
+  document.getElementById('sh-enabled').checked = SH.pub.enabled;
+  document.getElementById('sh-editor').innerHTML = SH.pub.html;
+  document.getElementById('sh-pubinfo').textContent = '最後發布：' + SH.pub.updated + '　' + SH.pub.by;
+  shCount(); shRenderManualTable();
+}
+function shRenderManualTable() {
+  document.getElementById('sh-manual-body').innerHTML = SH.manuals.map(m => `<tr>
+    <td><b>${m.name}</b><div class="manual-meta">${m.note || ''}</div></td><td>${m.ver}</td><td>${m.size}</td><td>${m.date}</td>
+    <td>${m.current ? '<span class="badge badge-gold">現行版本</span>' : '<span class="badge badge-secondary">歷史版本</span>'}</td>
+    <td><label class="toggle-switch"><input type="checkbox" ${m.show ? 'checked' : ''} ${m.current ? 'disabled' : ''} onchange="shToggleShow(${m.id},this.checked)"><span class="toggle-slider"></span></label></td>
+    <td style="white-space:nowrap"><button class="btn btn-outline btn-sm" onclick="shDownload(${m.id})">下載</button>
+      ${m.current ? '' : `<button class="btn btn-outline-primary btn-sm" onclick="shSetCurrent(${m.id})">設為現行</button><button class="btn btn-outline-danger btn-sm" onclick="shDelete(${m.id})">刪除</button>`}</td></tr>`).join('');
+}
+function shToggleShow(id, v) { SH.manuals.find(m => m.id === id).show = v; shRenderFront(); showToast('success', '已更新', '前端下載清單已調整'); }
+function shSetCurrent(id) { SH.manuals.forEach(m => { m.current = m.id === id; if (m.current) m.show = true; }); shRenderManualTable(); shRenderFront(); showToast('success', '已設為現行版本', '使用者前端將優先提供此版本下載'); }
+function shDelete(id) { if (!confirm('確定刪除此版本操作手冊？')) return; SH.manuals = SH.manuals.filter(m => m.id !== id); shRenderManualTable(); shRenderFront(); showToast('success', '已刪除', ''); }
+function shUpload(f) {
+  if (!f) return;
+  const ver = document.getElementById('sh-ver').value.trim();
+  if (!ver) { showToast('error', '請輸入版本號', '上傳前須填寫版本號'); document.getElementById('sh-ver').classList.add('error'); return; }
+  document.getElementById('sh-ver').classList.remove('error');
+  if (f.size > 20 * 1024 * 1024) { showToast('error', '檔案過大', '單檔上限為 20 MB'); return; }
+  SH.manuals.forEach(m => m.current = false);
+  SH.manuals.unshift({id: SH.nextId++, name: f.name, ver, note: document.getElementById('sh-vernote').value.trim(), size: (f.size / 1048576).toFixed(1) + ' MB', date: '115/10/19', current: true, show: true, blob: f});
+  document.getElementById('sh-ver').value = ''; document.getElementById('sh-vernote').value = '';
+  shRenderManualTable(); shRenderFront(); showToast('success', '上傳成功', f.name + ' 已設為現行版本');
+}
+function shDownload(id) {
+  const m = SH.manuals.find(x => x.id === id); if (!m) return;
+  try { const a = document.createElement('a'); a.href = URL.createObjectURL(m.blob || new Blob(['示意檔案：' + m.name], {type: 'text/plain'})); a.download = m.name; document.body.appendChild(a); a.click(); a.remove(); } catch (e) {}
+  showToast('success', '開始下載', m.name);
+}
+function shDownloadCurrent() { const m = SH.manuals.find(x => x.current); m ? shDownload(m.id) : showToast('warning', '尚無手冊', '管理者尚未上傳操作手冊'); }
+function shPublish() {
+  const t = document.getElementById('sh-title').value.trim(), h = document.getElementById('sh-editor').innerHTML;
+  if (!t || !document.getElementById('sh-editor').innerText.trim()) { showToast('error', '請填寫完整', '標題與說明內容為必填'); return; }
+  Object.assign(SH.pub, {title: t, html: h, enabled: document.getElementById('sh-enabled').checked, updated: '115/10/19 ' + new Date().toTimeString().slice(0, 5), by: '系統管理者'});
+  document.getElementById('sh-pubinfo').textContent = '最後發布：' + SH.pub.updated + '　' + SH.pub.by;
+  shRenderFront(); showToast('success', '發布成功', '使用者前端「網站說明」已更新');
+}
+function shPreview() {
+  document.getElementById('shp-title').textContent = document.getElementById('sh-title').value;
+  document.getElementById('shp-content').innerHTML = document.getElementById('sh-editor').innerHTML;
+  openModal('sh-preview-modal');
+}
+function shRenderFront() {
+  document.getElementById('shf-title').textContent = SH.pub.title;
+  document.getElementById('shf-sub').textContent = '最後更新：' + SH.pub.updated;
+  document.getElementById('shf-content').innerHTML = SH.pub.enabled ? SH.pub.html : '<p style="color:var(--text-secondary)">網站說明目前未啟用。</p>';
+  const list = SH.manuals.filter(m => m.current || m.show);
+  document.getElementById('shf-manuals').innerHTML = list.length ? list.map(m => `<div class="manual-item ${m.current ? 'current' : ''}">
+    <div class="manual-icon">${mText(m)}</div><div class="manual-info"><div class="manual-name">${m.name}</div>
+    <div class="manual-meta">${m.ver}　${m.size}　${m.date}${m.current ? '　<span class="badge badge-gold">最新</span>' : ''}</div></div>
+    <button class="btn btn-outline-primary btn-sm" onclick="shDownload(${m.id})">下載</button></div>`).join('') : '<div class="form-hint">尚未提供操作手冊</div>';
+}
+
+/* ---- 功能表管理 ---- */
+const MC = {meta: {}, secs: [], applied: null, draft: null, open: {}, locked: ['dashboard', 'admin', 'admin-menu-config']};
+function mcBuild() {
+  document.querySelectorAll('#sidebar > .sidebar-section').forEach(sec => {
+    const cfgSec = {label: sec.querySelector('.sidebar-section-label').textContent.trim(), el: sec, items: []};
+    sec.querySelectorAll(':scope > .sidebar-item').forEach(el => {
+      const sub = el.nextElementSibling && el.nextElementSibling.classList.contains('sidebar-submenu') ? el.nextElementSibling : null;
+      const key = sub ? el.id.replace('menu-', '') : (el.getAttribute('onclick').match(/navigateTo\('([^']+)'\)/) || [])[1];
+      const item = {key, visible: true, children: []};
+      MC.meta[key] = {name: el.querySelector('.sidebar-item-text').textContent.trim(), icon: el.querySelector('.sidebar-item-icon').innerHTML, el, sub, section: cfgSec.label};
+      if (sub) sub.querySelectorAll(':scope > .sidebar-sub-item').forEach(c => {
+        const k = c.getAttribute('onclick').match(/navigateTo\('([^']+)'\)/)[1];
+        MC.meta[k] = {name: c.textContent.trim(), el: c}; item.children.push({key: k, visible: true});
+      });
+      cfgSec.items.push(item);
+    });
+    MC.secs.push(cfgSec);
+  });
+  MC.def = JSON.stringify(MC.secs.map(s => s.items));
+  MC.applied = JSON.parse(MC.def); MC.draft = JSON.parse(MC.def);
+}
+function mcItemShown(i) { return i.visible && (!i.children.length || i.children.some(c => c.visible)); }
+function mcApply(cfg) {
+  MC.secs.forEach((s, si) => {
+    cfg[si].forEach(i => {
+      const m = MC.meta[i.key], shown = mcItemShown(i);
+      s.el.appendChild(m.el); m.el.style.display = shown ? '' : 'none';
+      if (m.sub) { s.el.appendChild(m.sub); m.sub.style.display = shown ? '' : 'none';
+        i.children.forEach(c => { m.sub.appendChild(MC.meta[c.key].el); MC.meta[c.key].el.style.display = c.visible ? '' : 'none'; }); }
+    });
+    s.el.style.display = cfg[si].some(mcItemShown) ? '' : 'none';
+  });
+}
+function mcRender() {
+  const dirty = JSON.stringify(MC.draft) !== JSON.stringify(MC.applied);
+  document.getElementById('mc-dirty').classList.toggle('show', dirty);
+  let total = 0, on = 0;
+  document.getElementById('mc-tree').innerHTML = MC.secs.map((s, si) => {
+    const items = MC.draft[si];
+    return `<div class="mc-group-label">${s.label}</div>` + items.map((i, ii) => {
+      const m = MC.meta[i.key], lock = MC.locked.includes(i.key), has = i.children.length, op = MC.open[i.key];
+      total++; if (i.visible) on++;
+      let h = `<div class="mc-row ${i.visible ? '' : 'off'}">
+        ${has ? `<button class="mc-expand ${op ? 'open' : ''}" onclick="mcOpen('${i.key}')">▶</button>` : '<span style="width:24px"></span>'}
+        <span class="mc-ico">${m.icon}</span><span class="mc-name">${m.name}</span>
+        ${lock ? '<span class="badge badge-secondary">必要</span>' : ''}${has ? `<span class="badge badge-info">${i.children.filter(c => c.visible).length}/${has}</span>` : ''}
+        <label class="toggle-switch"><input type="checkbox" ${i.visible ? 'checked' : ''} ${lock ? 'disabled' : ''} onchange="mcToggle(${si},${ii},-1,this.checked)"><span class="toggle-slider"></span></label>
+        <button class="mc-move" title="上移" ${ii === 0 ? 'disabled' : ''} onclick="mcMove(${si},${ii},-1,-1)">▲</button>
+        <button class="mc-move" title="下移" ${ii === items.length - 1 ? 'disabled' : ''} onclick="mcMove(${si},${ii},-1,1)">▼</button></div>`;
+      if (has && op) h += i.children.map((c, ci) => { total++; if (c.visible) on++; const cl = MC.locked.includes(c.key);
+        return `<div class="mc-row child ${c.visible ? '' : 'off'}"><span class="mc-name">${MC.meta[c.key].name}</span>${cl ? '<span class="badge badge-secondary">必要</span>' : ''}
+        <label class="toggle-switch"><input type="checkbox" ${c.visible ? 'checked' : ''} ${cl ? 'disabled' : ''} onchange="mcToggle(${si},${ii},${ci},this.checked)"><span class="toggle-slider"></span></label>
+        <button class="mc-move" ${ci === 0 ? 'disabled' : ''} onclick="mcMove(${si},${ii},${ci},-1)">▲</button>
+        <button class="mc-move" ${ci === i.children.length - 1 ? 'disabled' : ''} onclick="mcMove(${si},${ii},${ci},1)">▼</button></div>`; }).join('');
+      return h;
+    }).join('');
+  }).join('');
+  document.getElementById('mc-stat').textContent = `共 ${total} 項功能，顯示 ${on} 項、隱藏 ${total - on} 項`;
+  document.getElementById('mc-preview').innerHTML = MC.secs.map((s, si) => {
+    const vis = MC.draft[si].filter(mcItemShown); if (!vis.length) return '';
+    return `<div class="sidebar-section-label">${s.label}</div>` + vis.map(i => `<div class="sidebar-item"><div class="sidebar-item-icon">${MC.meta[i.key].icon}</div><div class="sidebar-item-text">${MC.meta[i.key].name}</div>${i.children.length ? '<div class="sidebar-item-arrow" style="transform:rotate(90deg)">▶</div>' : ''}</div>` +
+      i.children.filter(c => c.visible).map(c => `<div class="sidebar-sub-item">${MC.meta[c.key].name}</div>`).join('')).join('');
+  }).join('');
+}
+function mcOpen(k) { MC.open[k] = !MC.open[k]; mcRender(); }
+function mcExpandAll(v) { MC.draft.forEach(s => s.forEach(i => { if (i.children.length) MC.open[i.key] = v; })); mcRender(); }
+function mcToggle(si, ii, ci, v) { (ci < 0 ? MC.draft[si][ii] : MC.draft[si][ii].children[ci]).visible = v; mcRender(); }
+function mcMove(si, ii, ci, d) { const arr = ci < 0 ? MC.draft[si] : MC.draft[si][ii].children, a = ci < 0 ? ii : ci; [arr[a], arr[a + d]] = [arr[a + d], arr[a]]; mcRender(); }
+function mcSave() { MC.applied = JSON.parse(JSON.stringify(MC.draft)); mcApply(MC.applied); mcRender(); showToast('success', '功能表已套用', '使用者前端左側選單已依新設定顯示'); }
+function mcCancel() { MC.draft = JSON.parse(JSON.stringify(MC.applied)); mcRender(); }
+function mcReset() { if (!confirm('確定還原為系統預設的功能表順序與顯示？')) return; MC.draft = JSON.parse(MC.def); mcRender(); showToast('warning', '已還原預設', '請按「儲存並套用」使前端生效'); }
+
+mcBuild(); shRenderAdmin(); shRenderFront();
+const _navV11 = navigateTo;
+navigateTo = function (id) {
+  _navV11(id);
+  const map = {'site-help': null, 'admin-site-help': 'admin', 'admin-menu-config': 'admin'};
+  if (map[id]) { const sm = document.getElementById('submenu-' + map[id]); if (sm) { sm.classList.add('open'); document.getElementById('menu-' + map[id]).classList.add('expanded'); } }
+  document.querySelectorAll('.sidebar-item, .sidebar-sub-item').forEach(el => {
+    const oc = el.getAttribute('onclick') || ''; if (oc.indexOf("navigateTo('" + id + "')") > -1) el.classList.add('active');
+  });
+  if (id === 'admin-menu-config') { MC.draft = JSON.parse(JSON.stringify(MC.applied)); mcRender(); }
+  if (id === 'site-help') shRenderFront();
+};
 </script>
+
+<div class="modal-overlay" id="sh-preview-modal"><div class="modal modal-lg">
+  <div class="modal-header"><div class="modal-title">前端預覽：網站說明</div><div class="modal-close" onclick="closeModal('sh-preview-modal')">✕</div></div>
+  <div class="modal-body"><div class="page-title" id="shp-title" style="margin-bottom:12px"></div><div class="help-content" id="shp-content"></div></div>
+  <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('sh-preview-modal')">關閉</button></div>
+</div></div>
 
 <script
   src="./widget/widget-loader.js?v=28.6.19.19.296"
