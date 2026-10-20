@@ -2776,7 +2776,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           </div>
           <div class="form-group">
             <label class="form-label">與退撫人關係</label>
-            <select class="form-control" id="direct-payee-relation">
+            <select class="form-control" id="direct-payee-relation" onchange="syncPayeeFromPensioner(true)">
               <option>本人</option>
               <option>配偶</option>
               <option>子女</option>
@@ -2785,7 +2785,21 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
             </select>
           </div>
         </div>
-        <div class="form-hint" style="margin-top:4px">領受人為實際受領撥款款項之對象，如退撫人本人已無法受領（如亡故、喪失行為能力等），得由法定代理人或其他受核准人員登打其身分證統一編號及姓名；系統不會自退撫人資料自動帶入領受人欄位。</div>
+        <div class="form-row cols-3">
+          <div class="form-group">
+            <label class="form-label">領受人銀行別 <span class="required">*</span></label>
+            <input type="text" class="form-control" id="direct-payee-bank" placeholder="與退撫人關係為本人時自動帶入" value="合作金庫">
+          </div>
+          <div class="form-group">
+            <label class="form-label">領受人帳號 <span class="required">*</span></label>
+            <input type="text" class="form-control" id="direct-payee-account" placeholder="與退撫人關係為本人時自動帶入" value="0123456789012">
+          </div>
+          <div class="form-group">
+            <label class="form-label">領受人身分別／退撫類別</label>
+            <input type="text" class="form-control" id="direct-payee-cat" value="公務人員／公務人員月退" readonly>
+          </div>
+        </div>
+        <div class="form-hint" style="margin-top:4px">與退撫人關係為「本人」時，系統依退撫人身分證統一編號自動帶入領受人身分證字號、姓名、銀行別及帳號；如退撫人本人已無法受領（如亡故、喪失行為能力等），請改選法定代理人或其他關係，並自行登打領受人身分證統一編號、姓名及受款帳戶。</div>
       </div>
 
       <div class="card" style="margin-bottom:16px">
@@ -2849,11 +2863,11 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div class="form-row cols-3" style="margin-top:4px">
           <div class="form-group">
             <label class="form-label">公文文號 <span class="required">*</span></label>
-            <input type="text" class="form-control" value="府退一字第1130012399號">
+            <input type="text" class="form-control" id="direct-docno" value="府退一字第1130012399號">
           </div>
           <div class="form-group">
             <label class="form-label">直撥原因 <span class="required">*</span></label>
-            <select class="form-control">
+            <select class="form-control" id="direct-reason">
               <option>補發短少金額</option>
               <option>系統異常補撥</option>
               <option>人工更正撥付</option>
@@ -2870,17 +2884,17 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div class="form-row cols-2" id="direct-diff-note-row" style="display:none">
           <div class="form-group">
             <label class="form-label">差額原因說明</label>
-            <input type="text" class="form-control" placeholder="請輸入差額原因，如：重審後金額調整">
+            <input type="text" class="form-control" id="direct-diff-reason" placeholder="請輸入差額原因，如：重審後金額調整">
           </div>
           <div class="form-group">
             <label class="form-label">原撥付金額 (元)</label>
-            <input type="text" class="form-control" placeholder="請輸入原撥付金額">
+            <input type="text" class="form-control" id="direct-diff-orig" placeholder="請輸入原撥付金額">
           </div>
         </div>
         <div class="form-row cols-2">
           <div class="form-group">
             <label class="form-label">備註</label>
-            <input type="text" class="form-control" placeholder="請輸入備註說明">
+            <input type="text" class="form-control" id="direct-remark" placeholder="請輸入備註說明">
           </div>
         </div>
       </div>
@@ -2906,6 +2920,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         </div>
         <div style="display:flex;gap:8px">
           <button class="btn btn-outline" onclick="resetDirectRegisterForm()">取消</button>
+          <button class="btn btn-outline" onclick="previewDirectInterfaceFormat()">介接格式預覽</button>
           <button class="btn btn-outline-primary" onclick="showToast('success','暫存成功','資料已儲存為草稿，可稍後繼續編輯')">暫存</button>
           <button class="btn btn-gold" id="direct-save-btn" onclick="saveDirectRecord()"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> 儲存送審</button>
         </div>
@@ -2980,6 +2995,48 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         </table>
         </div>
         <div class="form-hint" id="sup-empty-hint" style="margin:12px 16px 16px;display:none">目前查無符合條件之案件。</div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+          <div class="card-title">已登錄未核符案件・系統訊息通知紀錄</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-warning btn-sm" onclick="notifyPendingDirectCases()">立即通知未核符案件</button>
+            <button class="btn btn-outline btn-sm" onclick="runDirectDailyCheck()">執行每日排程檢核</button>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead><tr><th style="width:120px">通知時間</th><th>案件編號</th><th>退撫人</th><th>通知對象</th><th>通知原因</th><th>管道</th><th>狀態</th></tr></thead>
+            <tbody id="sup-noti-body"></tbody>
+          </table>
+        </div>
+        <div class="form-hint" style="margin-top:8px">案件送審登錄後、逾期未核符及取消核准回復待核符時，系統均以系統訊息（併送電子郵件）通知承辦人員與所屬業務主管；每日 03:00 排程自動檢核。</div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+          <div class="card-title">撥付系統回饋檔處理</div>
+          <button class="btn btn-primary btn-sm" onclick="receiveDirectFeedback()">接收撥付系統回饋檔</button>
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead><tr><th>案件編號</th><th>退撫人</th><th>撥付子系統</th><th>批號</th><th>回饋檔名稱</th><th>處理結果</th><th>處理時間</th></tr></thead>
+            <tbody id="sup-feedback-body"></tbody>
+          </table>
+        </div>
+        <div class="form-hint" style="margin-top:8px">回饋檔之欄位、結果代碼及處理方式與現行人工登錄撥付系統相符；期次撥付案件之回饋格式比照本局定撥程式核算格式。</div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <div class="card-title" style="margin-bottom:12px">直撥異動紀錄（修改、核符鎖定、取消核准）</div>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead><tr><th style="width:120px">時間</th><th style="width:120px">案件編號</th><th style="width:100px">動作</th><th style="width:100px">操作人</th><th>說明</th></tr></thead>
+            <tbody id="sup-audit-log-body"></tbody>
+          </table>
+        </div>
+        <div class="form-hint" style="margin-top:8px">任何異動行為（含取消核准後刪除之批號及支領紀錄）均永久保留，供查核與追蹤。</div>
       </div>
     </div>
 
@@ -8199,7 +8256,28 @@ function lookupPayeeBySSN() {
   const maskBtn = document.getElementById('direct-account').nextElementSibling;
   if (maskBtn) { maskBtn.textContent = '顯示'; maskBtn.setAttribute('onclick', "toggleMask('direct-account','" + data.account + "')"); }
 
-  showToast('success', '查詢帶入完成', '已介接撥付系統帶入退撫人 ' + data.name + ' 之身分別、退撫類別、會計類別、銀行別及帳號等資料；領受人資訊請於下方另行登打');
+  // 關係為「本人」時，一併帶入領受人身分證字號、姓名、銀行別及帳號
+  syncPayeeFromPensioner(false);
+  showToast('success', '查詢帶入完成', '已介接撥付系統帶入退撫人 ' + data.name + ' 之身分別、退撫類別、會計類別、銀行別及帳號；領受人為本人時已一併帶入，其餘關係請自行登打');
+}
+
+// 領受人帶入：關係為「本人」→ 自動帶入並唯讀；其他關係 → 清空供自行登打
+function syncPayeeFromPensioner(fromRelationChange) {
+  const rel = document.getElementById('direct-payee-relation').value;
+  const pid = (document.getElementById('direct-pensioner-id-input').value || '').trim().toUpperCase();
+  const data = payeeLookupDB[pid];
+  const ids = ['direct-payee-id-input','direct-payee-name','direct-payee-bank','direct-payee-account'];
+  if (rel === '本人' && data) {
+    document.getElementById('direct-payee-id-input').value = pid;
+    document.getElementById('direct-payee-name').value = data.name;
+    document.getElementById('direct-payee-bank').value = data.bank;
+    document.getElementById('direct-payee-account').value = data.account;
+    document.getElementById('direct-payee-cat').value = data.idType + '／' + data.category;
+    ids.forEach(i => document.getElementById(i).readOnly = true);
+  } else {
+    ids.forEach(i => { const e = document.getElementById(i); e.readOnly = false; if (fromRelationChange && rel !== '本人') e.value = ''; });
+    if (data) document.getElementById('direct-payee-cat').value = data.idType + '／' + data.category;
+  }
 }
 
 // ===== 期次撥付支領紀錄：依起迄期間展開各期排程 =====
@@ -8245,26 +8323,182 @@ function toggleDiffNote() {
   document.getElementById('direct-diff-note-row').style.display = cb.checked ? 'flex' : 'none';
 }
 
-// ===== 異動紀錄：新增一筆紀錄 =====
-function appendAuditLog(action, desc) {
-  const tbody = document.getElementById('direct-audit-log-body');
-  if (!tbody) return;
-  const now = new Date();
-  const time = '今日 ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
-  const badgeClass = action === '核符' ? 'badge-success' : (action === '取消核准' ? 'badge-danger' : (action === '修改' ? 'badge-warning' : 'badge-info'));
-  const row = document.createElement('tr');
-  row.innerHTML = '<td>' + time + '</td><td><span class="badge ' + badgeClass + '">' + action + '</span></td><td>王大明</td><td>' + desc + '</td>';
-  tbody.insertBefore(row, tbody.firstChild);
+// ===== 直撥登錄共用：狀態、紀錄、通知、介接格式 =====
+const DIR_SUPERVISOR = '科長 陳主任', DIR_HANDLER = '王大明', DIR_MANAGER = '業務主管 林組長';
+const DIRECT_LOG = [];
+const DIRECT_NOTI = [];
+let dirDraftCaseNo = 'DIR-113-0046';
+
+function dirNow() { const d = new Date(); return '113/12/10 ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0'); }
+function dirMaskId(id) { id = String(id || ''); return id.length === 10 ? id.substring(0,4) + '***' + id.substring(7) : id; }
+function dirByName(n) { return Object.values(payeeLookupDB).find(x => x.name === n) || null; }
+function dirPad(n) { return String(n).padStart(4,'0'); }
+
+function appendAuditLog(action, desc, operator, caseNo) {
+  operator = operator || DIR_HANDLER;
+  const time = dirNow();
+  DIRECT_LOG.unshift({ time: time, caseNo: caseNo || '', action: action, operator: operator, desc: desc });
+  if (caseNo) { const c = supervisorCases.find(x => x.caseNo === caseNo); if (c) { (c.history = c.history || []).unshift({ time: time, action: action, operator: operator, desc: desc }); } }
+  const cls = { '核符':'badge-success', '取消核准':'badge-danger', '修改':'badge-warning', '鎖定':'badge-success', '回饋檔':'badge-info' };
+  const badge = '<span class="badge ' + (cls[action] || 'badge-info') + '">' + action + '</span>';
+  const a = document.getElementById('direct-audit-log-body');
+  if (a) { const r = document.createElement('tr'); r.innerHTML = '<td>' + time + '</td><td>' + badge + '</td><td>' + operator + '</td><td>' + desc + '</td>'; a.insertBefore(r, a.firstChild); }
+  const b = document.getElementById('sup-audit-log-body');
+  if (b) { const r = document.createElement('tr'); r.innerHTML = '<td>' + time + '</td><td>' + (caseNo || '-') + '</td><td>' + badge + '</td><td>' + operator + '</td><td>' + desc + '</td>'; b.insertBefore(r, b.firstChild); }
 }
 
+// 系統訊息通知：承辦人員與所屬業務主管
+function directNotify(c, reason) {
+  DIRECT_NOTI.unshift({ t: dirNow(), caseNo: c.caseNo, name: c.pensionerName, to: c.submittedBy + '（承辦人）、' + DIR_MANAGER, reason: reason, ch: '系統訊息＋Email', st: '已發送' });
+  renderDirectNotiLog();
+}
+function renderDirectNotiLog() {
+  const tb = document.getElementById('sup-noti-body');
+  if (!tb) return;
+  tb.innerHTML = DIRECT_NOTI.length ? DIRECT_NOTI.slice(0, 30).map(n => '<tr><td>' + n.t + '</td><td>' + n.caseNo + '</td><td>' + n.name + '</td><td>' + n.to + '</td><td>' + n.reason + '</td><td>' + n.ch + '</td><td><span class="badge badge-success">' + n.st + '</span></td></tr>').join('') : '<tr><td colspan="7" style="text-align:center;color:var(--text-secondary)">尚無通知紀錄</td></tr>';
+}
+function dirIsOverdue(c) { return c.status === 'pending' && c.submitTime < '113/12/07'; }
+function notifyPendingDirectCases() {
+  const list = supervisorCases.filter(c => c.status === 'pending');
+  if (!list.length) { showToast('info', '無須通知', '目前無已登錄未核符案件'); return; }
+  list.forEach(c => directNotify(c, dirIsOverdue(c) ? '逾期未核符（送審超過3日）' : '已登錄尚未核符'));
+  showToast('success', '通知已發送', '已以系統訊息通知承辦人員與所屬業務主管，共 ' + list.length + ' 件未核符案件');
+}
+function runDirectDailyCheck() {
+  const list = supervisorCases.filter(c => dirIsOverdue(c));
+  list.forEach(c => directNotify(c, '每日排程檢核：逾期未核符（送審超過3日）'));
+  showToast(list.length ? 'warning' : 'success', '每日排程檢核完成', list.length ? '共 ' + list.length + ' 件逾期未核符，已通知承辦人員及業務主管' : '無逾期未核符案件');
+}
+
+// 介接撥付系統之支領紀錄格式（與人工登錄撥付系統相符；期次案件並比照定撥程式核算格式）
+function dirSnapshotOf(c) {
+  if (c.snap) return c.snap;
+  const d = dirByName(c.pensionerName) || {};
+  return { idType: c.idType, category: d.category || '', acctType: d.acctType || '', bank: d.bank || '', account: d.account || '', payeeBank: d.bank || '', payeeAccount: d.account || '', docNo: c.docNo || ('府退一字第113001' + c.caseNo.slice(-4) + '號'), payDate: ((String(c.period).match(/\d{3}\/\d{2}/) || [''])[0]) ? (String(c.period).match(/\d{3}\/\d{2}/)[0] + '/15') : '', diffFlag: 'N' };
+}
+function dirInterfaceRows(c) {
+  const s = dirSnapshotOf(c);
+  const subMap = { '公務人員':'公務人員撥付系統', '教育人員':'教育人員撥付系統', '軍職人員':'軍職人員撥付系統' };
+  const rows = [
+    ['撥付子系統別', subMap[c.idType] || ''],
+    ['批號', c.batchNo || '（核符後由撥付系統產生）'],
+    ['退撫人身分證字號', c.pensionerId],
+    ['領受人身分證字號', c.payeeId],
+    ['身分別', s.idType],
+    ['退撫類別', s.category],
+    ['會計類別', s.acctType],
+    ['銀行別', s.payeeBank || s.bank],
+    ['帳號', (s.payeeAccount || s.account) ? String(s.payeeAccount || s.account).substring(0,4) + '***' + String(s.payeeAccount || s.account).substring(9) : ''],
+    ['公文文號', s.docNo],
+    ['撥付期間', c.period],
+    ['撥付日期', s.payDate],
+    ['撥付金額', c.amount ? 'NT$ ' + c.amount.toLocaleString('en-US') : ''],
+    ['差額註記', s.diffFlag === 'Y' ? 'Y（原撥付金額 ' + (s.diffOrig || '-') + '；' + (s.diffReason || '-') + '）' : 'N']
+  ];
+  if (c.isPeriodCase) {
+    rows.push(['期次格式（比照定撥程式核算格式）', '共 ' + c.totalPeriods + ' 期／每期 NT$ ' + c.amount.toLocaleString('en-US') + '／首期核符後後續期別納入定撥排程']);
+  }
+  return rows;
+}
+function dirMissingFields(c) {
+  const miss = [];
+  dirInterfaceRows(c).forEach(r => { if (!r[1] || r[1] === '') miss.push(r[0]); });
+  return miss.filter(x => x !== '批號');
+}
+function dirFormSnapshot() {
+  const g = id => (document.getElementById(id) || {}).value || '';
+  const isPeriod = document.getElementById('direct-type-tab-period').classList.contains('active');
+  const pid = g('direct-pensioner-id-input').trim().toUpperCase();
+  const db = payeeLookupDB[pid] || {};
+  const amount = parseInt((isPeriod ? g('direct-amount-period') : g('direct-amount-single')).replace(/[^\d]/g,''), 10) || 0;
+  const payeeId = g('direct-payee-id-input').trim().toUpperCase();
+  const from = g('direct-period-from'), to = g('direct-period-to');
+  const totalPeriods = parseInt(g('direct-period-count'), 10) || 0;
+  return {
+    isPeriod: isPeriod, pid: pid, db: db, amount: amount, payeeId: payeeId, from: from, to: to, totalPeriods: totalPeriods,
+    c: {
+      pensionerName: g('direct-name'), pensionerId: dirMaskId(pid), payeeName: g('direct-payee-name').trim(), payeeId: dirMaskId(payeeId),
+      idType: g('direct-idtype'), type: isPeriod ? '期次' : '單筆', isPeriodCase: isPeriod, totalPeriods: totalPeriods, amount: amount,
+      period: isPeriod ? from + '～' + to + '（首期 ' + from + '）' : g('direct-period-single'),
+      snap: {
+        idType: g('direct-idtype'), category: g('direct-category'), acctType: g('direct-acct-type'),
+        bank: g('direct-bank'), account: db.account || '', payeeBank: g('direct-payee-bank').trim(), payeeAccount: g('direct-payee-account').trim(),
+        docNo: g('direct-docno').trim(), payDate: isPeriod ? g('direct-paydate-period') : g('direct-paydate-single'),
+        reason: g('direct-reason'), remark: g('direct-remark'),
+        diffFlag: document.getElementById('direct-diff-flag').checked ? 'Y' : 'N', diffReason: g('direct-diff-reason'), diffOrig: g('direct-diff-orig')
+      }
+    }
+  };
+}
+function previewDirectInterfaceFormat() {
+  const f = dirFormSnapshot();
+  const rows = dirInterfaceRows(f.c).map(r => '<tr><td style="width:200px;font-weight:600">' + r[0] + '</td><td>' + (r[1] || '<span style="color:var(--danger)">（未填）</span>') + '</td></tr>').join('');
+  const html = '<div class="detail-block"><div class="detail-block-title">介接撥付系統之支領紀錄格式預覽</div><div class="table-wrapper"><table class="data-table"><tbody>' + rows + '</tbody></table></div>' +
+    '<div class="form-hint" style="margin-top:10px">格式與現行人工登錄撥付系統之支領紀錄相符' + (f.isPeriod ? '，期次撥付案件並與本局定撥程式核算格式一致' : '') + '。回饋檔欄位：批號、結果代碼（00 成功／E01 格式錯誤／E02 重複登錄／E03 查無退撫人）、回饋時間，處理方式與人工登錄相同。</div></div>';
+  openDetailModal('介接格式預覽', html, '', '');
+}
+function receiveDirectFeedback() {
+  const list = supervisorCases.filter(c => c.status === 'approved' && c.feedback === '待回饋');
+  if (!list.length) { showToast('info', '無待處理回饋檔', '目前無待回饋之已核符案件'); renderDirectFeedbackLog(); return; }
+  list.forEach(c => {
+    c.feedback = '成功'; c.feedbackTime = dirNow(); c.feedbackFile = 'FB_' + c.batchNo + '.txt';
+    appendAuditLog('回饋檔', '接收撥付系統回饋檔 ' + c.feedbackFile + '，結果代碼 00（成功）', '系統', c.caseNo);
+  });
+  renderDirectFeedbackLog(); renderSupervisorQueue();
+  showToast('success', '回饋檔處理完成', '已處理 ' + list.length + ' 件回饋檔，格式與人工登錄撥付系統相符');
+}
+function renderDirectFeedbackLog() {
+  const tb = document.getElementById('sup-feedback-body');
+  if (!tb) return;
+  const list = supervisorCases.filter(c => c.status === 'approved');
+  tb.innerHTML = list.length ? list.map(c => '<tr><td>' + c.caseNo + '</td><td>' + c.pensionerName + '</td><td>' + (c.subSystem || '-') + '</td><td>' + (c.batchNo || '-') + '</td><td>' + (c.feedbackFile || '-') + '</td><td><span class="badge ' + ((c.feedback || '成功') === '成功' ? 'badge-success' : 'badge-warning') + '">' + (c.feedback || '成功') + '</span></td><td>' + (c.feedbackTime || c.approveTime || '-') + '</td></tr>').join('') : '<tr><td colspan="7" style="text-align:center;color:var(--text-secondary)">尚無已核符案件</td></tr>';
+}
+function dirHistoryHtml(c) {
+  const h = (c.history || []);
+  const rows = h.length ? h.map(x => '<tr><td>' + x.time + '</td><td>' + x.action + '</td><td>' + x.operator + '</td><td>' + x.desc + '</td></tr>').join('') : '<tr><td colspan="4" style="text-align:center;color:var(--text-secondary)">尚無異動紀錄</td></tr>';
+  const canc = (c.cancelRecords || []).map(x => '<tr><td>' + x.time + '</td><td>' + x.by + '</td><td>' + x.batchNo + '（' + x.subSystem + '）</td><td>' + x.reason + '</td></tr>').join('');
+  const ifRows = dirInterfaceRows(c).map(r => '<tr><td style="width:200px">' + r[0] + '</td><td>' + (r[1] || '-') + '</td></tr>').join('');
+  return '<div class="detail-block-title" style="margin-top:16px">介接撥付系統支領紀錄內容</div><div class="table-wrapper"><table class="data-table"><tbody>' + ifRows + '</tbody></table></div>' +
+    '<div class="detail-block-title" style="margin-top:16px">異動紀錄</div><div class="table-wrapper"><table class="data-table"><thead><tr><th>時間</th><th>動作</th><th>操作人</th><th>說明</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
+    (canc ? '<div class="detail-block-title" style="margin-top:16px">取消核准紀錄（已刪除之批號保留備查）</div><div class="table-wrapper"><table class="data-table"><thead><tr><th>時間</th><th>操作人</th><th>已刪除批號</th><th>取消原因</th></tr></thead><tbody>' + canc + '</tbody></table></div>' : '');
+}
+
+
 function saveDirectRecord() {
-  const type = document.getElementById('direct-type-tab-period').classList.contains('active') ? '期次撥付支領紀錄' : '單筆支領紀錄';
-  const name = (document.getElementById('direct-name') || {}).value || '';
-  const payeeName = (document.getElementById('direct-payee-name') || {}).value || '';
+  const f = dirFormSnapshot();
+  const errs = [];
+  const periodRe = /^\d{3}\/\d{2}$/, dateRe = /^\d{3}\/\d{2}\/\d{2}$/, idRe = /^[A-Z][0-9A-D]\d{8}$/;
+  if (!f.db.name || f.db.name !== f.c.pensionerName) errs.push('請先以退撫人身分證統一編號執行「查詢帶入」');
+  if (!idRe.test(f.payeeId)) errs.push('領受人身分證統一編號格式不正確');
+  if (!f.c.payeeName) errs.push('請填寫領受人姓名');
+  if (!f.c.snap.payeeBank || !f.c.snap.payeeAccount) errs.push('請填寫領受人銀行別及帳號');
+  if (!f.c.snap.docNo) errs.push('請填寫公文文號');
+  if (!(f.amount > 0)) errs.push('撥付金額須大於 0');
+  if (!dateRe.test(f.c.snap.payDate)) errs.push('撥付日期格式應為 yyy/mm/dd');
+  if (f.isPeriod) {
+    if (!periodRe.test(f.from) || !periodRe.test(f.to) || f.totalPeriods < 1) errs.push('期次撥付起迄期間不正確（迄須不早於起）');
+  } else if (!periodRe.test(f.c.period)) errs.push('撥付期間格式應為 yyy/mm');
+  if (f.c.snap.diffFlag === 'Y' && (!f.c.snap.diffReason.trim() || !f.c.snap.diffOrig.trim())) errs.push('勾選差額註記時，須填寫差額原因說明及原撥付金額');
+  const dup = supervisorCases.find(x => x.caseNo !== dirDraftCaseNo && x.pensionerName === f.c.pensionerName && x.type === f.c.type && x.period === f.c.period && x.status !== 'void');
+  if (dup) errs.push('撥付期間 ' + f.c.period + ' 已有直撥案件 ' + dup.caseNo + '，請勿重複登錄');
+  if (errs.length) { showToast('error', '檢核未通過', errs.join('；')); return; }
 
-  appendAuditLog('送審', '送出' + type + '（退撫人：' + name + '／領受人：' + payeeName + '），已送交科長核符作業排入待核符清單');
+  const typeLabel = f.isPeriod ? '期次撥付支領紀錄' : '單筆支領紀錄';
+  let c = supervisorCases.find(x => x.caseNo === dirDraftCaseNo);
+  if (c) {
+    Object.assign(c, f.c, { status: 'pending', submittedBy: DIR_HANDLER, submitTime: dirNow() });
+  } else {
+    c = Object.assign({ caseNo: dirDraftCaseNo, submittedBy: DIR_HANDLER, submitTime: dirNow(), status: 'pending' }, f.c);
+    supervisorCases.unshift(c);
+  }
+  c.docNo = f.c.snap.docNo;
+  const miss = dirMissingFields(c);
+  if (miss.length) { showToast('error', '介接格式檢核未通過', '欄位未完整：' + miss.join('、')); return; }
 
-  // 送審後鎖定表單，避免與科長核符作業頁面之修改衝突；科長於核符前仍可於「科長核符作業」頁面調整撥付期間及金額
+  appendAuditLog('送審', '送出' + typeLabel + '（退撫人：' + c.pensionerName + '／領受人：' + c.payeeName + '），案件編號 ' + c.caseNo + '，已排入科長待核符清單', DIR_HANDLER, c.caseNo);
+  directNotify(c, '已登錄尚未核符（新送審案件）');
+
+  // 送審後鎖定表單；核符前由科長於「科長核符作業」頁面修正
   document.querySelectorAll('#view-direct-register .form-control, #view-direct-register select, #view-direct-register textarea').forEach(el => el.disabled = true);
   document.querySelectorAll('#view-direct-register input[type=checkbox]').forEach(el => el.disabled = true);
   document.querySelectorAll('#view-direct-register .btn-outline-primary.btn-sm').forEach(el => el.disabled = true);
@@ -8272,15 +8506,14 @@ function saveDirectRecord() {
   const saveBtn = document.getElementById('direct-save-btn');
   saveBtn.disabled = true;
   saveBtn.innerHTML = '已送審';
-
   const badge = document.getElementById('direct-submit-badge');
   badge.className = 'badge badge-warning';
   badge.innerHTML = '⏳ 已送出，待科長核符';
   const headerBadge = document.getElementById('supervisor-status');
   if (headerBadge) { headerBadge.className = 'badge badge-warning'; headerBadge.innerHTML = '⏳ 已送出，待科長核符'; }
   document.getElementById('direct-submit-hint').style.display = 'inline';
-
-  showToast('success', '儲存送審成功', type + '已送審，請至「科長核符作業」頁面完成核符');
+  renderSupervisorQueue();
+  showToast('success', '儲存送審成功', typeLabel + ' ' + c.caseNo + ' 已送審，並已系統訊息通知承辦人員及業務主管');
 }
 
 function resetDirectRegisterForm() {
@@ -8295,6 +8528,9 @@ function resetDirectRegisterForm() {
   const headerBadge = document.getElementById('supervisor-status');
   if (headerBadge) { headerBadge.className = 'badge badge-secondary'; headerBadge.innerHTML = '📝 草稿編輯中'; }
   document.getElementById('direct-submit-hint').style.display = 'none';
+  const used = supervisorCases.map(x => parseInt(x.caseNo.split('-')[2], 10));
+  if (supervisorCases.some(x => x.caseNo === dirDraftCaseNo)) dirDraftCaseNo = 'DIR-113-' + dirPad(Math.max.apply(null, used) + 1);
+  syncPayeeFromPensioner(false);
 }
 
 // ===== 直撥書函產製：已選取之核符案件（比照撥付系統核算資料） =====
@@ -8360,17 +8596,20 @@ function renderSupervisorQueue() {
   }
   updateSupervisorSelectedInfo();
   document.getElementById('sup-select-all').checked = false;
+  renderDirectFeedbackLog();
 }
 
 function renderSupervisorRow(c) {
   const isPending = c.status === 'pending';
-  const statusBadge = isPending ? '<span class="badge badge-warning">⏳ 待核符</span>' : '<span class="badge badge-success">✔ 已核符（鎖定）</span>';
+  const statusBadge = isPending
+    ? '<span class="badge badge-warning">⏳ 待核符</span><br><span style="font-size:11px;color:var(--text-secondary)">可編修' + (dirIsOverdue(c) ? '・<span style="color:var(--danger)">逾期</span>' : '') + '</span>'
+    : '<span class="badge badge-success">✔ 已核符（鎖定）</span><br><span style="font-size:11px;color:var(--text-secondary)">不可編修・回饋：' + (c.feedback || '成功') + '</span>';
   const typeBadge = c.isPeriodCase ? c.type + '（共' + c.totalPeriods + '期）' : c.type;
   const periodCell = isPending
-    ? '<input type="text" class="form-control sup-edit-period" data-case="' + c.caseNo + '" value="' + c.period + '" style="min-width:150px">'
+    ? '<input type="text" class="form-control sup-edit-period" onchange="syncSupervisorRowEdits(\'' + c.caseNo + '\')" data-case="' + c.caseNo + '" value="' + c.period + '" style="min-width:150px">'
     : c.period;
   const amountCell = isPending
-    ? '<input type="text" class="form-control sup-edit-amount" data-case="' + c.caseNo + '" value="' + c.amount.toLocaleString('en-US') + '" style="min-width:100px">'
+    ? '<input type="text" class="form-control sup-edit-amount" onchange="syncSupervisorRowEdits(\'' + c.caseNo + '\')" data-case="' + c.caseNo + '" value="' + c.amount.toLocaleString('en-US') + '" style="min-width:100px">'
     : ('NT$ ' + c.amount.toLocaleString('en-US'));
   const subInfo = isPending
     ? c.submittedBy + '<br><span style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary)">' + c.submitTime + '</span>'
@@ -8400,45 +8639,54 @@ function findSupervisorCase(caseNo) { return supervisorCases.find(c => c.caseNo 
 function syncSupervisorRowEdits(caseNo) {
   const c = findSupervisorCase(caseNo);
   if (!c) return;
+  // 核符後鎖定：禁止任何修改
+  if (c.status !== 'pending') { showToast('error', '資料已鎖定', '案件 ' + caseNo + ' 已核符，不得修改；如需更正請先由科長取消核准'); return; }
   const periodEl = document.querySelector('.sup-edit-period[data-case="' + caseNo + '"]');
   const amountEl = document.querySelector('.sup-edit-amount[data-case="' + caseNo + '"]');
   if (periodEl && periodEl.value !== c.period) {
+    appendAuditLog('修改', '核符前修改撥付期間：' + c.period + ' → ' + periodEl.value, DIR_SUPERVISOR, caseNo);
     c.period = periodEl.value;
   }
   if (amountEl) {
     const newAmount = parseInt(String(amountEl.value).replace(/[^\d]/g,''), 10);
-    if (!isNaN(newAmount) && newAmount !== c.amount) {
+    if (!isNaN(newAmount) && newAmount > 0 && newAmount !== c.amount) {
+      appendAuditLog('修改', '核符前修改撥付金額：NT$ ' + c.amount.toLocaleString('en-US') + ' → NT$ ' + newAmount.toLocaleString('en-US'), DIR_SUPERVISOR, caseNo);
       c.amount = newAmount;
     }
   }
+}
+
+// 核符：鎖定資料並介接撥付系統登錄支領紀錄
+function dirDoApprove(c, batchMode) {
+  if (c.status !== 'pending') return false;
+  syncSupervisorRowEdits(c.caseNo);
+  const miss = dirMissingFields(c);
+  if (miss.length) { showToast('error', '介接格式檢核未通過', '案件 ' + c.caseNo + ' 欄位未完整：' + miss.join('、')); return false; }
+  const subSystemMap = { '公務人員': '公務人員撥付系統', '教育人員': '教育人員撥付系統', '軍職人員': '軍職人員撥付系統' };
+  const subSystem = subSystemMap[c.idType] || '公務人員撥付系統';
+  const batchNo = 'B' + subSystem.substr(0,1) + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
+  c.status = 'approved';
+  c.approver = DIR_SUPERVISOR;
+  c.approveTime = dirNow();
+  c.batchNo = batchNo;
+  c.subSystem = subSystem;
+  c.feedback = '待回饋';
+  appendAuditLog('核符', DIR_SUPERVISOR + '完成案件 ' + c.caseNo + '（' + c.pensionerName + '）核符' + (batchMode ? '（批次核符）' : '') + '，資料已鎖定禁止修改；已介接' + subSystem + '登錄支領紀錄，批號：' + batchNo, DIR_SUPERVISOR, c.caseNo);
+  if (c.isPeriodCase) appendAuditLog('納入定撥排程', '案件 ' + c.caseNo + ' 首期核符完成後，系統自動將後續 ' + (c.totalPeriods - 1) + ' 期排入定撥排程', '系統', c.caseNo);
+  return true;
 }
 
 function approveSupervisorCase(caseNo) {
   const c = findSupervisorCase(caseNo);
   if (!c) return;
   syncSupervisorRowEdits(caseNo);
-
   if (!confirm('確定要核符「' + c.caseNo + '（' + c.pensionerName + '）」嗎？\n撥付期間：' + c.period + '　撥付金額：NT$ ' + c.amount.toLocaleString('en-US') + '\n核符後系統將鎖定本筆資料，禁止任何修改。')) return;
-
-  const subSystemMap = { '公務人員': '公務人員撥付系統', '教育人員': '教育人員撥付系統', '軍職人員': '軍職人員撥付系統' };
-  const subSystem = subSystemMap[c.idType] || '公務人員撥付系統';
-  const batchNo = 'B' + subSystem.substr(0,1) + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
-
-  c.status = 'approved';
-  c.approver = '科長 陳主任';
-  c.approveTime = '113/12/10 ' + String(new Date().getHours()).padStart(2,'0') + ':' + String(new Date().getMinutes()).padStart(2,'0');
-  c.batchNo = batchNo;
-  c.subSystem = subSystem;
-
-  appendAuditLog('核符', '科長 陳主任完成案件 ' + c.caseNo + '（' + c.pensionerName + '）核符，已介接' + subSystem + '登錄支領紀錄，批號：' + batchNo);
-
+  if (!dirDoApprove(c, false)) return;
   if (c.isPeriodCase) {
-    showToast('success', '首期核符完成', '案件 ' + c.caseNo + ' 首期已核符並介接' + subSystem + '產生批號 ' + batchNo + '；後續 ' + (c.totalPeriods - 1) + ' 期已自動納入本局定撥排程，無需逐期核符');
-    appendAuditLog('納入定撥排程', '案件 ' + c.caseNo + ' 首期核符完成後，系統自動將後續 ' + (c.totalPeriods - 1) + ' 期排入定撥排程');
+    showToast('success', '首期核符完成', '案件 ' + c.caseNo + ' 首期已核符並介接' + c.subSystem + '產生批號 ' + c.batchNo + '；後續 ' + (c.totalPeriods - 1) + ' 期已自動納入本局定撥排程');
   } else {
-    showToast('success', '科長核符', '案件 ' + c.caseNo + ' 已核符，已介接' + subSystem + '登錄支領紀錄，批號：' + batchNo);
+    showToast('success', '科長核符', '案件 ' + c.caseNo + ' 已核符並鎖定，已介接' + c.subSystem + '登錄支領紀錄，批號：' + c.batchNo);
   }
-
   renderSupervisorQueue();
 }
 
@@ -8446,44 +8694,29 @@ function batchApproveSupervisor() {
   const checked = Array.from(document.querySelectorAll('#sup-queue-body input.sup-row-check:checked')).map(el => el.dataset.case);
   if (checked.length === 0) { showToast('warning', '尚未勾選', '請先勾選欲核符之案件'); return; }
   if (!confirm('確定要批次核符已勾選之 ' + checked.length + ' 筆案件嗎？核符後系統將鎖定資料，禁止任何修改。')) return;
-
-  checked.forEach(caseNo => {
-    const c = findSupervisorCase(caseNo);
-    if (!c || c.status !== 'pending') return;
-    syncSupervisorRowEdits(caseNo);
-    const subSystemMap = { '公務人員': '公務人員撥付系統', '教育人員': '教育人員撥付系統', '軍職人員': '軍職人員撥付系統' };
-    const subSystem = subSystemMap[c.idType] || '公務人員撥付系統';
-    const batchNo = 'B' + subSystem.substr(0,1) + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
-    c.status = 'approved';
-    c.approver = '科長 陳主任';
-    c.approveTime = '113/12/10 ' + String(new Date().getHours()).padStart(2,'0') + ':' + String(new Date().getMinutes()).padStart(2,'0');
-    c.batchNo = batchNo;
-    c.subSystem = subSystem;
-    appendAuditLog('核符', '科長 陳主任完成案件 ' + c.caseNo + '（' + c.pensionerName + '）核符（批次核符），已介接' + subSystem + '登錄支領紀錄，批號：' + batchNo);
-    if (c.isPeriodCase) {
-      appendAuditLog('納入定撥排程', '案件 ' + c.caseNo + ' 首期核符完成後，系統自動將後續 ' + (c.totalPeriods - 1) + ' 期排入定撥排程');
-    }
-  });
-
-  showToast('success', '批次核符完成', '已完成 ' + checked.length + ' 筆案件核符，資料已鎖定並介接撥付系統登錄支領紀錄');
+  let ok = 0;
+  checked.forEach(caseNo => { const c = findSupervisorCase(caseNo); if (c && dirDoApprove(c, true)) ok++; });
+  showToast(ok === checked.length ? 'success' : 'warning', '批次核符完成', '成功 ' + ok + ' 筆、未通過 ' + (checked.length - ok) + ' 筆；已核符資料已鎖定並介接撥付系統登錄支領紀錄');
   renderSupervisorQueue();
 }
 
 function cancelSupervisorApproval(caseNo) {
   const c = findSupervisorCase(caseNo);
-  if (!c) return;
-  if (!confirm('確定要取消「' + c.caseNo + '（' + c.pensionerName + '）」之核准嗎？系統將自動介接撥付系統，刪除已登錄之支領紀錄與批號，資料回復為可編修狀態。')) return;
+  if (!c || c.status !== 'approved') return;
+  const reason = prompt('請輸入取消核准原因（必填，將併同刪除紀錄留存）：');
+  if (reason === null) return;
+  if (!reason.trim()) { showToast('warning', '請填寫原因', '取消核准須填寫原因，以利後續查核與追蹤'); return; }
+  if (!confirm('確定要取消「' + c.caseNo + '（' + c.pensionerName + '）」之核准嗎？系統將自動介接撥付系統，刪除已登錄之支領紀錄與批號' + (c.isPeriodCase ? '，並移除已排入定撥排程之後續各期' : '') + '，資料回復為可編修狀態；本次異動及被刪除之批號將保留紀錄。')) return;
 
   const batchNo = c.batchNo || '-';
-  c.status = 'pending';
   const oldApprover = c.approver;
-  delete c.approver;
-  delete c.approveTime;
-  delete c.batchNo;
-  delete c.subSystem;
+  (c.cancelRecords = c.cancelRecords || []).push({ time: dirNow(), by: DIR_SUPERVISOR, reason: reason.trim(), batchNo: batchNo, subSystem: c.subSystem || '-' });
+  c.status = 'pending';
+  delete c.approver; delete c.approveTime; delete c.batchNo; delete c.subSystem; delete c.feedback; delete c.feedbackFile; delete c.feedbackTime;
 
-  appendAuditLog('取消核准', '科長取消案件 ' + c.caseNo + ' 原核准作業（原核符人：' + oldApprover + '），已介接撥付系統刪除批號 ' + batchNo + ' 及其支領紀錄，資料回復為可編修狀態');
-  showToast('success', '取消核准完成', '案件 ' + c.caseNo + ' 已回復為待核符狀態，可重新修改後再次核符');
+  appendAuditLog('取消核准', '科長取消案件 ' + c.caseNo + ' 原核准（原核符人：' + oldApprover + '），原因：' + reason.trim() + '；已介接撥付系統刪除批號 ' + batchNo + ' 及其支領紀錄' + (c.isPeriodCase ? '，並移除後續 ' + (c.totalPeriods - 1) + ' 期定撥排程' : '') + '，資料回復為可編修狀態', DIR_SUPERVISOR, c.caseNo);
+  directNotify(c, '科長取消核准，案件回復為待核符');
+  showToast('success', '取消核准完成', '案件 ' + c.caseNo + ' 已刪除撥付系統批號 ' + batchNo + ' 及支領紀錄並保留異動紀錄，已通知承辦人員與業務主管');
   renderSupervisorQueue();
 }
 
@@ -8506,7 +8739,7 @@ function viewSupervisorCaseDetail(caseNo) {
       <div class="info-row"><div class="info-key">核符狀態</div><div class="info-val">${statusBadge}</div></div>
       ${c.status === 'approved' ? '<div class="info-row"><div class="info-key">核符人／核符時間</div><div class="info-val">' + c.approver + '　' + c.approveTime + '</div></div><div class="info-row"><div class="info-key">批號／撥付子系統</div><div class="info-val">' + c.batchNo + '　' + c.subSystem + '</div></div>' : ''}
     </div>`;
-  openDetailModal('直撥案件明細 · ' + c.pensionerName, html, '直撥案件明細_' + c.caseNo, 'pdf');
+  openDetailModal('直撥案件明細 · ' + c.pensionerName, html + dirHistoryHtml(c), '直撥案件明細_' + c.caseNo, 'pdf');
 }
 
 const directLetterCases = [
@@ -9421,7 +9654,12 @@ document.addEventListener('DOMContentLoaded', function() {
   updateReportStats();
 
   // 初始化科長核符作業預設清單（尚未核符）
-  if (document.getElementById('sup-queue-body')) renderSupervisorQueue();
+  if (document.getElementById('sup-queue-body')) {
+    renderSupervisorQueue();
+    if (!DIRECT_NOTI.length) supervisorCases.filter(c => c.status === 'pending').forEach(c => { DIRECT_NOTI.push({ t: c.submitTime, caseNo: c.caseNo, name: c.pensionerName, to: c.submittedBy + '（承辦人）、' + DIR_MANAGER, reason: dirIsOverdue(c) ? '逾期未核符（送審超過3日）' : '已登錄尚未核符', ch: '系統訊息＋Email', st: '已發送' }); });
+    renderDirectNotiLog();
+    syncPayeeFromPensioner(false);
+  }
 
   // 初始化核心定撥執行頁（一算／二算 清查與備份步驟清單）
   if (document.getElementById('precheck-list')) { renderPrecheckList(); renderBackupSteps(); }
