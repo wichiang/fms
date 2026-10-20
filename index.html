@@ -1093,6 +1093,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div class="sidebar-sub-item" onclick="navigateTo('admin-monthly-audit-perm')">定撥作業查核權限設定</div>
         <div class="sidebar-sub-item" onclick="navigateTo('monthly-exec')">核心定撥執行</div>
 <div class="sidebar-sub-item" onclick="navigateTo('monthly-change')">定撥資料異動</div>
+        <div class="sidebar-sub-item" onclick="navigateTo('monthly-bank')">銀行媒體檔及回饋處理</div>
         <div class="sidebar-sub-item" onclick="navigateTo('monthly-report')">報表產製</div>
         <div class="sidebar-sub-item" onclick="navigateTo('monthly-anomaly')">異常處理</div>
       </div>
@@ -3861,6 +3862,13 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         </div>
         <div id="chg-bank-result" style="display:none"></div>
       </div>
+    </div>
+
+    <div class="view" id="view-monthly-bank">
+      <div class="breadcrumb"><span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-item">定撥作業</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-item current">銀行媒體檔及回饋處理</span></div>
+      <div class="page-header"><div><div class="page-title">產製銀行媒體檔及銀行回饋處理</div><div class="page-subtitle">定撥資料異動名單確認後，產製中華郵政(700)、臺灣銀行(004)、合作金庫(006)、第一銀行(007)之核發清冊與轉出清冊，核對定撥統計表，並檢核銀行回饋檔</div></div></div>
+      <div class="tx-steps" id="mb-steps"></div>
+      <div id="mb-body"></div>
     </div>
 
     <!-- ===== MONTHLY REPORT ===== -->
@@ -11644,6 +11652,178 @@ function chgBankFile() {
 const _navV17 = navigateTo;
 navigateTo = function (id) { _navV17(id); if (id === 'monthly-change') chgRender(); };
 
+
+/* ===== V18：產製銀行媒體檔及銀行回饋處理 ===== */
+const MB_BANKS = [{c: '700', n: '中華郵政'}, {c: '004', n: '臺灣銀行'}, {c: '006', n: '合作金庫'}, {c: '007', n: '第一銀行'}];
+const MB_CATS = ['退休(職)金', '撫慰金（含遺屬年金）', '因公傷病', '撫卹金（含月撫卹金）', '退休俸', '贍養金', '年撫金', '退休俸半數（含軍職遺屬年金、贍養金半數、撫卹之退休俸半數）'];
+const MB_CAT_SHORT = ['退休(職)金', '撫慰金', '因公傷病', '撫卹金', '退休俸', '贍養金', '年撫金', '退休俸半數'];
+const MB_N = {'700': [320, 410, 18, 260, 2850, 95, 1210, 440], '004': [290, 350, 22, 210, 2460, 80, 1050, 380], '006': [150, 190, 9, 120, 1280, 40, 560, 210], '007': [90, 120, 5, 75, 720, 25, 330, 130]};
+const MB_AMT = [[180000, 2400000], [20000, 60000], [40000, 120000], [25000, 80000], [28000, 80000], [15000, 40000], [8000, 30000], [14000, 40000]];
+const MB_CHG_CAT = {'軍職月退': 4, '公務人員月退': 4, '教育人員月退': 4, '政務人員月退': 4, '公務人員月撫': 3, '軍職月撫': 3, '公務人員年撫卹': 6};
+const MB_CHG_BANK = {'臺灣銀行': '004', '合作金庫': '006', '第一銀行': '007', '郵局': '700', '華南銀行': '004', '土地銀行': '004'};
+const MB_CODES = {'00': '成功', 'E01': '帳號不存在／止付', 'E02': '戶名或統編不符', 'E03': '帳戶已結清或凍結', 'E09': '其他錯誤'};
+const mbMask = id => String(id).slice(0, 4) + '***' + String(id).slice(7), mbF = n => Number(n).toLocaleString('en-US');
+const mbEsc = t => String(t == null ? '' : t).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+function mbRnd(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const MB_LT = {A: 10, B: 11, C: 12, D: 13, E: 14, F: 15, G: 16, H: 17, I: 34, J: 18, K: 19, L: 20, M: 21, N: 22, O: 35, P: 23, Q: 24, R: 25, S: 26, T: 27, U: 28, V: 29, W: 32, X: 30, Y: 31, Z: 33};
+function mbId(L, g, d7) { const n = MB_LT[L]; let s = Math.floor(n / 10) + (n % 10) * 9; (g + d7).split('').forEach((x, i) => { s += (+x) * [8, 7, 6, 5, 4, 3, 2, 1][i]; }); return L + g + d7 + ((10 - s % 10) % 10); }
+const MB_STATE = {src: [], stat: {}};
+(function mbGen() {
+  const r = mbRnd(11312), SN = '陳林黃張李王吳劉蔡楊許鄭謝郭洪曾邱廖賴徐周葉蘇莊呂江何蕭羅高潘簡朱鍾彭游詹胡施沈余盧', GN = '志明俊雄淑芬美玲雅婷怡君宗翰建宏文彥惠珠佳穎柏國華家豪育任貞麗秀英靜雯素蘭金龍永昌春嬌', LT = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+  const pick = s => s[Math.floor(r() * s.length)], rows = [];
+  MB_BANKS.forEach(b => MB_N[b.c].forEach((n, ci) => { for (let k = 0; k < n; k++) { const lo = MB_AMT[ci][0], hi = MB_AMT[ci][1]; rows.push({bank: b.c, cat: ci, id: mbId(pick(LT), r() < 0.5 ? '1' : '2', String(Math.floor(r() * 1e7)).padStart(7, '0')), name: pick(SN) + pick(GN) + pick(GN), acct: String(Math.floor(r() * 9e13) + 1e13), amt: Math.round((lo + r() * (hi - lo)) / 10) * 10, ref: null}); } }));
+  const bank = c => rows.filter(x => x.bank === c);
+  [['004', 4, 1], ['700', 4, 6], ['700', 1, 7], ['007', 4, 3], ['004', 1, 7], ['006', 4, 6]].forEach(a => { const s = bank(a[0]).filter(x => x.cat === a[1])[a[2]], d = (a[1] + 3) % 8; rows.push({bank: a[0], cat: d === 4 ? 6 : d, id: s.id, name: s.name, acct: s.acct, amt: 31500, ref: null}); });  // 同一領受人多類別（合理）
+  [['006', 4, 11], ['006', 4, 24]].forEach(a => { const s = bank(a[0]).filter(x => x.cat === a[1])[a[2]]; rows.push({bank: a[0], cat: s.cat, id: s.id, name: s.name, acct: s.acct, amt: s.amt + 500, ref: null}); }); // 疑似同類別重複
+  CHG_PAY.forEach(p => rows.push({bank: MB_CHG_BANK[p.bank] || '004', cat: MB_CHG_CAT[p.cat] != null ? MB_CHG_CAT[p.cat] : 4, id: mbId(p.id[0], (p.amt % 2) ? '1' : '2', p.id.slice(1, 4) + '7' + p.id.slice(7)), name: p.name.replace('Ｏ', '小'), acct: p.acct, amt: p.amt, ref: p, tr: !MB_CHG_BANK[p.bank] || ['華南銀行', '土地銀行'].includes(p.bank)}));
+  rows.sort((a, b) => a.bank < b.bank ? -1 : a.bank > b.bank ? 1 : a.cat - b.cat); const sq = {}; rows.forEach(x => { sq[x.bank] = (sq[x.bank] || 0) + 1; x.seq = sq[x.bank]; });
+  MB_STATE.src = rows;
+  MB_BANKS.forEach(b => { MB_STATE.stat[b.c] = MB_CATS.map(() => ({n: 0, amt: 0})); }); rows.forEach(x => { const t = MB_STATE.stat[x.bank][x.cat]; t.n++; t.amt += x.amt; });
+})();
+const MB = {step: 1, pay: '113/12/25', batch: 'B11312-01', inject: false, ledger: {}, xfer: {}, fb: {}, log: [], flt: {type: '全部', bank: '全部', lv: '全部'}, scen: {'700': 'fail', '004': 'ok', '006': 'dup', '007': 'miss'}, done: {}};
+const mbStatSum = c => MB_STATE.stat[c].reduce((a, x) => ({n: a.n + x.n, amt: a.amt + x.amt}), {n: 0, amt: 0});
+const mbYYY = () => MB.pay.slice(0, 3), mbMMDD = () => MB.pay.slice(4, 6) + MB.pay.slice(7, 9), mbPayOk = () => /^\d{3}\/\d{2}\/\d{2}$/.test(MB.pay) && (d => d.getMonth() === +MB.pay.slice(4, 6) - 1 && d.getDate() === +MB.pay.slice(7, 9))(new Date(+MB.pay.slice(0, 3) + 1911, +MB.pay.slice(4, 6) - 1, +MB.pay.slice(7, 9)));
+const mbName = (pre, c) => pre + '-' + c + '-' + mbMMDD() + '.' + mbYYY();
+function mbOp() { try { chgInitOperators(); const o = chgOperator(); if (o && o.name) return o; } catch (e) {} return {name: '李大同', role: '承辦人', dept: '軍科'}; }
+function mbLog(act, note) { const o = mbOp(); MB.log.unshift({t: execNowStr(), who: o.name, act, note}); }
+const mbGate = () => CHG.status === 'approved';
+
+/* ---- (A) 核發清冊 ---- */
+function mbLedgerText(c) {
+  const rows = MB_STATE.src.filter(x => x.bank === c), b = MB_BANKS.find(x => x.c === c), L = [`"${b.n}（${c}）定撥核發清冊","撥付日 ${MB.pay}","批號 ${MB.batch}","產製時間 ${execNowStr()}"`];
+  let gn = 0, ga = 0; MB_CATS.forEach((cat, ci) => { const x = rows.filter(r => r.cat === ci); if (!x.length) return; L.push('', `"【${cat}】"`, '序號,身分證字號,戶名,受款帳號,金額,備註'); x.forEach((r, i) => { const sp = r.ref && r.ref.susp; L.push([i + 1, r.id, r.name, sp ? r.acct.slice(0, -2) + 'XX' : r.acct, r.amt, sp ? '暫緩撥款（止付）' : (r.tr ? '轉匯' : '')].join(',')); }); const sa = x.reduce((a, r) => a + r.amt, 0); L.push(`小計,${x.length} 筆,,,${sa},`); gn += x.length; ga += sa; });
+  L.push('', `總計,${gn} 筆,,,${ga},`); return {text: '\ufeff' + L.join('\r\n'), n: gn, amt: ga};
+}
+function mbGenLedger(c) { if (!mbPayOk()) { showToast('error', '撥付日期格式錯誤', '請輸入有效之 yyy/mm/dd'); return; } const t = mbLedgerText(c), b = MB_BANKS.find(x => x.c === c); MB.ledger[c] = {t: execNowStr(), name: '核發清冊-' + c + '-' + mbMMDD() + '.' + mbYYY() + '.csv', text: t.text, n: t.n, amt: t.amt}; mbLog('產製核發清冊', b.n + ' ' + t.n + ' 筆 NT$ ' + mbF(t.amt)); showToast('success', '核發清冊已產製', b.n + '：' + mbF(t.n) + ' 筆'); mbRender(); }
+function mbLedgerPrev(c) { const rows = MB_STATE.src.filter(x => x.bank === c), b = MB_BANKS.find(x => x.c === c);
+  openDetailModal(b.n + ' 核發清冊預覽', `<table class="data-table"><thead><tr><th>發放類別</th><th style="text-align:right">筆數</th><th style="text-align:right">金額</th></tr></thead><tbody>${MB_CATS.map((cat, ci) => { const s = MB_STATE.stat[c][ci]; return s.n ? `<tr><td>${cat}</td><td style="text-align:right">${mbF(s.n)}</td><td style="text-align:right">${mbF(s.amt)}</td></tr>` : ''; }).join('')}<tr style="font-weight:700"><td>合計</td><td style="text-align:right">${mbF(mbStatSum(c).n)}</td><td style="text-align:right">${mbF(mbStatSum(c).amt)}</td></tr></tbody></table><div style="margin:12px 0 6px;font-weight:700">明細前 8 筆（已遮罩身分證）</div><table class="data-table"><thead><tr><th>發放類別</th><th>身分證</th><th>戶名</th><th>帳號</th><th>金額</th></tr></thead><tbody>${rows.slice(0, 8).map(r => `<tr><td>${MB_CAT_SHORT[r.cat]}</td><td>${mbMask(r.id)}</td><td>${r.name}</td><td>${r.acct.slice(0, 4)}••••••${r.acct.slice(-4)}</td><td>${mbF(r.amt)}</td></tr>`).join('')}</tbody></table>`); }
+function mbDl(name, text, mime) { dlBlob(name, text, mime || 'text/plain'); showToast('success', '已下載', name); }
+
+/* ---- (B) 轉出清冊與核對 ---- */
+function mbXferBuild(c) {
+  let rows = MB_STATE.src.filter(x => x.bank === c).map(x => Object.assign({}, x, {susp: !!(x.ref && x.ref.susp)}));
+  if (MB.inject && c === '004') { let k = 0; rows = rows.filter(x => !(x.cat === 4 && k++ >= rows.filter(y => y.cat === 4).length - 2)); const f = rows.find(x => x.cat === 1); if (f) f.amt += 100; }
+  const out = [`H|${c}|${mbYYY()}${mbMMDD()}|${MB.batch}`]; rows.forEach((x, i) => out.push(['D', i + 1, x.id, x.name, x.susp ? x.acct.slice(0, -2) + 'XX' : x.acct, x.amt, String(x.cat + 1).padStart(2, '0'), x.susp ? 'Y' : 'N'].join('|')));
+  const amt = rows.reduce((a, x) => a + x.amt, 0); out.push(`T|${rows.length}|${amt}`);
+  return {bank: c, name: mbName('7', c), text: out.join('\r\n') + '\r\n', n: rows.length, amt, susp: rows.filter(x => x.susp).length, rows, t: execNowStr()};
+}
+function mbVerify(X) {
+  const c = X.bank, L = X.text.split(/\r?\n/).filter(Boolean), D = L.filter(l => l[0] === 'D').map(l => l.split('|')), T = (L.find(l => l[0] === 'T') || '').split('|'), checks = [];
+  const nameOk = new RegExp('^7-' + c + '-' + mbMMDD() + '\\.' + mbYYY() + '$').test(X.name);
+  checks.push(['檔名命名規則（7-銀行代號-mmdd.yyy）', X.name, nameOk]);
+  checks.push(['檔頭／檔尾完整', 'H 1 行、T 1 行', L[0] && L[0][0] === 'H' && T[0] === 'T']);
+  const n = D.length, amt = D.reduce((a, x) => a + (+x[5]), 0);
+  checks.push(['檔尾筆數與明細行數一致', `檔尾 ${T[1]}／明細 ${n}`, +T[1] === n]); checks.push(['檔尾總額與明細加總一致', `檔尾 ${mbF(T[2])}／明細 ${mbF(amt)}`, +T[2] === amt]);
+  const st = mbStatSum(c); checks.push(['轉出筆數與定撥統計表相符', `轉出 ${mbF(n)}／統計表 ${mbF(st.n)}`, n === st.n]); checks.push(['轉出金額與定撥統計表相符', `轉出 ${mbF(amt)}／統計表 ${mbF(st.amt)}`, amt === st.amt]);
+  const cat = MB_CATS.map((nm, i) => { const x = D.filter(d => +d[6] === i + 1), s = MB_STATE.stat[c][i], a = x.reduce((q, d) => q + (+d[5]), 0); return {nm: MB_CAT_SHORT[i], fn: x.length, fa: a, sn: s.n, sa: s.amt, ok: x.length === s.n && a === s.amt}; });
+  checks.push(['各發放類別筆數與金額逐項相符', cat.filter(x => !x.ok).length ? cat.filter(x => !x.ok).length + ' 類不符' : '8 類全數相符', cat.every(x => x.ok)]);
+  return {checks, cat, ok: checks.every(x => x[2]), n, amt};
+}
+function mbGenXfer(c) {
+  if (!mbGate()) { showToast('error', '無法產製', '「定撥支領資料異動名單」須經業務組各科主辦人全數確認後，方可產製銀行媒體檔'); return; } if (!mbPayOk()) { showToast('error', '撥付日期格式錯誤', ''); return; }
+  const X = mbXferBuild(c); X.v = mbVerify(X); MB.xfer[c] = X; delete MB.fb[c]; mbLog('產製轉出清冊', X.name + '：' + mbF(X.n) + ' 筆 NT$ ' + mbF(X.amt) + '；核對' + (X.v.ok ? '通過' : '未通過'));
+  if (MB_BANKS.every(b => MB.xfer[b.c] && MB.xfer[b.c].v.ok)) { CHG.bankDone = true; CHG_TRAIL.push({t: execNowStr(), who: mbOp().name, role: mbOp().role, act: '產製銀行轉出清冊', note: '四家銀行轉出清冊核對相符，異動資料鎖定'}); try { chgRender(); } catch (e) {} }
+  showToast(X.v.ok ? 'success' : 'error', X.v.ok ? '轉出清冊核對相符' : '轉出清冊核對不符', X.name); mbRender();
+}
+function mbGenAll() { if (!mbGate()) { showToast('error', '無法產製', '須先完成異動名單簽核'); return; } MB_BANKS.forEach(b => mbGenXfer(b.c)); }
+function mbXferPrev(c) { const X = MB.xfer[c], L = X.text.split(/\r\n/).filter(Boolean); openDetailModal(X.name + ' 內容預覽', `<pre style="background:#0f1b2d;color:#d6e4ff;padding:12px;border-radius:6px;font-size:12px;overflow-x:auto">${mbEsc(L.slice(0, 7).join('\n'))}\n…（共 ${L.length} 行）\n${mbEsc(L[L.length - 1])}</pre><div class="form-hint">格式：H（檔頭）|銀行代號|撥付日|批號；D（明細）|序號|身分證|戶名|帳號|金額|類別碼(01～08)|止付註記；T（檔尾）|筆數|總額。暫緩撥款者帳號尾碼改為 XX 並註記 Y。（欄位格式依各銀行媒體規格參數化）</div>`); }
+function mbStatPrev() { openDetailModal('系統定撥統計表（銀行別×發放類別）', `<table class="data-table"><thead><tr><th>發放類別</th>${MB_BANKS.map(b => `<th style="text-align:right">${b.c} ${b.n}<br>筆數／金額</th>`).join('')}</tr></thead><tbody>${MB_CATS.map((cat, ci) => `<tr><td style="font-size:12px">${cat}</td>${MB_BANKS.map(b => { const s = MB_STATE.stat[b.c][ci]; return `<td style="text-align:right">${mbF(s.n)}<br><span style="font-size:11px;color:var(--text-secondary)">${mbF(s.amt)}</span></td>`; }).join('')}</tr>`).join('')}<tr style="font-weight:700;background:#f5f8ff"><td>合計</td>${MB_BANKS.map(b => `<td style="text-align:right">${mbF(mbStatSum(b.c).n)}<br>${mbF(mbStatSum(b.c).amt)}</td>`).join('')}</tr></tbody></table>`); }
+
+/* ---- (C) 銀行回饋檔檢核 ---- */
+function mbMockFb(c, scen) {
+  const X = MB.xfer[c], r = mbRnd(c.charCodeAt(2) * 97 + scen.length), rows = X.rows.map(x => ({id: x.id, acct: x.susp ? x.acct.slice(0, -2) + 'XX' : x.acct, amt: x.amt, code: x.susp ? 'E01' : '00'}));
+  let name = mbName('8', c), bad = [];
+  const fail = k => { for (let i = 0; i < k; i++) { const x = rows[Math.floor(r() * rows.length)]; if (x.code === '00') x.code = ['E01', 'E02', 'E03', 'E09'][Math.floor(r() * 4)]; } };
+  if (scen === 'fail') fail(9);
+  if (scen === 'dup') { fail(2); for (let i = 0; i < 3; i++) rows.splice(30 + i * 40, 0, Object.assign({}, rows[29 + i * 40])); }
+  if (scen === 'miss') { rows.splice(100, 5); rows.push({id: mbId('Z', '1', '9999991'), acct: '99887766554433', amt: 45000, code: '00'}, {id: mbId('Y', '2', '8888882'), acct: '11223344556677', amt: 23000, code: 'E02'}); }
+  if (scen === 'name') { name = '8-' + c + '-' + mbMMDD().replace(/.$/, '9') + '.' + mbYYY(); }
+  if (scen === 'fmt') bad = [12, 55, 90, 130];
+  if (scen === 'susp') { const s = X.rows.find(x => x.susp); if (s) { const m = rows.find(x => x.id === s.id && x.amt === s.amt); if (m) m.code = '00'; } }
+  const out = [`H|${c}|${mbYYY()}${mbMMDD()}`]; let amt = 0;
+  rows.forEach((x, i) => { amt += x.amt; let l = ['D', i + 1, x.id, x.acct, x.amt, x.code, MB_CODES[x.code]].join('|'); if (bad.includes(i)) l = [l.replace(/\|[^|]*$/, ''), l.replace(/^D\|\d+\|[^|]*\|/, 'D|' + (i + 1) + '|A12|')][i % 2]; if (bad.includes(i) && i === 130) l = ['D', i + 1, x.id, x.acct, 'ABC', x.code, MB_CODES[x.code]].join('|'); out.push(l); });
+  out.push(`T|${scen === 'fmt' ? rows.length + 3 : rows.length}|${amt}`); return {name, text: out.join('\r\n') + '\r\n', src: '模擬（' + ({ok: '全數成功', fail: '含失敗件', dup: '含重複領受人', fmt: '格式錯誤', miss: '行數不符／缺漏', name: '檔名錯誤', susp: '止付未生效'}[scen]) + '）'};
+}
+function mbAnalyze(c, fbName, text) {
+  const X = MB.xfer[c], items = [], add = (type, lv, o) => items.push(Object.assign({type, lv, bank: c, done: false}, o)), reNm = /^8-(\d{3})-(\d{4})\.(\d{3})$/.exec(fbName);
+  if (!reNm) add('檔名錯誤', 'err', {msg: '檔名格式應為 8-銀行代號-mmdd.yyy，實際為「' + fbName + '」', adv: '請銀行依規定命名後重傳'}); else { if (reNm[1] !== c) add('檔名錯誤', 'err', {msg: '檔名銀行代號 ' + reNm[1] + ' 與轉出清冊 ' + c + ' 不符', adv: '確認是否誤傳他行檔案'}); if (reNm[2] !== mbMMDD() || reNm[3] !== mbYYY()) add('檔名錯誤', 'err', {msg: '檔名日期 ' + reNm[2] + '.' + reNm[3] + ' 與轉出清冊 ' + mbMMDD() + '.' + mbYYY() + ' 不符', adv: '確認回饋對應之撥付日'}); }
+  X.rows.forEach(x => { x.fmtbad = false; });
+  const L = text.replace(/^\ufeff/, '').split(/\r?\n/).filter(x => x.trim() !== ''), H = L[0] && L[0].split('|'), Tr = L.length && L[L.length - 1].split('|'), det = [];
+  if (!H || H[0] !== 'H' || H[1] !== c) add('格式錯誤', 'err', {line: 1, msg: '檔頭缺漏或銀行代號不符', adv: '確認檔案格式'});
+  if (!Tr || Tr[0] !== 'T') add('格式錯誤', 'err', {line: L.length, msg: '檔尾缺漏', adv: '確認檔案是否完整傳輸'});
+  let nd = 0; L.forEach((l, i) => { if (l[0] !== 'D') return; nd++; const p = l.split('|'), e = []; if (p.length !== 7) e.push('欄位數 ' + p.length + '（應為 7）'); else { if (!/^[A-Z][12]\d{8}$/.test(p[2])) e.push('身分證字號格式錯誤（' + p[2] + '）'); if (!/^\d{14}$|^\d{12}XX$/.test(p[3])) e.push('帳號格式錯誤'); if (!/^\d+$/.test(p[4])) e.push('金額非數值（' + p[4] + '）'); if (!MB_CODES[p[5]]) e.push('回覆碼未定義（' + p[5] + '）'); } if (e.length) { const sq = +p[1]; if (sq >= 1 && X.rows[sq - 1]) X.rows[sq - 1].fmtbad = true; add('格式錯誤', 'err', {line: i + 1, id: p[2], msg: e.join('；'), raw: l, adv: '請銀行更正該行資料後重傳'}); } else det.push({line: i + 1, id: p[2], acct: p[3], amt: +p[4], code: p[5]}); });
+  if (Tr && Tr[0] === 'T' && +Tr[1] !== nd) add('行數不符', 'err', {msg: '檔尾宣告 ' + Tr[1] + ' 筆，實際明細 ' + nd + ' 行', adv: '請銀行核對產檔程式後重傳'});
+  if (nd !== X.n) add('行數不符', 'err', {msg: '回饋明細 ' + mbF(nd) + ' 行，與轉出清冊 ' + mbF(X.n) + ' 筆不符（差 ' + mbF(nd - X.n) + '）', adv: '逐筆比對缺漏或多餘資料'});
+  const mp = new Map(), byId = new Map(); X.rows.forEach(x => { const o = x.susp ? x.acct.slice(0, -2) + 'XX' : x.acct, k = x.id + '|' + o + '|' + x.amt; x.used = false; x.oa = o; (mp.get(k) || mp.set(k, []).get(k)).push(x); (byId.get(x.id) || byId.set(x.id, []).get(x.id)).push(x); });
+  let ok = 0, stop = 0, ufail = 0;
+  det.forEach(d => { const k = d.id + '|' + d.acct + '|' + d.amt, a = (mp.get(k) || []).find(x => !x.used);
+    if (a) { a.used = true; a.fb = d; if (d.code === '00') { if (a.susp) add('止付未生效', 'err', {line: d.line, id: d.id, name: a.name, acct: d.acct, amt: d.amt, code: d.code, msg: '暫緩撥款（止付）之受款人銀行回覆成功，款項可能已撥出', adv: '立即聯繫銀行追回並通知承辦人'}); else ok++; } else if (a.susp) { stop++; add('預期止付', 'info', {line: d.line, id: d.id, name: a.name, acct: d.acct, amt: d.amt, code: d.code, msg: '暫緩撥款受款人（帳號尾碼 XX）撥付失敗，止付成功', adv: '無須處理，保留止付紀錄'}); } else { ufail++; add('失敗件', 'err', {line: d.line, id: d.id, name: a.name, acct: d.acct, amt: d.amt, code: d.code, msg: '回覆 ' + d.code + '：' + MB_CODES[d.code], adv: d.code === 'E02' ? '核對戶名／統編後重新撥付' : '聯繫領受人更正帳號後重新撥付'}); }
+    } else if (byId.has(d.id)) { const cand = byId.get(d.id); if (cand.every(x => x.used)) add('重複領受人', 'warn', {line: d.line, id: d.id, name: cand[0].name, acct: d.acct, amt: d.amt, code: d.code, msg: '回饋檔重複出現同一筆（身分證＋帳號＋金額），超出轉出清冊筆數', adv: '確認銀行是否重複撥款；如重複撥款須追回'}); else add('資料不符', 'warn', {line: d.line, id: d.id, name: cand[0].name, acct: d.acct, amt: d.amt, code: d.code, msg: '身分證在轉出清冊，但帳號或金額不一致（轉出：' + cand[0].oa.slice(-4) + '／' + mbF(cand[0].amt) + '）', adv: '核對該領受人帳號與金額'}); }
+    else add('統編不符', 'err', {line: d.line, id: d.id, acct: d.acct, amt: d.amt, code: d.code, msg: '回饋失敗／多餘統編：不在本次轉出清冊中' + (d.code !== '00' ? '（回覆 ' + d.code + '）' : ''), adv: '確認是否誤植身分證字號或他行資料'}); });
+  X.rows.filter(x => !x.used && !x.fmtbad).forEach(x => add('回饋缺漏', 'err', {id: x.id, name: x.name, acct: x.oa, amt: x.amt, msg: '轉出清冊有此筆，但回饋檔查無', adv: '請銀行補回饋或確認是否未撥款'}));
+  const g = new Map(); X.rows.forEach(x => (g.get(x.id) || g.set(x.id, []).get(x.id)).push(x)); g.forEach((a, id) => { if (a.length < 2) return; const same = a.some((x, i) => a.some((y, j) => i < j && x.cat === y.cat)); add(same ? '疑似重複領受人' : '同一領受人多筆', same ? 'warn' : 'info', {id, name: a[0].name, acct: a[0].oa, amt: a.reduce((q, x) => q + x.amt, 0), msg: same ? '同一領受人於同一發放類別有 ' + a.length + ' 筆（' + a.map(x => MB_CAT_SHORT[x.cat] + ' ' + mbF(x.amt)).join('、') + '），疑似重複撥付' : '同一領受人 ' + a.length + ' 筆不同發放類別（' + a.map(x => MB_CAT_SHORT[x.cat]).join('、') + '），屬合理多筆', adv: same ? '核對定撥資料是否重複計算' : '無須處理'}); });
+  const miss = items.filter(i => i.type === '回饋缺漏').length, oth = items.filter(i => ['格式錯誤', '統編不符', '資料不符', '重複領受人', '檔名錯誤', '行數不符', '止付未生效'].includes(i.type)).length;
+  return {name: fbName, n: nd, ok, stop, ufail, miss, oth, items, t: execNowStr()};
+}
+function mbFbRun(c, name, text, src) { const X = MB.xfer[c]; if (!X || !X.v.ok) { showToast('error', '無法檢核', '請先產製並核對相符轉出清冊'); return; } MB.fb[c] = {name, text, src, res: mbAnalyze(c, name, text)}; const r = MB.fb[c].res; mbLog('銀行回饋檢核', c + ' ' + name + '：成功 ' + r.ok + '、預期止付 ' + r.stop + '、失敗 ' + r.ufail + '、缺漏 ' + r.miss + '、其他異常 ' + r.oth); showToast(r.items.some(i => i.lv === 'err') ? 'warning' : 'success', '回饋檢核完成', c + '：' + r.items.filter(i => i.lv !== 'info').length + ' 項異常'); mbRender(); }
+function mbFbMock(c) { const m = mbMockFb(c, MB.scen[c]); mbFbRun(c, m.name, m.text, m.src); }
+function mbFbUpload(c, f) { if (!f) return; const rd = new FileReader(); rd.onload = () => mbFbRun(c, f.name, String(rd.result), '上傳'); rd.readAsText(f, 'utf-8'); }
+function mbFbDl(c) { const m = MB.fb[c]; mbDl(m.name, m.text); }
+function mbExport() { const rows = mbItems(); mbDl('銀行回饋異常檢誤清單_' + mbMMDD() + '.' + mbYYY() + '.xls', `<html><head><meta charset="utf-8"></head><body><h3>銀行回饋異常檢誤清單（撥付日 ${MB.pay}）</h3><table border="1"><tr><th>銀行</th><th>檔案行號</th><th>異常類型</th><th>身分證字號</th><th>戶名</th><th>帳號</th><th>金額</th><th>回覆碼</th><th>說明</th><th>處理建議</th><th>處理狀態</th></tr>${rows.map(i => `<tr><td>${i.bank}</td><td>${i.line || ''}</td><td>${i.type}</td><td>${i.id || ''}</td><td>${i.name || ''}</td><td>${i.acct || ''}</td><td>${i.amt || ''}</td><td>${i.code || ''}</td><td>${mbEsc(i.msg)}</td><td>${mbEsc(i.adv)}</td><td>${i.done ? '已核對' : '待處理'}</td></tr>`).join('')}</table></body></html>`, 'application/vnd.ms-excel'); }
+const mbItems = () => MB_BANKS.flatMap(b => MB.fb[b.c] ? MB.fb[b.c].res.items : []).filter(i => (MB.flt.type === '全部' || i.type === MB.flt.type) && (MB.flt.bank === '全部' || i.bank === MB.flt.bank) && (MB.flt.lv === '全部' || i.lv === MB.flt.lv));
+function mbToggle(b, idx) { const it = MB.fb[b].res.items[idx]; it.done = !it.done; mbRender(); }
+
+/* ---- 畫面 ---- */
+function mbRender() {
+  const el = document.getElementById('mb-body'); if (!el) return; const gate = mbGate();
+  document.getElementById('mb-steps').innerHTML = [['前置條件與參數', '異動名單簽核'], ['核發清冊', '各銀行發放明細'], ['轉出清冊與核對', '筆數金額勾稽'], ['銀行回饋檢核', '失敗／重複／異常']].map((n, i) => `<div class="tx-step ${MB.step === i + 1 ? 'active' : ''} ${(i === 0 && gate) ? 'done' : ''} ${i > 0 && !gate ? 'lock' : ''}" onclick="mbGo(${i + 1})"><div class="tx-num">${(i === 0 && gate) ? '✓' : i + 1}</div><div><b>${n[0]}</b><small>${n[1]}</small></div></div>`).join('');
+  el.innerHTML = [mbS1, mbS2, mbS3, mbS4][MB.step - 1]();
+}
+function mbGo(n) { if (n > 1 && !mbGate()) { showToast('warning', '尚未符合產製條件', '須先完成「定撥支領資料異動名單」簽核確認'); return; } if (n === 4 && !MB_BANKS.some(b => MB.xfer[b.c] && MB.xfer[b.c].v.ok)) { showToast('warning', '請先產製轉出清冊', '回饋檢核須以核對相符之轉出清冊為基準'); return; } MB.step = n; mbRender(); }
+function mbDemoApprove() { CHG.status = 'approved'; CHG.listNo = CHG.listNo || 'CHG-11412-001'; MH_DEPTS.forEach(d => { CHG.signs[d] = {st: 'ok', at: execNowStr(), note: '（示範）'}; }); CHG_TRAIL.push({t: execNowStr(), who: '示範', role: '-', act: '簽核完成', note: '示範：略過簽核流程'}); try { chgRender(); } catch (e) {} showToast('success', '示範：簽核已完成', ''); mbRender(); }
+function mbS1() {
+  const gate = mbGate(), dp = MH_DEPTS.map(d => { const s = CHG.signs && CHG.signs[d]; const st = s ? s.st : 'none'; return `<tr><td>${d}</td><td>${{ok: '<span class="badge badge-success">已確認</span>', pending: '<span class="badge badge-warning">待簽核</span>', na: '<span class="badge badge-secondary">無異動免簽</span>', none: '<span class="badge badge-secondary">尚未送簽</span>'}[st] || '<span class="badge badge-secondary">-</span>'}</td><td>${s && s.at ? s.at : '-'}</td></tr>`; }).join('');
+  return `<div class="card" style="margin-bottom:16px;border-left:4px solid ${gate ? 'var(--success)' : 'var(--warning)'}"><div class="card-header"><div><div class="card-title">產製前置條件</div><div class="card-subtitle">須經業務組核對並確認「定撥試算後定撥支領資料異動名單」完成後，始可產製銀行媒體檔</div></div>${gate ? '<span class="badge badge-success">條件已符合</span>' : '<span class="badge badge-warning">尚未符合</span>'}</div>
+    <div class="table-wrapper"><table class="data-table"><thead><tr><th>科別</th><th>異動名單簽核</th><th>確認時間</th></tr></thead><tbody>${dp}</tbody></table></div><div style="font-size:13px;margin-top:8px">異動名單編號：${CHG.listNo || '（尚未產製）'}｜暫緩撥款受款人：${CHG_PAY.filter(p => p.susp).length} 筆（轉出清冊自動標記止付並將帳號尾碼改為 XX）</div>
+    <div class="page-actions" style="margin-top:12px"><button class="btn btn-outline-primary" onclick="navigateTo('monthly-change')">前往定撥資料異動作業</button>${gate ? '' : '<button class="btn btn-outline" onclick="mbDemoApprove()">（示範）直接視為簽核完成</button>'}${gate ? '<button class="btn btn-gold" onclick="mbGo(2)">下一步：產製核發清冊 →</button>' : ''}</div></div>
+  <div class="card" style="margin-bottom:16px"><div class="section-title">撥付參數</div><div class="form-row cols-3"><div class="form-group"><label class="form-label">撥付日期 yyy/mm/dd</label><input class="form-control" value="${MB.pay}" onchange="MB.pay=this.value.trim();MB.xfer={};MB.ledger={};MB.fb={};mbRender()"></div><div class="form-group"><label class="form-label">批號</label><input class="form-control" value="${MB.batch}" onchange="MB.batch=this.value.trim()"></div><div class="form-group"><label class="form-label">檔名範例</label><input class="form-control" disabled value="${mbPayOk() ? '轉出 ' + mbName('7', '004') + '　回饋 ' + mbName('8', '004') : '日期格式錯誤'}"></div></div>
+    <div class="form-hint">命名規則：7 開頭為本局提供之轉出清冊、8 開頭為銀行回饋檔；格式「7-銀行代號-mmdd.yyy」（mmdd 為撥付月日、yyy 為民國年），例如臺銀 004 為 7-004-${mbMMDD()}.${mbYYY()}。四家銀行：中華郵政 700、臺灣銀行 004、合作金庫 006、第一銀行 007。</div></div>
+  <div class="card"><div class="card-title" style="margin-bottom:8px">作業紀錄</div>${MB.log.length ? `<div class="table-wrapper"><table class="data-table"><thead><tr><th>時間</th><th>人員</th><th>動作</th><th>說明</th></tr></thead><tbody>${MB.log.slice(0, 12).map(l => `<tr><td>${l.t}</td><td>${l.who}</td><td>${l.act}</td><td style="font-size:12px">${mbEsc(l.note)}</td></tr>`).join('')}</tbody></table></div>` : '<div class="form-hint">尚無紀錄</div>'}</div>`;
+}
+function mbS2() {
+  return `<div class="card" style="margin-bottom:16px"><div class="card-header"><div><div class="card-title">產製銀行核發清冊（發放明細）</div><div class="card-subtitle">各金融機構所需之發放明細，依 8 類發放類別分段列示並小計；暫緩撥款受款人標示止付</div></div><div style="display:flex;gap:8px"><button class="btn btn-outline btn-sm" onclick="mbStatPrev()">檢視定撥統計表</button><button class="btn btn-gold btn-sm" onclick="MB_BANKS.forEach(b=>mbGenLedger(b.c))">產製全部核發清冊</button></div></div>
+    <div class="table-wrapper"><table class="data-table"><thead><tr><th>發放類別</th>${MB_BANKS.map(b => `<th style="text-align:right">${b.c} ${b.n}</th>`).join('')}</tr></thead><tbody>${MB_CATS.map((cat, ci) => `<tr><td style="font-size:12px">${cat}</td>${MB_BANKS.map(b => `<td style="text-align:right">${mbF(MB_STATE.stat[b.c][ci].n)}</td>`).join('')}</tr>`).join('')}<tr style="font-weight:700;background:#f5f8ff"><td>合計（筆）</td>${MB_BANKS.map(b => `<td style="text-align:right">${mbF(mbStatSum(b.c).n)}</td>`).join('')}</tr></tbody></table></div></div>
+  <div class="tx-grid">${MB_BANKS.map(b => { const l = MB.ledger[b.c]; return `<div class="card"><div class="card-title">${b.c} ${b.n}</div><div class="manual-meta" style="margin:4px 0 10px">${mbF(mbStatSum(b.c).n)} 筆｜NT$ ${mbF(mbStatSum(b.c).amt)}</div>${l ? `<div class="form-hint" style="color:var(--success)">已產製：${l.name}<br>${l.t}</div><div style="display:flex;gap:6px;margin-top:8px"><button class="btn btn-outline btn-sm" onclick="mbLedgerPrev('${b.c}')">預覽</button><button class="btn btn-primary btn-sm" onclick="mbDl(MB.ledger['${b.c}'].name,MB.ledger['${b.c}'].text,'text/csv')">下載</button></div>` : `<button class="btn btn-gold btn-sm" onclick="mbGenLedger('${b.c}')">產製核發清冊</button> <button class="btn btn-outline btn-sm" onclick="mbLedgerPrev('${b.c}')">預覽</button>`}</div>`; }).join('')}</div>
+  <div class="page-actions" style="margin-top:16px"><button class="btn btn-gold" onclick="mbGo(3)">下一步：產製轉出清冊 →</button></div>`;
+}
+function mbS3() {
+  const all = MB_BANKS.every(b => MB.xfer[b.c] && MB.xfer[b.c].v.ok);
+  return `<div class="card" style="margin-bottom:16px"><div class="card-header"><div><div class="card-title">產製銀行轉出清冊（直接撥款用）並核對定撥統計表</div><div class="card-subtitle">依命名規則產製 7-銀行代號-mmdd.yyy；產檔後自動檢核各銀行轉出檔之筆數、金額，並與系統定撥統計表逐類別比對，須完全相符</div></div><div style="display:flex;gap:8px"><button class="btn btn-outline btn-sm" onclick="mbStatPrev()">檢視定撥統計表</button><button class="btn btn-gold btn-sm" onclick="mbGenAll()">產製並核對全部</button></div></div>
+    <label style="font-size:13px;color:var(--text-secondary)"><input type="checkbox" ${MB.inject ? 'checked' : ''} onchange="MB.inject=this.checked;MB.xfer={};MB.fb={};mbRender()"> （示範）模擬臺銀 004 轉出檔短少 2 筆並有 1 筆金額差異，以驗證核對機制</label>
+    <div class="table-wrapper" style="margin-top:12px"><table class="data-table"><thead><tr><th>銀行</th><th>轉出清冊檔名</th><th>筆數</th><th>總額</th><th>止付標記</th><th>統計表筆數／金額</th><th>核對結果</th><th>操作</th></tr></thead><tbody>${MB_BANKS.map(b => { const X = MB.xfer[b.c], s = mbStatSum(b.c); return `<tr><td>${b.c} ${b.n}</td><td style="font-family:monospace">${mbName('7', b.c)}</td><td style="text-align:right">${X ? mbF(X.n) : '-'}</td><td style="text-align:right">${X ? mbF(X.amt) : '-'}</td><td>${X ? X.susp : '-'}</td><td style="font-size:12px">${mbF(s.n)}／${mbF(s.amt)}</td><td>${X ? (X.v.ok ? '<span class="badge badge-success">相符</span>' : '<span class="badge badge-danger">不符</span>') : '<span class="badge badge-secondary">未產製</span>'}</td><td style="white-space:nowrap">${X ? `<button class="btn btn-outline btn-sm" onclick="mbXferPrev('${b.c}')">預覽</button> <button class="btn btn-primary btn-sm" ${X.v.ok ? '' : 'disabled title="核對不符，不可下載"'} onclick="mbDl(MB.xfer['${b.c}'].name,MB.xfer['${b.c}'].text)">下載</button>` : `<button class="btn btn-gold btn-sm" onclick="mbGenXfer('${b.c}')">產製</button>`}</td></tr>`; }).join('')}</tbody></table></div></div>
+  ${MB_BANKS.filter(b => MB.xfer[b.c]).map(b => { const X = MB.xfer[b.c], v = X.v; return `<div class="card" style="margin-bottom:16px;border-left:4px solid ${v.ok ? 'var(--success)' : 'var(--danger)'}"><div class="card-title" style="margin-bottom:8px">${b.c} ${b.n} 核對明細：${v.ok ? '<span class="tx-ok">全數相符</span>' : '<span class="tx-bad">核對不符，請重新產製</span>'}</div>${v.checks.map(c => `<div style="font-size:13px;padding:2px 0"><span class="${c[2] ? 'tx-ok' : 'tx-bad'}" style="display:inline-block;width:20px">${c[2] ? '✓' : '✕'}</span><b>${c[0]}</b>：${c[1]}</div>`).join('')}${v.ok ? '' : `<div class="table-wrapper" style="margin-top:8px"><table class="data-table"><thead><tr><th>發放類別</th><th>轉出筆數</th><th>統計表筆數</th><th>轉出金額</th><th>統計表金額</th><th>差異</th></tr></thead><tbody>${v.cat.filter(x => !x.ok).map(x => `<tr class="tx-chg"><td>${x.nm}</td><td>${mbF(x.fn)}</td><td>${mbF(x.sn)}</td><td>${mbF(x.fa)}</td><td>${mbF(x.sa)}</td><td class="neg">${mbF(x.fn - x.sn)} 筆／${mbF(x.fa - x.sa)} 元</td></tr>`).join('')}</tbody></table></div>`}</div>`; }).join('')}
+  <div class="page-actions"><button class="btn btn-gold" ${all ? '' : 'disabled'} onclick="mbGo(4)">${all ? '下一步：銀行回饋檢核 →' : '四家轉出清冊核對相符後方可進入回饋檢核'}</button></div>`;
+}
+function mbS4() {
+  const scen = [['ok', '全數成功（暫緩撥款回覆止付）'], ['fail', '含失敗件（帳號／戶名錯誤）'], ['dup', '含重複領受人'], ['fmt', '格式錯誤'], ['miss', '行數不符／缺漏／多餘統編'], ['name', '檔名錯誤'], ['susp', '止付未生效']];
+  const rs = MB_BANKS.filter(b => MB.fb[b.c]).map(b => MB.fb[b.c].res), sum = k => rs.reduce((a, r) => a + r[k], 0), tot = sum('ok') + sum('stop') + sum('ufail') + sum('miss') + sum('oth') || 1;
+  const seg = [['成功', sum('ok'), '#2e7d4f'], ['預期止付', sum('stop'), '#7b8794'], ['非預期失敗', sum('ufail'), '#c62828'], ['缺漏', sum('miss'), '#ef6c00'], ['其他異常', sum('oth'), '#7b1fa2']];
+  let acc = 0; const cg = seg.map(s => { const a = acc, b = acc + s[1] / tot * 100; acc = b; return `${s[2]} ${a}% ${b}%`; }).join(',');
+  const items = mbItems(), types = ['全部', ...new Set(MB_BANKS.flatMap(b => MB.fb[b.c] ? MB.fb[b.c].res.items.map(i => i.type) : []))], lc = {err: 'danger', warn: 'warning', info: 'info'}, ln = {err: '錯誤', warn: '警示', info: '提示'};
+  const cnt = {}; items.forEach(i => { cnt[i.type] = (cnt[i.type] || 0) + 1; }); const mx = Math.max(1, ...Object.values(cnt));
+  return `<div class="tx-grid" style="margin-bottom:16px">${MB_BANKS.map(b => { const X = MB.xfer[b.c], f = MB.fb[b.c]; return `<div class="card"><div class="card-title">${b.c} ${b.n}</div><div class="manual-meta" style="margin:2px 0 8px">轉出 ${X ? mbF(X.n) : '-'} 筆｜應回饋檔名：<span style="font-family:monospace">${mbName('8', b.c)}</span></div>
+      ${X && X.v.ok ? `<select class="form-control" onchange="MB.scen['${b.c}']=this.value">${scen.map(s => `<option value="${s[0]}" ${MB.scen[b.c] === s[0] ? 'selected' : ''}>${s[1]}</option>`).join('')}</select><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"><button class="btn btn-gold btn-sm" onclick="mbFbMock('${b.c}')">模擬接收回饋檔</button><button class="btn btn-outline btn-sm" onclick="document.getElementById('mbf-${b.c}').click()">上傳回饋檔</button>${f ? `<button class="btn btn-outline btn-sm" onclick="mbFbDl('${b.c}')">下載</button>` : ''}</div><input type="file" id="mbf-${b.c}" style="display:none" onchange="mbFbUpload('${b.c}',this.files[0]);this.value=''">` : '<span class="badge badge-secondary">轉出清冊尚未核對相符</span>'}
+      ${f ? `<div style="margin-top:8px;font-size:12px"><b>${f.name}</b>（${f.src}）<br>回饋 ${mbF(f.res.n)} 行｜成功 ${mbF(f.res.ok)}｜預期止付 ${f.res.stop}｜失敗 ${f.res.ufail}｜缺漏 ${f.res.miss}｜其他異常 ${f.res.oth}</div>` : ''}</div>`; }).join('')}</div>
+  ${rs.length ? `<div class="card" style="margin-bottom:16px"><div class="card-title" style="margin-bottom:12px">回饋檢核總覽（視覺化）</div><div style="display:flex;gap:28px;flex-wrap:wrap;align-items:center"><div style="width:150px;height:150px;border-radius:50%;background:conic-gradient(${cg});position:relative;flex-shrink:0"><div style="position:absolute;inset:32px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column"><b style="font-size:18px">${mbF(rs.reduce((a, r) => a + r.n, 0))}</b><span style="font-size:11px;color:var(--text-secondary)">回饋筆數</span></div></div>
+    <div style="flex:1;min-width:240px">${seg.map(s => `<div style="display:flex;align-items:center;gap:8px;font-size:13px;margin:3px 0"><span style="width:12px;height:12px;border-radius:2px;background:${s[2]}"></span>${s[0]}<b style="margin-left:auto">${mbF(s[1])}</b></div>`).join('')}</div>
+    <div style="flex:1.3;min-width:260px"><div style="font-size:12px;color:var(--text-secondary);margin-bottom:4px">異常類型分布</div>${Object.keys(cnt).map(k => `<div style="display:flex;align-items:center;gap:8px;font-size:12px;margin:3px 0"><span style="width:96px">${k}</span><div style="flex:1;height:12px;background:#eef1f6;border-radius:6px"><div style="width:${cnt[k] / mx * 100}%;height:100%;background:var(--secondary);border-radius:6px"></div></div><b>${cnt[k]}</b></div>`).join('') || '<span class="form-hint">無異常</span>'}</div></div></div>
+  <div class="card"><div class="card-header"><div><div class="card-title">回饋異常檢誤清單</div><div class="card-subtitle">自動比對失敗統編、識別多筆重複領受人及格式／行數異常，供線上核對</div></div><button class="btn btn-success btn-sm" onclick="mbExport()">匯出 Excel</button></div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px"><select class="form-control" style="width:auto" onchange="MB.flt.type=this.value;mbRender()">${types.map(t => `<option ${MB.flt.type === t ? 'selected' : ''}>${t}</option>`).join('')}</select><select class="form-control" style="width:auto" onchange="MB.flt.bank=this.value;mbRender()">${['全部', ...MB_BANKS.map(b => b.c)].map(t => `<option ${MB.flt.bank === t ? 'selected' : ''}>${t}</option>`).join('')}</select><select class="form-control" style="width:auto" onchange="MB.flt.lv=this.value;mbRender()">${['全部', 'err', 'warn', 'info'].map(t => `<option value="${t}" ${MB.flt.lv === t ? 'selected' : ''}>${t === '全部' ? '全部等級' : ln[t]}</option>`).join('')}</select><span class="badge badge-info" style="align-self:center">${items.length} 項</span></div>
+    <div class="table-wrapper"><table class="data-table"><thead><tr><th>銀行</th><th>行號</th><th>異常類型</th><th>身分證</th><th>戶名</th><th>帳號</th><th>金額</th><th>回覆</th><th>說明</th><th>處理建議</th><th>狀態</th></tr></thead><tbody>${items.slice(0, 200).map(i => { const idx = MB.fb[i.bank].res.items.indexOf(i); return `<tr class="${i.done ? '' : i.lv === 'err' ? 'tx-chg' : ''}"><td>${i.bank}</td><td>${i.line || '-'}</td><td><span class="badge badge-${lc[i.lv]}">${i.type}</span></td><td>${i.id ? mbMask(i.id) : '-'}</td><td>${i.name || '-'}</td><td style="font-family:monospace;font-size:12px">${i.acct ? i.acct.slice(0, 4) + '••••' + i.acct.slice(-4) : '-'}</td><td style="text-align:right">${i.amt ? mbF(i.amt) : '-'}</td><td>${i.code || '-'}</td><td style="font-size:12px;max-width:260px">${mbEsc(i.msg)}</td><td style="font-size:12px;max-width:200px">${mbEsc(i.adv)}</td><td><button class="btn btn-sm ${i.done ? 'btn-outline' : 'btn-gold'}" onclick="mbToggle('${i.bank}',${idx})">${i.done ? '已核對' : '標記核對'}</button></td></tr>`; }).join('') || '<tr><td colspan="11" style="text-align:center;color:var(--text-secondary)">無符合條件之異常</td></tr>'}</tbody></table></div></div>` : '<div class="card"><div class="form-hint">請於上方各銀行卡片「模擬接收回饋檔」或「上傳回饋檔」。回饋檔命名 8-銀行代號-mmdd.yyy；格式 H|銀行代號|撥付日、D|序號|身分證|帳號|金額|回覆碼|說明、T|筆數|總額（回覆碼 00 成功，其餘為失敗）。</div></div>'}`;
+}
+function chgBankFile() { if (CHG.status !== 'approved' || CHG.bankDone) { showToast('error', '無法產製', CHG.bankDone ? '銀行轉出清冊已產製並鎖定' : '異動名單須經各科主辦人全數確認後方可產製'); return; } navigateTo('monthly-bank'); showToast('info', '已前往銀行媒體檔作業', '核發清冊、轉出清冊及回饋檢核集中於此辦理'); }
+const _navMB = navigateTo;
+navigateTo = function (id) { _navMB(id); if (id === 'monthly-bank') { const sm = document.getElementById('submenu-monthly'); if (sm) { sm.classList.add('open'); const m = document.getElementById('menu-monthly'); if (m) m.classList.add('expanded'); } mbRender(); document.querySelectorAll('.sidebar-sub-item').forEach(e => { if ((e.getAttribute('onclick') || '').indexOf("'monthly-bank'") > -1) e.classList.add('active'); }); } };
 </script>
 
 <div class="modal-overlay" id="sh-preview-modal"><div class="modal modal-lg">
