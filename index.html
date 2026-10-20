@@ -30,7 +30,7 @@ document.addEventListener('click', function(e) {
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>公務人員退休撫卹基金管理局 - 基金業務系統（V13 課稅案件管理與扣繳憑單）</title>
+<title>公務人員退休撫卹基金管理局 - 基金業務系統（V15 定撥作業需求對照）</title>
 <style>
 :root {
   --primary: #0a2647;
@@ -3214,9 +3214,70 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       </div>
       <div class="page-header">
         <div class="page-title">定撥前準備作業</div>
-        <div class="page-subtitle">113年12月定撥 - 每月10日外部機關資料比對查核（9項）與每月20日退撫平台會驗作業</div>
+        <div class="page-subtitle">113年12月定撥 - 每月10日起外部機關資料轉入與比對查核（9大機關）、每月20日起人事行政總處退撫資料界接與會驗作業</div>
       </div>
       
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-header">
+          <div>
+            <div class="card-title">任務零：外部機關資料轉入與異常阻斷檢核</div>
+            <div class="card-subtitle">每月10日起自動轉入 9 大外部機關查驗資料、每月20日起界接行政院人事行政總處退撫資料；轉入時除檢核資料格式，並比對筆數與歷史平均值之偏差，超過檢核值即自動阻斷轉檔並發送警報</div>
+          </div>
+          <span class="badge badge-success" id="ex-summary-badge">已轉入 10 / 10</span>
+        </div>
+
+        <div id="ex-alert-banner" style="display:none;margin-bottom:12px" class="info-card danger"></div>
+
+        <div class="form-row cols-4">
+          <div class="form-group">
+            <label class="form-label">排程狀態</label>
+            <div style="padding-top:6px"><span class="badge badge-success">已啟用</span> <span style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">每月10日、20日 02:00</span></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">筆數偏差檢核值（±%）</label>
+            <div style="display:flex;gap:6px"><input type="number" class="form-control" id="ex-th" value="10" min="1" max="100" style="flex:1"><button class="btn btn-outline btn-sm" onclick="exApplyTh()">套用</button></div>
+            <div class="form-hint">與近 12 期歷史平均筆數比較</div>
+          </div>
+          <div class="form-group" style="grid-column:span 2">
+            <label class="form-label">模擬資料情境（Demo）</label>
+            <select class="form-control" id="ex-scenario">
+              <option value="normal">正常資料（格式正確、筆數接近歷史平均）</option>
+              <option value="count">筆數異常（偏差超過檢核值）</option>
+              <option value="format">格式錯誤（欄位／檢核碼不符）</option>
+            </select>
+            <div class="form-hint">選擇情境後，按各列「轉入」即可驗證檢核與阻斷行為</div>
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead><tr><th>機關</th><th>資料內容</th><th>排程</th><th>轉入時間</th><th>格式檢核</th><th>本期筆數</th><th>歷史平均</th><th>偏差率</th><th>狀態</th><th>操作</th></tr></thead>
+            <tbody id="ex-list"></tbody>
+          </table>
+        </div>
+
+        <div style="margin-top:20px">
+          <div class="card-title" style="margin-bottom:8px;font-size:calc(14px * var(--font-scale))">異常阻斷警報紀錄</div>
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead><tr><th>時間</th><th>機關</th><th>類型</th><th>說明</th><th>警報發送對象</th><th>處理狀態</th></tr></thead>
+              <tbody id="ex-alert-log"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div style="margin-top:20px">
+          <div class="card-title" style="margin-bottom:4px;font-size:calc(14px * var(--font-scale))">轉入完成通知紀錄</div>
+          <div class="card-subtitle" style="margin-bottom:8px">轉入完成後，依「定撥作業查核權限設定」之軍、公、教各科主辦人／承辦人名單自動通知對應業務人員進行比對（法務部資料僅通知該科主辦人及法務部查核主辦人）</div>
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead><tr><th>時間</th><th>機關</th><th>通知對象</th><th>管道</th><th>狀態</th></tr></thead>
+              <tbody id="ex-notify-log"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
       <div class="card" style="margin-bottom:20px">
         <div class="card-header">
           <div>
@@ -5699,11 +5760,24 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
                 <button class="btn btn-sm btn-danger" onclick="toggleInterfaceStatus(this,'off')">停用</button>
               </td>
             </tr>
+            <tr>
+              <td><strong>行政院人事行政總處退撫平台</strong></td>
+              <td class="masked">IF-DGPA-06</td>
+              <td><span class="badge badge-warning">SFTP 檔案交換</span></td>
+              <td>sftp://pension.dgpa.gov.tw:22</td>
+              <td>113/12/20 02:10:44</td>
+              <td><span class="badge badge-success">啟用</span></td>
+              <td>
+                <button class="btn btn-sm btn-outline" onclick="openInterfaceModal(this)">編輯</button>
+                <button class="btn btn-sm btn-outline" onclick="openInterfaceModal(this,true)">連線設定</button>
+                <button class="btn btn-sm btn-danger" onclick="toggleInterfaceStatus(this,'off')">停用</button>
+              </td>
+            </tr>
           </tbody>
         </table>
         </div>
         <div class="pagination">
-          <div class="pagination-info">顯示 1-5 / 共 5 筆</div>
+          <div class="pagination-info">顯示 1-6 / 共 6 筆</div>
           <div class="pagination-controls">
             <button class="page-btn" disabled>上一頁</button>
             <button class="page-btn active">1</button>
@@ -5820,39 +5894,71 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div class="form-hint" style="margin-top:8px">系統以 MTYPE 代碼區分領受人身分類別，並據以判斷查核資料應歸屬軍、公、教哪一科之查詢範圍。</div>
       </div>
 
-      <!-- 3. 本月主辦人員設定 -->
+      <!-- 3. 各月份主辦人員設定（V15：可選月份、法務部查核各科主辦人） -->
       <div class="card" style="margin-bottom:16px">
         <div class="card-header">
           <div>
-            <div class="card-title">本月（113年12月）主辦人員設定</div>
-            <div class="card-subtitle">業務組軍、公、教三科每月主辦人員均會更換並發送通知；資訊室須於每月10日外部查核前，配合當月名單動態開通對應之查詢權限</div>
+            <div class="card-title">各月份定撥主辦人員設定</div>
+            <div class="card-subtitle">業務組軍、公、教三科每月主辦人員均會更換並發送通知；可預先設定未來月份名單。「法務部查核」須另行指定各科專屬主辦人員，資訊室於每月10日外部查核前依當月名單動態開通查詢權限</div>
           </div>
-          <button class="btn btn-gold btn-sm" onclick="openMainHandlerModal()">+ 設定本月主辦人</button>
+          <button class="btn btn-gold btn-sm" onclick="openMainHandlerModal()">+ 設定主辦人</button>
+        </div>
+        <div class="form-row cols-3" style="margin-bottom:12px">
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">定撥月份</label>
+            <select class="form-control" id="mh-month" onchange="mhSetMonth(this.value)">
+              <option value="113/11">113年11月（已結束・唯讀）</option>
+              <option value="113/12" selected>113年12月（本月）</option>
+              <option value="114/01">114年01月（預先設定）</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom:0;grid-column:span 2;align-self:flex-end">
+            <div class="form-hint" id="mh-month-hint" style="margin:0"></div>
+          </div>
         </div>
         <div class="table-wrapper">
           <table class="data-table">
-            <thead><tr><th>科別</th><th>本月主辦人</th><th>身分證字號</th><th>本科承辦人員</th><th>權限生效期間</th><th>開通狀態</th><th>操作</th></tr></thead>
-            <tbody id="main-handler-list">
-              <tr data-dept="軍科">
-                <td><span class="badge badge-secondary">軍科</span></td><td>王小明</td><td class="masked">A123***456</td>
-                <td>李大同、林淑芬</td><td>113/12/01 ～ 113/12/31</td>
-                <td><span class="badge badge-success">已開通</span></td>
-                <td><button class="btn btn-sm btn-outline" onclick="openMainHandlerModal('軍科','王小明','李大同、林淑芬')">編輯</button></td>
-              </tr>
-              <tr data-dept="公科">
-                <td><span class="badge badge-secondary">公科</span></td><td>陳建國</td><td class="masked">B234***567</td>
-                <td>張美玲、周文山、蔡宗翰</td><td>113/12/01 ～ 113/12/31</td>
-                <td><span class="badge badge-success">已開通</span></td>
-                <td><button class="btn btn-sm btn-outline" onclick="openMainHandlerModal('公科','陳建國','張美玲、周文山、蔡宗翰')">編輯</button></td>
-              </tr>
-              <tr data-dept="教科">
-                <td><span class="badge badge-secondary">教科</span></td><td>李美華</td><td class="masked">C345***678</td>
-                <td>黃志偉</td><td>113/12/01 ～ 113/12/31</td>
-                <td><span class="badge badge-success">已開通</span></td>
-                <td><button class="btn btn-sm btn-outline" onclick="openMainHandlerModal('教科','李美華','黃志偉')">編輯</button></td>
-              </tr>
-            </tbody>
+            <thead><tr><th>科別</th><th>本月主辦人</th><th>身分證字號</th><th>本科承辦人員</th><th><span style="color:var(--danger)">法務部查核主辦人</span></th><th>權限生效期間</th><th>開通狀態</th><th>操作</th></tr></thead>
+            <tbody id="main-handler-list"></tbody>
           </table>
+        </div>
+      </div>
+
+      <!-- 3-1. 角色資料存取範圍自動配置（V15） -->
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-header">
+          <div>
+            <div class="card-title">角色與權責類別之資料存取範圍（系統自動配置）</div>
+            <div class="card-subtitle">儲存主辦人／承辦人名單後，系統依使用者角色（主辦人／承辦人）及權責類別（MTYPE 對應科別、法務部查核）自動產生資料存取權，無需人工逐筆設定</div>
+          </div>
+          <span class="badge badge-success">自動配置</span>
+        </div>
+        <div class="table-wrapper" style="margin-bottom:16px">
+          <table class="data-table">
+            <thead><tr><th>使用者</th><th>科別</th><th>角色</th><th>可查詢身分類別（MTYPE）</th><th>資料範圍</th><th>承辦人員欄位</th><th>法務部查核</th><th>匯出全科Excel</th></tr></thead>
+            <tbody id="ck-matrix-body"></tbody>
+          </table>
+        </div>
+        <div style="padding-top:16px;border-top:1px solid var(--border)">
+          <div style="font-weight:700;margin-bottom:10px;font-size:calc(13px * var(--font-scale))">權限驗證模擬：選擇使用者，檢視其登入後於定撥查核頁面實際可查詢之資料</div>
+          <div class="form-row cols-2">
+            <div class="form-group">
+              <label class="form-label">模擬使用者</label>
+              <select class="form-control" id="ck-sim-user" onchange="ckSimUserChange()"></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">承辦人員欄位</label>
+              <select class="form-control" id="ck-sim-handler" onchange="ckSimRender()"></select>
+              <div class="form-hint" id="ck-sim-hint"></div>
+            </div>
+          </div>
+          <div id="ck-sim-summary" style="margin-bottom:8px;font-size:calc(13px * var(--font-scale))"></div>
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead><tr><th>領受人</th><th>MTYPE</th><th>科別</th><th>查核機關</th><th>承辦人員</th><th>查核結果</th></tr></thead>
+              <tbody id="ck-sim-body"></tbody>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -6511,49 +6617,73 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 <div class="modal-overlay" id="main-handler-modal">
   <div class="modal modal-md">
     <div class="modal-header">
-      <div class="modal-title" id="main-handler-modal-title"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="5"/><circle cx="15" cy="15" r="5"/></svg> 設定本月主辦人</div>
+      <div class="modal-title" id="main-handler-modal-title"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="5"/><circle cx="15" cy="15" r="5"/></svg> 設定主辦人</div>
       <button class="modal-close" onclick="closeModal('main-handler-modal')">×</button>
     </div>
     <div class="modal-body">
       <div class="form-row cols-2">
         <div class="form-group">
+          <label class="form-label">定撥月份</label>
+          <input type="text" class="form-control" id="main-handler-month" readonly style="background:#f5f7fa">
+        </div>
+        <div class="form-group">
           <label class="form-label">科別 <span class="required">*</span></label>
-          <select class="form-control" id="main-handler-dept">
+          <select class="form-control" id="main-handler-dept" onchange="mhFillModal(this.value)">
             <option value="軍科">軍科</option>
             <option value="公科">公科</option>
             <option value="教科">教科</option>
           </select>
         </div>
+      </div>
+      <div class="form-row cols-2">
         <div class="form-group">
           <label class="form-label">本月主辦人 <span class="required">*</span></label>
           <input type="text" class="form-control" id="main-handler-name" placeholder="請輸入主辦人姓名">
         </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">本科承辦人員</label>
-        <input type="text" class="form-control" id="main-handler-staff" placeholder="以頓號分隔，例如：李大同、林淑芬">
-        <div class="form-hint">承辦人員僅能查詢本人所管轄範圍之資料，欄位將於查核頁面鎖定為灰色。</div>
-      </div>
-      <div class="form-row cols-2">
         <div class="form-group">
-          <label class="form-label">權限生效日期 <span class="required">*</span></label>
-          <input type="text" class="form-control" id="main-handler-start" value="113/12/01">
-        </div>
-        <div class="form-group">
-          <label class="form-label">權限截止日期 <span class="required">*</span></label>
-          <input type="text" class="form-control" id="main-handler-end" value="113/12/31">
+          <label class="form-label">本科承辦人員</label>
+          <input type="text" class="form-control" id="main-handler-staff" placeholder="以頓號分隔，例如：李大同、林淑芬">
         </div>
       </div>
-      <div class="form-group">
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+      <div class="form-hint" style="margin:-4px 0 12px">承辦人員僅能查詢本人所管轄範圍之資料，欄位將於查核頁面鎖定為灰色。</div>
+      <div class="form-group" style="border:1.5px solid var(--danger);border-radius:var(--radius-card);padding:12px;background:#fff8f8">
+        <label class="form-label" style="color:var(--danger)">法務部查核主辦人 <span class="required">*</span></label>
+        <input type="text" class="form-control" id="main-handler-moj-name" placeholder="須為本科主辦人或承辦人員">
+        <div class="form-hint">「法務部查核」涉及通緝、偵查與監所收容等敏感資料，各科須指定專屬主辦人員，僅該員（及本科主辦人）可檢視法務部查核結果。</div>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-top:8px">
           <input type="checkbox" id="main-handler-moj">
           <span style="font-size:calc(13px * var(--font-scale))">同時開通本科「法務部查核」特別授權</span>
         </label>
       </div>
+      <div class="form-hint" id="main-handler-period"></div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="closeModal('main-handler-modal')">取消</button>
-      <button class="btn btn-gold" onclick="saveMainHandler()"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> 儲存並開通權限</button>
+      <button class="btn btn-gold" onclick="saveMainHandler()">儲存</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="ex-release-modal">
+  <div class="modal modal-md">
+    <div class="modal-header">
+      <div class="modal-title">異常資料覆核放行</div>
+      <button class="modal-close" onclick="closeModal('ex-release-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="info-card danger" style="margin-bottom:12px">
+        <div class="info-row"><div class="info-key">外部機關</div><div class="info-val" id="ex-rel-ag"></div></div>
+        <div class="info-row"><div class="info-key">阻斷原因</div><div class="info-val" id="ex-rel-reason"></div></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">覆核說明 <span class="required">*</span></label>
+        <textarea class="form-control" id="ex-rel-note" rows="3" placeholder="請說明已與外部機關確認資料正確之依據（至少 5 字）"></textarea>
+        <div class="form-hint">放行後資料將轉入資料庫並通知業務人員；本操作將留存稽核紀錄。建議優先通知外部機關重送資料。</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('ex-release-modal')">取消</button>
+      <button class="btn btn-danger" onclick="exConfirmRelease()">確認放行轉入</button>
     </div>
   </div>
 </div>
@@ -7145,48 +7275,6 @@ function saveTaxParam() {
   if (miss.length) { showToast('error', '儲存失敗', '尚有 ' + miss.length + ' 個必填欄位未填寫（含免稅額、利率、扣繳率等參數）'); document.getElementById(miss[0]).focus(); return; }
   closeModal('tax-param-modal');
   showToast('success', '版次已儲存', '新課稅參數版次已建立，將於指定生效日期自動套用');
-}
-
-// ===== 定撥作業查核權限設定：本月主辦人員設定 =====
-function openMainHandlerModal(dept, handler, staff) {
-  const isEdit = !!dept;
-  document.getElementById('main-handler-modal-title').textContent = isEdit ? '編輯本月主辦人設定 - ' + dept : '設定本月主辦人';
-  document.getElementById('main-handler-dept').value = dept || '軍科';
-  document.getElementById('main-handler-dept').disabled = isEdit;
-  document.getElementById('main-handler-name').value = handler || '';
-  document.getElementById('main-handler-staff').value = staff || '';
-  document.getElementById('main-handler-start').value = '113/12/01';
-  document.getElementById('main-handler-end').value = '113/12/31';
-  document.getElementById('main-handler-moj').checked = false;
-  openModal('main-handler-modal');
-}
-
-function saveMainHandler() {
-  const dept = document.getElementById('main-handler-dept').value;
-  const name = document.getElementById('main-handler-name').value.trim();
-  const staff = document.getElementById('main-handler-staff').value.trim();
-  if (!name) {
-    showToast('error', '儲存失敗', '請輸入本月主辦人姓名');
-    return;
-  }
-  const row = document.querySelector('#main-handler-list tr[data-dept="' + dept + '"]');
-  if (row) {
-    row.children[1].textContent = name;
-    row.children[3].textContent = staff || '-';
-  }
-  closeModal('main-handler-modal');
-  showToast('success', '設定完成', dept + ' 本月主辦人已設定為「' + name + '」，對應查詢權限將依生效期間自動開通');
-}
-
-function grantMojAccess(btn) {
-  const badge = document.getElementById('moj-access-badge');
-  badge.className = 'badge badge-success';
-  badge.textContent = '已開通';
-  btn.disabled = true;
-  btn.textContent = '本月已開通';
-  btn.classList.remove('btn-danger');
-  btn.classList.add('btn-outline');
-  showToast('success', '權限已開通', '本月法務部查核（通緝／偵查／監所收容）特別授權已完成開通，業務組人員可正常執行 PayChk.exe 轉檔查詢');
 }
 
 // ===== PROFILE / PASSWORD (使用者個人資料 / 變更密碼) =====
@@ -9333,6 +9421,10 @@ function runExtCheck() {
   const itemSel = document.getElementById('extcheck-item');
   const itemKey = itemSel.value;
   const meta = extCheckMeta[itemKey];
+  if (typeof EX_ST !== 'undefined' && EX_ST[itemKey] && EX_ST[itemKey].status !== 'ok') {
+    showToast('error', '無法開始比對', meta.agency + ' 外部資料已被阻斷轉檔，請先於「任務零」重新轉入或經覆核放行');
+    return;
+  }
   const filePath = document.getElementById('extcheck-file-path').value;
   if (!filePath) {
     showToast('warning', '請先選擇檔案', '請先選擇資料上傳檔案路徑後再開始比對');
@@ -10607,6 +10699,309 @@ navigateTo = function (id) {
   document.querySelectorAll('.sidebar-sub-item').forEach(el => { if ((el.getAttribute('onclick') || '').indexOf("navigateTo('" + id + "')") > -1) el.classList.add('active'); });
 };
 txnRender(); trRenderA(); rptEnhance(); qcSearch(); txDiffRender();
+
+/* ===== V15：定撥作業子系統需求對照補強（查核權限設定／外部資料轉入檢核與阻斷） ===== */
+const MH_CUR = '113/12';
+const MH_DATA = {
+  '113/11': {
+    '軍科': {h:'王小明', id:'A123***456', staff:['李大同','林淑芬'], moj:'林淑芬', mojOn:true, on:true},
+    '公科': {h:'張美玲', id:'D456***789', staff:['陳建國','周文山','蔡宗翰'], moj:'周文山', mojOn:true, on:true},
+    '教科': {h:'李美華', id:'C345***678', staff:['吳建宏','黃志偉'], moj:'吳建宏', mojOn:true, on:true}
+  },
+  '113/12': {
+    '軍科': {h:'王小明', id:'A123***456', staff:['李大同','林淑芬'], moj:'李大同', mojOn:false, on:true},
+    '公科': {h:'陳建國', id:'B234***567', staff:['張美玲','周文山','蔡宗翰'], moj:'周文山', mojOn:false, on:true},
+    '教科': {h:'李美華', id:'C345***678', staff:['黃志偉'], moj:'黃志偉', mojOn:false, on:true}
+  },
+  '114/01': {
+    '軍科': {h:'李大同', id:'A234***111', staff:['王小明','林淑芬'], moj:'林淑芬', mojOn:false, on:false},
+    '公科': {h:'張美玲', id:'D456***789', staff:['陳建國','周文山','蔡宗翰'], moj:'蔡宗翰', mojOn:false, on:false},
+    '教科': {h:'黃志偉', id:'E567***222', staff:['李美華'], moj:'李美華', mojOn:false, on:false}
+  }
+};
+const MH_DEPTS = ['軍科','公科','教科'];
+const MH_MTYPE = {'軍科':[3], '公科':[1,0], '教科':[2]};
+let mhMonth = MH_CUR;
+const mhRange = m => { const [y,mo] = m.split('/').map(Number); const last = new Date(y+1911, mo, 0).getDate(); return m + '/01 ～ ' + m + '/' + String(last).padStart(2,'0'); };
+
+function mhSetMonth(m) { mhMonth = m; mhRender(); }
+function mhRender() {
+  const data = MH_DATA[mhMonth], past = mhMonth < MH_CUR;
+  const body = document.getElementById('main-handler-list');
+  if (!body) return;
+  body.innerHTML = MH_DEPTS.map(d => {
+    const x = data[d];
+    const st = x.on ? '<span class="badge badge-success">已開通</span>' : '<span class="badge badge-warning">待開通（月初前自動開通）</span>';
+    const moj = x.moj ? '<strong>' + htmlEsc(x.moj) + '</strong> ' + (x.mojOn ? '<span class="badge badge-success">已授權</span>' : '<span class="badge badge-warning">尚未授權</span>') : '<span class="badge badge-danger">未指定</span>';
+    return '<tr data-dept="' + d + '"><td><span class="badge badge-secondary">' + d + '</span></td><td>' + htmlEsc(x.h) + '</td><td class="masked">' + x.id + '</td><td>' + (x.staff.join('、') || '-') + '</td><td>' + moj + '</td><td>' + mhRange(mhMonth) + '</td><td>' + st + '</td><td>' +
+      (past ? '<span style="color:var(--text-secondary);font-size:12px">唯讀</span>' : '<button class="btn btn-sm btn-outline" onclick="openMainHandlerModal(\'' + d + '\')">編輯</button>') + '</td></tr>';
+  }).join('');
+  const hint = document.getElementById('mh-month-hint');
+  if (hint) hint.textContent = past ? '已結束月份僅供查閱，不可修改。' : (mhMonth === MH_CUR ? '本月名單已生效；異動後系統將重新配置資料存取權並通知相關人員。' : '預先設定之名單將於該月1日 00:00 自動生效並發送通知。');
+  ckMatrixRender();
+  ckSimInit();
+}
+function mhFillModal(dept) {
+  const x = MH_DATA[mhMonth][dept];
+  document.getElementById('main-handler-name').value = x.h;
+  document.getElementById('main-handler-staff').value = x.staff.join('、');
+  document.getElementById('main-handler-moj-name').value = x.moj;
+  document.getElementById('main-handler-moj').checked = x.mojOn;
+}
+function openMainHandlerModal(dept) {
+  const isEdit = !!dept;
+  document.getElementById('main-handler-modal-title').lastChild.textContent = isEdit ? ' 編輯主辦人設定 - ' + dept : ' 設定主辦人';
+  document.getElementById('main-handler-month').value = mhMonth.replace('/', '年') + '月';
+  const sel = document.getElementById('main-handler-dept');
+  sel.value = dept || '軍科';
+  sel.disabled = isEdit;
+  mhFillModal(sel.value);
+  document.getElementById('main-handler-period').textContent = '權限生效期間：' + mhRange(mhMonth);
+  openModal('main-handler-modal');
+}
+function saveMainHandler() {
+  if (mhMonth < MH_CUR) { showToast('error', '儲存失敗', '已結束月份不可修改'); return; }
+  const dept = document.getElementById('main-handler-dept').value;
+  const name = document.getElementById('main-handler-name').value.trim();
+  const staff = document.getElementById('main-handler-staff').value.split(/[、,，\s]+/).map(s => s.trim()).filter(Boolean);
+  const moj = document.getElementById('main-handler-moj-name').value.trim();
+  if (!name) { showToast('error', '儲存失敗', '請輸入主辦人姓名'); return; }
+  if (!moj) { showToast('error', '儲存失敗', '請指定本科「法務部查核」主辦人'); return; }
+  if (moj !== name && staff.indexOf(moj) < 0) { showToast('error', '儲存失敗', '法務部查核主辦人須為本科主辦人或承辦人員'); return; }
+  const x = MH_DATA[mhMonth][dept];
+  const idChanged = x.h !== name;
+  x.h = name; x.staff = staff; x.moj = moj; x.mojOn = document.getElementById('main-handler-moj').checked;
+  if (idChanged) x.id = '（待資訊室補登）';
+  closeModal('main-handler-modal');
+  mhRender();
+  showToast('success', '設定完成', mhMonth.replace('/', '年') + '月 ' + dept + ' 主辦人「' + name + '」、法務部查核主辦人「' + moj + '」已設定，資料存取權已自動重新配置');
+}
+function grantMojAccess(btn) {
+  MH_DATA[mhMonth] && MH_DEPTS.forEach(d => { MH_DATA[MH_CUR][d].mojOn = true; });
+  const badge = document.getElementById('moj-access-badge');
+  badge.className = 'badge badge-success';
+  badge.textContent = '已開通';
+  btn.disabled = true;
+  btn.textContent = '本月已開通';
+  btn.classList.remove('btn-danger');
+  btn.classList.add('btn-outline');
+  mhRender();
+  showToast('success', '權限已開通', '本月軍、公、教三科法務部查核特別授權已開通，各科法務部查核主辦人可正常執行查詢');
+}
+
+/* --- 角色／權責類別資料存取範圍 --- */
+const CK_DATA = [
+  {n:'林Ｏ德', mt:3, d:'軍科', ag:'內政部', h:'李大同', r:'戶籍遷出待確認'},
+  {n:'陳Ｏ國', mt:3, d:'軍科', ag:'移民署', h:'林淑芬', r:'長期出境逾期'},
+  {n:'許Ｏ雄', mt:3, d:'軍科', ag:'警政署', h:'李大同', r:'協尋資料吻合'},
+  {n:'曾Ｏ明', mt:3, d:'軍科', ag:'法務部', h:'*MOJ*', r:'監所收容中'},
+  {n:'張Ｏ華', mt:1, d:'公科', ag:'臺灣銀行（公保處）', h:'張美玲', r:'公保身分重複'},
+  {n:'吳Ｏ惠', mt:1, d:'公科', ag:'勞動部勞工保險局', h:'周文山', r:'勞保投保中'},
+  {n:'趙Ｏ平', mt:0, d:'公科', ag:'衛生福利部', h:'蔡宗翰', r:'死亡登記相符'},
+  {n:'簡Ｏ貞', mt:1, d:'公科', ag:'司法院', h:'張美玲', r:'裁判確定待查'},
+  {n:'黃Ｏ國', mt:1, d:'公科', ag:'法務部', h:'*MOJ*', r:'通緝中'},
+  {n:'羅Ｏ珍', mt:1, d:'公科', ag:'衛生福利部中央健康保險署', h:'蔡宗翰', r:'健保欠費註記'},
+  {n:'蘇Ｏ芳', mt:2, d:'教科', ag:'內政部', h:'黃志偉', r:'戶籍資料不一致'},
+  {n:'鄭Ｏ文', mt:2, d:'教科', ag:'法務部', h:'*MOJ*', r:'偵查中'},
+  {n:'葉Ｏ萱', mt:2, d:'教科', ag:'衛生福利部中央健康保險署', h:'黃志偉', r:'投保狀態相符'}
+];
+/* 取得使用者在某月份之角色清單 */
+function ckUsers() {
+  const m = MH_DATA[mhMonth], out = [];
+  MH_DEPTS.forEach(d => {
+    const x = m[d];
+    out.push({d:d, name:x.h, role:'主辦人'});
+    x.staff.forEach(s => { if (s !== x.h) out.push({d:d, name:s, role:'承辦人'}); });
+  });
+  return out;
+}
+/* 依角色與權責類別自動計算可見資料 */
+function ckVisible(u, handlerFilter) {
+  const x = MH_DATA[mhMonth][u.d], rows = [];
+  let hidden = 0, mojBlocked = false;
+  CK_DATA.filter(r => r.d === u.d).forEach(r => {
+    const owner = r.h === '*MOJ*' ? x.moj : r.h;
+    let ok;
+    if (r.ag === '法務部') {
+      if (!x.mojOn) { mojBlocked = true; ok = false; }
+      else ok = (u.role === '主辦人') || (u.name === x.moj);
+    } else {
+      ok = (u.role === '主辦人') || (owner === u.name);
+    }
+    if (ok && u.role === '主辦人' && handlerFilter && handlerFilter !== 'MIS' && owner !== handlerFilter) ok = false;
+    if (ok) rows.push(Object.assign({owner:owner}, r)); else hidden++;
+  });
+  return {rows:rows, hidden:hidden, mojBlocked:mojBlocked};
+}
+function ckMatrixRender() {
+  const body = document.getElementById('ck-matrix-body');
+  if (!body) return;
+  const m = MH_DATA[mhMonth];
+  body.innerHTML = ckUsers().map(u => {
+    const x = m[u.d], isMoj = u.name === x.moj;
+    const moj = (u.role === '主辦人' || isMoj) ? (x.mojOn ? '<span class="badge badge-success">可查詢</span>' : '<span class="badge badge-warning">待開通</span>') : '<span class="badge badge-secondary">不可</span>';
+    const roleTxt = u.role === '主辦人' ? '<span class="badge badge-warning">主辦人</span>' : '<span class="badge badge-secondary">承辦人</span>' + (isMoj ? ' <span class="badge badge-danger">法務部查核主辦</span>' : '');
+    return '<tr><td>' + htmlEsc(u.name) + '</td><td>' + u.d + '</td><td>' + roleTxt + '</td><td>' + MH_MTYPE[u.d].join('、') + '</td><td>' + (u.role === '主辦人' ? '本科全部承辦人資料' : '僅本人所管轄範圍') + '</td><td>' + (u.role === '主辦人' ? '可選（含 MIS）' : '鎖定灰色') + '</td><td>' + moj + '</td><td>' + (u.role === '主辦人' ? '可' : '不可') + '</td></tr>';
+  }).join('');
+}
+function ckSimInit() {
+  const sel = document.getElementById('ck-sim-user');
+  if (!sel) return;
+  const prev = sel.value;
+  sel.innerHTML = ckUsers().map(u => '<option value="' + u.d + '|' + u.name + '|' + u.role + '">' + u.d + '・' + htmlEsc(u.name) + '（' + u.role + '）</option>').join('');
+  if (prev && Array.from(sel.options).some(o => o.value === prev)) sel.value = prev;
+  ckSimUserChange();
+}
+function ckSimUserChange() {
+  const p = document.getElementById('ck-sim-user').value.split('|');
+  const hs = document.getElementById('ck-sim-handler');
+  const x = MH_DATA[mhMonth][p[0]];
+  if (p[2] === '主辦人') {
+    hs.disabled = false; hs.style.background = ''; hs.style.color = '';
+    hs.innerHTML = '<option value="MIS">MIS（全部人員）</option>' + x.staff.map(s => '<option>' + htmlEsc(s) + '</option>').join('');
+    document.getElementById('ck-sim-hint').textContent = '主辦人可切換檢視任一承辦人或全部人員（MIS）。';
+  } else {
+    hs.innerHTML = '<option>' + htmlEsc(p[1]) + '（本人）</option>';
+    hs.disabled = true; hs.style.background = '#eef0f2'; hs.style.color = '#98a2b3';
+    document.getElementById('ck-sim-hint').textContent = '承辦人欄位鎖定為灰色，僅能查詢本人所管轄之資料。';
+  }
+  ckSimRender();
+}
+function ckSimRender() {
+  const p = document.getElementById('ck-sim-user').value.split('|');
+  const u = {d:p[0], name:p[1], role:p[2]};
+  const hv = document.getElementById('ck-sim-handler');
+  const res = ckVisible(u, u.role === '主辦人' ? hv.value : null);
+  document.getElementById('ck-sim-body').innerHTML = res.rows.length ? res.rows.map(r => '<tr><td>' + r.n + '</td><td>' + r.mt + '</td><td>' + r.d + '</td><td>' + (r.ag === '法務部' ? '<span class="badge badge-danger">法務部</span>' : r.ag) + '</td><td>' + htmlEsc(r.owner) + '</td><td>' + r.r + '</td></tr>').join('') : '<tr><td colspan="6" style="text-align:center;color:var(--text-secondary)">無可查詢資料</td></tr>';
+  const total = CK_DATA.length;
+  document.getElementById('ck-sim-summary').innerHTML = '可查詢 <strong>' + res.rows.length + '</strong> 筆；因角色／權責類別限制而不顯示 <strong>' + (total - res.rows.length) + '</strong> 筆（含其他科別資料）' + (res.mojBlocked ? '　<span class="badge badge-warning">本科法務部查核尚未開通特別授權，相關資料暫不顯示</span>' : '');
+}
+
+/* --- 外部機關資料轉入、檢核與異常阻斷 --- */
+const EX_MONTH = '113/12';
+const EX_AG = [
+  {k:'moi',ag:'內政部',view:'戶役政資料',day:10,avg:12790},
+  {k:'nia',ag:'內政部移民署',view:'入出境資料',day:10,avg:12802},
+  {k:'police',ag:'內政部警政署',view:'通緝與協尋資料',day:10,avg:12795},
+  {k:'boct',ag:'臺灣銀行（公保處）',view:'公保身分資料',day:10,avg:12770},
+  {k:'bli',ag:'勞動部勞工保險局',view:'勞保身分資料',day:10,avg:12780},
+  {k:'moj',ag:'法務部',view:'通緝／偵查／監所收容資料',day:10,avg:12798},
+  {k:'judicial',ag:'司法院',view:'裁判查詢資料',day:10,avg:12786},
+  {k:'mohw',ag:'衛生福利部',view:'死亡登記資料',day:10,avg:12775},
+  {k:'nhi',ag:'衛生福利部中央健康保險署',view:'健保投保資料',day:10,avg:12783},
+  {k:'dgpa',ag:'行政院人事行政總處',view:'退撫平台資料',day:20,avg:12781}
+];
+let EX_TH = 10;
+const EX_ST = {};
+EX_AG.forEach((a, i) => { EX_ST[a.k] = {status:'ok', cur:12847, fmt:true, time:'113/12/' + a.day + ' 0' + (2 + (i % 3)) + ':' + String(5 + i * 3).padStart(2,'0'), reason:'', busy:false}; });
+const EX_ALERTS = [
+  {t:'113/11/10 09:12', ag:'內政部警政署', type:'筆數偏差', detail:'本期 9,812 筆，較歷史平均 12,781 筆偏差 -23.2%，超過檢核值 ±10%', to:'資訊室、業務組科長', st:'已覆核放行（113/11/10 10:30）'}
+];
+const EX_NOTI = [];
+const exNow = a => { const d = new Date(); return '113/12/' + a.day + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0'); };
+const exFmtDev = (cur, avg) => (cur - avg) / avg * 100;
+
+function exRecipients(k) {
+  const m = MH_DATA[EX_MONTH];
+  return MH_DEPTS.map(d => {
+    const x = m[d];
+    let names = [x.h + '（主辦）'];
+    if (k === 'moj') { if (x.moj !== x.h) names.push(x.moj + '（法務部查核主辦）'); }
+    else names = names.concat(x.staff.filter(s => s !== x.h));
+    return d + '：' + names.join('、');
+  });
+}
+function exNotify(a, t) {
+  EX_NOTI.unshift({t:t, ag:a.ag, to:exRecipients(a.k), ch:'系統訊息＋Email', st:'已發送'});
+}
+function exRender() {
+  const body = document.getElementById('ex-list');
+  if (!body) return;
+  const okN = EX_AG.filter(a => EX_ST[a.k].status === 'ok').length;
+  const sb = document.getElementById('ex-summary-badge');
+  const blk = EX_AG.filter(a => EX_ST[a.k].status === 'blocked');
+  sb.textContent = blk.length ? '已阻斷 ' + blk.length + ' 項' : '已轉入 ' + okN + ' / ' + EX_AG.length;
+  sb.className = 'badge ' + (blk.length ? 'badge-danger' : (okN === EX_AG.length ? 'badge-success' : 'badge-warning'));
+  body.innerHTML = EX_AG.map(a => {
+    const s = EX_ST[a.k], dev = exFmtDev(s.cur, a.avg), over = Math.abs(dev) > EX_TH;
+    const stBadge = s.busy ? '<span class="badge badge-info">轉入中…</span>' : s.status === 'ok' ? '<span class="badge badge-success">已轉入</span>' : '<span class="badge badge-danger">已阻斷</span><div style="font-size:11px;color:var(--danger);margin-top:2px">' + htmlEsc(s.reason) + '</div>';
+    const fmt = s.fmt ? '<span class="badge badge-success">通過</span>' : '<span class="badge badge-danger">失敗</span>';
+    const acts = '<button class="btn btn-sm btn-outline" ' + (s.busy ? 'disabled' : '') + ' onclick="exTransfer(\'' + a.k + '\')">' + (s.status === 'blocked' ? '重新轉入' : '轉入') + '</button>' +
+      (s.status === 'blocked' && !s.busy ? ' <button class="btn btn-sm btn-danger" onclick="exOpenRelease(\'' + a.k + '\')">覆核放行</button>' : '');
+    return '<tr><td><strong>' + a.ag + '</strong></td><td>' + a.view + '</td><td style="white-space:nowrap">每月' + a.day + '日起</td><td style="white-space:nowrap">' + (s.time || '-') + '</td><td>' + fmt + '</td><td>' + s.cur.toLocaleString() + (s.status === 'blocked' ? '<div style="font-size:11px;color:var(--text-secondary)">未入庫</div>' : '') + '</td><td>' + a.avg.toLocaleString() + '</td><td style="color:' + (over ? 'var(--danger)' : 'var(--success)') + ';font-weight:600">' + (dev >= 0 ? '+' : '') + dev.toFixed(1) + '%</td><td>' + stBadge + '</td><td style="white-space:nowrap">' + acts + '</td></tr>';
+  }).join('');
+  const ban = document.getElementById('ex-alert-banner');
+  if (blk.length) {
+    ban.style.display = 'block';
+    ban.innerHTML = '<div style="font-weight:700;color:var(--danger);margin-bottom:4px">⚠ 系統警報：偵測到 ' + blk.length + ' 項外部資料異常，已自動阻斷轉檔，未寫入資料庫</div>' + blk.map(a => '<div style="font-size:13px">• ' + a.ag + '：' + htmlEsc(EX_ST[a.k].reason) + '</div>').join('') + '<div style="font-size:12px;color:var(--text-secondary);margin-top:4px">已通知資訊室及業務組科長；請洽外部機關確認後重新轉入，或經覆核後放行。</div>';
+  } else ban.style.display = 'none';
+  document.getElementById('ex-alert-log').innerHTML = EX_ALERTS.map(r => '<tr><td>' + r.t + '</td><td>' + r.ag + '</td><td><span class="badge ' + (r.type === '格式錯誤' ? 'badge-warning' : 'badge-danger') + '">' + r.type + '</span></td><td>' + htmlEsc(r.detail) + '</td><td>' + r.to + '</td><td>' + (r.st.indexOf('阻斷') === 0 ? '<span class="badge badge-danger">' + r.st + '</span>' : r.st) + '</td></tr>').join('');
+  document.getElementById('ex-notify-log').innerHTML = EX_NOTI.slice(0, 30).map(r => '<tr><td>' + r.t + '</td><td>' + r.ag + '</td><td style="font-size:12px;line-height:1.7">' + r.to.map(htmlEsc).join('<br>') + '</td><td>' + r.ch + '</td><td><span class="badge badge-success">' + r.st + '</span></td></tr>').join('');
+}
+function exApplyTh() {
+  const v = parseFloat(document.getElementById('ex-th').value);
+  if (!(v >= 1 && v <= 100)) { showToast('error', '設定失敗', '檢核值須介於 1～100 之間'); return; }
+  EX_TH = v; exRender();
+  showToast('success', '檢核值已更新', '筆數偏差檢核值已設為 ±' + v + '%，後續轉入作業依此判定');
+}
+function exTransfer(k) {
+  const a = EX_AG.find(x => x.k === k), s = EX_ST[k];
+  const sc = document.getElementById('ex-scenario').value;
+  s.busy = true; exRender();
+  setTimeout(() => {
+    s.busy = false;
+    const t = exNow(a);
+    let cur, fmtOk = true, reason = '', type = '';
+    if (sc === 'count') cur = Math.round(a.avg * (Math.random() < 0.5 ? 0.58 : 1.42));
+    else cur = Math.round(a.avg * (1 + (Math.random() * 0.04 - 0.02)));
+    if (sc === 'format') { fmtOk = false; cur = a.avg; }
+    const dev = exFmtDev(cur, a.avg);
+    s.cur = cur; s.fmt = fmtOk; s.time = t;
+    if (!fmtOk) { reason = '格式檢核失敗：第 ' + (1000 + Math.floor(Math.random() * 8000)) + ' 列身分證字號檢核碼錯誤、欄位數不符'; type = '格式錯誤'; }
+    else if (Math.abs(dev) > EX_TH) { reason = '筆數偏差 ' + (dev >= 0 ? '+' : '') + dev.toFixed(1) + '%，超過檢核值 ±' + EX_TH + '%'; type = '筆數偏差'; }
+    if (reason) {
+      s.status = 'blocked'; s.reason = reason;
+      EX_ALERTS.unshift({t:t, ag:a.ag, type:type, detail:reason, to:'資訊室、業務組科長', st:'阻斷中，待處理'});
+      exRender();
+      showToast('error', '已阻斷轉檔並發送警報', a.ag + '：' + reason);
+    } else {
+      s.status = 'ok'; s.reason = '';
+      exNotify(a, t);
+      exRender();
+      showToast('success', '轉入完成', a.ag + ' ' + cur.toLocaleString() + ' 筆，檢核通過，已通知對應業務人員進行比對');
+    }
+  }, 900);
+}
+let exRelKey = null;
+function exOpenRelease(k) {
+  exRelKey = k;
+  document.getElementById('ex-rel-ag').textContent = EX_AG.find(x => x.k === k).ag;
+  document.getElementById('ex-rel-reason').textContent = EX_ST[k].reason;
+  document.getElementById('ex-rel-note').value = '';
+  openModal('ex-release-modal');
+}
+function exConfirmRelease() {
+  const note = document.getElementById('ex-rel-note').value.trim();
+  if (note.length < 5) { showToast('error', '無法放行', '請填寫至少 5 字之覆核說明'); return; }
+  const a = EX_AG.find(x => x.k === exRelKey), s = EX_ST[exRelKey], t = exNow(a);
+  s.status = 'ok'; s.fmt = true;
+  const al = EX_ALERTS.find(r => r.ag === a.ag && r.st === '阻斷中，待處理');
+  if (al) al.st = '已覆核放行（' + t + '）';
+  exNotify(a, t);
+  closeModal('ex-release-modal');
+  exRender();
+  showToast('success', '已覆核放行', a.ag + ' 資料已轉入並通知業務人員，覆核說明已留存稽核紀錄');
+}
+/* 初始通知紀錄（已完成之轉入） */
+EX_AG.slice().reverse().forEach(a => exNotify(a, EX_ST[a.k].time));
+
+const _navV15 = navigateTo;
+navigateTo = function (id) {
+  _navV15(id);
+  if (id === 'admin-monthly-audit-perm') mhRender();
+  if (id === 'monthly-prep') exRender();
+};
+mhRender(); exRender();
 </script>
 
 <div class="modal-overlay" id="sh-preview-modal"><div class="modal modal-lg">
