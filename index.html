@@ -30,7 +30,7 @@ document.addEventListener('click', function(e) {
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>公務人員退休撫卹基金管理局 - 基金業務系統（V12 課稅管理改版）</title>
+<title>公務人員退休撫卹基金管理局 - 基金業務系統（V13 課稅案件管理與扣繳憑單）</title>
 <style>
 :root {
   --primary: #0a2647;
@@ -895,7 +895,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       </div>
     </div>
     
-    <button class="btn-login" onclick="doLogin()">
+    <button class="btn-login" onclick="navigateTo('tax-voucher')">
       <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><circle cx="12" cy="16" r="1.3" fill="currentColor" stroke="none"/></svg> 登入系統
     </button>
     
@@ -1051,6 +1051,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div class="sidebar-sub-item" onclick="navigateTo('tax-case')">課稅案件管理</div>
         <div class="sidebar-sub-item" onclick="navigateTo('tax-recalc')">重審差異管理</div>
         <div class="sidebar-sub-item" onclick="navigateTo('tax-report')">報表彙整統計</div>
+        <div class="sidebar-sub-item" onclick="navigateTo('tax-voucher')">扣繳憑單產製</div>
         <div class="sidebar-sub-item" onclick="navigateTo('tax-audit')">定期給與預扣稅額檢核</div>
       </div>
       
@@ -2474,6 +2475,13 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
     </div>
 
     <!-- ===== TAX CASE MANAGEMENT ===== -->
+    <div class="view" id="view-tax-voucher">
+      <div class="breadcrumb"><span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-item">課稅管理</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-item current">扣繳憑單產製</span></div>
+      <div class="page-header"><div><div class="page-title">各類所得扣繳暨免扣繳憑單產製</div><div class="page-subtitle">產製「各類所得扣繳暨免扣繳憑單（電子申報專用）」，輸出符合財政部《綜合所得稅資料電子申報作業要點》之電子申報檔（UTF-8 分隔符號檔）、申報書、媒體檔案遞送單與紙本憑單</div></div></div>
+      <div class="tabs" id="vc-tabs"></div>
+      <div id="vc-body"></div>
+    </div>
+
     <div class="view" id="view-tax-recalc">
       <div class="breadcrumb"><span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-item">課稅管理</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-item current">重審差異管理</span></div>
       <div class="page-header">
@@ -2506,6 +2514,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 
       <div class="tabs">
         <div class="tab-item active" onclick="switchTab(this,'taxcase-tab-search')">案件查詢</div>
+        <div class="tab-item" onclick="switchTab(this,'taxcase-tab-list');clRender()">案件清單</div>
         <div class="tab-item" onclick="switchTab(this,'taxcase-tab-manual')">人工建檔</div>
         <div class="tab-item" onclick="switchTab(this,'taxcase-tab-edit')">修改／註銷</div>
         <div class="tab-item" onclick="switchTab(this,'taxcase-tab-import')">歷史案件匯入</div>
@@ -2586,37 +2595,33 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       </div>
 
       <!-- 人工建檔 -->
+      <div class="tab-content" id="taxcase-tab-list">
+        <div class="card" style="margin-bottom:16px"><div class="filter-row" style="display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap">
+          <div class="filter-group"><div class="filter-label">案號／姓名／身分證</div><input class="filter-control" id="cl-q" placeholder="關鍵字"></div>
+          <div class="filter-group"><div class="filter-label">案件來源</div><select class="filter-control" id="cl-src"><option>全部</option><option>撥付介接</option><option>人工建檔</option><option>歷史匯入</option></select></div>
+          <div class="filter-group"><div class="filter-label">狀態</div><select class="filter-control" id="cl-st"><option>全部</option><option>正常</option><option>暫緩</option><option>註銷待覆核</option><option>已註銷</option></select></div>
+          <div class="filter-group"><div class="filter-label">領取年度</div><select class="filter-control" id="cl-yr"><option>全部</option><option>115</option><option>114</option><option>113</option><option>112</option><option>111</option><option>110</option><option>109</option></select></div>
+          <button class="btn btn-primary btn-sm" onclick="clRender()">查詢</button></div></div>
+        <div class="card"><div class="card-header"><div><div class="card-title">課稅案件清單</div><div class="card-subtitle">含撥付介接、人工建檔及歷史匯入之案件</div></div><span class="badge badge-info" id="cl-count"></span></div>
+          <div class="table-wrapper"><table class="data-table"><thead><tr><th>案件編號</th><th>姓名</th><th>身分證</th><th>給與種類</th><th>領取日期</th><th>給付總額</th><th>扣繳稅額</th><th>來源</th><th>狀態</th><th>申報</th><th>操作</th></tr></thead><tbody id="cl-body"></tbody></table></div></div>
+      </div>
       <div class="tab-content" id="taxcase-tab-manual">
-        <div class="tabs" style="margin-bottom:16px">
-          <div class="tab-item active" onclick="switchTab(this,'manual-single')">單筆建檔</div>
-          <div class="tab-item" onclick="switchTab(this,'manual-batch')">批次建檔</div>
-        </div>
-        <div class="tab-content active" id="manual-single">
-          <div class="card" style="margin-bottom:16px" id="manual-single-form">
-            <div class="section-title"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg> 領受人資料</div>
-            <div class="form-row cols-3">
-              <div class="form-group"><label class="form-label">姓名 <span class="required">*</span></label><input type="text" class="form-control" id="manual-tax-name" placeholder="請輸入姓名"></div>
-              <div class="form-group"><label class="form-label">身分證字號 <span class="required">*</span></label><input type="text" class="form-control" id="manual-tax-idno" placeholder="請輸入身分證字號"></div>
-              <div class="form-group"><label class="form-label">退撫給與種類 <span class="required">*</span></label>
-                <select class="form-control" id="manual-tax-type"><option>月退休(職)金</option><option>一次退休(職、伍)金</option><option>遺屬年金</option><option>遺屬一次金</option><option>資遣給與</option></select>
-              </div>
-            </div>
-            <div class="form-row cols-3">
-              <div class="form-group"><label class="form-label">領受期間</label><input type="text" class="form-control" id="manual-tax-period" placeholder="113/01~113/12"></div>
-              <div class="form-group"><label class="form-label">領受總額 (元)</label><input type="text" class="form-control" id="manual-tax-amount" placeholder="請輸入領受總額"></div>
-              <div class="form-group"><label class="form-label">關聯撥付案文號</label><input type="text" class="form-control" id="manual-tax-docnum" placeholder="府退一字第..."></div>
-            </div>
-            <div class="form-group">
-              <label class="form-label">建檔原因說明 <span class="required">*</span></label>
-              <textarea class="form-control" id="manual-tax-reason" rows="2" placeholder="請輸入人工建檔原因（如：扣繳相關案件建檔、系統介接前個案補登等）"></textarea>
-            </div>
-            <div class="form-hint" style="margin-top:4px">系統將依欄位檢核、提示及資料合理性檢查機制驗證所輸入資料。</div>
-          </div>
-          <div style="display:flex;gap:8px;justify-content:flex-end">
-            <button class="btn btn-outline" onclick="resetManualTaxCaseForm()">取消</button>
-            <button class="btn btn-gold" onclick="saveManualTaxCase()"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> 儲存建檔</button>
-          </div>
-        </div>
+        <div class="tabs" style="margin-bottom:16px"><div class="tab-item active" onclick="switchTab(this,'manual-single')">單筆建檔</div><div class="tab-item" onclick="switchTab(this,'manual-batch')">批次建檔</div></div>
+        <div class="tab-content active" id="manual-single"><div id="mf-form">
+          <div class="card" style="margin-bottom:16px"><div class="section-title">領受人與案件資料</div>
+            <div class="form-row cols-3"><div class="form-group"><label class="form-label">姓名 <span class="required">*</span></label><input class="form-control" id="mf-name" placeholder="請輸入姓名" ></div><div class="form-group"><label class="form-label">身分證字號／證號 <span class="required">*</span></label><input class="form-control" id="mf-pid" placeholder="例：A123456789" ></div>
+              <div class="form-group"><label class="form-label">領受人身分</label><select class="form-control" id="mf-res"><option>居住者</option><option>非居住者</option></select></div>
+              <div class="form-group"><label class="form-label">退撫給與種類 <span class="required">*</span></label><select class="form-control" id="mf-type"></select></div>
+              <div class="form-group"><label class="form-label">案件性質</label><select class="form-control" id="mf-kind"><option>一般課稅案件</option><option>扣繳案件</option><option>免扣繳（申報憑單）案件</option></select></div>
+              <div class="form-group"><label class="form-label">關聯撥付案文號</label><input class="form-control" id="mf-doc" placeholder="府退二字第1150000203號" ></div>
+              <div class="form-group"><label class="form-label">領取日期 yyy/mm/dd <span class="required">*</span></label><input class="form-control" id="mf-date" placeholder="115/06/01" ></div><div class="form-group"><label class="form-label">所屬期間（起）yyy/mm</label><input class="form-control" id="mf-pfrom" placeholder="115/01" ></div><div class="form-group"><label class="form-label">所屬期間（迄）yyy/mm</label><input class="form-control" id="mf-pto" placeholder="115/12" ></div>
+              <div class="form-group"><label class="form-label">給付總額（元；月退為全年金額） <span class="required">*</span></label><input class="form-control" id="mf-gross" placeholder="" type="number"></div><div class="form-group"><label class="form-label">服務年資</label><input class="form-control" id="mf-years" placeholder="一次性給與必填" type="number" step="0.5"></div>
+              <div class="form-group"><label class="form-label">是否因公撫卹</label><select class="form-control" id="mf-duty"><option>否</option><option>是</option></select></div>
+              <div class="form-group"><label class="form-label">應稅所得額（元）</label><input class="form-control" id="mf-inc" placeholder="可按「依規則試算」帶入" type="number"></div><div class="form-group"><label class="form-label">扣繳稅額（元） <span class="required">*</span></label><input class="form-control" id="mf-tax" placeholder="" type="number"></div><div class="form-group"><label class="form-label">所得人地址（憑單用）</label><input class="form-control" id="mf-addr" placeholder="縣市＋鄉鎮區＋路街" ></div></div>
+            <div class="form-group"><label class="form-label">建檔原因說明 <span class="required">*</span></label><textarea class="form-control" id="mf-reason" rows="2" placeholder="例：撥付系統未介接，依函補建檔"></textarea></div>
+            <div class="page-actions"><button class="btn btn-outline" onclick="mfClear()">清除</button><button class="btn btn-outline-primary" onclick="mfCalc()">依規則試算</button><button class="btn btn-outline" onclick="mfCheck()">執行欄位檢核</button><button class="btn btn-gold" onclick="mfSave()">儲存建檔</button></div></div>
+          <div class="card"><div id="mf-check"><div class="form-hint">請輸入資料後按「執行欄位檢核」，儲存前系統亦會自動檢核（欄位完整性、格式、資料合理性、重複檢查）。</div></div>
+            <label id="mf-ackrow" style="display:none;margin-top:10px;font-size:13px"><input type="checkbox" id="mf-ack"> 已確認上述警示事項，仍要建檔</label></div></div></div>
         <div class="tab-content" id="manual-batch">
           <div class="card" style="margin-bottom:16px">
             <div class="section-title"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="4" width="12" height="17" rx="2"/><rect x="9" y="2" width="6" height="4" rx="1"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="15" y2="15"/></svg> 批次建檔上傳</div>
@@ -2652,90 +2657,17 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
             </div>
           </div>
         </div>
+      
       </div>
-
-      <!-- 修改／註銷 -->
       <div class="tab-content" id="taxcase-tab-edit">
-        <div class="card" style="margin-bottom:16px">
-          <div class="filter-row" style="display:flex;gap:16px;align-items:flex-end">
-            <div class="filter-group" style="flex:1;max-width:280px"><div class="filter-label">案件編號 / 身分證字號</div><input type="text" class="filter-control" value="TAX-113-1987" style="width:100%"></div>
-            <button class="btn btn-primary btn-sm" style="align-self:flex-end" onclick="showToast('success','查詢完成','已載入案件 TAX-113-1987（吳淑珍）之課稅案件資料')">查詢案件</button>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">案件：TAX-113-1987 · 吳淑珍</div>
-            <span class="badge badge-success" id="taxcase-edit-status-badge">已計算</span>
-          </div>
-          <div class="form-row cols-3">
-            <div class="form-group"><label class="form-label">應稅所得</label><input type="text" class="form-control" id="taxcase-edit-taxable" value="356,000"></div>
-            <div class="form-group"><label class="form-label">應納稅額</label><input type="text" class="form-control" id="taxcase-edit-tax" value="53,400"></div>
-            <div class="form-group"><label class="form-label">案件狀態</label><select class="form-control" id="taxcase-edit-state"><option selected>正常</option><option>暫緩</option></select></div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">異動或註銷原因 <span class="required">*</span></label>
-            <textarea class="form-control" id="taxcase-edit-reason" rows="2" placeholder="請輸入異動或註銷原因，將完整保留異動歷程以利稽核"></textarea>
-          </div>
-          <div style="display:flex;gap:8px;justify-content:flex-end">
-            <button class="btn btn-danger" onclick="cancelTaxCase()">註銷案件</button>
-            <button class="btn btn-gold" onclick="saveTaxCaseEdit()">儲存修改</button>
-          </div>
-          <div class="card-title" style="margin:16px 0 8px">異動歷程</div>
-          <div class="case-timeline" id="taxcase-edit-timeline">
-            <div class="case-timeline-item create">
-              <div class="case-timeline-time">113/11/02 09:10</div>
-              <div class="case-timeline-title">案件建立</div>
-              <div class="case-timeline-desc">系統自動計算建檔 · 操作人：系統排程</div>
-            </div>
-            <div class="case-timeline-item">
-              <div class="case-timeline-time">113/11/15 14:02</div>
-              <div class="case-timeline-title">金額修正</div>
-              <div class="case-timeline-desc">應稅所得由 NT$360,000 修正為 NT$356,000，原因：撥付系統回饋金額差異 · 操作人：李小華</div>
-            </div>
-          </div>
-        </div>
+        <div class="card" style="margin-bottom:16px"><div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end">
+          <div class="filter-group"><div class="filter-label">目前操作角色（示意；實際依「權限設定」）</div><select class="filter-control" id="ed-role" onchange="TXC.role=this.value;edSearch()"><option>承辦人</option><option>覆核主管</option><option>查詢人員</option></select></div>
+          <div class="filter-group"><div class="filter-label">案件編號／身分證／姓名</div><input class="filter-control" id="ed-q" placeholder="例：TAX-115-2001"></div>
+          <button class="btn btn-primary btn-sm" onclick="TXC.editNo=null;edSearch()">查詢案件</button></div>
+          <div id="ed-perm" class="form-hint" style="margin-top:10px"></div></div>
+        <div id="ed-list"></div><div id="ed-detail"></div>
       </div>
-
-      <!-- 歷史案件匯入 -->
-      <div class="tab-content" id="taxcase-tab-import">
-        <div class="card" style="margin-bottom:16px">
-          <div class="section-title"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> 舊系統歷史案件批次匯入</div>
-          <div class="form-row cols-3">
-            <div class="form-group"><label class="form-label">匯入範圍年度</label><select class="form-control"><option>109年度~112年度</option><option>110年度</option><option>111年度</option><option>112年度</option></select></div>
-            <div class="form-group"><label class="form-label">案件狀態篩選</label><select class="form-control"><option>全部（含尚未完成申報）</option><option>僅已完成申報</option><option>僅未完成申報</option></select></div>
-            <div class="form-group"><label class="form-label">身分別</label><select class="form-control"><option>全部</option><option>公務人員</option><option>教育人員</option><option>軍職人員</option></select></div>
-          </div>
-          <div class="upload-dropzone" style="margin-top:8px" onclick="triggerFileInput('taxcase-hist-file-input')" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="handleFileDrop(event,'taxcase-hist-file-input')">
-            <div class="upload-dropzone-icon"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:32px;height:32px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
-            <div class="upload-dropzone-title">上傳舊系統歷史案件資料檔</div>
-            <div class="upload-dropzone-hint">支援 .csv／.xlsx，系統將自動進行欄位對應及匯入檢核</div>
-            <div class="upload-file-chip" id="taxcase-hist-file-chip">歷史課稅案件_109-112.csv（12,406筆）</div>
-            <div style="margin-top:12px">
-              <button class="btn btn-outline-primary btn-sm" onclick="event.stopPropagation();triggerFileInput('taxcase-hist-file-input')">選擇檔案</button>
-            </div>
-          </div>
-          <input type="file" id="taxcase-hist-file-input" accept=".csv,.xlsx" style="display:none" onchange="displayChosenFile(this,'taxcase-hist-file-chip')">
-          <div style="display:flex;gap:8px;margin-top:12px">
-            <button class="btn btn-outline btn-sm" onclick="runDownload('歷史案件匯入欄位對應表','xlsx')">下載欄位對應表</button>
-            <button class="btn btn-primary btn-sm" onclick="showToast('success','匯入檢核完成','共 12,406 筆，通過 12,388 筆，異常 18 筆，請確認後執行匯入')">執行匯入檢核</button>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">匯入檢核結果</div>
-            <span class="badge badge-warning">18 筆待確認</span>
-          </div>
-          <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:16px">
-            <div class="stat-card gold"><div class="stat-label">總筆數</div><div class="stat-value gold">12,406</div></div>
-            <div class="stat-card success"><div class="stat-label">通過欄位對應檢核</div><div class="stat-value success">12,388</div></div>
-            <div class="stat-card danger"><div class="stat-label">欄位缺漏／格式異常</div><div class="stat-value danger">18</div></div>
-          </div>
-          <div style="display:flex;gap:8px">
-            <button class="btn btn-outline btn-sm" onclick="runDownload('歷史案件匯入異常清單','xlsx')">下載異常清單</button>
-            <button class="btn btn-gold" onclick="showToast('success','匯入完成','12,388 筆歷史課稅案件已成功接續管理，18 筆異常案件請人工確認後補登')">執行批次匯入</button>
-          </div>
-        </div>
-      </div>
+      <div class="tab-content" id="taxcase-tab-import"><div id="im-root"></div></div>
     </div>
 
     <!-- ===== DIRECT REGISTER ===== -->
@@ -9885,11 +9817,11 @@ function txRecs(c, res) {
 /* ---- 資料 ---- */
 const TX = {step: 1, sel: -1, res: null, regs: {}, records: [], seq: 7, adj: {},
   cases: [
-    {doc: '府退一字第1130012410號', name: '楊淑娟', pid: 'H901234567', type: 'once-ret', resident: true, I: {once: 1850000, years: 3.5}, payDate: '113/12/05', bank: '0040037', recips: [{n: '楊淑娟', r: 1}]},
-    {doc: '府退二字第1130009876號', name: '李秀蘭', pid: 'F678901234', type: 'period-ret', resident: true, I: {per: 1440000}, payDate: '113/12/01', bank: '0040037', recips: [{n: '李秀蘭', r: 1}]},
-    {doc: '府退一字第1130012408號', name: '蔡文彬', pid: 'I012345678', type: 'surv-ann', resident: true, I: {per: 700000, paid: 400000, death: '是'}, payDate: '113/12/03', bank: '0060016', recips: [{n: '蔡文彬', r: 0.6}, {n: '蔡美玲', r: 0.4}]},
+    {doc: '府退一字第1130012410號', name: '楊淑娟', pid: 'H101234562', type: 'once-ret', resident: true, I: {once: 1850000, years: 3.5}, payDate: '113/12/05', bank: '0040037', recips: [{n: '楊淑娟', r: 1}]},
+    {doc: '府退二字第1130009876號', name: '李秀蘭', pid: 'F278901236', type: 'period-ret', resident: true, I: {per: 1440000}, payDate: '113/12/01', bank: '0040037', recips: [{n: '李秀蘭', r: 1}]},
+    {doc: '府退一字第1130012408號', name: '蔡文彬', pid: 'I112345679', type: 'surv-ann', resident: true, I: {per: 700000, paid: 400000, death: '是'}, payDate: '113/12/03', bank: '0060016', recips: [{n: '蔡文彬', r: 0.6}, {n: '蔡美玲', r: 0.4}]},
     {doc: '府退一字第1130012401號', name: '許志豪', pid: 'J12345678', type: 'mix-ret', resident: true, I: {i1: 3000000, i2: 0, i3: 0, i4: 20000, i5: 0, per: 810000, years: null, by: 55, bm: 6, ry: 113, rm: 12, pp: 12, amt: 60000, mths: 1, aw: 90000, rate: 1.5, due: '期末'}, payDate: '113/11/28', bank: '0170014', recips: [{n: '許志豪', r: 1}], bad: true},
-    {doc: '府退一字第1130012415號', name: '黃雅婷', pid: 'N234567890', type: 'surv-once', resident: true, I: {once: 6000000, n: 5}, payDate: '113/12/06', bank: '0090011', recips: [{n: '黃雅婷', r: 1}]}
+    {doc: '府退一字第1130012415號', name: '黃雅婷', pid: 'N234567894', type: 'surv-once', resident: true, I: {once: 6000000, n: 5}, payDate: '113/12/06', bank: '0090011', recips: [{n: '黃雅婷', r: 1}]}
   ],
   log: [
     {t: '115/09/28 10:12', u: '陳志明（給付科）', c: '府退二字第1130009850號 張鳳英', k: '應扣繳稅額', a: 'NT$ 27,660', b: 'NT$ 29,460', why: '主管機關重審，月退休金增加', src: '重審'},
@@ -9897,28 +9829,28 @@ const TX = {step: 1, sel: -1, res: null, regs: {}, records: [], seq: 7, adj: {},
   ],
   diffs: [{c: '府退二字第1130009850號 張鳳英', ty: '月退休(職)金(俸)', a: 27660, b: 29460, adj: -1800, t: '115/09/28 10:12', u: '陳志明（給付科）'}],
   recalc: [
-    {doc: '府退二字第1130009876號', name: '李秀蘭', pid: 'F678901234', type: 'period-ret', resident: true, notice: '銓敘部 部退二字第1150081234號', nd: '115/10/15', recips: [{n: '李秀蘭', r: 1}], o: {per: 1440000}, n: {per: 1512000}, st: '待重算'},
-    {doc: '府退一字第1130012410號', name: '楊淑娟', pid: 'H901234567', type: 'once-ret', resident: true, notice: '銓敘部 部退一字第1150079012號', nd: '115/10/12', recips: [{n: '楊淑娟', r: 1}], o: {once: 1850000, years: 3.5}, n: {once: 1720000, years: 3.5}, st: '待重算'},
-    {doc: '府退二字第1130009801號', name: '陳淑華', pid: 'B234567890', type: 'period-ret', resident: true, notice: '銓敘部 部退二字第1150080456號', nd: '115/10/10', recips: [{n: '陳淑華', r: 1}], o: {per: 1020000}, n: {per: 1032000}, st: '待重算'}
+    {doc: '府退二字第1130009876號', name: '李秀蘭', pid: 'F178901234', type: 'period-ret', resident: true, notice: '銓敘部 部退二字第1150081234號', nd: '115/10/15', recips: [{n: '李秀蘭', r: 1}], o: {per: 1440000}, n: {per: 1512000}, st: '待重算'},
+    {doc: '府退一字第1130012410號', name: '楊淑娟', pid: 'H201234564', type: 'once-ret', resident: true, notice: '銓敘部 部退一字第1150079012號', nd: '115/10/12', recips: [{n: '楊淑娟', r: 1}], o: {once: 1850000, years: 3.5}, n: {once: 1720000, years: 3.5}, st: '待重算'},
+    {doc: '府退二字第1130009801號', name: '陳淑華', pid: 'B134567892', type: 'period-ret', resident: true, notice: '銓敘部 部退二字第1150080456號', nd: '115/10/10', recips: [{n: '陳淑華', r: 1}], o: {per: 1020000}, n: {per: 1032000}, st: '待重算'}
   ]
 };
 TX.cases.forEach(c => { c.I.resident = c.resident; c.I.d = c.payDate; });
 /* ---- 適用「115/01/01 起」版次之示範案件（領取日期 ≥ 115/01/01） ---- */
 const PVD = {by: 55, bm: 3, ry: 115, rm: 7, pp: 12, amt: 75000, mths: 1, aw: 112500, rate: 1.5, due: '期末'};
 const EX115 = [
-  {doc: '府退一字第1150000101號', name: '陳怡君', pid: 'A223456789', type: 'once-ret', I: {once: 2800000, years: 15}, payDate: '115/02/05', bank: '0040037', note: '一次退休金｜免稅區（≤ 20.6萬×年資）'},
-  {doc: '府退一字第1150000118號', name: '林建國', pid: 'E123456780', type: 'once-ret', I: {once: 6200000, years: 20}, payDate: '115/03/12', bank: '0040037', note: '一次退休金｜半稅區'},
+  {doc: '府退一字第1150000101號', name: '陳怡君', pid: 'A223456781', type: 'once-ret', I: {once: 2800000, years: 15}, payDate: '115/02/05', bank: '0040037', note: '一次退休金｜免稅區（≤ 20.6萬×年資）'},
+  {doc: '府退一字第1150000118號', name: '林建國', pid: 'E123456783', type: 'once-ret', I: {once: 6200000, years: 20}, payDate: '115/03/12', bank: '0040037', note: '一次退休金｜半稅區'},
   {doc: '府退一字第1150000135號', name: '吳美珠', pid: 'D223344556', type: 'once-ret', I: {once: 12500000, years: 25}, payDate: '115/04/20', bank: '0060016', note: '一次退休金｜過半全課（倍數 1.50485）'},
-  {doc: '府退一字第1150000142號', name: 'Mark Allen', pid: 'A800123456', type: 'sev', resident: false, I: {once: 1500000, years: 5}, payDate: '115/05/08', bank: '0170014', note: '資遣給與｜非居住者 18%'},
-  {doc: '府退二字第1150000203號', name: '郭泰安', pid: 'K121234567', type: 'period-ret', I: {per: 1560000}, payDate: '115/06/01', bank: '0040037', note: '月退休金｜減除 89.4萬，超過 2,000 元須預扣'},
+  {doc: '府退一字第1150000142號', name: 'Mark Allen', pid: '19850312MA', type: 'sev', resident: false, I: {once: 1500000, years: 5}, payDate: '115/05/08', bank: '0170014', note: '資遣給與｜非居住者 18%'},
+  {doc: '府退二字第1150000203號', name: '郭泰安', pid: 'K121234560', type: 'period-ret', I: {per: 1560000}, payDate: '115/06/01', bank: '0040037', note: '月退休金｜減除 89.4萬，超過 2,000 元須預扣'},
   {doc: '府退二字第1150000215號', name: '周麗華', pid: 'M222334455', type: 'period-ret', I: {per: 960000}, payDate: '115/06/01', bank: '0090011', note: '月退休金｜每月稅額 ≤ 2,000 元免扣繳'},
-  {doc: '府退三字第1150000301號', name: '黃國棟', pid: 'L123987654', type: 'mix-ret', I: Object.assign({i1: 2400000, i2: 0, i3: 0, i4: 30000, i5: 0, per: 1012500, years: 28}, PVD), payDate: '115/08/14', bank: '0040037', note: '兼領一次及月退｜PV 按月、期末'},
-  {doc: '府退三字第1150000318號', name: '謝文雄', pid: 'S123456780', type: 'mix-ret', I: {i1: 2000000, i2: 150000, i3: 0, i4: 0, i5: 0, per: 945000, years: 32, by: 54, bm: 9, ry: 115, rm: 3, pp: 4, amt: 210000, mths: 3, aw: 105000, rate: 1.5, due: '期初'}, payDate: '115/09/02', bank: '0060016', note: '兼領一次及月退｜PV 按季、期初、含現金補償金'},
-  {doc: '府撫一字第1150000402號', name: '蔡文彬', pid: 'R223344558', type: 'surv-ann', I: {per: 720000, paid: 480000, death: '是'}, payDate: '115/07/10', bank: '0060016', recips: [{n: '蔡文彬', r: 0.55}, {n: '蔡美玲', r: 0.45}], note: '遺屬年金｜死亡當年度、2 位領受人比例分配、92 申報'},
-  {doc: '府撫一字第1150000417號', name: '黃雅婷', pid: 'N234567890', type: 'surv-once', I: {once: 7500000, n: 6}, payDate: '115/08/25', bank: '0090011', note: '遺屬一次金｜定額免稅額度（年金現值係數）、92 申報'},
-  {doc: '府撫二字第1150000503號', name: '劉宗翰', pid: 'H123456780', type: 'once-np', I: {once: 3000000, years: 20, duty: '是'}, payDate: '115/09/18', bank: '0040037', note: '一次撫卹｜因公，免納所得稅'},
-  {doc: '府撫二字第1150000516號', name: '孫淑芬', pid: 'F223344550', type: 'once-np', I: {once: 5000000, years: 18, duty: '否'}, payDate: '115/10/06', bank: '0170014', note: '一次撫卹（非因公）｜×50% 課稅、92 申報'},
-  {doc: '府撫三字第1150000602號', name: '賴秀英', pid: 'Z223456789', type: 'mix-surv', I: Object.assign({i1: 4000000, i2: 0, i3: 0, i4: 0, i5: 0, per: 600000, paid: 200000, death: '是', n: 6, years: 0}, {by: 50, bm: 8, ry: 114, rm: 12, pp: 12, amt: 45000, mths: 1, aw: 67500, rate: 1.5, due: '期末'}), payDate: '115/10/15', bank: '0060016', note: '遺屬一次金及年金｜PV 比例 A/B、92 申報'}
+  {doc: '府退三字第1150000301號', name: '黃國棟', pid: 'L123987653', type: 'mix-ret', I: Object.assign({i1: 2400000, i2: 0, i3: 0, i4: 30000, i5: 0, per: 1012500, years: 28}, PVD), payDate: '115/08/14', bank: '0040037', note: '兼領一次及月退｜PV 按月、期末'},
+  {doc: '府退三字第1150000318號', name: '謝文雄', pid: 'S223456786', type: 'mix-ret', I: {i1: 2000000, i2: 150000, i3: 0, i4: 0, i5: 0, per: 945000, years: 32, by: 54, bm: 9, ry: 115, rm: 3, pp: 4, amt: 210000, mths: 3, aw: 105000, rate: 1.5, due: '期初'}, payDate: '115/09/02', bank: '0060016', note: '兼領一次及月退｜PV 按季、期初、含現金補償金'},
+  {doc: '府撫一字第1150000402號', name: '蔡文彬', pid: 'R123344555', type: 'surv-ann', I: {per: 720000, paid: 480000, death: '是'}, payDate: '115/07/10', bank: '0060016', recips: [{n: '蔡文彬', r: 0.55}, {n: '蔡美玲', r: 0.45}], note: '遺屬年金｜死亡當年度、2 位領受人比例分配、92 申報'},
+  {doc: '府撫一字第1150000417號', name: '黃雅婷', pid: 'N234567894', type: 'surv-once', I: {once: 7500000, n: 6}, payDate: '115/08/25', bank: '0090011', note: '遺屬一次金｜定額免稅額度（年金現值係數）、92 申報'},
+  {doc: '府撫二字第1150000503號', name: '劉宗翰', pid: 'H123456786', type: 'once-np', I: {once: 3000000, years: 20, duty: '是'}, payDate: '115/09/18', bank: '0040037', note: '一次撫卹｜因公，免納所得稅'},
+  {doc: '府撫二字第1150000516號', name: '孫淑芬', pid: 'F223344558', type: 'once-np', I: {once: 5000000, years: 18, duty: '否'}, payDate: '115/10/06', bank: '0170014', note: '一次撫卹（非因公）｜×50% 課稅、92 申報'},
+  {doc: '府撫三字第1150000602號', name: '賴秀英', pid: 'Z123456780', type: 'mix-surv', I: Object.assign({i1: 4000000, i2: 0, i3: 0, i4: 0, i5: 0, per: 600000, paid: 200000, death: '是', n: 6, years: 0}, {by: 50, bm: 8, ry: 114, rm: 12, pp: 12, amt: 45000, mths: 1, aw: 67500, rate: 1.5, due: '期末'}), payDate: '115/10/15', bank: '0060016', note: '遺屬一次金及年金｜PV 比例 A/B、92 申報'}
 ];
 EX115.forEach(c => { c.resident = c.resident !== false; c.recips = c.recips || [{n: c.name, r: 1}]; c.I.resident = c.resident; c.I.d = c.payDate; });
 ['一次退休金｜113 年度版次（原示範）', '月退休金｜113 年度版次（原示範）', '遺屬年金｜113 年度版次（原示範）', '兼領｜113 年度版次（資料缺漏示範，可模擬補正）', '遺屬一次金｜113 年度版次（原示範）'].forEach((n, i) => TX.cases[i].note = n);
@@ -9926,9 +9858,9 @@ TX.cases.push(...EX115); TX.flt = '115/01/01 起';
 
 TX.recalc.forEach(r => { r.o.resident = r.n.resident = r.resident; r.o.d = r.n.d = '113/12/05'; });
 TX.audit = [
-  {k: 'F678', n: '李秀蘭', pid: 'F678901234', m: 120000, doc: '府退二字第1130009876號'},
+  {k: 'F678', n: '李秀蘭', pid: 'F278901236', m: 120000, doc: '府退二字第1130009876號'},
   {k: 'A123', n: '王志明', pid: 'A123456789', m: 110000, doc: '府退二字第1130009801號'},
-  {k: 'B234', n: '陳淑華', pid: 'B234567890', m: 85000, doc: '府退二字第1130009802號'}
+  {k: 'B234', n: '陳淑華', pid: 'B234567894', m: 85000, doc: '府退二字第1130009802號'}
 ];
 
 /* ---- B：介接撥付資料與欄位完整性及格式檢核 ---- */
@@ -9937,7 +9869,7 @@ function txValidate(c) {
   const needYr = ['once93', 'once92', 'mix93', 'mixNp'].includes(t.kind), sumR = c.recips.reduce((a, r) => a + r.r, 0);
   return [
     ['撥付文號', c.doc, '必填，格式「○○字第 n 號」', /第\d+號$/.test(c.doc)],
-    ['身分證字號', c.pid, '1 位英文＋9 位數字（共 10 碼）', /^[A-Z]\d{9}$/.test(c.pid)],
+    ['身分證字號／證號', c.pid, c.resident ? '1 位英文＋1／2＋8 位數字，且通過檢查碼' : '居留證統一證號，或護照出生年月日＋英文姓名前 2 碼', c.resident ? idOk(c.pid) : npidOk(c.pid)],
     ['姓名', c.name, '必填', !!c.name],
     ['退撫給與種類', t.name, '須為彙整表所列 14 種之一', true],
     ['領受人身分', c.resident ? '居住者' : '非居住者', '必填（居住者 6%／非居住者 18%）', true],
@@ -9949,7 +9881,7 @@ function txValidate(c) {
     ['銀行代號', c.bank, '7 碼數字', /^\d{7}$/.test(c.bank)]
   ];
 }
-function txFix(i) { const c = TX.cases[i]; c.pid = 'J123456789'; c.I.years = 30; c.bad = false; showToast('success', '撥付系統已補正', '重新介接後欄位檢核通過'); txRender(); }
+function txFix(i) { const c = TX.cases[i]; c.pid = 'J123456787'; c.I.years = 30; c.bad = false; showToast('success', '撥付系統已補正', '重新介接後欄位檢核通過'); txRender(); }
 
 /* ---- 畫面 ---- */
 function txGo(n) {
@@ -10145,7 +10077,395 @@ navigateTo = function (id) {
   if (id === 'tax-audit') txAuditRender();
   document.querySelectorAll('.sidebar-sub-item').forEach(el => { if ((el.getAttribute('onclick') || '').indexOf("navigateTo('" + id + "')") > -1) el.classList.add('active'); });
 };
+
+
+/* ===== V13：課稅案件管理（人工建檔／修改註銷／歷史匯入）===== */
+const LET = {A: 10, B: 11, C: 12, D: 13, E: 14, F: 15, G: 16, H: 17, I: 34, J: 18, K: 19, L: 20, M: 21, N: 22, O: 35, P: 23, Q: 24, R: 25, S: 26, T: 27, U: 28, V: 29, W: 32, X: 30, Y: 31, Z: 33};
+const idForm = id => /^[A-Z][12]\d{8}$/.test(id || '');
+const idSum = id => { const n = LET[id[0]]; let s = Math.floor(n / 10) + (n % 10) * 9; [8, 7, 6, 5, 4, 3, 2, 1, 1].forEach((w, i) => { s += (+id[i + 1]) * w; }); return s; };
+const idOk = id => idForm(id) && idSum(id) % 10 === 0;
+const mkId = (L, g, d7) => { const n = LET[L]; let s = Math.floor(n / 10) + (n % 10) * 9; (g + d7).split('').forEach((x, i) => { s += (+x) * [8, 7, 6, 5, 4, 3, 2, 1][i]; }); return L + g + d7 + ((10 - s % 10) % 10); };
+const bnOk = b => { if (!/^\d{8}$/.test(b || '')) return false; let s = 0; [1, 2, 1, 2, 1, 2, 4, 1].forEach((w, i) => { const p = w * (+b[i]); s += Math.floor(p / 10) + p % 10; }); return s % 10 === 0 || (b[6] === '7' && (s + 1) % 10 === 0); };
+const npidOk = id => /^(\d{8}[A-Z]{2}|[A-Z][A-D89]\d{8})$/.test(id || '');
+const realDate = (y, m, d) => { const dt = new Date(y + 1911, m - 1, d); return dt.getFullYear() === y + 1911 && dt.getMonth() === m - 1 && dt.getDate() === d; };
+const rocOk = s => { const m = /^(\d{3})\/(\d{2})\/(\d{2})$/.exec(s || ''); return !!m && realDate(+m[1], +m[2], +m[3]); };
+const dlBlob = (name, text, mime) => { try { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\ufeff' === text[0] ? text : text], {type: (mime || 'text/plain') + ';charset=utf-8'})); a.download = name; document.body.appendChild(a); a.click(); a.remove(); } catch (e) {} };
+const TXU = {'承辦人': '王大明（給付科）', '覆核主管': '陳志明（給付科·覆核主管）', '查詢人員': '李小華（查詢人員）'};
+const ADDR = ['臺北市中正區忠孝西路一段1號', '新北市板橋區文化路一段100號', '桃園市中壢區中正路200號', '臺中市西區三民路一段50號', '臺南市東區大學路20號', '高雄市前鎮區中山二路30號'];
+const TXC = {list: [], seq: 2040, role: '承辦人', batches: [], impSeq: 1, imp: null, editNo: null, flt: {}};
+
+/* ---- 案件建立 ---- */
+function txcNew(o) {
+  const t = txType(o.type), res = o.resident !== false, I = Object.assign({resident: res, d: o.payDate}, JSON.parse(JSON.stringify(o.I || {})));
+  const r = txCalc(t, I), y = +o.payDate.slice(0, 3), m = o.payDate.slice(4, 6);
+  const c = {no: o.no || 'TAX-' + y + '-' + String(++TXC.seq).padStart(4, '0'), name: o.name, pid: o.pid, pt: res ? '0' : '7', resident: res, type: o.type, fmt: t.fmt, payDate: o.payDate,
+    period: o.period || (t.nat === '分期' || r.parts.some(p => p.times > 1) ? y + '/01～' + y + '/12' : y + '/' + m + '～' + y + '/' + m),
+    gross: Math.round(r.gross), inc: Math.round(r.inc), tax: Math.round(r.tax), addr: o.addr || '', src: o.src || '撥付介接', status: '正常', decl: o.decl || '未申報',
+    by: o.by || TXU['承辦人'], at: o.at || rocNow(), ver: 1, hist: [], exempt: I.duty === '是', doc: o.doc || '', I};
+  c.net = c.gross - c.tax;
+  c.hist.push({t: c.at, u: c.by, type: '案件建立', why: o.why || '系統介接撥付資料建檔', diff: []});
+  return c;
+}
+function txcLog(c, k, a, b, why, src, u) { TX.log.unshift({t: rocNow(), u: u || TXU[TXC.role], c: c.no + ' ' + c.name, k, a, b, why, src}); }
+function txcSeed() {
+  const S = [
+    ['周美玲', mkId('B', 2, '3412345'), 'once-ret', {once: 4500000, years: 18}, '115/01/15'],
+    ['徐國安', mkId('C', 1, '2345678'), 'period-ret', {per: 1380000}, '115/01/31'],
+    ['簡淑貞', mkId('D', 2, '4567890'), 'sev', {once: 2600000, years: 12}, '115/02/10'],
+    ['許文賢', mkId('E', 1, '5678901'), 'period-ret', {per: 1020000}, '115/02/28'],
+    ['劉美惠', mkId('G', 2, '7890123'), 'once-np', {once: 3200000, years: 20, duty: '是'}, '115/03/18'],
+    ['張鳳英', mkId('A', 2, '1122334'), 'once-np', {once: 5200000, years: 16, duty: '否'}, '115/04/09'],
+    ['Emma Wilson', '19900615EW', 'sev', {once: 1800000, years: 6}, '115/05/12', false]
+  ];
+  S.forEach((x, i) => TXC.list.push(txcNew({name: x[0], pid: x[1], type: x[2], I: x[3], payDate: x[4], resident: x[5] !== false, addr: x[5] === false ? '1234 Main St, Los Angeles, USA' : ADDR[i % ADDR.length], at: x[4] + ' 09:30', no: 'TAX-115-' + String(2001 + i).padStart(4, '0'), decl: i < 2 ? '未申報' : '未申報'})));
+}
+function txcRegister(c, r) {
+  if (TXC.list.some(x => x.doc === c.doc && x.src === '撥付介接')) return;
+  const n = txcNew({name: c.name, pid: c.pid, type: c.type, I: c.I, payDate: c.payDate, resident: c.resident, addr: c.addr, doc: c.doc, why: '課稅計算確認建檔（' + c.doc + '）'});
+  TXC.list.unshift(n); clRender();
+}
+function txConfirm() {
+  const c = TX.cur(), r = TX.res; if (!r) return;
+  TX.regs[c.doc] = {res: r, no: 'TX113' + String(TX.seq++).padStart(4, '0'), t: rocNow(), disp: null};
+  txcRegister(c, r);
+  showToast('success', '課稅計算已建檔', '已建立課稅案件並隨案介接公文系統產製公文及相關文件');
+  TX.step = 3; txRender();
+}
+
+
+/* ---- 案件清單 ---- */
+function clRender() {
+  const q = (document.getElementById('cl-q') || {}).value || '', sr = (document.getElementById('cl-src') || {}).value || '全部', st = (document.getElementById('cl-st') || {}).value || '全部', yr = (document.getElementById('cl-yr') || {}).value || '全部';
+  const rows = TXC.list.filter(c => (!q || (c.no + c.name + c.pid).includes(q)) && (sr === '全部' || c.src === sr) && (st === '全部' || c.status === st) && (yr === '全部' || String(c.payDate.slice(0, 3)) === yr));
+  const el = document.getElementById('cl-body'); if (!el) return;
+  const bc = {'正常': 'success', '暫緩': 'warning', '註銷待覆核': 'warning', '已註銷': 'danger'};
+  el.innerHTML = rows.map(c => `<tr><td style="font-size:12px;white-space:nowrap">${c.no}</td><td>${c.name}</td><td>${mskId(c.pid)}</td><td>${txType(c.type).name}</td><td>${c.payDate}</td><td style="text-align:right">${fm(c.gross)}</td><td style="text-align:right">${fm(c.tax)}</td><td><span class="badge badge-info">${c.src}</span></td><td><span class="badge badge-${bc[c.status]}">${c.status}</span></td><td>${c.decl}</td><td style="white-space:nowrap"><button class="btn btn-outline btn-sm" onclick="edOpenFromList('${c.no}')">修改／註銷</button></td></tr>`).join('') || '<tr><td colspan="11" style="text-align:center;color:var(--text-secondary)">查無符合條件之案件</td></tr>';
+  document.getElementById('cl-count').textContent = rows.length + ' 筆';
+}
+function tcTab(label, id) { const el = [...document.querySelectorAll('#view-tax-case .tabs > .tab-item')].find(x => x.textContent.trim().startsWith(label)); if (el) switchTab(el, id); }
+function edOpenFromList(no) { TXC.editNo = no; tcTab('修改', 'taxcase-tab-edit'); document.getElementById('ed-q').value = no; edSearch(); }
+
+/* ---- 人工建檔 ---- */
+const MFT = ['once-ret', 'sev', 'refund', 'once-give', 'once-np', 'period-ret', 'surv-ann', 'half', 'alimony'];
+const mfv = id => (document.getElementById(id) || {}).value || '';
+function mfInit() {
+  const el = document.getElementById('mf-type'); if (el && !el.options.length) el.innerHTML = MFT.map(k => `<option value="${k}">${txType(k).name}（${txType(k).fmt}）</option>`).join('');
+}
+function mfRead() {
+  const t = txType(mfv('mf-type') || 'once-ret');
+  return {name: mfv('mf-name').trim(), pid: mfv('mf-pid').trim().toUpperCase(), res: mfv('mf-res') !== '非居住者', type: t, date: mfv('mf-date').trim(), pf: mfv('mf-pfrom').trim(), pt: mfv('mf-pto').trim(), doc: mfv('mf-doc').trim(), addr: mfv('mf-addr').trim(),
+    kind: mfv('mf-kind'), gross: mfv('mf-gross'), years: mfv('mf-years'), duty: mfv('mf-duty'), inc: mfv('mf-inc'), tax: mfv('mf-tax'), why: mfv('mf-reason').trim()};
+}
+function mfCalc() {
+  const v = mfRead(), g = +v.gross; if (!g || !rocOk(v.date)) { showToast('warning', '無法試算', '請先填寫給付總額與正確之領取日期'); return; }
+  const I = {resident: v.res, d: v.date, years: +v.years || 0, duty: v.duty || '否', death: '否', paid: 0}; ['once92', 'once93'].includes(v.type.kind) ? I.once = g : I.per = g;
+  const r = txCalc(v.type, I); document.getElementById('mf-inc').value = Math.round(r.inc); document.getElementById('mf-tax').value = Math.round(r.tax);
+  showToast('success', '已依課稅規則試算', '課稅所得額 ' + nt(r.inc) + '、應扣繳稅額 ' + nt(r.tax) + '（可再調整）'); mfCheck();
+}
+function mfCheck() {
+  const v = mfRead(), L = [], add = (lv, f, msg) => L.push({lv, f, msg}), g = +v.gross, tax = +v.tax, inc = +v.inc, cur = '115/10/20';
+  [['姓名', v.name], ['身分證字號', v.pid], ['領取日期', v.date], ['給付總額', v.gross], ['扣繳稅額', v.tax], ['建檔原因', v.why]].forEach(x => { if (!x[1]) add('error', x[0], '為必填欄位'); });
+  if (v.name && [...v.name].length < 2) add('error', '姓名', '至少 2 個字');
+  if (v.pid) { if (v.res) { if (!idForm(v.pid)) add('error', '身分證字號', '格式應為 1 位英文＋1／2＋8 位數字'); else if (!idOk(v.pid)) add('warn', '身分證字號', '檢查碼邏輯不符，申報憑單時須註記錯誤註記 A／B'); else add('ok', '身分證字號', '格式與檢查碼正確'); } else if (!npidOk(v.pid)) add('error', '證號', '非居住者請填居留證統一證號或「護照西元出生年月日＋英文姓名前 2 碼」'); else add('ok', '證號', '格式正確'); }
+  if (v.date) { if (!rocOk(v.date)) add('error', '領取日期', '格式須為 yyy/mm/dd 且為有效日期'); else if (v.date > cur) add('error', '領取日期', '不得晚於今日（' + cur + '）'); }
+  if (v.pf && v.pt) { if (!/^\d{3}\/\d{2}$/.test(v.pf) || !/^\d{3}\/\d{2}$/.test(v.pt)) add('error', '所屬期間', '格式須為 yyy/mm'); else if (v.pf > v.pt) add('error', '所屬期間', '起日不得晚於迄日'); else if (v.date && v.pf.slice(0, 3) !== v.date.slice(0, 3) && v.pt.slice(0, 3) !== v.date.slice(0, 3)) add('warn', '所屬期間', '所屬期間與領取年度不一致'); }
+  else add('info', '所屬期間', '未填寫，憑單所屬期間將以領取年度全年／當月帶入');
+  if (v.gross) { if (!(g > 0)) add('error', '給付總額', '須為大於 0 之數值'); else { if (g > 10000000) add('warn', '給付總額', '超過 1,000 萬元，申報審核需再確認'); if (g !== Math.floor(g)) add('error', '給付總額', '須為整數（元）'); } }
+  const needY = ['once93', 'once92'].includes(v.type.kind); if (needY && !(+v.years > 0)) add('error', '服務年資', '一次性給與須填寫服務年資（用以計算免稅額）'); if (+v.years > 60) add('warn', '服務年資', '超過 60 年，請確認');
+  if (v.tax !== '') { if (tax < 0) add('error', '扣繳稅額', '不得為負值'); if (g && tax > g) add('error', '扣繳稅額', '不得大於給付總額'); }
+  if (v.date && rocOk(v.date) && g) {
+    const I = {resident: v.res, d: v.date, years: +v.years || 0, duty: v.duty || '否', death: '否', paid: 0}; needY ? I.once = g : I.per = g; const r = txCalc(v.type, I);
+    if (v.duty === '是') { if (tax > 0) add('error', '扣繳稅額', '因公撫卹金免納所得稅，稅額應為 0'); } else if (v.tax !== '' && Math.abs(tax - r.tax) > 1) add('warn', '合理性檢查', '依 ' + txP(v.date).lbl + ' 版次試算應扣繳稅額為 ' + nt(r.tax) + '，與輸入（' + nt(tax) + '）不同');
+    else if (v.tax !== '') add('ok', '合理性檢查', '扣繳稅額與課稅規則試算結果一致');
+    if (!v.res && v.type.fmt === 93 && tax === 0 && g > 0) add('warn', '合理性檢查', '非居住者適用 18% 扣繳率，稅額為 0 請確認');
+  }
+  if (v.doc && !/第\d+號$/.test(v.doc)) add('warn', '關聯撥付案文號', '格式應為「○○字第 n 號」');
+  if (v.doc) { const hit = TX.cases.find(c => c.doc === v.doc); if (hit) { add('info', '關聯撥付案', '已比對撥付案：' + hit.name + '，' + txType(hit.type).name); if (hit.pid !== v.pid) add('warn', '關聯撥付案', '身分證字號與撥付案（' + mskId(hit.pid) + '）不一致'); } else add('info', '關聯撥付案', '撥付系統查無此文號，將以人工資料建檔'); }
+  if (v.pid && v.date && TXC.list.some(c => c.pid === v.pid && c.type === v.type.id && c.payDate === v.date && c.status !== '已註銷')) add('error', '重複檢查', '疑似重複：已有相同身分證字號、給與種類及領取日期之案件');
+  if (v.kind === '扣繳案件' && !(tax > 0) && v.type.fmt === 93) add('warn', '案件性質', '標示為扣繳案件但扣繳稅額為 0，請確認是否改為免扣繳案件');
+  if (!v.addr) add('info', '所得人地址', '未填寫，申報憑單前須補齊（地址空白將被審核剔除）');
+  const err = L.filter(x => x.lv === 'error').length, warn = L.filter(x => x.lv === 'warn').length;
+  const ic = {error: '✕', warn: '⚠', ok: '✓', info: 'ℹ'}, cl = {error: 'tx-bad', warn: 'neg', ok: 'tx-ok', info: ''};
+  document.getElementById('mf-check').innerHTML = `<div class="card-title" style="margin-bottom:8px">檢核結果：${err ? `<span class="tx-bad">${err} 項錯誤</span>` : '<span class="tx-ok">無錯誤</span>'}${warn ? `，<span class="neg">${warn} 項警示</span>` : ''}</div>` + (L.length ? L.map(x => `<div style="padding:4px 0;font-size:13px"><span class="${cl[x.lv]}" style="display:inline-block;width:20px">${ic[x.lv]}</span><b>${x.f}</b>：${x.msg}</div>`).join('') : '<div class="form-hint">請輸入資料後執行檢核</div>');
+  document.getElementById('mf-ackrow').style.display = warn && !err ? 'block' : 'none';
+  return {err, warn, v};
+}
+function mfSave() {
+  const r = mfCheck(); if (r.err) { showToast('error', '欄位檢核未通過', '請修正 ' + r.err + ' 項錯誤後再儲存'); return; }
+  if (r.warn && !document.getElementById('mf-ack').checked) { showToast('warning', '請確認警示事項', '合理性檢查有警示，請勾選「已確認」後再儲存'); return; }
+  const v = r.v, g = +v.gross, c = txcNew({name: v.name, pid: v.pid, type: v.type.id, resident: v.res, I: {}, payDate: v.date, addr: v.addr, doc: v.doc, src: '人工建檔', by: TXU[TXC.role], why: v.why, period: v.pf && v.pt ? v.pf + '～' + v.pt : null});
+  Object.assign(c, {gross: g, inc: Math.round(+v.inc || 0), tax: Math.round(+v.tax || 0), exempt: v.duty === '是', kind: v.kind || '一般課稅案件'}); c.net = c.gross - c.tax; c.hist[0].why = v.why;
+  TXC.list.unshift(c); txcLog(c, '案件建立', '-', '給付總額 ' + nt(c.gross) + '／扣繳稅額 ' + nt(c.tax), v.why, '人工建檔'); clRender(); mfClear();
+  showToast('success', '建檔成功', c.name + ' 之課稅案件已人工建立，案件編號：' + c.no);
+}
+function mfClear() { document.querySelectorAll('#mf-form input:not([type=checkbox]), #mf-form textarea').forEach(e => e.value = ''); document.getElementById('mf-ack').checked = false; document.getElementById('mf-check').innerHTML = '<div class="form-hint">請輸入資料後按「執行欄位檢核」，儲存前系統亦會自動檢核。</div>'; document.getElementById('mf-ackrow').style.display = 'none'; }
+
+/* ---- 修改／註銷（權限控管＋異動歷程）---- */
+const EDF = [['gross', '給付總額'], ['inc', '應稅所得額'], ['tax', '扣繳稅額'], ['period', '所屬期間'], ['addr', '所得人地址'], ['status', '案件狀態']];
+function edPerm() { const r = TXC.role; return r === '查詢人員' ? '【查詢人員】僅可查詢，不可修改或註銷。' : r === '承辦人' ? '【承辦人】可修改案件；註銷須填寫原因並送「覆核主管」核准後生效。' : '【覆核主管】可修改、直接註銷，並可核准／退回承辦人之註銷申請。'; }
+function edSearch() {
+  const q = mfv('ed-q').trim(), rows = TXC.list.filter(c => !q || (c.no + c.name + c.pid).includes(q));
+  document.getElementById('ed-perm').textContent = edPerm();
+  if (rows.length === 1 || (TXC.editNo && rows.some(c => c.no === TXC.editNo))) { TXC.editNo = (rows.find(c => c.no === TXC.editNo) || rows[0]).no; document.getElementById('ed-list').innerHTML = ''; edRender(); return; }
+  document.getElementById('ed-detail').innerHTML = '';
+  document.getElementById('ed-list').innerHTML = `<div class="card"><div class="card-title" style="margin-bottom:8px">查得 ${rows.length} 筆，請選擇案件</div><div class="table-wrapper"><table class="data-table"><tbody>${rows.slice(0, 12).map(c => `<tr><td>${c.no}</td><td>${c.name}</td><td>${txType(c.type).name}</td><td>${c.payDate}</td><td>${c.status}</td><td><button class="btn btn-sm btn-gold" onclick="TXC.editNo='${c.no}';edSearch()">選擇</button></td></tr>`).join('')}</tbody></table></div></div>`;
+}
+function edRender() {
+  document.getElementById('ed-perm').textContent = edPerm();
+  const c = TXC.list.find(x => x.no === TXC.editNo), el = document.getElementById('ed-detail'); if (!c) { el.innerHTML = ''; return; }
+  const ro = TXC.role === '查詢人員' || c.status === '已註銷' || c.status === '註銷待覆核', bc = {'正常': 'success', '暫緩': 'warning', '註銷待覆核': 'warning', '已註銷': 'danger'};
+  const inp = (k, v, num) => `<input class="form-control" id="ed-${k}" ${ro ? 'disabled' : ''} value="${v}" ${num ? 'type="number"' : ''}>`;
+  const tl = c.hist.slice().reverse().map(h => `<div class="case-timeline-item"><div class="case-timeline-time">${h.t}</div><div class="case-timeline-title">${h.type}</div><div class="case-timeline-desc">${h.why ? '原因：' + h.why + ' · ' : ''}操作人：${h.u}${h.diff && h.diff.length ? '<br>' + h.diff.map(d => d.k + '：' + d.a + ' → <b>' + d.b + '</b>').join('；') : ''}</div></div>`).join('');
+  el.innerHTML = `<div class="card" style="margin-bottom:16px"><div class="card-header"><div><div class="card-title">案件 ${c.no} · ${c.name}</div><div class="card-subtitle">${txType(c.type).name}｜所得格式 ${c.fmt}｜來源：${c.src}｜版次 v${c.ver}｜申報：${c.decl}</div></div><span class="badge badge-${bc[c.status]}">${c.status}</span></div>
+    ${c.status === '已註銷' ? '<div class="tx-formula" style="margin-bottom:12px">本案件已註銷，資料僅供查詢，不得再修改；異動歷程已完整保留。</div>' : ''}${c.status === '註銷待覆核' ? `<div class="tx-formula" style="margin-bottom:12px">已由 ${c.cancelReq.u} 於 ${c.cancelReq.t} 提出註銷申請（原因：${c.cancelReq.why}），待覆核主管核准。</div>` : ''}
+    ${c.decl === '已申報' ? '<div class="tx-formula" style="margin-bottom:12px;border-left-color:var(--warning)">本案件已完成申報，異動後須辦理「更正申報」。</div>' : ''}
+    <div class="form-row cols-3"><div class="form-group"><label class="form-label">給付總額</label>${inp('gross', c.gross, 1)}</div><div class="form-group"><label class="form-label">應稅所得額</label>${inp('inc', c.inc, 1)}</div><div class="form-group"><label class="form-label">扣繳稅額</label>${inp('tax', c.tax, 1)}</div>
+    <div class="form-group"><label class="form-label">所屬期間</label>${inp('period', c.period)}</div><div class="form-group"><label class="form-label">所得人地址</label>${inp('addr', c.addr)}</div><div class="form-group"><label class="form-label">案件狀態</label><select class="form-control" id="ed-status" ${ro ? 'disabled' : ''}><option ${c.status === '暫緩' ? '' : 'selected'}>正常</option><option ${c.status === '暫緩' ? 'selected' : ''}>暫緩</option></select></div></div>
+    <div class="form-group"><label class="form-label">異動或註銷原因 <span class="required">*</span>（至少 5 字）</label><input class="form-control" id="ed-why" ${ro ? 'disabled' : ''} placeholder="例：撥付系統回饋金額差異，依函 OOO 修正"></div>
+    ${c.decl === '已申報' && !ro ? '<label style="font-size:13px"><input type="checkbox" id="ed-ack"> 已知悉須辦理更正申報</label>' : ''}
+    <div class="page-actions" style="margin-top:12px">
+      ${TXC.role === '查詢人員' ? '<span class="form-hint">目前角色無修改權限</span>' : `<button class="btn btn-gold" ${ro ? 'disabled' : ''} onclick="edSave()">儲存修改</button>
+      <button class="btn btn-outline-danger" ${ro ? 'disabled' : ''} onclick="edCancel()">${TXC.role === '覆核主管' ? '註銷案件' : '申請註銷（送覆核）'}</button>
+      ${c.status === '註銷待覆核' && TXC.role === '覆核主管' ? '<button class="btn btn-success" onclick="edApprove(true)">核准註銷</button><button class="btn btn-outline" onclick="edApprove(false)">退回</button>' : ''}`}
+    </div></div>
+    <div class="card"><div class="card-title" style="margin-bottom:10px">異動歷程（完整保留，不可刪除）</div>${tl}</div>`;
+}
+function edSave() {
+  const c = TXC.list.find(x => x.no === TXC.editNo), why = mfv('ed-why').trim();
+  if ([...why].length < 5) { showToast('warning', '請填寫異動原因', '依規定執行異動前，須填寫至少 5 字之異動原因以利稽核'); return; }
+  if (c.decl === '已申報' && !document.getElementById('ed-ack').checked) { showToast('warning', '請確認更正申報', '本案件已申報，請勾選已知悉須辦理更正申報'); return; }
+  const nv = {gross: +mfv('ed-gross'), inc: +mfv('ed-inc'), tax: +mfv('ed-tax'), period: mfv('ed-period').trim(), addr: mfv('ed-addr').trim(), status: mfv('ed-status')};
+  if (!(nv.gross > 0) || nv.tax < 0 || nv.tax > nv.gross) { showToast('error', '資料合理性檢查未通過', '給付總額須大於 0，扣繳稅額須介於 0 與給付總額'); return; }
+  const diff = []; EDF.forEach(f => { const a = c[f[0]], b = nv[f[0]]; if (a !== b) diff.push({k: f[1], a: typeof a === 'number' ? nt(a) : (a || '（空白）'), b: typeof b === 'number' ? nt(b) : (b || '（空白）'), key: f[0]}); });
+  if (!diff.length) { showToast('info', '無異動', '資料與原內容相同'); return; }
+  diff.forEach(d => { c[d.key] = nv[d.key]; txcLog(c, d.k, d.a, d.b, why, '人工修改'); }); c.net = c.gross - c.tax; c.ver++;
+  c.hist.push({t: rocNow(), u: TXU[TXC.role], type: '人工修改', why, diff}); showToast('success', '修改成功', '已更新並記錄 ' + diff.length + ' 項異動（異動人員：' + TXU[TXC.role] + '）'); clRender(); edRender();
+}
+function edCancel() {
+  const c = TXC.list.find(x => x.no === TXC.editNo), why = mfv('ed-why').trim();
+  if ([...why].length < 5) { showToast('warning', '請填寫註銷原因', '註銷前須填寫至少 5 字之註銷原因以利稽核'); return; }
+  if (!confirm(TXC.role === '覆核主管' ? '確定註銷本案件？註銷後不可修改，並排除於扣繳憑單產製。' : '確定送出註銷申請？需經覆核主管核准後生效。')) return;
+  if (TXC.role === '覆核主管') { c.status = '已註銷'; txcLog(c, '案件註銷', '正常', '已註銷', why, '人工註銷'); c.hist.push({t: rocNow(), u: TXU[TXC.role], type: '案件註銷', why, diff: []}); showToast('success', '已註銷', '異動歷程已保留'); }
+  else { c.pre = c.status; c.status = '註銷待覆核'; c.cancelReq = {u: TXU[TXC.role], t: rocNow(), why}; txcLog(c, '註銷申請', c.pre, '註銷待覆核', why, '人工註銷'); c.hist.push({t: rocNow(), u: TXU[TXC.role], type: '註銷申請', why, diff: []}); showToast('success', '已送出註銷申請', '待覆核主管核准'); }
+  clRender(); edRender();
+}
+function edApprove(ok) {
+  const c = TXC.list.find(x => x.no === TXC.editNo), u = TXU[TXC.role];
+  if (ok) { c.status = '已註銷'; txcLog(c, '案件註銷', '註銷待覆核', '已註銷', '核准註銷申請（' + c.cancelReq.why + '）', '人工註銷'); c.hist.push({t: rocNow(), u, type: '核准註銷', why: c.cancelReq.why, diff: []}); showToast('success', '已核准註銷', ''); }
+  else { c.status = c.pre || '正常'; txcLog(c, '註銷申請退回', '註銷待覆核', c.status, '覆核主管退回', '人工註銷'); c.hist.push({t: rocNow(), u, type: '退回註銷申請', why: '覆核主管退回', diff: []}); showToast('info', '已退回註銷申請', ''); }
+  clRender(); edRender();
+}
+
+/* ---- 歷史案件批次計算與匯入 ---- */
+const IMC = ['CASE_NO', 'PERSON_ID', 'PERSON_NM', 'PAY_TYPE', 'PAY_DATE', 'PAY_AMT', 'TAX_AMT', 'SERV_YRS', 'DECL_FLAG', 'ADDR'];
+const IMF = [['no', '案件編號', 'CASE_NO', false, '保留舊系統案號'], ['pid', '身分證字號', 'PERSON_ID', true, '去空白、轉大寫'], ['name', '姓名', 'PERSON_NM', true, '去前後空白'], ['ptype', '給與種類', 'PAY_TYPE', true, 'M→月退休(職)金；L→一次退休(職、伍)金'], ['date', '領取日期', 'PAY_DATE', true, '西元 YYYYMMDD → 民國 yyy/mm/dd'], ['gross', '給付總額', 'PAY_AMT', true, '去千分位；月退為全年金額'], ['tax', '舊系統扣繳稅額', 'TAX_AMT', false, '去千分位'], ['years', '服務年資', 'SERV_YRS', false, '一次性給與必填'], ['decl', '申報狀態', 'DECL_FLAG', false, 'Y→已申報；N→尚未完成申報'], ['addr', '所得人地址', 'ADDR', false, '憑單用']];
+function imSample() {
+  const mk = (nm, L, g, d7, ty, dt, amt, yrs, decl, o) => Object.assign({CASE_NO: '', PERSON_ID: mkId(L, g, d7), PERSON_NM: nm, PAY_TYPE: ty, PAY_DATE: dt, PAY_AMT: amt, TAX_AMT: 'auto', SERV_YRS: yrs || '', DECL_FLAG: decl, ADDR: ADDR[(d7 % 6 + 6) % 6]}, o || {});
+  const R = [mk('周美玲', 'B', 2, '3412345', 'L', '20210315', 3200000, 15, 'Y'), mk('徐國安', 'C', 1, '2345678', 'M', '20211231', 1320000, '', 'Y'), mk('簡淑貞', 'D', 2, '4567890', 'L', '20220120', 5400000, 22, 'Y'), mk('許文賢', 'E', 1, '5678901', 'M', '20221231', 1500000, '', 'N'),
+    mk('張家豪', 'F', 1, '6789012', 'L', '20200710', 2100000, 10, 'Y'), mk('劉美惠', 'G', 2, '7890123', 'M', '20201231', 1100000, '', 'Y'), mk('黃志強', 'H', 1, '8901234', 'L', '20210901', 8800000, 28, 'N'), mk('蔡淑娟', 'J', 2, '9012345', 'M', '20211231', 960000, '', 'Y'),
+    mk('王建民', 'K', 1, '0123456', 'L', '20111231', 2000000, 8, 'Y'), mk('李美玲', 'L', 2, '1234567', 'M', '20221231', 1420000, '', 'Y', {TAX_AMT: 'delta+1800'}), mk('吳俊傑', 'M', 1, '2345679', 'L', '20220505', 4100000, 18, 'N', {TAX_AMT: 'delta-3000'}), mk('鄭雅文', 'N', 2, '3456780', 'M', '20211231', 1260000, '', 'Y'),
+    mk('林小明', 'P', 1, '1111111', 'M', '20210630', 900000, '', 'Y', {PERSON_ID: ''}), mk('陳大偉', 'Q', 1, '2222222', 'M', '20210630', 900000, '', 'Y', {PERSON_ID: 'A12345'}), mk('趙敏君', 'R', 2, '3333333', 'L', '20210231', 1900000, 9, 'Y'), mk('孫志遠', 'S', 1, '4444444', 'M', '20210630', -5000, '', 'Y'),
+    mk('錢多多', 'T', 2, '5555555', 'X', '20210630', 800000, '', 'Y'), mk('周美玲', 'B', 2, '3412345', 'L', '20210315', 3200000, 15, 'Y'), mk('何冠宇', 'U', 1, '6666666', 'M', '20211231', 1180000, '', 'Y', {PERSON_ID: mkId('U', 1, '6666666').slice(0, 9) + '0'}), mk('吳淑芬', 'V', 2, '4567891', 'L', '20210618', 1500000, 9, 'Y'),
+    mk('陳國棟', 'W', 1, '5678902', 'M', '20221231', 1750000, '', 'N'), mk('林佳蓉', 'X', 2, '6789013', 'L', '20200415', 6900000, 25, 'Y'), mk('楊宗憲', 'Y', 1, '7890124', 'M', '20211231', 1380000, '', 'Y'), mk('徐若涵', 'Z', 2, '8901235', 'M', '20210930', 1240000, '', 'Y', {ADDR: ''})];
+  R.forEach((r, i) => { r.CASE_NO = 'OLD-' + String(10001 + i); r.PAY_AMT = String(r.PAY_AMT); });
+  return R;
+}
+const imDate = s => { const m = /^(\d{4})(\d{2})(\d{2})$/.exec(String(s || '').trim()); if (!m) return null; const y = +m[1], mo = +m[2], d = +m[3]; if (!realDate(y - 1911, mo, d)) return null; return String(y - 1911).padStart(3, '0') + '/' + m[2] + '/' + m[3]; };
+function imInit() { TXC.imp = {step: 1, from: 109, to: 112, decl: '全部', dup: '略過', rule: 'recalc', ack: false, name: '歷史課稅案件_109-112.csv（示範檔 24 筆）', headers: IMC.slice(), rows: imSample(), map: {}, res: null, flt: '全部', done: null}; IMF.forEach(f => TXC.imp.map[f[0]] = IMC.includes(f[2]) ? f[2] : ''); }
+function imGo(n) { const m = TXC.imp; if (n >= 2 && !m.ack) { showToast('warning', '請先確認匯入範圍', '須取得機關確認之匯入範圍與規則並勾選確認'); return; } if (n >= 3 && IMF.some(f => f[3] && !m.map[f[0]])) { showToast('warning', '欄位對應未完成', '必填欄位須對應舊系統欄位'); return; } if (n >= 4 && !m.res) { showToast('warning', '請先執行匯入檢核', ''); return; } m.step = n; imRender(); }
+function imParse(txt) { const L = txt.replace(/^\ufeff/, '').split(/\r?\n/).filter(x => x.trim()); const h = L[0].split(',').map(x => x.trim()); return {headers: h, rows: L.slice(1).map(l => { const p = l.split(','), o = {}; h.forEach((k, i) => o[k] = (p[i] || '').trim()); return o; })}; }
+function imFile(f) { if (!f) return; const rd = new FileReader(); rd.onload = () => { try { const p = imParse(rd.result), m = TXC.imp; m.name = f.name + '（' + p.rows.length + ' 筆）'; m.headers = p.headers; m.rows = p.rows; IMF.forEach(x => m.map[x[0]] = p.headers.includes(x[2]) ? x[2] : ''); m.res = null; showToast('success', '檔案已載入', p.rows.length + ' 筆；已依欄位名稱自動對應，請確認'); imRender(); } catch (e) { showToast('error', '檔案解析失敗', '請使用 UTF-8 CSV'); } }; rd.readAsText(f, 'utf-8'); }
+function imRun() {
+  const m = TXC.imp, g = k => (r => m.map[k] ? String(r[m.map[k]] || '').trim() : ''), seen = {}, res = [];
+  m.rows.forEach((r, i) => {
+    const o = {i: i + 1, no: g('no')(r) || 'ROW-' + (i + 1), name: g('name')(r), pid: g('pid')(r).toUpperCase(), pt: g('ptype')(r), raw: g('date')(r), gross: +String(g('gross')(r)).replace(/,/g, ''), years: g('years')(r), decl: g('decl')(r), addr: g('addr')(r), msgs: [], st: 'ok'};
+    const E = t => { o.msgs.push(t); o.st = 'err'; }, W = t => { o.msgs.push(t); if (o.st === 'ok') o.st = 'warn'; };
+    o.date = imDate(o.raw); const ty = {M: 'period-ret', L: 'once-ret'}[o.pt]; o.type = ty;
+    if (!o.name) E('姓名缺漏'); if (!o.pid) E('身分證字號缺漏'); else if (!idForm(o.pid)) E('身分證字號格式錯誤'); else if (!idOk(o.pid)) W('身分證檢查碼不符（憑單需註記 A／B）');
+    if (!o.date) E('領取日期格式或日期無效'); if (!ty) E('給與種類代碼「' + o.pt + '」無法對應'); if (!(o.gross > 0)) E('給付總額須大於 0');
+    if (ty === 'once-ret' && !(+o.years > 0)) E('一次退休金缺服務年資');
+    if (o.date) { const y = +o.date.slice(0, 3); if (y < m.from || y > m.to) { o.st = 'skip'; o.msgs = ['不在匯入年度範圍（' + m.from + '～' + m.to + '）']; } else if ((m.decl === '已完成申報' && o.decl !== 'Y') || (m.decl === '尚未完成申報' && o.decl === 'Y')) { o.st = 'skip'; o.msgs = ['不符申報狀態篩選']; } }
+    if (o.st !== 'skip' && o.st !== 'err') {
+      const k = o.pid + o.date + o.type; if (seen[k]) E('檔內重複（同第 ' + seen[k] + ' 列）'); else seen[k] = o.i;
+      const ex = TXC.list.find(c => c.pid === o.pid && c.payDate === o.date && c.type === o.type && c.status !== '已註銷'); if (ex) { if (m.dup === '覆蓋') { W('新系統已存在 ' + ex.no + '，將覆蓋'); o.over = ex.no; } else { o.st = 'skip'; o.msgs = ['新系統已存在 ' + ex.no + '，略過']; } }
+    }
+    if (o.st !== 'skip' && o.st !== 'err') {
+      const I = {resident: true, d: o.date}; ty === 'once-ret' ? (I.once = o.gross, I.years = +o.years) : (I.per = o.gross); const rr = txCalc(txType(ty), I); o.newTax = Math.round(rr.tax); o.ver = txP(o.date).lbl;
+      const ot = g('tax')(r); o.oldTax = ot === 'auto' ? o.newTax : ot.startsWith('delta') ? o.newTax + (+ot.slice(5)) : (ot === '' ? null : +String(ot).replace(/,/g, ''));
+      if (o.oldTax != null && o.oldTax !== o.newTax) W('依領取日期版次（' + o.ver + '）重算稅額 ' + fm(o.newTax) + '，與舊系統 ' + fm(o.oldTax) + ' 差 ' + fm(o.newTax - o.oldTax));
+      if (o.decl !== 'Y') W('尚未完成申報，匯入後標示「待接續申報」');
+      if (!o.addr) W('所得人地址空白（產製憑單前須補齊）');
+    }
+    if (!o.msgs.length) o.msgs = ['通過']; res.push(o);
+  });
+  m.res = res; m.step = 3; imRender(); showToast('success', '匯入檢核完成', '共 ' + res.length + ' 筆');
+}
+function imExport() { const m = TXC.imp; dlBlob('歷史匯入異常清單.csv', '\ufeff列次,案號,姓名,身分證,結果,說明\r\n' + m.res.filter(r => r.st === 'err' || r.st === 'warn').map(r => [r.i, r.no, r.name, r.pid, r.st === 'err' ? '錯誤' : '警示', r.msgs.join('；')].join(',')).join('\r\n'), 'text/csv'); showToast('success', '已下載', '異常清單.csv'); }
+function imDo() {
+  const m = TXC.imp, inclW = document.getElementById('im-incw').checked, bid = 'IMP-' + new Date().getFullYear() + '-' + String(TXC.impSeq++).padStart(4, '0'); let ok = 0, sk = 0, er = 0;
+  m.res.forEach(r => {
+    if (r.st === 'err') er++; else if (r.st === 'skip' || (r.st === 'warn' && !inclW)) sk++;
+    else {
+      if (r.over) { const x = TXC.list.find(c => c.no === r.over); if (x) { x.status = '已註銷'; x.hist.push({t: rocNow(), u: TXU[TXC.role], type: '歷史匯入覆蓋', why: '批次 ' + bid + ' 覆蓋', diff: []}); } }
+      const I = r.type === 'once-ret' ? {once: r.gross, years: +r.years} : {per: r.gross}, c = txcNew({name: r.name, pid: r.pid, type: r.type, I, payDate: r.date, addr: r.addr, src: '歷史匯入', decl: r.decl === 'Y' ? '已申報' : '待接續申報', why: '舊系統歷史案件匯入（' + bid + '，原案號 ' + r.no + '）', no: null});
+      if (m.rule === 'keep' && r.oldTax != null) { c.tax = r.oldTax; c.net = c.gross - c.tax; } c.batch = bid; c.oldNo = r.no; TXC.list.push(c); ok++;
+      TX.log.unshift({t: rocNow(), u: TXU[TXC.role], c: c.no + ' ' + c.name, k: '歷史案件匯入', a: r.no, b: '稅額 ' + nt(c.tax), why: bid, src: '歷史匯入'});
+    }
+  });
+  const b = {id: bid, t: rocNow(), u: TXU[TXC.role], scope: m.from + '～' + m.to + ' 年／' + m.decl, ok, sk, er, rule: m.rule === 'recalc' ? '依版次重新計算' : '沿用舊稅額', rolled: false}; TXC.batches.unshift(b); m.done = b; clRender(); imRender();
+  showToast('success', '匯入完成', '成功 ' + ok + ' 筆，略過 ' + sk + ' 筆，錯誤 ' + er + ' 筆（批次 ' + bid + '）');
+}
+function imRollback(id) { if (!confirm('確定還原批次 ' + id + '？該批次匯入之案件將註銷並保留歷程。')) return; TXC.list.filter(c => c.batch === id && c.status !== '已註銷').forEach(c => { c.status = '已註銷'; c.hist.push({t: rocNow(), u: TXU[TXC.role], type: '批次還原', why: '還原批次 ' + id, diff: []}); TX.log.unshift({t: rocNow(), u: TXU[TXC.role], c: c.no + ' ' + c.name, k: '批次還原', a: '正常', b: '已註銷', why: id, src: '歷史匯入'}); }); TXC.batches.find(b => b.id === id).rolled = true; clRender(); imRender(); showToast('success', '已還原批次', id); }
+function imRender() {
+  const m = TXC.imp; if (!m) imInit(); const M = TXC.imp, el = document.getElementById('im-root'); if (!el) return;
+  const names = ['範圍與規則', '檔案與欄位對應', '檢核與批次計算', '匯入與結果'];
+  let h = `<div class="tx-steps">${names.map((n, i) => `<div class="tx-step ${M.step === i + 1 ? 'active' : ''} ${M.step > i + 1 ? 'done' : ''}" onclick="imGo(${i + 1})"><div class="tx-num">${M.step > i + 1 ? '✓' : i + 1}</div><div><b>${n}</b></div></div>`).join('')}</div>`;
+  if (M.step === 1) h += `<div class="card"><div class="section-title">舊系統歷史案件批次匯入範圍</div><div class="form-row cols-3"><div class="form-group"><label class="form-label">匯入年度（起，民國）</label><input class="form-control" type="number" value="${M.from}" onchange="TXC.imp.from=+this.value"></div><div class="form-group"><label class="form-label">匯入年度（迄，民國）</label><input class="form-control" type="number" value="${M.to}" onchange="TXC.imp.to=+this.value"></div>
+    <div class="form-group"><label class="form-label">申報狀態篩選</label><select class="form-control" onchange="TXC.imp.decl=this.value">${['全部', '已完成申報', '尚未完成申報'].map(x => `<option ${M.decl === x ? 'selected' : ''}>${x}</option>`).join('')}</select></div>
+    <div class="form-group"><label class="form-label">新系統已有相同案件</label><select class="form-control" onchange="TXC.imp.dup=this.value">${['略過', '覆蓋'].map(x => `<option ${M.dup === x ? 'selected' : ''}>${x}</option>`).join('')}</select></div>
+    <div class="form-group" style="grid-column:span 2"><label class="form-label">課稅計算規則</label><select class="form-control" onchange="TXC.imp.rule=this.value"><option value="recalc" ${M.rule === 'recalc' ? 'selected' : ''}>依領取日期對應版次重新計算（與舊稅額差異列警示）</option><option value="keep" ${M.rule === 'keep' ? 'selected' : ''}>沿用舊系統扣繳稅額</option></select></div></div>
+    <label style="font-size:13px"><input type="checkbox" ${M.ack ? 'checked' : ''} onchange="TXC.imp.ack=this.checked"> 本次匯入範圍與計算規則已經機關確認（含尚未完成後續申報之案件）</label>
+    <div class="page-actions" style="margin-top:16px"><button class="btn btn-gold" onclick="imGo(2)">下一步：檔案與欄位對應 →</button></div></div>`;
+  if (M.step === 2) h += `<div class="card"><div class="section-title">舊系統資料檔</div><div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><span class="badge badge-info">${M.name}</span><button class="btn btn-outline btn-sm" onclick="document.getElementById('im-file').click()">選擇 CSV 檔</button><button class="btn btn-outline btn-sm" onclick="dlBlob('歷史案件欄位對應表.csv','\\ufeff新系統欄位,舊系統欄位,必填,轉換規則\\r\\n'+IMF.map(f=>[f[1],f[2],f[3]?'是':'否',f[4]].join(',')).join('\\r\\n'),'text/csv')">下載欄位對應表</button></div><input type="file" id="im-file" accept=".csv" style="display:none" onchange="imFile(this.files[0])"><div class="form-hint" style="margin-top:6px">未選擇檔案時使用內建示範檔；自行上傳須為 UTF-8 CSV（首列為欄位名稱）。</div></div>
+    <div class="card" style="margin-top:16px"><div class="section-title">欄位對應</div><div class="table-wrapper"><table class="data-table"><thead><tr><th>新系統欄位</th><th>對應舊系統欄位</th><th>範例值（第 1 筆）</th><th>轉換規則</th></tr></thead><tbody>${IMF.map(f => `<tr><td><b>${f[1]}</b>${f[3] ? ' <span class="required">*</span>' : ''}</td><td><select class="form-control" onchange="TXC.imp.map['${f[0]}']=this.value"><option value="">（不對應）</option>${M.headers.map(x => `<option ${M.map[f[0]] === x ? 'selected' : ''}>${x}</option>`).join('')}</select></td><td>${M.map[f[0]] && M.rows[0] ? (M.rows[0][M.map[f[0]]] || '') : ''}</td><td style="font-size:12px;color:var(--text-secondary)">${f[4]}</td></tr>`).join('')}</tbody></table></div>
+    <div class="page-actions" style="margin-top:16px"><button class="btn btn-outline" onclick="imGo(1)">← 上一步</button><button class="btn btn-gold" onclick="imRun()">執行匯入檢核與批次計算</button></div></div>`;
+  if (M.step >= 3 && M.res) {
+    const R = M.res, c = k => R.filter(r => r.st === k).length, F = M.flt === '全部' ? R : R.filter(r => ({'通過': 'ok', '警示': 'warn', '錯誤': 'err', '略過': 'skip'}[M.flt] === r.st)), bd = {ok: 'success', warn: 'warning', err: 'danger', skip: 'secondary'}, bn = {ok: '通過', warn: '警示', err: '錯誤', skip: '略過'};
+    h += `<div class="tx-grid" style="margin-bottom:16px"><div class="tx-kpi"><small>總筆數</small><b>${R.length}</b></div><div class="tx-kpi g"><small>通過</small><b>${c('ok')}</b></div><div class="tx-kpi o"><small>警示（可匯入）</small><b>${c('warn')}</b></div><div class="tx-kpi r"><small>錯誤（不可匯入）</small><b>${c('err')}</b></div><div class="tx-kpi"><small>略過（範圍外／重複）</small><b>${c('skip')}</b></div></div>
+    <div class="card"><div class="card-header"><div class="card-title">檢核與批次計算結果</div><div style="display:flex;gap:8px;flex-wrap:wrap"><select class="form-control" style="width:auto" onchange="TXC.imp.flt=this.value;imRender()">${['全部', '通過', '警示', '錯誤', '略過'].map(x => `<option ${M.flt === x ? 'selected' : ''}>${x}</option>`).join('')}</select><button class="btn btn-outline btn-sm" onclick="imExport()">下載異常清單</button></div></div>
+    <div class="table-wrapper"><table class="data-table"><thead><tr><th>列</th><th>舊案號</th><th>姓名</th><th>身分證</th><th>領取日期</th><th>給付總額</th><th>舊稅額</th><th>新計算稅額</th><th>適用版次</th><th>申報</th><th>結果</th><th>說明</th></tr></thead><tbody>${F.map(r => `<tr class="${r.st === 'err' ? 'tx-chg' : ''}"><td>${r.i}</td><td style="font-size:12px">${r.no}</td><td>${r.name}</td><td>${r.pid ? mskId(r.pid.padEnd(10, '*')) : '-'}</td><td>${r.date || r.raw}</td><td style="text-align:right">${isFinite(r.gross) ? fm(r.gross) : ''}</td><td style="text-align:right">${r.oldTax != null && r.oldTax !== undefined ? fm(r.oldTax) : '-'}</td><td style="text-align:right">${r.newTax != null ? fm(r.newTax) : '-'}</td><td style="font-size:12px">${r.ver || '-'}</td><td>${r.decl === 'Y' ? '已申報' : r.decl === 'N' ? '<span class="badge badge-warning">未完成</span>' : '-'}</td><td><span class="badge badge-${bd[r.st]}">${bn[r.st]}</span></td><td style="font-size:12px">${r.msgs.join('；')}</td></tr>`).join('')}</tbody></table></div>
+    ${M.step === 3 ? `<div class="page-actions" style="margin-top:16px"><button class="btn btn-outline" onclick="imGo(2)">← 調整欄位對應</button><button class="btn btn-gold" onclick="imGo(4)">下一步：執行匯入 →</button></div>` : ''}</div>`;
+  }
+  if (M.step === 4) h += `<div class="card" style="margin-top:16px"><div class="section-title">執行批次匯入</div><label style="font-size:13px"><input type="checkbox" id="im-incw" checked> 一併匯入「警示」案件（含稅額差異、尚未完成申報、檢查碼不符）</label><div class="page-actions" style="margin-top:12px"><button class="btn btn-gold" ${M.done ? 'disabled' : ''} onclick="imDo()">${M.done ? '已完成匯入' : '確認並執行批次匯入'}</button></div>
+    ${M.done ? `<div class="tx-formula" style="margin-top:12px">匯入批次 <b>${M.done.id}</b>：成功 <b class="tx-ok">${M.done.ok}</b> 筆、略過 ${M.done.sk} 筆、錯誤 ${M.done.er} 筆；成功之案件已可於「案件清單」查詢並接續管理（來源：歷史匯入；尚未完成申報者標示「待接續申報」）。</div>` : ''}</div>`;
+  if (TXC.batches.length) h += `<div class="card" style="margin-top:16px"><div class="section-title">批次匯入紀錄</div><div class="table-wrapper"><table class="data-table"><thead><tr><th>批次編號</th><th>時間</th><th>人員</th><th>範圍</th><th>計算規則</th><th>成功／略過／錯誤</th><th>狀態</th><th></th></tr></thead><tbody>${TXC.batches.map(b => `<tr><td>${b.id}</td><td>${b.t}</td><td>${b.u}</td><td>${b.scope}</td><td>${b.rule}</td><td>${b.ok}／${b.sk}／${b.er}</td><td>${b.rolled ? '<span class="badge badge-danger">已還原</span>' : '<span class="badge badge-success">有效</span>'}</td><td>${b.rolled ? '' : `<button class="btn btn-outline-danger btn-sm" onclick="imRollback('${b.id}')">還原批次</button>`}</td></tr>`).join('')}</tbody></table></div></div>`;
+  el.innerHTML = h;
+}
+
+txcSeed(); TX.cases.forEach((c, i) => { c.addr = c.addr || ADDR[i % ADDR.length]; });
+imInit(); mfInit(); clRender(); imRender(); edSearch();
 txRender(); rcList(); txAuditRender(); txLogRender(); txDiffRender();
+
+/* ===== V13：各類所得扣繳暨免扣繳憑單（電子申報專用）產製 =====
+   依財政部〈綜合所得稅資料電子申報作業要點〉（行政院公報 029 卷 234 期）第二章第一節：
+   UTF-8 分隔符號檔（欄位以 | 分隔，副檔名 U8）；所得資料 32 欄、申報書資料 26 欄、申報單位基本資料 17 欄 */
+const VC = {tab: 1, year: 115, excl: false, built: false, rows: [], errMark: {}, fix: {},
+  set: {bn: '78654321', name: '公務人員退休撫卹基金管理局', addr: '臺北市中正區忠孝西路一段1號', payer: '陳大文', contact: '王大明', phone: '02-23456789', email: 'taxdesk@example.gov.tw', taxid: '123456789', office: 'A01', house: 'A12345678901', soft: 'A', mode: '2', times: 1, why: '', code92: '', resCode: 'ZZ'}};
+const vcSet = (k, v) => { VC.set[k] = v; VC.built = false; };
+function vcSetErr() {
+  const s = VC.set, e = [];
+  if (!bnOk(s.bn)) e.push(['扣繳單位統一編號', '須為 8 位數字且通過統編檢查（附件 7）']);
+  if (!s.name || [...s.name].length > 50) e.push(['申報單位名稱', '必填，最長 50 個中文字']);
+  if (!s.addr || [...s.addr].length > 26) e.push(['申報單位地址', '必填，最長 26 個中文字（申報單位基本資料欄位限制）']);
+  if (!s.payer || [...s.payer].length < 2 || [...s.payer].length > 20) e.push(['扣繳義務人名稱', '2～20 個中文字']);
+  if (!s.contact || [...s.contact].length > 20) e.push(['聯絡人姓名', '必填，最長 20 個中文字']);
+  if (!/^[\d\-]{7,15}$/.test(s.phone)) e.push(['聯絡人電話', '7～15 位數字／連字號']);
+  if (!s.email || s.email.length > 30) e.push(['電子郵件信箱', '必填，最長 30 字元']);
+  if (!/^\d{4}[\dFGHP]\d{4}$/.test(s.taxid)) e.push(['扣繳單位稅籍編號', '9 碼：第 1～4 位數字、第 5 位數字或 F／G／H／P、第 6～9 位數字']);
+  if (!/^[A-Z]\d{2}$/.test(s.office)) e.push(['稽徵機關代號', '3 碼：第 1 位英文（縣市別）＋2 位數字，須在要點附件 2 範圍內']);
+  if (s.house && !/^[A-Z][A-Z0-9]{4}\d{7}$/.test(s.house)) e.push(['申報單位房屋稅籍編號', '12 碼：第 1 位英文，第 2～5 位英數字，其餘數字']);
+  return e;
+}
+function vcBuild() {
+  const list = TXC.list.filter(c => +c.payDate.slice(0, 3) === VC.year && c.status !== '已註銷' && !c.exempt && c.gross > 0);
+  const excl = TXC.list.filter(c => +c.payDate.slice(0, 3) === VC.year && (c.status === '已註銷' || c.exempt)).length;
+  const rows = list.map(c => ({c, fmt: String(c.fmt), nonres: !c.resident, pt: c.pt, pid: c.pid, name: c.name, addr: c.addr, gross: c.gross, tax: c.fmt === 92 ? 0 : c.tax, period: c.period, payDate: c.payDate}));
+  rows.forEach(r => { r.net = r.gross - r.tax; });
+  rows.sort((a, b) => (a.nonres - b.nonres) || (a.fmt < b.fmt ? 1 : a.fmt > b.fmt ? -1 : 0) || (a.payDate < b.payDate ? -1 : 1));
+  let n1 = 0, n2 = 0; rows.forEach(r => { r.no = r.nonres ? '00' + '0' + String(++n2).padStart(5, '0') : String(n1++).padStart(8, '0'); r.mk = r.no + VC.set.bn; });
+  const cnt = {}; rows.forEach(r => { const k = r.pid + r.fmt; cnt[k] = (cnt[k] || 0) + 1; });
+  rows.forEach(r => {
+    r.mark = VC.errMark[r.c.no] || ''; r.msgs = []; r.lv = 'ok'; const E = (cd, t) => { r.msgs.push(cd + '：' + t); r.lv = 'err'; }, W = (cd, t) => { r.msgs.push(cd + '：' + t); if (r.lv === 'ok') r.lv = 'warn'; };
+    if (r.addr === '' || VC.fix[r.c.no] !== undefined) r.addr = VC.fix[r.c.no] !== undefined ? VC.fix[r.c.no] : r.addr;
+    if (!r.nonres) { if (!idForm(r.pid)) E('2', '所得人統一編（證）號不符形式要件'); else if (!idOk(r.pid) && !r.mark) E('2', '統一編（證）號邏輯檢查不符，核對無誤請註記 A（無法查對註記 B）'); }
+    else if (!npidOk(r.pid)) E('2', '非居住者證號格式不符');
+    if ([...(r.name || '')].length < 2 && !/[A-Za-z]/.test(r.name || '')) E('X', '所得人姓名少於 2 個字');
+    if (!r.addr) E('Y', '所得人地址空白（電子申報須有地址）');
+    if (r.net + r.tax !== r.gross) E('E', '金額不平衡（給付總額－扣繳稅額≠給付淨額）');
+    if (r.fmt === '92' && !VC.set.code92) E('J', '所得格式 92 須填「其他所得給付項目代號」（要點附件 3 之 2），請於申報設定填寫');
+    if (r.gross > 10000000) W('G', '給付總額超過 1,000 萬元，請申報單位再確認');
+    if (cnt[r.pid + r.fmt] > 2) W('I', '同一所得人相同所得格式超過 2 筆，請再確認');
+    if (r.nonres && !rocOk(r.payDate)) E('W', '非居住者所得缺給付日期');
+  });
+  VC.rows = rows; VC.excluded = excl; VC.built = true;
+}
+const vcPeriod = p => { const m = /^(\d{3})\/(\d{2})～(\d{3})\/(\d{2})$/.exec(p); return m ? m[1] + m[2] + m[3] + m[4] : ''; };
+const vcMD = d => d.slice(4, 6) + d.slice(7, 9);
+function vcFiles() {
+  const s = VC.set, now = new Date(), roc = (now.getFullYear() - 1911) + String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0'), yr = String(VC.year).padStart(3, '0');
+  const ok = VC.rows.filter(r => r.lv !== 'err'), files = [];
+  const mkInc = r => { const f = Array(32).fill(''); f[0] = s.office; f[1] = r.no; f[2] = s.bn; f[4] = r.fmt; f[5] = r.pid; f[6] = r.pt; f[7] = r.gross; f[8] = r.tax; f[9] = r.net; f[10] = r.fmt === '92' ? s.code92 : ''; f[13] = s.soft; f[14] = r.mark; f[15] = yr; f[16] = r.name; f[17] = r.addr; f[18] = vcPeriod(r.period); f[19] = 0; f[25] = s.mode; f[26] = r.nonres ? 'N' : ''; f[27] = r.nonres ? s.resCode : ''; f[30] = r.nonres ? vcMD(r.payDate) : roc.slice(3); f[31] = r.nonres ? 'NOTIN' : ''; return f; };
+  const mkRep = (g, dom) => { const f = Array(26).fill(''); f[0] = s.office; f[1] = 'ZZ00000' + (dom ? '1' : '2'); f[2] = s.bn; f[3] = '9'; f[4] = dom ? '1' : '2'; f[5] = '1'; f[6] = g.fmt === '93' ? '9' : 'A'; f[8] = g.rows.length; f[9] = g.rows.reduce((a, r) => a + r.gross, 0); f[10] = g.rows.reduce((a, r) => a + r.tax, 0); f[11] = s.taxid; f[13] = s.house; f[15] = yr; f[16] = roc; f[17] = g.rows[0].no; f[18] = g.rows[g.rows.length - 1].no; f[25] = 'C'; return f; };
+  const mkUnit = () => { const f = Array(17).fill(''); f[0] = s.office; f[2] = s.bn; f[3] = '1'; f[4] = s.name; f[5] = s.addr; f[6] = s.payer; f[7] = s.contact; f[8] = s.phone; f[9] = s.email; f[10] = s.taxid; f[11] = 'N'; f[12] = s.times; f[13] = s.times > 1 ? s.why : ''; f[14] = 'N'; f[16] = 'N'; return f; };
+  const groups = rs => ['93', '92'].map(k => ({fmt: k, rows: rs.filter(r => r.fmt === k)})).filter(g => g.rows.length);
+  const dom = ok.filter(r => !r.nonres);
+  if (dom.length) { const lines = [...dom.map(mkInc), ...groups(dom).map(g => mkRep(g, true)), mkUnit()]; files.push({name: s.bn + '.' + yr + '.U8', kind: '居住者所得資料檔', n: dom.length, g: groups(dom).length, lines, gross: dom.reduce((a, r) => a + r.gross, 0), tax: dom.reduce((a, r) => a + r.tax, 0)}); }
+  const byDate = {}; ok.filter(r => r.nonres).forEach(r => { const d = r.payDate.replace(/\//g, ''); (byDate[d] = byDate[d] || []).push(r); });
+  Object.keys(byDate).forEach(d => { const rs = byDate[d]; files.push({name: s.bn + '.' + d + '.U8', kind: '非居住者所得資料檔（給付日期 ' + d + '，須於代扣稅款之日起 10 日內申報）', n: rs.length, g: groups(rs).length, lines: [...rs.map(mkInc), ...groups(rs).map(g => mkRep(g, false)), mkUnit()], gross: rs.reduce((a, r) => a + r.gross, 0), tax: rs.reduce((a, r) => a + r.tax, 0)}); });
+  files.forEach(f => { f.text = f.lines.map(l => l.join('|')).join('\r\n') + '\r\n'; f.fc = [...new Set(f.lines.map(l => l.length))].join('／'); });
+  return files;
+}
+function vcForm(r, copy) {
+  const s = VC.set, id = copy === 2 ? r.pid.slice(0, -3) + '＊＊＊' : r.pid, fl = r.fmt === '93' ? '93 退職所得' : '92 其他所得（項目代號：' + (s.code92 || '未設定') + '）';
+  const td = 'border:1px solid #333;padding:6px 8px;font-size:12px;vertical-align:top';
+  return `<div style="border:2px solid #333;padding:10px;margin-bottom:14px;background:#fff;color:#111"><div style="display:flex;justify-content:space-between;font-size:12px"><b>各類所得扣繳暨免扣繳憑單（電子申報專用）</b><span>第 ${copy} 聯（${copy === 1 ? '報核聯' : '備查聯'}）　${VC.year} 年度</span></div>
+  <table style="width:100%;border-collapse:collapse;margin-top:6px"><tr><td style="${td}" colspan="2">製單編號：${r.mk}（流水號 ${r.no}＋統編）</td><td style="${td}">格式代號及所得類別：${fl}</td></tr>
+  <tr><td style="${td}">扣繳單位統一編號<br><b>${s.bn}</b></td><td style="${td}">名稱／地址<br><b>${s.name}</b><br>${s.addr}</td><td style="${td}">扣繳義務人<br><b>${s.payer}</b></td></tr>
+  <tr><td style="${td}">所得人姓名<br><b>${r.name}</b></td><td style="${td}">統一編（證）號${copy === 2 ? '（後 3 碼以＊取代）' : ''}<br><b>${id}</b>（證號別 ${r.pt}）</td><td style="${td}">所得人地址<br>${r.addr || '（空白）'}</td></tr>
+  <tr><td style="${td}">所得所屬年月<br>${r.period}</td><td style="${td}">給付總額<br><b>${fm(r.gross)}</b></td><td style="${td}">${r.fmt === '92' ? '免扣繳' : '扣繳稅額'}<br><b>${fm(r.tax)}</b>　給付淨額 <b>${fm(r.net)}</b></td></tr></table>
+  <div style="font-size:11px;margin-top:6px;color:#555">憑單填發方式：${{1: '免填發', 2: '電子憑單', 3: '紙本憑單'}[s.mode]}　｜　扣繳義務人簽章：＿＿＿＿＿＿＿＿　日期：＿＿＿＿＿</div></div>`;
+}
+function vcPrev(i) { const r = VC.rows[i]; openDetailModal('憑單預覽：' + r.name + '（' + r.no + '）', '<div class="form-hint" style="margin-bottom:8px">電子申報專用憑單：複寫式每聯 14×17.5 公分，第 2 聯所得人統一編（證）號後 3 碼以「＊」取代（要點第二章第一節七(六)(八)）。</div>' + vcForm(r, 1) + vcForm(r, 2), '扣繳憑單_' + r.name, 'pdf'); }
+function vcReport() {
+  const fs = vcFiles(); const rows = []; fs.forEach(f => { f.lines.filter(l => l.length === 26).forEach(l => rows.push({file: f.name, dom: l[4] === '1', cat: l[6], n: l[8], g: l[9], t: l[10], a: l[17], b: l[18]})); });
+  openDetailModal('各類所得扣繳暨免扣繳憑單申報書', `<div class="info-card"><div class="info-row"><div class="info-key">申報單位</div><div class="info-val">${VC.set.name}（統編 ${VC.set.bn}）　稅籍編號 ${VC.set.taxid}</div></div></div><table class="data-table" style="margin-top:10px"><thead><tr><th>所得資料檔</th><th>國內／國外</th><th>所得類別</th><th>憑單張數</th><th>給付總額</th><th>扣繳總額</th><th>起訖流水號</th></tr></thead><tbody>${rows.map(x => `<tr><td style="font-size:12px">${x.file}</td><td>${x.dom ? '國內' : '國外'}</td><td>${x.cat === '9' ? '9 退職所得' : 'A 其他所得'}</td><td>${x.n}</td><td>${fm(x.g)}</td><td>${fm(x.t)}</td><td>${x.a}～${x.b}</td></tr>`).join('')}</tbody></table><div class="form-hint" style="margin-top:8px">所得類別、類別區分、個人或非個人、國內或國外不同時，均分別產出 1 筆申報書資料；申報書須與所得資料檔一併檢附（媒體申報應附報核聯及備查聯）。</div>`, '各類所得扣繳暨免扣繳憑單申報書', 'pdf');
+}
+function vcDeliver() {
+  const fs = vcFiles(), s = VC.set;
+  openDetailModal('媒體檔案遞送單', `<div class="info-card"><div class="info-row"><div class="info-key">申報單位</div><div class="info-val">${s.name}　統編 ${s.bn}</div></div><div class="info-row"><div class="info-key">使用機型／中文內碼</div><div class="info-val">PC／UTF-8（Unicode，欄位以直線 | 分隔）</div></div><div class="info-row"><div class="info-key">檔案類型</div><div class="info-val">光碟片或網路傳輸；副檔名 U8</div></div></div><table class="data-table" style="margin-top:10px"><thead><tr><th>檔案名稱</th><th>資料名稱</th><th>扣免繳資料件數</th><th>申報書資料件數</th></tr></thead><tbody>${fs.map(f => `<tr><td style="font-size:12px">${f.name}</td><td style="font-size:12px">${f.kind}</td><td>${f.n}</td><td>${f.g}</td></tr>`).join('')}</tbody></table><div class="form-hint" style="margin-top:8px">媒體檔案遞送單 1 式 3 聯，連同所得資料檔案、各類所得扣繳暨免扣繳憑單申報書，於所得年度次年 1 月 31 日前向管轄稽徵機關申報。</div>`, '媒體檔案遞送單', 'pdf');
+}
+function vcDl(i) { const f = vcFiles()[i]; dlBlob(f.name, f.text, 'text/plain'); showToast('success', '已下載電子申報檔', f.name + '（' + f.n + ' 筆憑單，UTF-8、| 分隔）'); }
+function vcDlAll() { vcFiles().forEach((f, i) => setTimeout(() => dlBlob(f.name, f.text, 'text/plain'), i * 300)); showToast('success', '已下載全部檔案', ''); }
+
+function vcRender() {
+  const el = document.getElementById('vc-body'); if (!el) return; if (!VC.built) vcBuild();
+  const s = VC.set, se = vcSetErr(), R = VC.rows, c = k => R.filter(r => r.lv === k).length;
+  document.getElementById('vc-tabs').innerHTML = ['① 申報設定', '② 憑單明細與審核', '③ 電子申報檔與憑單產製'].map((t, i) => `<div class="tab-item ${VC.tab === i + 1 ? 'active' : ''}" onclick="VC.tab=${i + 1};vcRender()">${t}</div>`).join('');
+  const f = (k, lb, ph, w) => `<div class="form-group"><label class="form-label">${lb}</label><input class="form-control" value="${s[k] == null ? '' : s[k]}" ${ph ? 'placeholder="' + ph + '"' : ''} onchange="vcSet('${k}',this.value)"></div>`;
+  let h = '';
+  if (VC.tab === 1) h = `<div class="card"><div class="card-header"><div><div class="card-title">申報單位基本資料</div><div class="card-subtitle">對應申報檔「申報單位基本資料」17 欄；依電子申報作業要點各欄位長度及格式規定檢核</div></div>${se.length ? `<span class="badge badge-danger">${se.length} 項待修正</span>` : '<span class="badge badge-success">設定完整</span>'}</div>
+    <div class="form-row cols-3">${f('bn', '扣繳單位統一編號（8 碼）')}${f('name', '申報單位名稱')}${f('addr', '申報單位地址（≤26 字）')}${f('payer', '扣繳義務人名稱')}${f('contact', '聯絡人姓名')}${f('phone', '聯絡人電話')}${f('email', '電子郵件信箱')}${f('taxid', '扣繳單位稅籍編號（9 碼）')}${f('office', '稽徵機關代號', '例：A01（依附件 2）')}${f('house', '申報單位房屋稅籍編號（12 碼）')}</div>
+    <div class="section-title" style="margin-top:8px">憑單與申報選項</div><div class="form-row cols-3">
+    <div class="form-group"><label class="form-label">憑單填發方式</label><select class="form-control" onchange="vcSet('mode',this.value)">${[['1', '1 免填發'], ['2', '2 電子憑單'], ['3', '3 紙本憑單']].map(o => `<option value="${o[0]}" ${s.mode === o[0] ? 'selected' : ''}>${o[1]}</option>`).join('')}</select></div>
+    <div class="form-group"><label class="form-label">軟體註記</label><select class="form-control" onchange="vcSet('soft',this.value)">${[['A', 'A 自行撰寫程式'], ['B', 'B 向軟體公司購買'], ['', '空值']].map(o => `<option value="${o[0]}" ${s.soft === o[0] ? 'selected' : ''}>${o[1]}</option>`).join('')}</select></div>
+    ${f('code92', '其他所得（92）給付項目代號（2 碼）', '依要點附件 3 之 2')}
+    <div class="form-group"><label class="form-label">申報次數</label><input class="form-control" type="number" min="1" value="${s.times}" onchange="vcSet('times',+this.value)"></div>
+    <div class="form-group"><label class="form-label">重複申報原因（第 2 次起）</label><select class="form-control" onchange="vcSet('why',this.value)">${[['', '無'], ['01', '01 申報單位發現錯誤主動更正'], ['02', '02 稽徵機關發現錯誤更正']].map(o => `<option value="${o[0]}" ${s.why === o[0] ? 'selected' : ''}>${o[1]}</option>`).join('')}</select></div>
+    ${f('resCode', '非居住者居住地國代碼（2 碼）', 'ZZ＝其他國家（附件 41）')}</div>
+    ${se.length ? `<div class="tx-formula" style="border-left-color:var(--danger)">${se.map(x => `<div><b>${x[0]}</b>：${x[1]}</div>`).join('')}</div>` : ''}
+    <div class="form-hint" style="margin-top:10px">申報期限：所得年度次年 1 月 31 日前（遇連續 3 日以上國定假日延至 2 月 5 日）；非居住者應於代扣稅款之日起 10 日內申報。更正申報須彙送該單位全部資料，不可僅送部分。稽徵機關代號、給付項目代號等代碼表（附件 2、3 之 2、41）請依財政部公告值設定。</div></div>`;
+  if (VC.tab === 2) h = `<div class="card" style="margin-bottom:16px"><div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap"><label class="form-label" style="margin:0">所得給付年度</label><select class="form-control" style="width:auto" onchange="VC.year=+this.value;VC.built=false;vcRender()">${[...new Set(TXC.list.map(c => +c.payDate.slice(0, 3)).concat([115]))].sort().reverse().map(y => `<option ${VC.year === y ? 'selected' : ''}>${y}</option>`).join('')}</select><span class="form-hint">資料來源：課稅案件（正常／暫緩）；已註銷及因公撫卹免稅案件不申報（本年度排除 ${VC.excluded} 筆）</span></div></div>
+    <div class="tx-grid" style="margin-bottom:16px"><div class="tx-kpi"><small>憑單總件數</small><b>${R.length}</b></div><div class="tx-kpi g"><small>通過</small><b>${c('ok')}</b></div><div class="tx-kpi o"><small>警示（需確認）</small><b>${c('warn')}</b></div><div class="tx-kpi r"><small>錯誤（剔除不進檔）</small><b>${c('err')}</b></div><div class="tx-kpi"><small>給付總額／扣繳稅額</small><b style="font-size:15px">${fm(R.reduce((a, r) => a + r.gross, 0))}<br>${fm(R.reduce((a, r) => a + r.tax, 0))}</b></div></div>
+    <div class="card"><div class="table-wrapper"><table class="data-table"><thead><tr><th>流水號</th><th>所得人</th><th>證號別</th><th>格式</th><th>給付總額</th><th>扣繳稅額</th><th>給付淨額</th><th>所屬期間</th><th>錯誤註記</th><th>審核</th><th>操作</th></tr></thead><tbody>${R.map((r, i) => `<tr class="${r.lv === 'err' ? 'tx-chg' : ''}"><td style="font-size:12px">${r.no}${r.nonres ? '<br><span class="badge badge-warning">非居住者</span>' : ''}</td><td>${r.name}<div class="manual-meta">${mskId(r.pid.padEnd(10, '*'))}</div></td><td>${r.pt}</td><td>${r.fmt}</td><td style="text-align:right">${fm(r.gross)}</td><td style="text-align:right">${fm(r.tax)}</td><td style="text-align:right">${fm(r.net)}</td><td style="font-size:12px">${vcPeriod(r.period)}</td><td><select class="form-control" style="width:70px" onchange="VC.errMark['${r.c.no}']=this.value;VC.built=false;vcRender()">${['', 'A', 'B'].map(x => `<option ${r.mark === x ? 'selected' : ''}>${x}</option>`).join('')}</select></td><td>${r.lv === 'ok' ? '<span class="badge badge-success">通過</span>' : `<span class="badge badge-${r.lv === 'err' ? 'danger' : 'warning'}">${r.lv === 'err' ? '剔除' : '警示'}</span><div style="font-size:11px;margin-top:2px">${r.msgs.join('<br>')}</div>${r.msgs.some(m => m.startsWith('Y')) ? `<input class="form-control" style="margin-top:4px" placeholder="補填地址" onchange="VC.fix['${r.c.no}']=this.value;VC.built=false;vcRender()">` : ''}`}</td><td><button class="btn btn-outline btn-sm" onclick="vcPrev(${i})">預覽憑單</button></td></tr>`).join('') || '<tr><td colspan="11" style="text-align:center;color:var(--text-secondary)">本年度尚無可申報之課稅案件</td></tr>'}</tbody></table></div></div>`;
+  if (VC.tab === 3) {
+    const errN = c('err'), fs = !se.length ? vcFiles() : [];
+    h = `<div class="card" style="margin-bottom:16px"><div class="card-header"><div><div class="card-title">申報前檢核</div><div class="card-subtitle">審核錯誤之憑單依規定「剔除不進檔」，須更正後重新產製，或改以人工方式申報</div></div></div>
+    <div style="font-size:13px;line-height:2">${se.length ? `<div class="tx-bad">✕ 申報單位資料有 ${se.length} 項待修正（請至「申報設定」）</div>` : '<div class="tx-ok">✓ 申報單位資料完整</div>'}${errN ? `<div class="tx-bad">✕ 有 ${errN} 筆憑單審核錯誤（請至「憑單明細與審核」更正）</div>` : '<div class="tx-ok">✓ 憑單審核無錯誤</div>'}<div class="tx-ok">✓ 給付總額－扣繳稅額＝給付淨額 之金額平衡檢查</div><div class="tx-ok">✓ 各類所得申報書件數與所得資料筆數一致</div></div>
+    ${errN ? `<label style="font-size:13px"><input type="checkbox" ${VC.excl ? 'checked' : ''} onchange="VC.excl=this.checked;vcRender()"> 排除錯誤筆數（該等憑單改採人工申報），其餘照常產製</label>` : ''}</div>`;
+    if (se.length || (errN && !VC.excl)) h += '<div class="card"><div class="form-hint">請先修正上述問題後，再產製電子申報檔。</div></div>';
+    else if (!fs.length) h += '<div class="card"><div class="form-hint">無可產製之憑單。</div></div>';
+    else h += `<div class="card"><div class="card-header"><div><div class="card-title">電子申報檔（UTF-8 分隔符號格式，副檔名 U8）</div><div class="card-subtitle">所得資料 32 欄＋各類所得申報書資料 26 欄＋申報單位基本資料 17 欄；欄位以直線（|）分隔，空值以前後分隔符號相連</div></div><button class="btn btn-gold btn-sm" onclick="vcDlAll()">下載全部</button></div>
+      ${fs.map((x, i) => `<div class="tx-doc"><div><b>${x.name}</b><div class="manual-meta">${x.kind}｜憑單 ${x.n} 筆、申報書 ${x.g} 筆｜給付總額 ${fm(x.gross)}、扣繳稅額 ${fm(x.tax)}｜欄位數檢核：${x.fc}（32／26／17）</div></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-outline btn-sm" onclick="document.getElementById('vc-pre-${i}').style.display=document.getElementById('vc-pre-${i}').style.display==='none'?'block':'none'">檢視內容</button><button class="btn btn-primary btn-sm" onclick="vcDl(${i})">下載電子檔</button></div></div><pre id="vc-pre-${i}" style="display:none;background:#0f1b2d;color:#d6e4ff;padding:12px;border-radius:6px;font-size:11px;overflow-x:auto;white-space:pre">${x.text.split('\r\n').slice(0, 5).join('\n').replace(/</g, '&lt;')}\n…（共 ${x.lines.length} 筆記錄）</pre>`).join('')}</div>
+      <div class="card" style="margin-top:16px"><div class="card-title" style="margin-bottom:10px">報送文件與紙本憑單</div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-outline" onclick="vcReport()">各類所得扣繳暨免扣繳憑單申報書</button><button class="btn btn-outline" onclick="vcDeliver()">媒體檔案遞送單</button><button class="btn btn-outline" onclick="VC.tab=2;vcRender()">逐筆預覽／列印憑單</button><button class="btn btn-outline" onclick="runDownload('扣繳暨免扣繳憑單_全部紙本','pdf')">批次產製紙本憑單 PDF</button></div><div class="form-hint" style="margin-top:8px">紙本憑單依電子申報專用格式（每聯 14×17.5 公分、第 2 聯所得人證號後 3 碼以＊取代）；檔名規則：居住者「統編.年度.U8」、非居住者「統編.給付日期.U8」。</div></div>`;
+  }
+  el.innerHTML = h;
+}
+const _navV13 = navigateTo;
+navigateTo = function (id) {
+  _navV13(id);
+  if (id === 'tax-voucher') { const sm = document.getElementById('submenu-tax'); if (sm) { sm.classList.add('open'); document.getElementById('menu-tax').classList.add('expanded'); } VC.built = false; vcRender(); document.querySelectorAll('.sidebar-sub-item').forEach(el => { if ((el.getAttribute('onclick') || '').indexOf("navigateTo('tax-voucher')") > -1) el.classList.add('active'); }); }
+  if (id === 'tax-case') { clRender(); edSearch(); }
+};
 </script>
 
 <div class="modal-overlay" id="sh-preview-modal"><div class="modal modal-lg">
