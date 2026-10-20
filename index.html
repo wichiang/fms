@@ -9903,6 +9903,27 @@ const TX = {step: 1, sel: -1, res: null, regs: {}, records: [], seq: 7, adj: {},
   ]
 };
 TX.cases.forEach(c => { c.I.resident = c.resident; c.I.d = c.payDate; });
+/* ---- 適用「115/01/01 起」版次之示範案件（領取日期 ≥ 115/01/01） ---- */
+const PVD = {by: 55, bm: 3, ry: 115, rm: 7, pp: 12, amt: 75000, mths: 1, aw: 112500, rate: 1.5, due: '期末'};
+const EX115 = [
+  {doc: '府退一字第1150000101號', name: '陳怡君', pid: 'A223456789', type: 'once-ret', I: {once: 2800000, years: 15}, payDate: '115/02/05', bank: '0040037', note: '一次退休金｜免稅區（≤ 20.6萬×年資）'},
+  {doc: '府退一字第1150000118號', name: '林建國', pid: 'E123456780', type: 'once-ret', I: {once: 6200000, years: 20}, payDate: '115/03/12', bank: '0040037', note: '一次退休金｜半稅區'},
+  {doc: '府退一字第1150000135號', name: '吳美珠', pid: 'D223344556', type: 'once-ret', I: {once: 12500000, years: 25}, payDate: '115/04/20', bank: '0060016', note: '一次退休金｜過半全課（倍數 1.50485）'},
+  {doc: '府退一字第1150000142號', name: 'Mark Allen', pid: 'A800123456', type: 'sev', resident: false, I: {once: 1500000, years: 5}, payDate: '115/05/08', bank: '0170014', note: '資遣給與｜非居住者 18%'},
+  {doc: '府退二字第1150000203號', name: '郭泰安', pid: 'K121234567', type: 'period-ret', I: {per: 1560000}, payDate: '115/06/01', bank: '0040037', note: '月退休金｜減除 89.4萬，超過 2,000 元須預扣'},
+  {doc: '府退二字第1150000215號', name: '周麗華', pid: 'M222334455', type: 'period-ret', I: {per: 960000}, payDate: '115/06/01', bank: '0090011', note: '月退休金｜每月稅額 ≤ 2,000 元免扣繳'},
+  {doc: '府退三字第1150000301號', name: '黃國棟', pid: 'L123987654', type: 'mix-ret', I: Object.assign({i1: 2400000, i2: 0, i3: 0, i4: 30000, i5: 0, per: 1012500, years: 28}, PVD), payDate: '115/08/14', bank: '0040037', note: '兼領一次及月退｜PV 按月、期末'},
+  {doc: '府退三字第1150000318號', name: '謝文雄', pid: 'S123456780', type: 'mix-ret', I: {i1: 2000000, i2: 150000, i3: 0, i4: 0, i5: 0, per: 945000, years: 32, by: 54, bm: 9, ry: 115, rm: 3, pp: 4, amt: 210000, mths: 3, aw: 105000, rate: 1.5, due: '期初'}, payDate: '115/09/02', bank: '0060016', note: '兼領一次及月退｜PV 按季、期初、含現金補償金'},
+  {doc: '府撫一字第1150000402號', name: '蔡文彬', pid: 'R223344558', type: 'surv-ann', I: {per: 720000, paid: 480000, death: '是'}, payDate: '115/07/10', bank: '0060016', recips: [{n: '蔡文彬', r: 0.55}, {n: '蔡美玲', r: 0.45}], note: '遺屬年金｜死亡當年度、2 位領受人比例分配、92 申報'},
+  {doc: '府撫一字第1150000417號', name: '黃雅婷', pid: 'N234567890', type: 'surv-once', I: {once: 7500000, n: 6}, payDate: '115/08/25', bank: '0090011', note: '遺屬一次金｜定額免稅額度（年金現值係數）、92 申報'},
+  {doc: '府撫二字第1150000503號', name: '劉宗翰', pid: 'H123456780', type: 'once-np', I: {once: 3000000, years: 20, duty: '是'}, payDate: '115/09/18', bank: '0040037', note: '一次撫卹｜因公，免納所得稅'},
+  {doc: '府撫二字第1150000516號', name: '孫淑芬', pid: 'F223344550', type: 'once-np', I: {once: 5000000, years: 18, duty: '否'}, payDate: '115/10/06', bank: '0170014', note: '一次撫卹（非因公）｜×50% 課稅、92 申報'},
+  {doc: '府撫三字第1150000602號', name: '賴秀英', pid: 'Z223456789', type: 'mix-surv', I: Object.assign({i1: 4000000, i2: 0, i3: 0, i4: 0, i5: 0, per: 600000, paid: 200000, death: '是', n: 6, years: 0}, {by: 50, bm: 8, ry: 114, rm: 12, pp: 12, amt: 45000, mths: 1, aw: 67500, rate: 1.5, due: '期末'}), payDate: '115/10/15', bank: '0060016', note: '遺屬一次金及年金｜PV 比例 A/B、92 申報'}
+];
+EX115.forEach(c => { c.resident = c.resident !== false; c.recips = c.recips || [{n: c.name, r: 1}]; c.I.resident = c.resident; c.I.d = c.payDate; });
+['一次退休金｜113 年度版次（原示範）', '月退休金｜113 年度版次（原示範）', '遺屬年金｜113 年度版次（原示範）', '兼領｜113 年度版次（資料缺漏示範，可模擬補正）', '遺屬一次金｜113 年度版次（原示範）'].forEach((n, i) => TX.cases[i].note = n);
+TX.cases.push(...EX115); TX.flt = '115/01/01 起';
+
 TX.recalc.forEach(r => { r.o.resident = r.n.resident = r.resident; r.o.d = r.n.d = '113/12/05'; });
 TX.audit = [
   {k: 'F678', n: '李秀蘭', pid: 'F678901234', m: 120000, doc: '府退二字第1130009876號'},
@@ -9943,12 +9964,14 @@ function txRender() {
   document.getElementById('tx-body').innerHTML = [txR1, txR2, txR3, txR4][TX.step - 1]();
 }
 function txR1() {
+  const vers = [...new Set(TX.cases.map(c => txP(c.payDate).lbl))];
   const rows = TX.cases.map((c, i) => {
+    if (TX.flt !== '全部' && txP(c.payDate).lbl !== TX.flt) return '';
     const v = txValidate(c), ok = v.every(x => x[3]), st = !c.checked ? '<span class="badge badge-secondary">待介接</span>' : ok ? '<span class="badge badge-success">檢核通過</span>' : '<span class="badge badge-danger">檢核未通過</span>';
-    return `<tr><td style="font-size:12px">${c.doc}</td><td>${c.name}</td><td>${mskId(c.pid)}</td><td>${txType(c.type).name}</td><td>${c.payDate}</td><td>${TX.regs[c.doc] ? '<span class="badge badge-gold">已建檔</span>' : st}</td><td><button class="btn btn-sm btn-gold" onclick="txFetch(${i})">介接撥付資料並檢核</button></td></tr>`;
+    return `<tr class="${TX.sel === i ? 'tx-chg' : ''}"><td style="font-size:12px">${c.doc}</td><td>${c.name}</td><td>${mskId(c.pid)}</td><td>${txType(c.type).name}</td><td>${c.payDate}</td><td><span class="badge badge-gold">${txP(c.payDate).lbl}</span></td><td style="font-size:12px;color:var(--text-secondary)">${c.note || ''}</td><td>${TX.regs[c.doc] ? '<span class="badge badge-gold">已建檔</span>' : st}</td><td><button class="btn btn-sm btn-gold" style="white-space:nowrap" onclick="txFetch(${i})">介接並檢核</button></td></tr>`;
   }).join('');
-  let h = `<div class="card" style="margin-bottom:16px"><div class="card-header"><div><div class="card-title">待辦理課稅計算案件（撥付系統）</div><div class="card-subtitle">以介接方式取得案件辦理退職所得課稅計算所需資料，接收後先執行必要之欄位完整性及格式檢核</div></div><span class="badge badge-warning">${TX.cases.length} 筆</span></div>
-    <div class="table-wrapper"><table class="data-table"><thead><tr><th>撥付文號</th><th>姓名</th><th>身分證字號</th><th>退撫給與種類</th><th>撥付入帳日</th><th>狀態</th><th>操作</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+  let h = `<div class="card" style="margin-bottom:16px"><div class="card-header"><div><div class="card-title">待辦理課稅計算案件（撥付系統）</div><div class="card-subtitle">以介接方式取得案件辦理退職所得課稅計算所需資料，接收後先執行必要之欄位完整性及格式檢核</div></div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><label class="form-label" style="margin:0">適用版次</label><select class="form-control" style="width:auto" onchange="TX.flt=this.value;TX.sel=-1;txRender()">${['全部', ...vers].map(v => `<option ${TX.flt === v ? 'selected' : ''}>${v}</option>`).join('')}</select><span class="badge badge-warning">${TX.cases.filter(c => TX.flt === '全部' || txP(c.payDate).lbl === TX.flt).length} 筆</span></div></div>
+    <div class="table-wrapper"><table class="data-table"><thead><tr><th>撥付文號</th><th>姓名</th><th>身分證字號</th><th>退撫給與種類</th><th>領取日期</th><th>適用版次</th><th>範例情境</th><th>狀態</th><th>操作</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
   const c = TX.cur();
   if (c && c.checked) {
     const v = txValidate(c), bad = v.filter(x => !x[3]).length;
