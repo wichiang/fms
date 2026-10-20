@@ -1098,6 +1098,19 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div class="sidebar-sub-item" onclick="navigateTo('monthly-anomaly')">異常處理</div>
       </div>
 
+      <!-- 調薪作業 -->
+      <div class="sidebar-item" id="menu-salary" onclick="toggleMenu('salary')">
+        <div class="sidebar-item-icon"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg></div>
+        <div class="sidebar-item-text">調薪作業</div>
+        <div class="sidebar-item-arrow">▶</div>
+      </div>
+      <div class="sidebar-submenu" id="submenu-salary">
+        <div class="sidebar-sub-item" onclick="navigateTo('salary-scale')">現職俸額對照檔維護</div>
+        <div class="sidebar-sub-item" onclick="navigateTo('salary-ret')">退職調薪資料表</div>
+        <div class="sidebar-sub-item" onclick="navigateTo('salary-retdiff')">退職調薪差額處理</div>
+        <div class="sidebar-sub-item" onclick="navigateTo('salary-active')">現職調薪差額處理</div>
+      </div>
+
       <!-- 外部資料交換 -->
       <div class="sidebar-item" id="menu-extdata" onclick="toggleMenu('extdata')">
         <div class="sidebar-item-icon"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></div>
@@ -4127,6 +4140,27 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
     </div>
 
     <!-- ===== 外部資料交換 > 軍職資料 ===== -->
+    <!-- ===== V19 調薪作業 ===== -->
+    <div class="view" id="view-salary-scale">
+      <div class="breadcrumb"><span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-item">調薪作業</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-item current">現職俸額對照檔維護</span></div>
+      <div class="page-header"><div><div class="page-title">現職俸額對照檔維護</div><div class="page-subtitle">配合政府法令公告之軍、公、教現職人員調薪內容，建立俸額對照檔（生效起迄日、俸點類別、俸點、俸額），依生效日期分版管理</div></div></div>
+      <div id="sal-b1"></div>
+    </div>
+    <div class="view" id="view-salary-ret">
+      <div class="breadcrumb"><span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-item">調薪作業</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-item current">退職調薪資料表</span></div>
+      <div class="page-header"><div><div class="page-title">退職調薪資料表</div><div class="page-subtitle">配合政府法令公告之軍、公、教退職人員調薪內容，建立調薪資料表（調薪幅度、生效日），並比對法令生效日與實際發放日</div></div></div>
+      <div id="sal-b2"></div>
+    </div>
+    <div class="view" id="view-salary-retdiff">
+      <div class="breadcrumb"><span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-item">調薪作業</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-item current">退職調薪差額處理</span></div>
+      <div class="page-header"><div><div class="page-title">退職調薪差額處理</div><div class="page-subtitle">法令生效日與實際發放日不同時，計算期間差額、寫入本局支領紀錄檔，並產製差異報表</div></div></div>
+      <div id="sal-b3"></div>
+    </div>
+    <div class="view" id="view-salary-active">
+      <div class="breadcrumb"><span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-item">調薪作業</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-item current">現職調薪差額處理</span></div>
+      <div class="page-header"><div><div class="page-title">現職調薪差額處理</div><div class="page-subtitle">法令公告日與實際發放日不同時：刪除原憑證版資料庫俸點資料 → 寫入業務組調整後俸(點)額對照檔 → 憑證版開啟批次調薪差額／單機版產製更新俸點檔</div></div></div>
+      <div id="sal-b4"></div>
+    </div>
     <div class="view" id="view-extdata-military">
       <div class="breadcrumb">
         <span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span>
@@ -11831,6 +11865,186 @@ navigateTo = function (id) { _navMB(id); if (id === 'monthly-bank') { const sm =
   <div class="modal-body"><div class="page-title" id="shp-title" style="margin-bottom:12px"></div><div class="help-content" id="shp-content"></div></div>
   <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('sh-preview-modal')">關閉</button></div>
 </div></div>
+
+<script>
+/* ===== V19：軍公教人員調薪作業（示意資料） ===== */
+const SAL={scale:[],adj:[],ret:[],rec:[],flt:'全部',nid:3,today:'115/10/20',
+ rd:{id:1,calc:null,written:false},
+ act:{ann:'115/03/20',pay:'115/05/01',chk:false,del:false,wr:false,onl:false,stand:null,delCnt:0,log:[]}};
+(function(){
+ const cats=['軍職本俸','公務本俸','教育本俸'],pts=[250,400,550,700];
+ cats.forEach(c=>pts.forEach(p=>{SAL.scale.push({c,p,a:Math.round(p*143),f:'113/01/01',t:'114/12/31'});SAL.scale.push({c,p,a:Math.round(p*148),f:'115/01/01',t:'999/12/31'});}));
+ SAL.adj=[{id:1,tgt:'軍、公、教退休(職)、退伍、撫卹(育)人員',rate:3.0,eff:'115/01/01',ann:'115/03/20',pay:'115/05/01'},
+          {id:2,tgt:'軍、公、教退休(職)、退伍、撫卹(育)人員',rate:2.0,eff:'114/01/01',ann:'113/12/20',pay:'114/01/01'}];
+ SAL.ret=[['王建國','A123***789','軍職月退',52000],['林美玲','F223***456','公務月退',48500],['陳志豪','H121***332','教育月退',61200],['張淑芬','E222***018','公務遺屬',24800],['李文彬','B120***654','軍職月退',45600],['黃雅惠','D221***907','教育月退',57300]];
+})();
+const sfm=n=>Number(n).toLocaleString('en-US');
+const sD=s=>{const p=s.split('/').map(Number);return new Date(p[0]+1911,p[1]-1,p[2]);};
+const sS=d=>(d.getFullYear()-1911)+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+String(d.getDate()).padStart(2,'0');
+const sOk=s=>/^\d{3}\/\d{2}\/\d{2}$/.test(s)&&sS(sD(s))===s;
+const sM=(a,b)=>{const x=a.split('/'),y=b.split('/');return (y[0]*12+ +y[1])-(x[0]*12+ +x[1]);};
+const sYM=s=>s.slice(0,6);
+const sPrevM=s=>{const d=sD(s);d.setMonth(d.getMonth()-1);return sS(d).slice(0,6);};
+const sNow=()=>SAL.today+' '+new Date().toTimeString().slice(0,5);
+const sEl=i=>document.getElementById(i);
+const sErr=(t,m)=>{showToast('error',t,m);return false;};
+const sAudit=(a,d)=>{try{appendAuditLog(a,d);}catch(e){}};
+const sStat=r=>r.f>SAL.today?'<span class="badge badge-info">未生效</span>':(r.t<SAL.today?'<span class="badge badge-secondary">已失效</span>':'<span class="badge badge-success">現行有效</span>');
+const sLatestF=()=>SAL.scale.reduce((m,r)=>r.f>m?r.f:m,'000/00/00');
+
+/* ---- A-1 現職俸額對照檔 ---- */
+function salScale(){
+ const cats=[...new Set(SAL.scale.map(r=>r.c))],rows=SAL.scale.map((r,i)=>({r,i})).filter(x=>SAL.flt==='全部'||x.r.c===SAL.flt).sort((a,b)=>a.r.c.localeCompare(b.r.c)||a.r.p-b.r.p||a.r.f.localeCompare(b.r.f));
+ return `<div class="card" style="margin-bottom:16px"><div class="card-title" style="margin-bottom:8px">新增版次（單筆）</div>
+ <div class="form-row cols-4"><div class="form-group"><label class="form-label">俸點類別</label><select class="form-control" id="ss-c">${cats.map(c=>`<option>${c}</option>`).join('')}</select></div>
+ <div class="form-group"><label class="form-label">俸點</label><input class="form-control" id="ss-p" type="number" min="1" placeholder="如 400"></div>
+ <div class="form-group"><label class="form-label">俸額（元）</label><input class="form-control" id="ss-a" type="number" min="1" placeholder="如 59200"></div>
+ <div class="form-group"><label class="form-label">生效日／迄日（民國 yyy/mm/dd）</label><div style="display:flex;gap:6px"><input class="form-control" id="ss-f" placeholder="115/01/01"><input class="form-control" id="ss-t" value="999/12/31"></div></div></div>
+ <div class="page-actions"><button class="btn btn-gold btn-sm" onclick="salScaleAdd()">新增</button></div>
+ <div class="form-hint">同一類別＋俸點之生效期間不得重疊；新生效日晚於現行無迄日版次時，系統自動將舊版迄日改為新生效日前一日。</div></div>
+ <div class="card" style="margin-bottom:16px"><div class="card-title" style="margin-bottom:8px">整批產生新版次（依調幅）</div>
+ <div class="form-row cols-4"><div class="form-group"><label class="form-label">新生效日</label><input class="form-control" id="sb-f" placeholder="116/01/01"></div>
+ <div class="form-group"><label class="form-label">調薪幅度（%）</label><input class="form-control" id="sb-r" type="number" step="0.01" placeholder="如 3"></div>
+ <div class="form-group" style="grid-column:span 2"><label class="form-label">說明</label><div class="form-hint" style="padding-top:8px">以各類別現行版次俸額 × (1＋幅度) 四捨五入產生新版；實際俸額以法令公告對照表為準，產生後可由業務組逐筆調整。</div></div></div>
+ <div class="page-actions"><button class="btn btn-outline-primary btn-sm" onclick="salScaleBatch()">整批產生</button></div></div>
+ <div class="card"><div class="card-header"><div><div class="card-title">俸額對照檔</div><div class="card-subtitle">共 ${rows.length} 筆（示意資料）</div></div>
+ <div style="display:flex;gap:8px"><select class="form-control" style="width:auto" onchange="SAL.flt=this.value;salRender('salary-scale')">${['全部',...cats].map(c=>`<option ${SAL.flt===c?'selected':''}>${c}</option>`).join('')}</select><button class="btn btn-success btn-sm" onclick="runDownload('俸額對照檔','xlsx')">匯出 Excel</button></div></div>
+ <div class="table-wrapper"><table class="data-table"><thead><tr><th>俸點類別</th><th>俸點</th><th>俸額</th><th>生效日</th><th>迄日</th><th>狀態</th><th>操作</th></tr></thead><tbody>${rows.map(x=>`<tr><td>${x.r.c}</td><td>${x.r.p}</td><td style="text-align:right">${sfm(x.r.a)}</td><td>${x.r.f}</td><td>${x.r.t==='999/12/31'?'（無迄日）':x.r.t}</td><td>${sStat(x.r)}</td><td><button class="btn btn-sm btn-danger" onclick="salScaleDel(${x.i})">刪除</button></td></tr>`).join('')}</tbody></table></div></div>`;
+}
+function salScaleAdd(){
+ const c=sEl('ss-c').value,p=+sEl('ss-p').value,a=+sEl('ss-a').value,f=sEl('ss-f').value.trim(),t=sEl('ss-t').value.trim();
+ if(!(p>0)||!(a>0))return sErr('欄位不完整','俸點、俸額須為大於 0 之數值');
+ if(!sOk(f)||!sOk(t))return sErr('日期格式錯誤','請輸入民國年 yyy/mm/dd，如 115/01/01');
+ if(f>t)return sErr('日期錯誤','生效日不得晚於迄日');
+ const same=SAL.scale.filter(r=>r.c===c&&r.p===p);
+ for(const r of same){ if(r.f<=t&&f<=r.t){ if(r.t==='999/12/31'&&f>r.f){continue;} return sErr('期間重疊',`${c} 俸點 ${p} 已有 ${r.f}～${r.t==='999/12/31'?'無迄日':r.t} 版次，期間重疊`);} }
+ same.forEach(r=>{ if(r.t==='999/12/31'&&f>r.f){const d=sD(f);d.setDate(d.getDate()-1);r.t=sS(d);} });
+ SAL.scale.push({c,p,a,f,t}); sAudit('調薪',`新增俸額對照檔 ${c} 俸點${p} 俸額${a} 生效${f}`); showToast('success','已新增','俸額對照檔版次已建立'); salRender('salary-scale');
+}
+function salScaleBatch(){
+ const f=sEl('sb-f').value.trim(),r=parseFloat(sEl('sb-r').value);
+ if(!sOk(f))return sErr('日期格式錯誤','請輸入民國年 yyy/mm/dd');
+ if(!(r>0))return sErr('調幅錯誤','調薪幅度須大於 0');
+ const cur=SAL.scale.filter(x=>x.t==='999/12/31');
+ if(cur.some(x=>x.f>=f))return sErr('生效日過早','新生效日須晚於現行版次生效日（'+sLatestF()+'）');
+ const d=sD(f);d.setDate(d.getDate()-1);const e=sS(d);
+ cur.forEach(x=>{x.t=e;SAL.scale.push({c:x.c,p:x.p,a:Math.round(x.a*(1+r/100)),f,t:'999/12/31'});});
+ sAudit('調薪',`整批產生俸額對照檔新版次 生效${f} 調幅${r}%`); showToast('success','整批產生完成',`已產生 ${cur.length} 筆新版次，舊版迄日已調整為 ${e}`); salRender('salary-scale');
+}
+function salScaleDel(i){const r=SAL.scale[i];if(r.f<=SAL.today)return sErr('不得刪除','已生效版次不得刪除，如需調整請新增版次或修改迄日');if(!confirm('確定刪除此未生效版次？'))return;SAL.scale.splice(i,1);salRender('salary-scale');}
+
+/* ---- A-2 退職調薪資料表 ---- */
+function salRet(){
+ return `<div class="card" style="margin-bottom:16px"><div class="card-title" style="margin-bottom:8px">新增調薪資料</div>
+ <div class="form-row cols-4"><div class="form-group"><label class="form-label">適用對象</label><select class="form-control" id="sr-t"><option>軍、公、教退休(職)、退伍、撫卹(育)人員</option><option>軍職退伍人員</option><option>公務人員退休(職)人員</option><option>教育人員退休人員</option></select></div>
+ <div class="form-group"><label class="form-label">調薪幅度（%）</label><input class="form-control" id="sr-r" type="number" step="0.01" placeholder="如 3"></div>
+ <div class="form-group"><label class="form-label">法令生效日</label><input class="form-control" id="sr-e" placeholder="116/01/01"></div>
+ <div class="form-group"><label class="form-label">公告日</label><input class="form-control" id="sr-a" placeholder="115/12/20"></div></div>
+ <div class="form-row cols-4"><div class="form-group"><label class="form-label">實際發放起月（首次按新標準發放）</label><input class="form-control" id="sr-p" placeholder="116/02/01"></div></div>
+ <div class="page-actions"><button class="btn btn-gold btn-sm" onclick="salAdjAdd()">新增</button></div></div>
+ <div class="card"><div class="card-title" style="margin-bottom:8px">退職人員調薪資料表</div><div class="table-wrapper"><table class="data-table"><thead><tr><th>適用對象</th><th>調薪幅度</th><th>生效日</th><th>公告日</th><th>實際發放起月</th><th>差額月數</th><th>處理</th></tr></thead><tbody>${[...SAL.adj].sort((a,b)=>b.eff.localeCompare(a.eff)).map(a=>{const m=sM(a.eff,a.pay);return `<tr><td>${a.tgt}</td><td>${a.rate.toFixed(2)}%</td><td>${a.eff}</td><td>${a.ann}</td><td>${a.pay}</td><td>${m>0?`<span class="badge badge-warning">${m} 個月</span>`:'<span class="badge badge-success">無差額</span>'}</td><td>${m>0?`<button class="btn btn-sm btn-gold" onclick="SAL.rd={id:${a.id},calc:null,written:false};navigateTo('salary-retdiff')">差額處理</button>`:'-'}</td></tr>`;}).join('')}</tbody></table></div>
+ <div class="form-hint" style="margin-top:8px">法令生效日早於實際發放起月者，期間差額須於「退職調薪差額處理」補發並寫入支領紀錄檔。</div></div>`;
+}
+function salAdjAdd(){
+ const r=parseFloat(sEl('sr-r').value),e=sEl('sr-e').value.trim(),a=sEl('sr-a').value.trim(),p=sEl('sr-p').value.trim();
+ if(!(r>0))return sErr('調幅錯誤','調薪幅度須大於 0');
+ if(!sOk(e)||!sOk(a)||!sOk(p))return sErr('日期格式錯誤','生效日、公告日、實際發放起月均須為民國 yyy/mm/dd');
+ if(p<e)return sErr('日期錯誤','實際發放起月不得早於法令生效日');
+ SAL.adj.push({id:SAL.nid++,tgt:sEl('sr-t').value,rate:r,eff:e,ann:a,pay:p}); sAudit('調薪',`新增退職調薪資料 幅度${r}% 生效${e}`); showToast('success','已新增','退職調薪資料已建立'); salRender('salary-ret');
+}
+
+/* ---- B 退職差額處理 ---- */
+function salRetDiff(){
+ const R=SAL.rd,a=SAL.adj.find(x=>x.id==R.id)||SAL.adj[0],C=R.calc;
+ return `<div class="card" style="margin-bottom:16px"><div class="card-title" style="margin-bottom:8px">步驟 1：選擇調薪案並設定實際發放起月</div>
+ <div class="form-row cols-4"><div class="form-group" style="grid-column:span 2"><label class="form-label">調薪案</label><select class="form-control" onchange="SAL.rd={id:+this.value,calc:null,written:false};salRender('salary-retdiff')">${SAL.adj.map(x=>`<option value="${x.id}" ${x.id==a.id?'selected':''}>生效 ${x.eff}／${x.rate.toFixed(2)}%／公告 ${x.ann}</option>`).join('')}</select></div>
+ <div class="form-group"><label class="form-label">實際發放起月</label><input class="form-control" id="rd-pay" value="${a.pay}"></div>
+ <div class="form-group"><label class="form-label">&nbsp;</label><button class="btn btn-gold" onclick="salRdCalc()">計算差額</button></div></div></div>
+ ${C?(C.m<=0?`<div class="info-card success">法令生效日與實際發放起月相同，無期間差額，不須處理。</div>`:`<div class="card" style="margin-bottom:16px"><div class="card-header"><div><div class="card-title">步驟 2：差額試算結果</div><div class="card-subtitle">補發期間 ${C.s}～${C.e}，共 ${C.m} 個月；調幅 ${C.a.rate.toFixed(2)}%（示意名單）</div></div>
+ <div style="display:flex;gap:8px"><button class="btn btn-gold btn-sm" ${R.written?'disabled':''} onclick="salRdWrite()">${R.written?'已寫入支領紀錄檔':'步驟 3：寫入本局支領紀錄檔'}</button><button class="btn btn-outline-primary btn-sm" onclick="salRdReport()">步驟 4：產製差異報表</button></div></div>
+ <div class="table-wrapper"><table class="data-table"><thead><tr><th>姓名</th><th>身分證字號</th><th>給與類別</th><th>原月領</th><th>調薪後月領</th><th>月差額</th><th>補發月數</th><th>差額合計</th></tr></thead><tbody>${C.rows.map(r=>`<tr><td>${r.n}</td><td class="masked">${r.id}</td><td>${r.k}</td><td>${sfm(r.o)}</td><td>${sfm(r.w)}</td><td>${sfm(r.d)}</td><td>${C.m}</td><td><b>${sfm(r.t)}</b></td></tr>`).join('')}<tr><td colspan="7" style="text-align:right"><b>合計</b></td><td><b>NT$ ${sfm(C.rows.reduce((x,r)=>x+r.t,0))}</b></td></tr></tbody></table></div></div>`):''}
+ <div class="card"><div class="card-header"><div><div class="card-title">本局支領紀錄檔（調薪差額）</div><div class="card-subtitle">由本作業寫入之差額款項紀錄</div></div><span class="badge badge-info">${SAL.rec.length} 筆</span></div>
+ <div class="table-wrapper"><table class="data-table"><thead><tr><th>寫入時間</th><th>批號</th><th>姓名</th><th>給與項目</th><th>差額期間</th><th>金額</th></tr></thead><tbody>${SAL.rec.length?SAL.rec.map(r=>`<tr><td>${r.t}</td><td>${r.b}</td><td>${r.n}</td><td>${r.i}</td><td>${r.p}</td><td class="pos">+${sfm(r.a)}</td></tr>`).join(''):'<tr><td colspan="6" style="text-align:center;color:var(--text-secondary)">尚無紀錄</td></tr>'}</tbody></table></div></div>`;
+}
+function salRdCalc(){
+ const a=SAL.adj.find(x=>x.id==SAL.rd.id),pay=sEl('rd-pay').value.trim();
+ if(!sOk(pay))return sErr('日期格式錯誤','實際發放起月須為民國 yyy/mm/dd');
+ const m=sM(a.eff,pay);
+ if(m<0)return sErr('日期錯誤','實際發放起月不得早於法令生效日');
+ SAL.rd.written=false;
+ SAL.rd.calc={a,m,pay,s:sYM(a.eff),e:sPrevM(pay),rows:SAL.ret.map(r=>{const w=Math.round(r[3]*(1+a.rate/100)),d=w-r[3];return{n:r[0],id:r[1],k:r[2],o:r[3],w,d,t:d*m};})};
+ salRender('salary-retdiff');
+}
+function salRdWrite(){
+ const R=SAL.rd,C=R.calc;if(!C||C.m<=0||R.written)return;
+ const b='ADJ'+SAL.today.replace(/\//g,'')+String(SAL.rec.length?(+SAL.rec[SAL.rec.length-1].b.slice(-2)+1):1).padStart(2,'0'),t=sNow();
+ C.rows.forEach(r=>SAL.rec.push({t,b,n:r.n,i:'調薪差額（'+r.k+'）',p:C.s+'～'+C.e,a:r.t}));
+ R.written=true;sAudit('調薪',`退職調薪差額寫入支領紀錄檔，批號 ${b}，${C.rows.length} 筆`);
+ showToast('success','已寫入支領紀錄檔',`批號 ${b}，共 ${C.rows.length} 筆差額款項`);salRender('salary-retdiff');
+}
+function salRdReport(){
+ const C=SAL.rd.calc;if(!C||C.m<=0)return;
+ openDetailModal('退職人員調薪差額差異報表',`<div style="text-align:center;margin-bottom:12px"><b style="color:var(--primary)">退職人員調薪差額差異報表</b></div><div class="info-card"><div class="info-row"><div class="info-key">調薪案</div><div class="info-val">生效 ${C.a.eff}／調幅 ${C.a.rate.toFixed(2)}%／公告 ${C.a.ann}</div></div><div class="info-row"><div class="info-key">差額期間</div><div class="info-val">${C.s}～${C.e}（${C.m} 個月；實際發放起月 ${C.pay}）</div></div><div class="info-row"><div class="info-key">支領紀錄檔</div><div class="info-val">${SAL.rd.written?'已寫入':'尚未寫入'}</div></div></div><table class="data-table" style="margin-top:12px"><thead><tr><th>姓名</th><th>類別</th><th>原月領</th><th>調薪後</th><th>月差額</th><th>差額合計</th></tr></thead><tbody>${C.rows.map(r=>`<tr><td>${r.n}</td><td>${r.k}</td><td>${sfm(r.o)}</td><td>${sfm(r.w)}</td><td>${sfm(r.d)}</td><td>${sfm(r.t)}</td></tr>`).join('')}<tr><td colspan="5"><b>合計</b></td><td><b>${sfm(C.rows.reduce((x,r)=>x+r.t,0))}</b></td></tr></tbody></table>`,'退職調薪差額差異報表','xlsx');
+}
+
+/* ---- C 現職差額處理 ---- */
+function salActive(){
+ const A=SAL.act,diff=A.ann!==A.pay,cf=sLatestF(),cur=SAL.scale.filter(r=>r.f===cf),
+  prevF=SAL.scale.filter(r=>r.f<cf).reduce((m,r)=>r.f>m?r.f:m,''),
+  st=(ok,txt)=>`<span class="badge badge-${ok?'success':'secondary'}">${ok?'已完成':txt||'待辦'}</span>`;
+ const dis=c=>c?'':'disabled';
+ return `<div class="card" style="margin-bottom:16px"><div class="card-header"><div><div class="card-title">步驟 1：比對法令公告日與實際發放日</div><div class="card-subtitle">兩者不同時，須啟動以下調整程序</div></div>${A.chk?'<span class="badge badge-warning">日期不同：須調整</span>':st(false,'待比對')}</div>
+ <div class="form-row cols-4"><div class="form-group"><label class="form-label">法令公告日</label><input class="form-control" id="ac-ann" value="${A.ann}"></div><div class="form-group"><label class="form-label">實際發放日</label><input class="form-control" id="ac-pay" value="${A.pay}"></div><div class="form-group"><label class="form-label">&nbsp;</label><button class="btn btn-gold" onclick="salActChk()">比對</button></div>
+ <div class="form-group"><label class="form-label">&nbsp;</label><button class="btn btn-outline btn-sm" onclick="salActReset()">重設流程（示範）</button></div></div></div>
+ <div class="card" style="margin-bottom:16px"><div class="card-header"><div><div class="card-title">步驟 2：刪除原憑證版資料庫俸點資料</div><div class="card-subtitle">刪除前自動備份原資料，供回復使用</div></div>${st(A.del)}</div>
+ ${A.del?`<div class="form-hint">已備份並刪除 ${A.delCnt} 筆原俸點資料（備份檔 SALPT_BAK_${SAL.today.replace(/\//g,'')}.bak）</div>`:''}
+ <div class="page-actions"><button class="btn btn-danger btn-sm" ${dis(A.chk&&!A.del)} onclick="salActDel()">備份並刪除</button></div></div>
+ <div class="card" style="margin-bottom:16px"><div class="card-header"><div><div class="card-title">步驟 3：寫入業務組調整後之俸(點)額對照檔</div><div class="card-subtitle">以「現職俸額對照檔維護」中最新版次（生效 ${cf}）寫入憑證版資料庫，共 ${cur.length} 筆</div></div>${st(A.wr)}</div>
+ <div class="page-actions"><button class="btn btn-gold btn-sm" ${dis(A.del&&!A.wr)} onclick="salActWrite()">寫入憑證版資料庫</button><button class="btn btn-outline btn-sm" onclick="navigateTo('salary-scale')">前往調整對照檔</button></div></div>
+ <div class="tx-grid" style="margin-bottom:16px"><div class="card"><div class="card-header"><div><div class="card-title">步驟 4a：憑證版</div><div class="card-subtitle">開啟調整憑證版批次調薪差額功能</div></div>${st(A.onl)}</div>
+ ${A.onl?`<div class="form-hint" style="margin-bottom:8px">功能已開啟，差額期間 ${sYM(cf)}～${sPrevM(A.pay)}；憑證版使用者可執行批次調薪差額。</div><div class="table-wrapper"><table class="data-table"><thead><tr><th>類別</th><th>俸點</th><th>舊俸額</th><th>新俸額</th><th>月差額</th></tr></thead><tbody>${cur.slice(0,8).map(r=>{const o=SAL.scale.find(x=>x.c===r.c&&x.p===r.p&&x.f===prevF);return `<tr><td>${r.c}</td><td>${r.p}</td><td>${o?sfm(o.a):'-'}</td><td>${sfm(r.a)}</td><td>${o?sfm(r.a-o.a):'-'}</td></tr>`;}).join('')}</tbody></table></div>`:''}
+ <div class="page-actions"><button class="btn btn-gold btn-sm" ${dis(A.wr)} onclick="salActOnline()">${A.onl?'關閉功能':'開啟批次調薪差額功能'}</button></div></div>
+ <div class="card"><div class="card-header"><div><div class="card-title">步驟 4b：單機版</div><div class="card-subtitle">產製更新俸點檔，放入本局官網資料夾供下載</div></div>${st(!!A.stand)}</div>
+ ${A.stand?`<div class="info-card success" style="font-size:13px">檔名：<b style="font-family:monospace">${A.stand.n}</b>（${A.stand.c} 筆）<br>放置路徑：${A.stand.p}<br>產製時間：${A.stand.t}</div>`:''}
+ <div class="page-actions"><button class="btn btn-gold btn-sm" ${dis(A.wr)} onclick="salActStand()">產製並放入官網資料夾</button>${A.stand?`<button class="btn btn-outline btn-sm" onclick="runDownload('${A.stand.n.replace('.txt','')}','txt')">下載</button>`:''}</div></div></div>
+ <div class="card"><div class="card-title" style="margin-bottom:8px">作業紀錄</div><div class="table-wrapper"><table class="data-table"><thead><tr><th>時間</th><th>作業</th><th>說明</th></tr></thead><tbody>${A.log.length?A.log.map(l=>`<tr><td>${l[0]}</td><td>${l[1]}</td><td>${l[2]}</td></tr>`).join(''):'<tr><td colspan="3" style="text-align:center;color:var(--text-secondary)">尚無紀錄</td></tr>'}</tbody></table></div></div>`;
+}
+function salLog(a,d){SAL.act.log.unshift([sNow(),a,d]);sAudit('調薪',a+'：'+d);}
+function salActChk(){
+ const a=sEl('ac-ann').value.trim(),p=sEl('ac-pay').value.trim();
+ if(!sOk(a)||!sOk(p))return sErr('日期格式錯誤','請輸入民國 yyy/mm/dd');
+ Object.assign(SAL.act,{ann:a,pay:p});
+ if(a===p){SAL.act.chk=false;showToast('info','日期相同','公告日與實際發放日相同，不須啟動調整程序');}
+ else{SAL.act.chk=true;salLog('日期比對',`公告日 ${a} 與實際發放日 ${p} 不同，啟動調整程序`);showToast('warning','日期不同','請依序辦理刪除、寫入及憑證版／單機版作業');}
+ salRender('salary-active');
+}
+function salActDel(){
+ if(!confirm('將先備份再刪除憑證版資料庫現有俸點資料，確定執行？'))return;
+ SAL.act.delCnt=SAL.scale.filter(r=>r.t==='999/12/31'||r.t>=SAL.today).length;SAL.act.del=true;
+ salLog('刪除俸點資料',`已備份並刪除憑證版資料庫 ${SAL.act.delCnt} 筆原俸點資料`);salRender('salary-active');
+}
+function salActWrite(){
+ const n=SAL.scale.filter(r=>r.f===sLatestF()).length;SAL.act.wr=true;
+ salLog('寫入對照檔',`已將調整後俸(點)額對照檔 ${n} 筆（生效 ${sLatestF()}）寫入憑證版資料庫`);showToast('success','寫入完成',n+' 筆俸點資料已寫入憑證版資料庫');salRender('salary-active');
+}
+function salActOnline(){
+ SAL.act.onl=!SAL.act.onl;salLog('憑證版批次調薪差額',SAL.act.onl?'已開啟批次調薪差額功能':'已關閉批次調薪差額功能');salRender('salary-active');
+}
+function salActStand(){
+ const d=SAL.today.replace(/\//g,''),c=SAL.scale.filter(r=>r.f===sLatestF()).length;
+ SAL.act.stand={n:'SALPT_'+d+'.txt',c,p:'官網／下載專區／單機版更新／俸點檔／',t:sNow()};
+ salLog('單機版更新俸點檔',`已產製 ${SAL.act.stand.n}（${c} 筆）並放入官網資料夾`);showToast('success','已放入官網資料夾',SAL.act.stand.n);salRender('salary-active');
+}
+function salActReset(){if(!confirm('重設示範流程狀態？'))return;Object.assign(SAL.act,{chk:false,del:false,wr:false,onl:false,stand:null,delCnt:0,log:[]});salRender('salary-active');}
+
+function salRender(id){
+ const m={'salary-scale':['sal-b1',salScale],'salary-ret':['sal-b2',salRet],'salary-retdiff':['sal-b3',salRetDiff],'salary-active':['sal-b4',salActive]}[id];
+ if(m&&sEl(m[0]))sEl(m[0]).innerHTML=m[1]();
+}
+const _navSal=navigateTo;
+navigateTo=function(id){_navSal(id);if(id.indexOf('salary-')===0){const sm=sEl('submenu-salary');if(sm){sm.classList.add('open');sEl('menu-salary').classList.add('expanded');}
+ salRender(id);document.querySelectorAll('.sidebar-sub-item').forEach(e=>{if((e.getAttribute('onclick')||'').indexOf("'"+id+"'")>-1)e.classList.add('active');});}};
+</script>
 
 <script
   src="./widget/widget-loader.js?v=28.6.19.19.296"
