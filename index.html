@@ -30,7 +30,7 @@ document.addEventListener('click', function(e) {
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>公務人員退休撫卹基金管理局 - 基金業務系統（V16 定撥試算需求對照）</title>
+<title>公務人員退休撫卹基金管理局 - 基金業務系統（V17 定撥資料異動需求對照）</title>
 <style>
 :root {
   --primary: #0a2647;
@@ -827,6 +827,15 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 @media print{.no-print{display:none!important}}
 </style>
 
+<style>
+.chg-sw{position:relative;display:inline-block;width:42px;height:22px}
+.chg-sw input{opacity:0;width:0;height:0}
+.chg-sw span{position:absolute;inset:0;background:#c5ccd6;border-radius:22px;transition:.2s;cursor:pointer}
+.chg-sw span::before{content:"";position:absolute;height:16px;width:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+.chg-sw input:checked+span{background:var(--warning)}
+.chg-sw input:checked+span::before{transform:translateX(20px)}
+.chg-sw input:disabled+span{opacity:.45;cursor:not-allowed}
+</style>
 </head>
 <body>
 
@@ -1083,6 +1092,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div class="sidebar-sub-item" onclick="navigateTo('monthly-prep')">定撥前準備</div>
         <div class="sidebar-sub-item" onclick="navigateTo('admin-monthly-audit-perm')">定撥作業查核權限設定</div>
         <div class="sidebar-sub-item" onclick="navigateTo('monthly-exec')">核心定撥執行</div>
+<div class="sidebar-sub-item" onclick="navigateTo('monthly-change')">定撥資料異動</div>
         <div class="sidebar-sub-item" onclick="navigateTo('monthly-report')">報表產製</div>
         <div class="sidebar-sub-item" onclick="navigateTo('monthly-anomaly')">異常處理</div>
       </div>
@@ -3736,6 +3746,120 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
             <button class="btn btn-gold btn-sm" onclick="navigateToReportTab('rpt-mil-monthly')">前往報表產製</button>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- ===== MONTHLY CHANGE（定撥資料異動作業） ===== -->
+    <div class="view" id="view-monthly-change">
+      <div class="breadcrumb">
+        <span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item">定撥作業</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item current">定撥資料異動</span>
+      </div>
+      <div class="page-header">
+        <div class="page-title">定撥資料異動作業</div>
+        <div class="page-subtitle">113年12月定撥 - 第2次定撥試算定案後、正式產製銀行核發／轉出清冊前，進行暫緩撥款等資料更正，並經業務組主辦人員線上簽核</div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px">
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;align-items:stretch">
+          <div style="padding:10px 12px;background:#f5f7fa;border-radius:6px"><div style="font-size:11px;color:var(--text-secondary)">第2次定撥試算</div><div style="margin-top:4px"><span class="badge badge-success">已定案</span></div></div>
+          <div style="padding:10px 12px;background:#f5f7fa;border-radius:6px"><div style="font-size:11px;color:var(--text-secondary)">暫緩撥款異動</div><div style="margin-top:4px;font-weight:700" id="chg-stat-count">0 筆</div></div>
+          <div style="padding:10px 12px;background:#f5f7fa;border-radius:6px"><div style="font-size:11px;color:var(--text-secondary)">異動名單簽核</div><div style="margin-top:4px" id="chg-stat-flow"></div></div>
+          <div style="padding:10px 12px;background:#f5f7fa;border-radius:6px"><div style="font-size:11px;color:var(--text-secondary)">銀行轉帳檔</div><div style="margin-top:4px" id="chg-stat-bank"></div></div>
+        </div>
+        <div class="form-row cols-2" style="margin-top:14px">
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">目前操作身分（模擬登入）</label>
+            <select class="form-control" id="chg-operator" onchange="chgRender()"></select>
+            <div class="form-hint" id="chg-op-hint"></div>
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <div id="chg-lock-banner"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- A. 暫緩撥款 -->
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-header">
+          <div>
+            <div class="card-title">A. 暫緩撥款設定</div>
+            <div class="card-subtitle">承辦人點選「暫緩撥款」開關並輸入暫緩撥付原因後，系統於產製銀行轉帳檔時自動標記止付並修改銀行帳號尾碼，使該筆撥付失敗，並紀錄異動作業人員與異動時間</div>
+          </div>
+        </div>
+        <div class="filter-row" style="margin-bottom:10px">
+          <div class="filter-group"><div class="filter-label">搜尋</div><input type="text" class="filter-control" id="chg-q" placeholder="姓名或身分證字號" oninput="chgRender()"></div>
+          <div class="filter-group"><div class="filter-label">科別</div>
+            <select class="filter-control" id="chg-dept" onchange="chgRender()"><option value="">全部</option><option>軍科</option><option>公科</option><option>教科</option></select>
+          </div>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;align-self:flex-end;padding-bottom:6px"><input type="checkbox" id="chg-only" onchange="chgRender()"> 僅顯示暫緩</label>
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead><tr><th>受款人</th><th>身分證字號</th><th>科別／承辦</th><th>發放類別</th><th>銀行</th><th>銀行帳號</th><th>定撥金額</th><th>暫緩撥款</th><th>狀態</th></tr></thead>
+            <tbody id="chg-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title" style="margin-bottom:8px">暫緩撥款異動紀錄</div>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead><tr><th>異動時間</th><th>異動作業人員</th><th>科別</th><th>受款人</th><th>動作</th><th>原因</th><th>轉帳檔帳號處理</th></tr></thead>
+            <tbody id="chg-log"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- B. 線上簽核 -->
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-header">
+          <div>
+            <div class="card-title">B. 定撥支領資料異動名單與線上簽核</div>
+            <div class="card-subtitle">依最終異動結果產製「定撥試算後定撥支領資料異動名單」，送業務組各科主辦人員線上確認；全數確認後方可產製銀行轉帳檔。送簽後異動資料即鎖定，如遭退回須修正後重新送簽</div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-gold btn-sm" id="chg-submit-btn" onclick="chgSubmit()">產製異動名單並送簽</button>
+            <button class="btn btn-outline btn-sm" onclick="chgDownloadList()">下載異動名單</button>
+          </div>
+        </div>
+        <div id="chg-list-meta" class="form-hint" style="margin-bottom:8px"></div>
+        <div class="table-wrapper" style="margin-bottom:14px">
+          <table class="data-table">
+            <thead><tr><th>序號</th><th>科別</th><th>受款人</th><th>身分證字號</th><th>發放類別</th><th>定撥金額</th><th>異動內容</th><th>異動原因</th><th>異動人員</th><th>異動時間</th></tr></thead>
+            <tbody id="chg-list-body"></tbody>
+          </table>
+        </div>
+        <div class="card-title" style="margin-bottom:8px;font-size:calc(14px * var(--font-scale))">各科主辦人確認</div>
+        <div class="table-wrapper" style="margin-bottom:14px">
+          <table class="data-table">
+            <thead><tr><th>科別</th><th>主辦人</th><th>異動筆數</th><th>簽核狀態</th><th>簽核時間／意見</th><th>操作</th></tr></thead>
+            <tbody id="chg-sign-body"></tbody>
+          </table>
+        </div>
+        <div class="card-title" style="margin-bottom:8px;font-size:calc(14px * var(--font-scale))">簽核軌跡</div>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead><tr><th>時間</th><th>人員</th><th>角色</th><th>動作</th><th>意見</th></tr></thead>
+            <tbody id="chg-trail"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 銀行轉帳檔 -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">銀行核發／轉出轉帳檔產製</div>
+            <div class="card-subtitle">異動名單經各科主辦人全數確認後方可產製；暫緩撥款受款人於轉帳檔中標記止付，並將銀行帳號尾碼 2 碼改為「XX」使撥付失敗。產製後不可再異動</div>
+          </div>
+          <button class="btn btn-primary btn-sm" id="chg-bank-btn" onclick="chgBankFile()">產製銀行轉帳檔</button>
+        </div>
+        <div id="chg-bank-result" style="display:none"></div>
       </div>
     </div>
 
@@ -6735,6 +6859,33 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
   </div>
 </div>
 
+<div class="modal-overlay" id="chg-reason-modal">
+  <div class="modal modal-md">
+    <div class="modal-header">
+      <div class="modal-title" id="chg-reason-title">輸入原因</div>
+      <button class="modal-close" onclick="closeModal('chg-reason-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="info-card" style="margin-bottom:12px" id="chg-reason-info"></div>
+      <div class="form-group" id="chg-reason-preset-wrap">
+        <label class="form-label">常用原因（可選）</label>
+        <select class="form-control" id="chg-reason-preset" onchange="if(this.value)document.getElementById('chg-reason-text').value=this.value">
+          <option value="">請選擇…</option><option>法院扣押命令，暫緩撥付</option><option>領受人死亡待確認</option><option>銀行帳戶疑義待查</option><option>債權人通知，待釐清</option><option>領受人資格查核有疑義</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label" id="chg-reason-label">原因 <span class="required">*</span></label>
+        <textarea class="form-control" id="chg-reason-text" rows="3" placeholder="請輸入原因（至少 5 字）"></textarea>
+      </div>
+      <div class="form-hint" id="chg-reason-hint"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('chg-reason-modal')">取消</button>
+      <button class="btn btn-gold" onclick="chgReasonOk()">確認</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="ex-release-modal">
   <div class="modal modal-md">
     <div class="modal-header">
@@ -6971,7 +7122,7 @@ function navigateTo(viewId) {
     'tax-calc': 'tax', 'tax-case': 'tax', 'tax-report': 'tax', 'tax-audit': 'tax',
     'direct-register': 'direct', 'direct-letter': 'direct', 'direct-query': 'direct',
     'monthly-dashboard': 'monthly', 'monthly-prep': 'monthly', 'admin-monthly-audit-perm': 'monthly',
-    'monthly-exec': 'monthly', 'monthly-report': 'monthly', 'monthly-anomaly': 'monthly',
+    'monthly-exec': 'monthly', 'monthly-report': 'monthly', 'monthly-anomaly': 'monthly', 'monthly-change': 'monthly',
     'extdata-military': 'extdata', 'extdata-labor': 'extdata', 'extdata-veterans': 'extdata', 'extdata-mohw': 'extdata',
     'query-individual': 'query', 'query-batch': 'query', 'query-flexible': 'query',
     'ruling-search': 'ruling', 'ruling-maintain': 'ruling',
@@ -11320,6 +11471,179 @@ sendReportNotifyEmail = function () {
   setInterval(execLedgerTick, 300);
   execLedgerTick();
 })();
+
+/* ===== V17：定撥資料異動作業（暫緩撥款／異動名單線上簽核／轉帳檔止付標記） ===== */
+const CHG_PAY = [
+  {id:'A123***456', name:'林Ｏ明', dept:'軍科', cat:'軍職月退', bank:'臺灣銀行', acct:'01234567890123', amt:53120, h:'李大同'},
+  {id:'B234***567', name:'陳Ｏ華', dept:'公科', cat:'公務人員月退', bank:'合作金庫', acct:'12345678901234', amt:48900, h:'張美玲'},
+  {id:'C345***678', name:'張Ｏ芬', dept:'教科', cat:'教育人員月退', bank:'第一銀行', acct:'23456789012345', amt:59850, h:'黃志偉'},
+  {id:'D456***789', name:'黃Ｏ偉', dept:'公科', cat:'公務人員月撫', bank:'郵局', acct:'34567890123456', amt:45600, h:'周文山'},
+  {id:'F678***901', name:'李Ｏ蘭', dept:'教科', cat:'教育人員月退', bank:'臺灣銀行', acct:'45678901234567', amt:41200, h:'黃志偉'},
+  {id:'G789***012', name:'吳Ｏ雄', dept:'軍科', cat:'軍職月撫', bank:'臺灣銀行', acct:'56789012345678', amt:36500, h:'林淑芬'},
+  {id:'H890***123', name:'趙Ｏ華', dept:'公科', cat:'公務人員年撫卹', bank:'華南銀行', acct:'67890123456789', amt:22000, h:'蔡宗翰'},
+  {id:'J012***345', name:'許Ｏ志', dept:'公科', cat:'政務人員月退', bank:'臺灣銀行', acct:'78901234567890', amt:70500, h:'周文山'},
+  {id:'K123***456', name:'蔡Ｏ宏', dept:'教科', cat:'教育人員月退', bank:'土地銀行', acct:'89012345678901', amt:43100, h:'黃志偉'},
+  {id:'G789***013', name:'鄭Ｏ宏', dept:'軍科', cat:'軍職月退', bank:'臺灣銀行', acct:'90123456789012', amt:61800, h:'李大同'}
+];
+CHG_PAY.forEach(p => { p.susp = false; p.reason = ''; p.by = ''; p.at = ''; });
+const CHG = {status:'edit', ver:0, listNo:'', snap:null, signs:{}, bankDone:false, bankFile:null};
+const CHG_LOG = [], CHG_TRAIL = [];
+const chgOutAcct = p => p.acct.slice(0, -2) + 'XX';
+const chgMask = a => a.slice(0, 4) + '••••••' + a.slice(-4);
+(function chgSeed() {
+  const p = CHG_PAY[7];
+  p.susp = true; p.reason = '法院扣押命令，暫緩撥付'; p.by = '周文山'; p.at = '113/12/16 14:20:11';
+  CHG_LOG.push({t:p.at, by:p.by, dept:p.dept, name:p.name, act:'暫緩撥款', reason:p.reason, note:'轉帳檔標記止付；帳號尾碼 ' + p.acct.slice(-2) + ' → XX'});
+})();
+function chgOperator() {
+  const v = (document.getElementById('chg-operator').value || '').split('|');
+  return {dept:v[0], name:v[1], role:v[2]};
+}
+function chgInitOperators() {
+  const sel = document.getElementById('chg-operator');
+  if (sel.options.length) return;
+  const m = MH_DATA[MH_CUR], staff = [], heads = [];
+  MH_DEPTS.forEach(d => { m[d].staff.forEach(n => { if (n !== m[d].h) staff.push(d + '|' + n + '|承辦人'); }); heads.push(d + '|' + m[d].h + '|主辦人'); });
+  sel.innerHTML = staff.concat(heads).map(v => { const a = v.split('|'); return '<option value="' + v + '"' + (a[1] === '李大同' ? ' selected' : '') + '>' + a[0] + '・' + a[1] + '（' + a[2] + '）</option>'; }).join('');
+}
+function chgCanEdit(p, op) { return CHG.status === 'edit' && !CHG.bankDone && op.role === '承辦人' && p.h === op.name; }
+function chgRender() {
+  if (!document.getElementById('chg-body')) return;
+  chgInitOperators();
+  const op = chgOperator(), q = document.getElementById('chg-q').value.trim(), dp = document.getElementById('chg-dept').value, only = document.getElementById('chg-only').checked;
+  document.getElementById('chg-op-hint').textContent = op.role === '承辦人' ? '承辦人僅可對本人承辦之受款人設定暫緩撥款，並可產製異動名單送簽。' : '主辦人負責確認或退回本科之異動名單，不直接設定暫緩撥款。';
+  document.getElementById('chg-body').innerHTML = CHG_PAY.map((p, i) => ({p:p, i:i})).filter(x => (!q || x.p.name.indexOf(q) >= 0 || x.p.id.indexOf(q) >= 0) && (!dp || x.p.dept === dp) && (!only || x.p.susp)).map(x => {
+    const p = x.p, can = chgCanEdit(p, op);
+    return '<tr' + (p.susp ? ' style="background:#fffaf0"' : '') + '><td><strong>' + p.name + '</strong></td><td class="masked">' + p.id + '</td><td>' + p.dept + '／' + p.h + '</td><td>' + p.cat + '</td><td>' + p.bank + '</td><td style="font-family:monospace">' + chgMask(p.acct) + (p.susp ? '<div style="font-size:11px;color:var(--danger)">轉帳檔：' + chgMask(chgOutAcct(p)) + '</div>' : '') + '</td><td>NT$ ' + p.amt.toLocaleString() + '</td><td><label class="chg-sw" title="' + (can ? '' : '目前身分或狀態不可異動') + '"><input type="checkbox" ' + (p.susp ? 'checked ' : '') + (can ? '' : 'disabled ') + 'onclick="event.preventDefault();chgToggle(' + x.i + ')"><span></span></label></td><td>' + (p.susp ? '<span class="badge badge-warning">暫緩撥款</span><div style="font-size:11px;color:var(--text-secondary);max-width:180px">' + htmlEsc(p.reason) + '</div>' : '<span class="badge badge-success">正常撥付</span>') + '</td></tr>';
+  }).join('') || '<tr><td colspan="9" style="text-align:center;color:var(--text-secondary)">無符合資料</td></tr>';
+  document.getElementById('chg-log').innerHTML = CHG_LOG.slice().reverse().map(r => '<tr><td>' + r.t + '</td><td>' + htmlEsc(r.by) + '</td><td>' + r.dept + '</td><td>' + r.name + '</td><td><span class="badge ' + (r.act === '暫緩撥款' ? 'badge-warning' : 'badge-secondary') + '">' + r.act + '</span></td><td>' + htmlEsc(r.reason) + '</td><td style="font-size:12px">' + r.note + '</td></tr>').join('');
+  const nS = CHG_PAY.filter(p => p.susp).length;
+  document.getElementById('chg-stat-count').textContent = nS + ' 筆';
+  const flowBadge = {edit:'<span class="badge badge-secondary">尚未送簽</span>', pending:'<span class="badge badge-warning">簽核中</span>', approved:'<span class="badge badge-success">簽核完成</span>'};
+  document.getElementById('chg-stat-flow').innerHTML = flowBadge[CHG.status];
+  document.getElementById('chg-stat-bank').innerHTML = CHG.bankDone ? '<span class="badge badge-success">已產製</span>' : '<span class="badge badge-secondary">未產製</span>';
+  document.getElementById('chg-lock-banner').innerHTML = CHG.bankDone ? '<div class="info-card danger"><div style="font-size:13px;color:var(--danger)"><strong>銀行轉帳檔已產製，所有異動已鎖定。</strong></div></div>' : CHG.status === 'pending' ? '<div class="info-card"><div style="font-size:13px"><strong>異動名單已送簽（' + CHG.listNo + '），異動資料暫時鎖定。</strong>如遭主辦人退回將解除鎖定。</div></div>' : CHG.status === 'approved' ? '<div class="info-card success"><div style="font-size:13px;color:var(--success)"><strong>異動名單已簽核完成，可產製銀行轉帳檔。</strong></div></div>' : '';
+  chgListRender();
+}
+/* 原因輸入視窗 */
+let chgReasonCb = null;
+function chgAsk(title, info, label, hint, preset, cb) {
+  document.getElementById('chg-reason-title').textContent = title;
+  document.getElementById('chg-reason-info').innerHTML = info;
+  document.getElementById('chg-reason-label').innerHTML = label + ' <span class="required">*</span>';
+  document.getElementById('chg-reason-hint').textContent = hint;
+  document.getElementById('chg-reason-preset-wrap').style.display = preset ? 'block' : 'none';
+  document.getElementById('chg-reason-preset').value = '';
+  document.getElementById('chg-reason-text').value = '';
+  chgReasonCb = cb;
+  openModal('chg-reason-modal');
+}
+function chgReasonOk() {
+  const t = document.getElementById('chg-reason-text').value.trim();
+  if (t.length < 5) { showToast('error', '請輸入原因', '原因至少需 5 字'); return; }
+  closeModal('chg-reason-modal');
+  if (chgReasonCb) chgReasonCb(t);
+}
+function chgToggle(i) {
+  const p = CHG_PAY[i], op = chgOperator();
+  if (!chgCanEdit(p, op)) { showToast('error', '無法異動', '目前身分或簽核狀態不允許異動此筆資料'); return; }
+  const info = '<div class="info-row"><div class="info-key">受款人</div><div class="info-val">' + p.name + '（' + p.id + '）</div></div><div class="info-row"><div class="info-key">定撥金額</div><div class="info-val">NT$ ' + p.amt.toLocaleString() + '</div></div><div class="info-row"><div class="info-key">異動人員</div><div class="info-val">' + op.name + '</div></div>';
+  if (!p.susp) {
+    chgAsk('暫緩撥款：' + p.name, info, '暫緩撥付原因', '確認後，系統將於產製銀行轉帳檔時標記止付，並將銀行帳號尾碼 2 碼改為「XX」使撥付失敗。', true, t => {
+      p.susp = true; p.reason = t; p.by = op.name; p.at = execNowStr();
+      CHG_LOG.push({t:p.at, by:op.name, dept:p.dept, name:p.name, act:'暫緩撥款', reason:t, note:'轉帳檔標記止付；帳號尾碼 ' + p.acct.slice(-2) + ' → XX'});
+      chgRender(); showToast('success', '已設定暫緩撥款', p.name + ' 將於轉帳檔標記止付，已記錄異動人員與時間');
+    });
+  } else {
+    chgAsk('取消暫緩撥款：' + p.name, info, '取消暫緩原因', '取消後該筆將恢復正常撥付，並留存異動紀錄。', false, t => {
+      p.susp = false; p.reason = ''; p.by = ''; p.at = '';
+      CHG_LOG.push({t:execNowStr(), by:op.name, dept:p.dept, name:p.name, act:'取消暫緩', reason:t, note:'恢復正常撥付，帳號不修改'});
+      chgRender(); showToast('success', '已取消暫緩撥款', p.name + ' 恢復正常撥付');
+    });
+  }
+}
+/* 異動名單與簽核 */
+const chgFinal = () => CHG_PAY.filter(p => p.susp).map(p => ({dept:p.dept, name:p.name, id:p.id, cat:p.cat, amt:p.amt, content:'暫緩撥款（轉帳檔止付）', reason:p.reason, by:p.by, at:p.at}));
+function chgListRender() {
+  const rows = CHG.status === 'edit' ? chgFinal() : CHG.snap;
+  document.getElementById('chg-list-meta').innerHTML = CHG.status === 'edit' ? '目前為<strong>預覽</strong>（依即時異動結果彙整，尚未送簽）。' : '名單編號：<strong>' + CHG.listNo + '</strong>　產製時間：' + CHG.snap.t + '　異動 ' + CHG.snap.rows.length + ' 筆（已鎖定）';
+  const list = CHG.status === 'edit' ? rows : rows.rows;
+  document.getElementById('chg-list-body').innerHTML = list.length ? list.map((r, i) => '<tr><td>' + (i + 1) + '</td><td>' + r.dept + '</td><td>' + r.name + '</td><td class="masked">' + r.id + '</td><td>' + r.cat + '</td><td>NT$ ' + r.amt.toLocaleString() + '</td><td><span class="badge badge-warning">' + r.content + '</span></td><td>' + htmlEsc(r.reason) + '</td><td>' + htmlEsc(r.by) + '</td><td>' + r.at + '</td></tr>').join('') : '<tr><td colspan="10" style="text-align:center;color:var(--text-secondary)">無異動資料</td></tr>';
+  const op = chgOperator(), m = MH_DATA[MH_CUR];
+  document.getElementById('chg-sign-body').innerHTML = MH_DEPTS.map(d => {
+    const n = list.filter(r => r.dept === d).length, sg = CHG.signs[d];
+    let st, act = '-';
+    if (CHG.status === 'edit') st = '<span class="badge badge-secondary">未送簽</span>';
+    else if (sg.st === 'na') st = '<span class="badge badge-secondary">無異動，免簽</span>';
+    else if (sg.st === 'ok') st = '<span class="badge badge-success">已確認</span>';
+    else { st = '<span class="badge badge-warning">待確認</span>'; act = '<button class="btn btn-sm btn-primary" ' + (op.role === '主辦人' && op.dept === d ? '' : 'disabled title="須由本科主辦人操作"') + ' onclick="chgSign(\'' + d + '\',true)">確認</button> <button class="btn btn-sm btn-outline" ' + (op.role === '主辦人' && op.dept === d ? '' : 'disabled') + ' onclick="chgSign(\'' + d + '\',false)">退回</button>'; }
+    return '<tr><td>' + d + '</td><td>' + htmlEsc(m[d].h) + '</td><td>' + n + '</td><td>' + st + '</td><td style="font-size:12px">' + (CHG.status !== 'edit' && sg.at ? sg.at + (sg.note ? '：' + htmlEsc(sg.note) : '') : '-') + '</td><td>' + act + '</td></tr>';
+  }).join('');
+  document.getElementById('chg-trail').innerHTML = CHG_TRAIL.slice().reverse().map(r => '<tr><td>' + r.t + '</td><td>' + htmlEsc(r.who) + '</td><td>' + r.role + '</td><td>' + r.act + '</td><td style="font-size:12px">' + htmlEsc(r.note) + '</td></tr>').join('') || '<tr><td colspan="5" style="text-align:center;color:var(--text-secondary)">尚無簽核紀錄</td></tr>';
+  document.getElementById('chg-submit-btn').disabled = CHG.status !== 'edit' || CHG.bankDone;
+  document.getElementById('chg-bank-btn').disabled = CHG.status !== 'approved' || CHG.bankDone;
+}
+function chgSubmit() {
+  const op = chgOperator();
+  if (op.role !== '承辦人') { showToast('error', '無法送簽', '請由承辦人產製異動名單並送簽'); return; }
+  const rows = chgFinal();
+  CHG.ver++; CHG.listNo = 'CHG-11412-' + String(CHG.ver).padStart(3, '0');
+  CHG.snap = {t:execNowStr(), rows:rows};
+  CHG.signs = {};
+  MH_DEPTS.forEach(d => { CHG.signs[d] = {st: rows.some(r => r.dept === d) ? 'pending' : 'na', at:'', note:''}; });
+  CHG_TRAIL.push({t:CHG.snap.t, who:op.name, role:'承辦人', act:'產製異動名單並送簽', note:CHG.listNo + '，異動 ' + rows.length + ' 筆'});
+  if (MH_DEPTS.every(d => CHG.signs[d].st === 'na')) {
+    CHG.status = 'approved';
+    CHG_TRAIL.push({t:CHG.snap.t, who:'系統', role:'-', act:'免簽核', note:'本期無異動資料，名單自動確認'});
+    showToast('success', '名單已產製', '本期無異動資料，免簽核，可產製銀行轉帳檔');
+  } else {
+    CHG.status = 'pending';
+    const to = MH_DEPTS.filter(d => CHG.signs[d].st === 'pending').map(d => d + MH_DATA[MH_CUR][d].h).join('、');
+    showToast('success', '已送簽', CHG.listNo + ' 已通知 ' + to + ' 確認');
+  }
+  chgRender();
+}
+function chgSign(dept, ok) {
+  const op = chgOperator();
+  if (!(op.role === '主辦人' && op.dept === dept) || CHG.status !== 'pending' || CHG.signs[dept].st !== 'pending') { showToast('error', '無法簽核', '須由本科主辦人於簽核中狀態操作'); return; }
+  const finish = note => {
+    const t = execNowStr();
+    if (ok) {
+      CHG.signs[dept] = {st:'ok', at:t, note:note};
+      CHG_TRAIL.push({t:t, who:op.name, role:'主辦人（' + dept + '）', act:'確認異動名單', note:note || '同意'});
+      if (MH_DEPTS.every(d => CHG.signs[d].st === 'ok' || CHG.signs[d].st === 'na')) { CHG.status = 'approved'; CHG_TRAIL.push({t:t, who:'系統', role:'-', act:'簽核完成', note:'各科主辦人均已確認'}); showToast('success', '簽核完成', '全部主辦人已確認，可產製銀行轉帳檔'); }
+      else showToast('success', '已確認', dept + ' 主辦人已確認，待其他科確認');
+    } else {
+      CHG_TRAIL.push({t:t, who:op.name, role:'主辦人（' + dept + '）', act:'退回', note:note});
+      CHG.status = 'edit'; CHG.snap = null; CHG.signs = {};
+      showToast('warning', '已退回承辦人', '異動名單已退回，請修正後重新送簽');
+    }
+    chgRender();
+  };
+  if (ok) finish('');
+  else chgAsk('退回異動名單：' + dept, '<div class="info-row"><div class="info-key">名單編號</div><div class="info-val">' + CHG.listNo + '</div></div>', '退回原因', '退回後全部簽核重置，承辦人修正異動資料後須重新送簽。', false, finish);
+}
+function chgDownloadList() { runDownload('定撥試算後定撥支領資料異動名單_' + (CHG.listNo || '預覽'), 'xlsx'); }
+function chgBankFile() {
+  const op = chgOperator();
+  if (CHG.status !== 'approved' || CHG.bankDone) { showToast('error', '無法產製', '異動名單須經各科主辦人全數確認後方可產製'); return; }
+  CHG.bankDone = true;
+  const sus = CHG_PAY.filter(p => p.susp), ok = CHG_PAY.filter(p => !p.susp);
+  const t = execNowStr();
+  CHG_TRAIL.push({t:t, who:op.name, role:op.role, act:'產製銀行轉帳檔', note:'撥付 ' + ok.length + ' 筆，止付標記 ' + sus.length + ' 筆'});
+  const sum = a => a.reduce((x, p) => x + p.amt, 0);
+  const box = document.getElementById('chg-bank-result');
+  box.style.display = 'block';
+  box.innerHTML = '<div class="info-card success" style="margin-bottom:12px"><div style="font-size:13px;color:var(--success)"><strong>轉帳檔已產製（' + t + '，' + htmlEsc(op.name) + '）</strong>　正常撥付 ' + ok.length + ' 筆 NT$ ' + sum(ok).toLocaleString() + '；止付標記 ' + sus.length + ' 筆 NT$ ' + sum(sus).toLocaleString() + '</div></div>' +
+    '<div class="table-wrapper"><table class="data-table"><thead><tr><th>受款人</th><th>銀行</th><th>原銀行帳號</th><th>轉帳檔帳號</th><th>止付註記</th><th>暫緩原因</th><th>異動人員／時間</th></tr></thead><tbody>' +
+    (sus.map(p => '<tr><td>' + p.name + '</td><td>' + p.bank + '</td><td style="font-family:monospace">' + chgMask(p.acct) + '</td><td style="font-family:monospace;color:var(--danger)">' + chgMask(chgOutAcct(p)) + '</td><td><span class="badge badge-danger">Y</span></td><td>' + htmlEsc(p.reason) + '</td><td>' + htmlEsc(p.by) + ' ' + p.at + '</td></tr>').join('') || '<tr><td colspan="7" style="text-align:center;color:var(--text-secondary)">本期無止付標記資料</td></tr>') + '</tbody></table></div>' +
+    '<div style="margin-top:10px"><button class="btn btn-outline btn-sm" onclick="runDownload(\'銀行轉帳檔_11412\',\'txt\')">下載轉帳檔</button></div>';
+  chgRender();
+  showToast('success', '銀行轉帳檔已產製', '止付標記 ' + sus.length + ' 筆已寫入並修改帳號尾碼，異動資料已鎖定');
+}
+const _navV17 = navigateTo;
+navigateTo = function (id) { _navV17(id); if (id === 'monthly-change') chgRender(); };
+
 </script>
 
 <div class="modal-overlay" id="sh-preview-modal"><div class="modal modal-lg">
