@@ -30,7 +30,7 @@ document.addEventListener('click', function(e) {
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>公務人員退休撫卹基金管理局 - 基金業務系統（V15 定撥作業需求對照）</title>
+<title>公務人員退休撫卹基金管理局 - 基金業務系統（V16 定撥試算需求對照）</title>
 <style>
 :root {
   --primary: #0a2647;
@@ -3468,6 +3468,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           </table>
         </div>
         <div id="precheck-banner" style="margin-top:12px"></div>
+        <div id="precheck-notify" style="margin-top:12px"></div>
       </div>
 
       <!-- 步驟 2：備份並清空重審金額對照表 -->
@@ -3503,6 +3504,23 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         </div>
       </div>
 
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-header">
+          <div>
+            <div class="card-title">試算參數設定（起日、迄日、撥付日、指定銀行別）</div>
+            <div class="card-subtitle">依軍、公、教不同發放類別，分別設定各類定撥試算之起日、迄日、撥付日與指定銀行別；指定銀行別選「不指定」代表傳入空字串 ''。參數隨定撥年月預設，可個別調整，執行時檢核</div>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="execParamDefaults()">依定撥年月重設預設值</button>
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead><tr><th>試算類別</th><th>發放類別</th><th>起日</th><th>迄日</th><th>撥付日</th><th>指定銀行別</th></tr></thead>
+            <tbody id="exec-param-body"></tbody>
+          </table>
+        </div>
+        <div class="form-hint" style="margin-top:8px">日期格式：民國年/月/日（例：114/12/01）。④ 軍職年撫卹僅於每年1月期定撥執行。</div>
+      </div>
+
       <div class="card" style="margin-bottom:12px">
         <div class="section-title" style="margin-bottom:4px">執行試算預存程序（PL/SQL Developer）</div>
         <div class="form-hint" style="margin-bottom:0">依軍、公、教不同發放類別，呼叫對應之預存程序（參數包含起日、迄日、撥付日、指定銀行別，留空字串 '' 代表不輸入指定銀行）。</div>
@@ -3511,7 +3529,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div class="program-card done" id="exec-card-1">
           <div class="program-card-header">
             <div>
-              <div class="program-card-title">① 軍職月退月輔（遺屬年金版）</div>
+              <div class="program-card-title">① 軍職月退月撫（含遺屬年金版）</div>
               <div class="program-card-meta">軍職人員月退休金、月撫卹金（含遺屬年金）核算程式</div>
             </div>
             <span class="badge badge-success" id="exec-badge-1">執行完成</span>
@@ -3528,7 +3546,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center;gap:8px">
             <div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)" id="exec-note-1">完成時間：113/12/15 09:24:15</div>
             <div style="display:flex;gap:6px">
-              <button class="btn btn-outline btn-sm" onclick="navigateToReportTab('rpt-mil-monthly')">本類報表 15 項</button>
+              <button class="btn btn-outline btn-sm" onclick="navigateToReportTab('rpt-mil-monthly')">本類報表 13 項</button>
               <button class="btn btn-outline btn-sm" onclick="startExecProgram(1)">重新執行</button>
             </div>
           </div>
@@ -3537,7 +3555,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div class="program-card running" id="exec-card-2">
           <div class="program-card-header">
             <div>
-              <div class="program-card-title">② 政公教月退月撫（遺屬年金版）</div>
+              <div class="program-card-title">② 政公教月退月撫（含遺屬年金版）</div>
               <div class="program-card-meta">政務、公教人員月退休金、月撫卹金（含遺屬年金）核算程式</div>
             </div>
             <span class="badge badge-warning" id="exec-badge-2">執行中</span>
@@ -3553,7 +3571,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           </div>
           <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center;gap:8px">
             <div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)" id="exec-note-2">開始時間：113/12/15 09:25:30</div>
-            <button class="btn btn-outline btn-sm" onclick="navigateToReportTab('rpt-civil-monthly')">本類報表 36 項</button>
+            <button class="btn btn-outline btn-sm" onclick="navigateToReportTab('rpt-civil-monthly')">本類報表 34 項</button>
           </div>
         </div>
         
@@ -3636,6 +3654,21 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         </div>
       </div>
 
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-header">
+          <div>
+            <div class="card-title">試算執行紀錄（進度、狀態與起訖時間）</div>
+            <div class="card-subtitle">即時顯示每項定撥試算之執行參數、進度、狀態及記錄起訖時間與耗時</div>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead><tr><th>試算類別</th><th>執行參數</th><th style="min-width:130px">進度</th><th>狀態</th><th>開始時間</th><th>結束時間</th><th>耗時</th></tr></thead>
+            <tbody id="exec-ledger-body"></tbody>
+          </table>
+        </div>
+      </div>
+
       <!-- 步驟 4：驗收與確認寫入資料 -->
       <div class="card" style="margin-bottom:20px">
         <div class="card-header">
@@ -3667,24 +3700,37 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div class="card-header">
           <div>
             <div class="card-title">步驟 5：建立本期新舊金額對照資料表</div>
-            <div class="card-subtitle">將本期試算結果與上期（或調薪前）歷史資料，以身分證字號等鍵值進行關聯比對，產出差異結果供業務組同仁覆核</div>
+            <div class="card-subtitle">將本期試算結果與上期（或調薪前）歷史資料，以身分證字號等鍵值進行關聯比對，產出新舊金額差異對照資料，供業務組同仁進行差異覆核</div>
           </div>
           <button class="btn btn-gold btn-sm" onclick="runBuildCompareTable()">建立對照表</button>
         </div>
+        <div class="form-row cols-3">
+          <div class="form-group">
+            <label class="form-label">比對基準（舊金額來源）</label>
+            <select class="form-control" id="cmp-base">
+              <option value="prev">上期（前一期定撥）</option>
+              <option value="pre-adjust">調薪前（調薪生效前最後一期）</option>
+            </select>
+          </div>
+          <div class="form-group" style="grid-column:span 2">
+            <label class="form-label">關聯比對鍵值</label>
+            <input type="text" class="form-control" value="身分證字號 ＋ 發放類別 ＋ 退撫別（本期定撥資料 ⟷ 歷史定撥資料）" readonly style="background:#f5f7fa">
+            <div class="form-hint">本期有、歷史無者列為「新增」；歷史有、本期無或金額為 0 者列為「停發」。</div>
+          </div>
+        </div>
         <div id="exec-compare-result" style="display:none">
+          <div class="form-row cols-4" style="margin-bottom:12px" id="cmp-tiles"></div>
+          <div style="display:flex;align-items:center;gap:16px;margin-bottom:8px;flex-wrap:wrap">
+            <label style="display:flex;align-items:center;gap:6px;font-size:calc(13px * var(--font-scale));cursor:pointer"><input type="checkbox" id="cmp-diff-only" onchange="cmpRender()"> 僅顯示有差異</label>
+            <span class="form-hint" style="margin:0" id="cmp-review-progress"></span>
+          </div>
           <div class="table-wrapper" style="margin-bottom:12px">
             <table class="data-table">
-              <thead><tr><th>身分證字號</th><th>姓名</th><th>舊金額</th><th>新金額</th><th>差異金額</th><th>差異原因</th></tr></thead>
-              <tbody>
-                <tr><td class="masked">A123***456</td><td>林○明</td><td>NT$ 52,300</td><td>NT$ 53,120</td><td style="color:var(--success)">+820</td><td>年資增加</td></tr>
-                <tr><td class="masked">B234***567</td><td>陳○華</td><td>NT$ 48,900</td><td>NT$ 48,900</td><td>0</td><td>無異動</td></tr>
-                <tr><td class="masked">C345***678</td><td>張○芬</td><td>NT$ 61,200</td><td>NT$ 59,850</td><td style="color:var(--danger)">-1,350</td><td>課稅參數調整</td></tr>
-                <tr><td class="masked">D456***789</td><td>黃○偉</td><td>NT$ 45,600</td><td>NT$ 45,600</td><td>0</td><td>無異動</td></tr>
-                <tr><td class="masked">E567***890</td><td>周○文</td><td>NT$ 58,000</td><td>NT$ 0</td><td style="color:var(--danger)">-58,000</td><td>亡故停發</td></tr>
-              </tbody>
+              <thead><tr><th>身分證字號</th><th>姓名</th><th>發放類別</th><th>舊金額</th><th>新金額</th><th>差異金額</th><th>差異類型</th><th>差異原因</th><th>覆核</th></tr></thead>
+              <tbody id="cmp-body"></tbody>
             </table>
           </div>
-          <div style="display:flex;gap:8px">
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
             <button class="btn btn-outline btn-sm" onclick="showFullCompareTable()">查看完整對照表（<span id="exec-compare-total">423,801</span> 筆）</button>
             <button class="btn btn-outline btn-sm" onclick="runDownload('新舊金額對照表','xlsx')">下載對照表</button>
             <button class="btn btn-gold btn-sm" onclick="navigateToReportTab('rpt-mil-monthly')">前往報表產製</button>
@@ -3704,7 +3750,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       </div>
       <div class="page-header">
         <div class="page-title">定撥報表產製</div>
-        <div class="page-subtitle" id="report-stage-subtitle">113年12月定撥（一算） - 共 56 項報表，依核心定撥執行之四大類程式分別產製</div>
+        <div class="page-subtitle" id="report-stage-subtitle">113年12月定撥（一算） - 共 57 項報表，依核心定撥執行之四大類程式分別產製</div>
         <div class="page-actions">
           <button class="btn btn-gold" onclick="runAllReports()">▶ 執行全部報表</button>
         </div>
@@ -3730,10 +3776,10 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       </div>
       
       <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
-        <div class="stat-card success"><div class="stat-label">已完成</div><div class="stat-value success" id="report-done">0</div><div class="stat-sub">/ 56 項</div></div>
+        <div class="stat-card success"><div class="stat-label">已完成</div><div class="stat-value success" id="report-done">0</div><div class="stat-sub">/ 57 項</div></div>
         <div class="stat-card danger"><div class="stat-label">失敗</div><div class="stat-value danger" id="report-fail">0</div><div class="stat-sub">需重試</div></div>
         <div class="stat-card warning"><div class="stat-label">執行中</div><div class="stat-value" style="color:var(--warning)" id="report-running">0</div><div class="stat-sub">-</div></div>
-        <div class="stat-card secondary"><div class="stat-label">待執行</div><div class="stat-value" style="color:var(--text-secondary)" id="report-pending">56</div><div class="stat-sub">-</div></div>
+        <div class="stat-card secondary"><div class="stat-label">待執行</div><div class="stat-value" style="color:var(--text-secondary)" id="report-pending">57</div><div class="stat-sub">-</div></div>
       </div>
 
       <div class="card" style="margin-bottom:20px">
@@ -3751,8 +3797,8 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       </div>
 
       <div class="tabs" id="report-cat-tabs" style="margin-bottom:16px">
-        <div class="tab-item active" id="tabbtn-rpt-mil-monthly" onclick="switchTab(this,'rpt-mil-monthly')">① 軍職月退月輔（15項）</div>
-        <div class="tab-item" id="tabbtn-rpt-civil-monthly" onclick="switchTab(this,'rpt-civil-monthly')">② 政公教月退月撫（36項）</div>
+        <div class="tab-item active" id="tabbtn-rpt-mil-monthly" onclick="switchTab(this,'rpt-mil-monthly')">① 軍職月退月撫（13項）</div>
+        <div class="tab-item" id="tabbtn-rpt-civil-monthly" onclick="switchTab(this,'rpt-civil-monthly')">② 政公教月退月撫（34項）</div>
         <div class="tab-item" id="tabbtn-rpt-civil-annual" onclick="switchTab(this,'rpt-civil-annual')">③ 政公教年撫卹</div>
         <div class="tab-item" id="tabbtn-rpt-mil-annual" onclick="switchTab(this,'rpt-mil-annual')">④ 軍職年撫卹（1項，每年1月）</div>
       </div>
@@ -3772,12 +3818,12 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           <div class="card-header">
             <div>
               <div class="card-title">銀行核對清冊（軍職類）</div>
-              <div class="card-subtitle">共 14 項，逐行對照各撥付銀行之核對清冊</div>
+              <div class="card-subtitle">共 12 項，逐行對照各撥付銀行之核對清冊</div>
             </div>
-            <button class="btn btn-sm btn-outline" onclick="showBankChecklist('軍職類',14)">展開查看 14 項</button>
+            <button class="btn btn-sm btn-outline" onclick="showBankChecklist('軍職類',12)">展開查看 12 項</button>
           </div>
           <div style="display:flex;gap:8px">
-            <button class="btn btn-sm btn-primary" onclick="runBankChecklist('軍職類',14)">全部產製</button>
+            <button class="btn btn-sm btn-primary" onclick="runBankChecklist('軍職類',12)">全部產製</button>
             <button class="btn btn-sm btn-outline" onclick="runDownload('軍職類銀行核對清冊_全部','zip')">下載全部</button>
           </div>
         </div>
@@ -3797,7 +3843,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
               <div class="report-item-actions"><span class="badge badge-secondary" id="af100020-status">待執行</span><button class="btn btn-sm btn-outline" onclick="runSingleReport('af100020')">執行</button></div>
             </div>
             <div class="report-item">
-              <div><div class="report-item-name">AF100050 - 公教人員定撥依退還撥別統計表</div><div class="report-item-meta">Excel · 共 1 張</div></div>
+              <div><div class="report-item-name">AF100050 - 公教人員定撥依退撫別統計表</div><div class="report-item-meta">Excel · 共 1 張</div></div>
               <div class="report-item-actions"><span class="badge badge-secondary" id="af100050-status">待執行</span><button class="btn btn-sm btn-outline" onclick="runSingleReport('af100050')">執行</button></div>
             </div>
           </div>
@@ -3806,12 +3852,12 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           <div class="card-header">
             <div>
               <div class="card-title">銀行核對清冊（政公教類）</div>
-              <div class="card-subtitle">共 27 項，逐行對照各撥付銀行之核對清冊</div>
+              <div class="card-subtitle">共 25 項，逐行對照各撥付銀行之核對清冊</div>
             </div>
-            <button class="btn btn-sm btn-outline" onclick="showBankChecklist('政公教類',27)">展開查看 27 項</button>
+            <button class="btn btn-sm btn-outline" onclick="showBankChecklist('政公教類',25)">展開查看 25 項</button>
           </div>
           <div style="display:flex;gap:8px">
-            <button class="btn btn-sm btn-primary" onclick="runBankChecklist('政公教類',27)">全部產製</button>
+            <button class="btn btn-sm btn-primary" onclick="runBankChecklist('政公教類',25)">全部產製</button>
             <button class="btn btn-sm btn-outline" onclick="runDownload('政公教類銀行核對清冊_全部','zip')">下載全部</button>
           </div>
         </div>
@@ -3839,13 +3885,38 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         </div>
       </div>
 
+            <!-- 科長未核符清冊／未壓撥付日期檢核表 -->
+      <div class="card" style="margin-top:20px">
+        <div class="card-header">
+          <div>
+            <div class="card-title">科長未核符清冊與未壓撥付日期檢核表（共 5 項）</div>
+            <div class="card-subtitle">科長未核符清冊 4 項、未壓撥付日期檢核表 1 項，與軍職類 12 項、政公教類 25 項銀行核對清冊合計 42 項清冊</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-sm btn-primary" onclick="runBankChecklist('科長未核符',4)">產製科長未核符清冊（4 項）</button>
+          <button class="btn btn-sm btn-outline" onclick="showBankChecklist('科長未核符',4)">展開查看</button>
+          <button class="btn btn-sm btn-primary" onclick="runBankChecklist('未壓撥付日期',1)">產製未壓撥付日期檢核表（1 項）</button>
+          <button class="btn btn-sm btn-outline" onclick="showBankChecklist('未壓撥付日期',1)">展開查看</button>
+        </div>
+      </div>
+
       <!-- 資料封存與通知 -->
       <div class="card" style="margin-top:20px">
         <div class="card-title" style="margin-bottom:4px">資料封存與通知</div>
-        <div class="card-subtitle" id="report-archive-subtitle" style="margin-bottom:14px">將產出之統計表 PDF 與 41 項銀行核對清冊發送 Email 通知業務組承辦人員開始核對；並備份相關 Table 資料，確保一算資料完整備份，供後續測試與二算對照使用</div>
+        <div class="card-subtitle" id="report-archive-subtitle" style="margin-bottom:14px">將產出之統計表 PDF 與 42 項銀行核對清冊與檢核表發送 Email 通知業務組承辦人員開始核對；並備份相關 Table 資料，確保一算資料完整備份，供後續測試與二算對照使用</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <button class="btn btn-outline btn-sm" onclick="sendReportNotifyEmail()">發送 Email 通知業務組承辦人員</button>
           <button class="btn btn-outline btn-sm" id="report-backup-btn" onclick="backupReportTables()">備份相關 Table 資料</button>
+        </div>
+        <div id="report-mail-wrap" style="margin-top:16px;display:none">
+          <div class="card-title" style="margin-bottom:8px;font-size:calc(14px * var(--font-scale))">Email 通知發送紀錄</div>
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead><tr><th>時間</th><th>階段</th><th>收件人（業務組主辦／承辦人員）</th><th>附件</th><th>狀態</th></tr></thead>
+              <tbody id="report-mail-log"></tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -8625,11 +8696,11 @@ function switchTab(tabEl, contentId) {
 // ===== MONTHLY REPORTS（依核心定撥執行四大類分別產製） =====
 // 報表清單與張數：AF100010(3)+AF100020(5)+AF100030(1)+AF100050(1)+CAL2PAY1New(4)+AF100040(1)
 // +政公教類銀行核對清冊(27)+軍職類銀行核對清冊(14) ＝ 共 56 項
-const REPORT_TOTAL = 56;
+const REPORT_TOTAL = 57;
 let reportDone = 0, reportFail = 0, reportRunning = 0, reportPending = REPORT_TOTAL;
 const reportSheetCounts = { af100010:3, af100020:5, af100030:1, af100050:1, cal2pay1new:4, af100040:1 };
 const bankChecklistDone = { '軍職類': 0, '政公教類': 0 };
-const bankChecklistTotal = { '軍職類': 14, '政公教類': 27 };
+const bankChecklistTotal = { '軍職類': 12, '政公教類': 25 };
 
 function updateReportStats() {
   document.getElementById('report-done').textContent = reportDone;
@@ -8641,8 +8712,8 @@ function updateReportStats() {
 // ===== 報表產製：一算／二算 階段切換 =====
 let currentReportStage = 'calc1';
 const reportStageMeta = {
-  calc1: { label: '一算', filename: '11412期定撥統計表(一算).pdf', subtitle: '113年12月定撥（一算） - 共 56 項報表，依核心定撥執行之四大類程式分別產製' },
-  calc2: { label: '二算', filename: '11412期定撥統計表(二算).pdf', subtitle: '113年12月定撥（二算，正式定案） - 共 56 項報表，依核心定撥執行之四大類程式分別產製' }
+  calc1: { label: '一算', filename: '11412期定撥統計表(一算).pdf', subtitle: '113年12月定撥（一算） - 共 57 項報表，依核心定撥執行之四大類程式分別產製' },
+  calc2: { label: '二算', filename: '11412期定撥統計表(二算).pdf', subtitle: '113年12月定撥（二算，正式定案） - 共 57 項報表，依核心定撥執行之四大類程式分別產製' }
 };
 
 function switchReportStage(stage) {
@@ -8658,10 +8729,10 @@ function switchReportStage(stage) {
   const archiveSubtitle = document.getElementById('report-archive-subtitle');
   if (stage === 'calc1') {
     backupBtn.style.display = 'inline-flex';
-    archiveSubtitle.textContent = '將產出之統計表 PDF 與 41 項銀行核對清冊發送 Email 通知業務組承辦人員開始核對；並備份相關 Table 資料，確保一算資料完整備份，供後續測試與二算對照使用';
+    archiveSubtitle.textContent = '將產出之統計表 PDF 與 42 項銀行核對清冊與檢核表發送 Email 通知業務組承辦人員開始核對；並備份相關 Table 資料，確保一算資料完整備份，供後續測試與二算對照使用';
   } else {
     backupBtn.style.display = 'none';
-    archiveSubtitle.textContent = '將產出之統計表 PDF 與 41 項銀行核對清冊發送 Email 通知業務組承辦人員，開始進行二算（正式定案）核對作業';
+    archiveSubtitle.textContent = '將產出之統計表 PDF 與 42 項銀行核對清冊與檢核表發送 Email 通知業務組承辦人員，開始進行二算（正式定案）核對作業';
   }
 }
 
@@ -8679,7 +8750,7 @@ function runMergedReport() {
 }
 
 function sendReportNotifyEmail() {
-  showToast('success', 'Email 已發送', '已將統計表 PDF 與 41 項銀行核對清冊發送通知予業務組承辦人員，請開始進行核對');
+  showToast('success', 'Email 已發送', '已將統計表 PDF 與 42 項銀行核對清冊與檢核表發送通知予業務組承辦人員，請開始進行核對');
 }
 
 function backupReportTables() {
@@ -8746,7 +8817,7 @@ function showBankChecklist(category, total) {
 }
 
 function runAllReports() {
-  showToast('info', '開始執行', '正在執行全部 56 項報表，請稍候...');
+  showToast('info', '開始執行', '正在執行全部 57 項報表，請稍候...');
   const reportIds = ['cal2pay1new','af100010','af100020','af100030','af100050'];
   reportIds.forEach((id, i) => {
     setTimeout(() => runSingleReport(id), i * 800);
@@ -8755,15 +8826,17 @@ function runAllReports() {
   if (month === '1') {
     setTimeout(() => runSingleReport('af100040'), reportIds.length * 800);
   }
-  setTimeout(() => runBankChecklist('軍職類', 14), 3500);
-  setTimeout(() => runBankChecklist('政公教類', 27), 4000);
+  setTimeout(() => runBankChecklist('軍職類', 12), 3500);
+  setTimeout(() => runBankChecklist('政公教類', 25), 4000);
+  setTimeout(() => runBankChecklist('科長未核符', 4), 4300);
+  setTimeout(() => runBankChecklist('未壓撥付日期', 1), 4600);
   setTimeout(() => {
     reportDone = REPORT_TOTAL - (month === '1' ? 0 : 1);
     reportFail = 0;
     reportRunning = 0;
     reportPending = REPORT_TOTAL - reportDone;
     updateReportStats();
-    showToast('success', '全部完成', (month === '1' ? '56' : '55') + ' 項報表已全部產製完成' + (month === '1' ? '' : '（AF100040年撫表僅於每年1月執行，本次未列入）'));
+    showToast('success', '全部完成', (month === '1' ? '57' : '56') + ' 項報表已全部產製完成' + (month === '1' ? '' : '（AF100040年撫表僅於每年1月執行，本次未列入）'));
   }, 8500);
 }
 
@@ -11002,6 +11075,251 @@ navigateTo = function (id) {
   if (id === 'monthly-prep') exRender();
 };
 mhRender(); exRender();
+
+/* ===== V16：定撥試算作業需求對照補強（試算前清查通知／試算參數與起訖紀錄／新舊金額對照／41+清冊與Email通知） ===== */
+
+/* --- (A) 試算前資料清查：異常清單與通知業務組主辦人員確認 --- */
+const PRE_DETAIL = {
+  'null-space': [
+    {dept:'公科', id:'F678***901', name:'李Ｏ蘭', field:'ADDR2', issue:'顯示為空值但實際含 1 個半形空格'},
+    {dept:'軍科', id:'A123***789', name:'王Ｏ民', field:'BANK_BRANCH', issue:'顯示為空值但實際含全形空格'}
+  ],
+  'bank': [{dept:'教科', id:'C345***678', name:'徐Ｏ安', field:'BANK_CODE', issue:'銀行代碼 0049999 不存在於銀行代碼檔'}]
+};
+const PRE_POOL = [
+  {dept:'公科', id:'D456***789', name:'簡Ｏ貞', field:'PAY_AMT', issue:'欄位值異常'},
+  {dept:'軍科', id:'E567***890', name:'黃Ｏ國', field:'ID_NO', issue:'欄位值異常'},
+  {dept:'教科', id:'H890***123', name:'趙Ｏ華', field:'PAY_DATE', issue:'欄位值異常'}
+];
+const preNotices = {calc1: [], calc2: []};
+const preNotified = {calc1: false, calc2: false};
+function preDetailRows(it) {
+  const base = PRE_DETAIL[it.id] || [];
+  const rows = base.slice(0, it.failCount);
+  for (let i = rows.length; i < it.failCount; i++) rows.push(Object.assign({}, PRE_POOL[i % PRE_POOL.length], {issue: it.name + '：' + PRE_POOL[i % PRE_POOL.length].issue}));
+  return rows;
+}
+function showPrecheckDetail(id) {
+  const it = precheckDataByStage[currentExecStage].find(x => x.id === id);
+  const rows = preDetailRows(it).map((r, i) => '<tr><td>' + (i + 1) + '</td><td>' + r.dept + '</td><td>' + r.name + '</td><td class="masked">' + r.id + '</td><td>' + r.field + '</td><td>' + r.issue + '</td></tr>').join('');
+  openDetailModal(it.name + ' 異常清單', '<div class="detail-block"><div class="detail-block-title">' + it.name + '（共 ' + it.failCount + ' 筆）</div><div class="table-wrapper"><table class="data-table"><thead><tr><th>序號</th><th>權責科別</th><th>姓名</th><th>身分證字號</th><th>異常欄位</th><th>異常說明</th></tr></thead><tbody>' + rows + '</tbody></table></div></div>', it.name + '異常清單', 'xlsx');
+}
+renderPrecheckList = function () {
+  const items = precheckDataByStage[currentExecStage];
+  document.getElementById('precheck-list').innerHTML = items.map(it => {
+    const countCell = it.status === 'fail' ? '<span style="color:var(--danger);font-weight:700">' + it.failCount + '</span>' : (it.status === 'pass' ? '0' : '-');
+    const actionCell = it.status === 'fail'
+      ? '<button class="btn btn-sm btn-outline" onclick="showPrecheckDetail(\'' + it.id + '\')">異常清單</button> <button class="btn btn-sm btn-outline" onclick="resolvePrecheckItem(\'' + it.id + '\')">標記已修正</button>'
+      : '-';
+    return '<tr><td>' + it.name + '</td><td style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">' + it.desc + '</td><td>' + countCell + '</td><td>' + precheckStatusBadge(it.status) + '</td><td style="white-space:nowrap">' + actionCell + '</td></tr>';
+  }).join('');
+  renderPrecheckBanner();
+};
+const _rpBanner = renderPrecheckBanner;
+renderPrecheckBanner = function () {
+  _rpBanner();
+  const st = currentExecStage, items = precheckDataByStage[st];
+  const done = items.every(it => it.status === 'pass' || it.status === 'fail');
+  if (done && items.some(it => it.status === 'fail') && !preNotified[st]) { preNotified[st] = true; precheckNotify(st); }
+  renderPrecheckNotify();
+};
+const _rpRun = runPrecheck;
+runPrecheck = function () { preNotified[currentExecStage] = false; preNotices[currentExecStage] = []; _rpRun(); };
+function precheckNotify(st) {
+  const items = precheckDataByStage[st], m = MH_DATA[MH_CUR], byDept = {};
+  items.filter(it => it.status === 'fail').forEach(it => preDetailRows(it).forEach(r => { byDept[r.dept] = (byDept[r.dept] || 0) + 1; }));
+  const t = execNowStr();
+  preNotices[st] = Object.keys(byDept).map(d => ({dept: d, to: m[d].h, count: byDept[d], t: t, confirmed: false, ct: ''}));
+  showToast('warning', '清查發現異常，已通知主辦人', preNotices[st].map(n => n.dept + n.to + '（' + n.count + ' 筆）').join('、') + ' 確認');
+}
+function precheckConfirm(i) {
+  const n = preNotices[currentExecStage][i];
+  n.confirmed = true; n.ct = execNowStr();
+  renderPrecheckNotify();
+  showToast('success', '主辦人已確認', n.dept + ' 主辦人 ' + n.to + ' 已確認異常資料處理');
+}
+function renderPrecheckNotify() {
+  let box = document.getElementById('precheck-notify');
+  if (!box) return;
+  const list = preNotices[currentExecStage];
+  if (!list.length) { box.innerHTML = ''; return; }
+  box.innerHTML = '<div class="card-title" style="margin:4px 0 8px;font-size:calc(14px * var(--font-scale))">異常資料通知與主辦人確認</div><div class="table-wrapper"><table class="data-table"><thead><tr><th>通知時間</th><th>權責科別</th><th>通知對象（主辦人）</th><th>異常筆數</th><th>管道</th><th>確認狀態</th><th>操作</th></tr></thead><tbody>' +
+    list.map((n, i) => '<tr><td>' + n.t + '</td><td>' + n.dept + '</td><td>' + htmlEsc(n.to) + '（主辦）</td><td style="color:var(--danger);font-weight:700">' + n.count + '</td><td>系統訊息＋Email</td><td>' + (n.confirmed ? '<span class="badge badge-success">已確認 ' + n.ct + '</span>' : '<span class="badge badge-warning">待確認</span>') + '</td><td>' + (n.confirmed ? '-' : '<button class="btn btn-sm btn-outline" onclick="precheckConfirm(' + i + ')">模擬主辦人確認</button>') + '</td></tr>').join('') + '</tbody></table></div>';
+}
+function execGate() {
+  const st = currentExecStage, items = precheckDataByStage[st];
+  if (items.some(it => it.status === 'pending' || it.status === 'checking')) return '請先於步驟 1 完成「試算前清查」檢核後，再執行定撥試算';
+  if (items.some(it => it.status === 'fail')) return '清查仍有異常資料，請修正後重新確認';
+  if (preNotices[st].some(n => !n.confirmed)) return '業務組主辦人尚未確認異常資料處理，請待主辦人確認後再執行';
+  return '';
+}
+
+/* --- (B) 試算參數與起訖時間紀錄 --- */
+const EX_PROG = {
+  1: {cat:'軍職', label:'① 軍職月退月撫（含遺屬年金版）'},
+  2: {cat:'政公教', label:'② 政公教月退月撫（含遺屬年金版）'},
+  3: {cat:'政公教', label:'③ 政公教年撫卹（按月撥付）'},
+  4: {cat:'軍職', label:'④ 軍職年撫卹（每年1月期）'}
+};
+const EX_BANKS = ['不指定（\'\'）','臺灣銀行','合作金庫','第一銀行','郵局','土地銀行','華南銀行'];
+function execParamDefaults() {
+  const y = document.getElementById('exec-year').value, m = String(document.getElementById('exec-month').value).padStart(2, '0');
+  const last = String(new Date(+y + 1911, +m, 0).getDate()).padStart(2, '0');
+  const body = document.getElementById('exec-param-body');
+  const keep = {};
+  [1,2,3,4].forEach(n => { const b = document.getElementById('exp-' + n + '-b'); keep[n] = b ? b.value : ''; });
+  body.innerHTML = [1,2,3,4].map(n => {
+    const ann = n === 4;
+    const s = ann ? y + '/01/01' : y + '/' + m + '/01', e = ann ? y + '/12/31' : y + '/' + m + '/' + last, p = ann ? y + '/01/01' : y + '/' + m + '/01';
+    return '<tr><td><strong>' + EX_PROG[n].label + '</strong></td><td><span class="badge badge-secondary">' + EX_PROG[n].cat + '</span></td>' +
+      '<td><input type="text" class="form-control" id="exp-' + n + '-s" value="' + s + '" style="min-width:110px"></td>' +
+      '<td><input type="text" class="form-control" id="exp-' + n + '-e" value="' + e + '" style="min-width:110px"></td>' +
+      '<td><input type="text" class="form-control" id="exp-' + n + '-p" value="' + p + '" style="min-width:110px"></td>' +
+      '<td><select class="form-control" id="exp-' + n + '-b">' + EX_BANKS.map(b => '<option' + (keep[n] === b ? ' selected' : '') + '>' + b + '</option>').join('') + '</select></td></tr>';
+  }).join('');
+}
+function execReadParams(n) {
+  const v = k => document.getElementById('exp-' + n + '-' + k).value.trim();
+  const re = /^\d{3}\/\d{2}\/\d{2}$/;
+  const ok = t => { if (!re.test(t)) return false; const [a, b, c] = t.split('/').map(Number); const d = new Date(a + 1911, b - 1, c); return d.getMonth() === b - 1 && d.getDate() === c; };
+  const s = v('s'), e = v('e'), p = v('p'), b = v('b');
+  if (!ok(s) || !ok(e) || !ok(p)) return {err: EX_PROG[n].label + '：起日、迄日、撥付日須為有效日期（民國年/月/日）'};
+  if (e < s) return {err: EX_PROG[n].label + '：迄日不得早於起日'};
+  return {s: s, e: e, p: p, b: b.indexOf('不指定') === 0 ? "''" : b};
+}
+const EXR = {calc1: {}, calc2: {}};
+(function seed() {
+  const now = Date.now();
+  EXR.calc1[1] = {params:{s:'114/12/01', e:'114/12/31', p:'114/12/01', b:"''"}, s:'113/12/15 09:22:52', st:now - 3600000, e:'113/12/15 09:24:15', et:now - 3600000 + 83000, dur:'1m 23s'};
+  EXR.calc1[2] = {params:{s:'114/12/01', e:'114/12/31', p:'114/12/01', b:"''"}, s:'113/12/15 09:25:30', st:now - 150000, e:null, et:null, dur:null};
+})();
+const fmtDur = ms => { const s = Math.max(1, Math.round(ms / 1000)); return s >= 60 ? Math.floor(s / 60) + 'm ' + String(s % 60).padStart(2, '0') + 's' : s + 's'; };
+function execLedgerTick() {
+  ['calc1', 'calc2'].forEach(st => [1,2,3,4].forEach(n => {
+    const p = execProgressByStage[st][n], r = EXR[st][n];
+    if (p > 0 && !r) EXR[st][n] = {params:null, s:execNowStr(), st:Date.now(), e:null, et:null, dur:null};
+    const q = EXR[st][n];
+    if (q && p >= 100 && !q.e) { q.e = execNowStr(); q.et = Date.now(); q.dur = fmtDur(q.et - q.st); }
+  }));
+  execLedgerRender();
+}
+function execLedgerRender() {
+  const body = document.getElementById('exec-ledger-body');
+  if (!body) return;
+  const st = currentExecStage;
+  body.innerHTML = [1,2,3,4].map(n => {
+    const p = Math.min(100, execProgressByStage[st][n]), r = EXR[st][n];
+    const badge = p >= 100 ? '<span class="badge badge-success">執行完成</span>' : p > 0 ? '<span class="badge badge-warning">執行中</span>' : '<span class="badge badge-secondary">待執行</span>';
+    const par = r && r.params ? '起 ' + r.params.s + '　迄 ' + r.params.e + '<br>撥付 ' + r.params.p + '　銀行 ' + r.params.b : '<span style="color:var(--text-secondary)">-</span>';
+    return '<tr><td><strong>' + EX_PROG[n].label + '</strong></td><td style="font-size:12px;line-height:1.6">' + par + '</td><td><div class="progress-bar-wrap"><div class="progress-bar-fill' + (p >= 100 ? ' success' : '') + '" style="width:' + p + '%"></div></div><div style="font-size:11px;color:var(--text-secondary)">' + Math.round(p) + '%</div></td><td>' + badge + '</td><td>' + (r ? r.s : '-') + '</td><td>' + (r && r.e ? r.e : (p > 0 && p < 100 ? '進行中' : '-')) + '</td><td>' + (r && r.dur ? r.dur : (p > 0 && p < 100 && r ? fmtDur(Date.now() - r.st) : '-')) + '</td></tr>';
+  }).join('');
+}
+const _startExecV16 = startExecProgram;
+startExecProgram = function (n) {
+  const g = execGate();
+  if (g) { showToast('error', '無法執行試算', g); return; }
+  const pr = execReadParams(n);
+  if (pr.err) { showToast('error', '試算參數有誤', pr.err); return; }
+  EXR[currentExecStage][n] = {params: pr, s: execNowStr(), st: Date.now(), e: null, et: null, dur: null};
+  _startExecV16(n);
+  showToast('info', '試算已啟動', EX_PROG[n].label + '：起 ' + pr.s + '／迄 ' + pr.e + '／撥付 ' + pr.p + '／銀行 ' + pr.b);
+};
+const _switchExecV16 = switchExecStage;
+switchExecStage = function (stage) { _switchExecV16(stage); renderPrecheckNotify(); execLedgerRender(); cmpReset(); };
+
+/* --- (C) 新舊金額對照資料表 --- */
+const CMP_ROWS = [
+  ['A123***456','林Ｏ明','軍職月退',52300,53120,'年資增加'],
+  ['B234***567','陳Ｏ華','公務人員月退',48900,48900,'無異動'],
+  ['C345***678','張Ｏ芬','教育人員月退',61200,59850,'課稅參數調整'],
+  ['D456***789','黃Ｏ偉','公務人員月撫',45600,45600,'無異動'],
+  ['E567***890','周Ｏ文','公務人員月退',58000,0,'亡故停發'],
+  ['F678***901','李Ｏ蘭','教育人員月退',39800,41200,'調整指數調整'],
+  ['G789***012','吳Ｏ雄','軍職月撫',0,36500,'新核定案件'],
+  ['H890***123','趙Ｏ華','公務人員年撫卹',22000,22000,'無異動'],
+  ['J012***345','許Ｏ志','政務人員月退',70500,70500,'無異動'],
+  ['K123***456','蔡Ｏ宏','教育人員月退',44300,43100,'兼領停發']
+];
+const CMP_STAT = {
+  'calc1|prev':{total:423801, same:418226, up:3412, down:1128, add:612, stop:423, net:'+3,284,560'},
+  'calc2|prev':{total:419770, same:414508, up:3280, down:1097, add:574, stop:311, net:'+3,015,402'},
+  'calc1|pre-adjust':{total:423801, same:300876, up:121890, down:0, add:612, stop:423, net:'+174,918,230'},
+  'calc2|pre-adjust':{total:419770, same:298555, up:120330, down:0, add:574, stop:311, net:'+172,640,115'}
+};
+let cmpBuilt = false;
+const cmpReviewed = {};
+function cmpReset() { cmpBuilt = false; const r = document.getElementById('exec-compare-result'); if (r) r.style.display = 'none'; }
+function cmpType(o, n) { return o === 0 && n > 0 ? '新增' : n === 0 && o > 0 ? '停發' : n > o ? '增加' : n < o ? '減少' : '無異動'; }
+function runBuildCompareTable() {
+  cmpBuilt = true;
+  Object.keys(cmpReviewed).forEach(k => delete cmpReviewed[k]);
+  const st = CMP_STAT[currentExecStage + '|' + document.getElementById('cmp-base').value];
+  document.getElementById('exec-compare-total').textContent = st.total.toLocaleString();
+  const tile = (v, l, c) => '<div style="text-align:center;padding:12px;background:#f5f7fa;border-radius:6px"><div style="font-size:calc(20px * var(--font-scale));font-weight:800;color:' + c + '">' + v + '</div><div style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary)">' + l + '</div></div>';
+  document.getElementById('cmp-tiles').innerHTML = tile(st.total.toLocaleString(), '關聯比對總筆數', 'var(--primary)') + tile((st.total - st.same).toLocaleString(), '差異筆數（金額不同／新增／停發）', 'var(--warning)') + tile(st.add.toLocaleString() + ' ／ ' + st.stop.toLocaleString(), '新增 ／ 停發', 'var(--danger)') + tile(st.net, '差異金額合計（元／月）', 'var(--success)');
+  document.getElementById('exec-compare-result').style.display = 'block';
+  cmpRender();
+  showToast('success', '對照表已建立', '已依身分證字號等鍵值完成本期與' + (document.getElementById('cmp-base').value === 'prev' ? '上期' : '調薪前') + '之關聯比對，共 ' + st.total.toLocaleString() + ' 筆，差異 ' + (st.total - st.same).toLocaleString() + ' 筆供業務組覆核');
+}
+function cmpRender() {
+  if (!cmpBuilt) return;
+  const only = document.getElementById('cmp-diff-only').checked, adj = document.getElementById('cmp-base').value === 'pre-adjust';
+  let rev = 0, tot = 0;
+  const rows = CMP_ROWS.map((r, i) => {
+    const o = adj && r[3] > 0 && r[3] === r[4] ? Math.round(r[3] / 1.03) : r[3], n = r[4], d = n - o, t = cmpType(o, n);
+    return {i:i, r:r, o:o, n:n, d:d, t:t, why: adj && t === '增加' && r[5] === '無異動' ? '調薪調升' : r[5]};
+  }).filter(x => !only || x.t !== '無異動');
+  document.getElementById('cmp-body').innerHTML = rows.map(x => {
+    const diff = x.t !== '無異動';
+    if (diff) { tot++; if (cmpReviewed[x.i]) rev++; }
+    const col = x.d > 0 ? 'var(--success)' : x.d < 0 ? 'var(--danger)' : '';
+    const tb = {'新增':'badge-info','停發':'badge-danger','增加':'badge-success','減少':'badge-warning','無異動':'badge-secondary'}[x.t];
+    return '<tr><td class="masked">' + x.r[0] + '</td><td>' + x.r[1] + '</td><td>' + x.r[2] + '</td><td>NT$ ' + x.o.toLocaleString() + '</td><td>NT$ ' + x.n.toLocaleString() + '</td><td style="color:' + col + '">' + (x.d > 0 ? '+' : '') + x.d.toLocaleString() + '</td><td><span class="badge ' + tb + '">' + x.t + '</span></td><td>' + x.why + '</td><td>' + (!diff ? '-' : cmpReviewed[x.i] ? '<span class="badge badge-success">已覆核</span>' : '<button class="btn btn-sm btn-outline" onclick="cmpReview(' + x.i + ')">標記覆核</button>') + '</td></tr>';
+  }).join('');
+  document.getElementById('cmp-review-progress').textContent = '預覽範例差異覆核進度：' + rev + ' / ' + tot;
+}
+function cmpReview(i) { cmpReviewed[i] = true; cmpRender(); }
+showFullCompareTable = function () {
+  const total = document.getElementById('exec-compare-total').textContent;
+  const rows = CMP_ROWS.map(r => '<tr><td class="masked">' + r[0] + '</td><td>' + r[1] + '</td><td>' + r[2] + '</td><td>NT$ ' + r[3].toLocaleString() + '</td><td>NT$ ' + r[4].toLocaleString() + '</td><td>' + (r[4] - r[3]) + '</td><td>' + cmpType(r[3], r[4]) + '</td><td>' + r[5] + '</td></tr>').join('');
+  openDetailModal('新舊金額對照表（' + total + ' 筆，預覽）', '<div class="form-hint" style="margin-bottom:12px">下列為對照表部分預覽（共 ' + total + ' 筆），完整清單請下載 Excel 檔案查閱。</div><div class="table-wrapper"><table class="data-table"><thead><tr><th>身分證字號</th><th>姓名</th><th>發放類別</th><th>舊金額</th><th>新金額</th><th>差異金額</th><th>差異類型</th><th>差異原因</th></tr></thead><tbody>' + rows + '</tbody></table></div>', '新舊金額對照表', 'xlsx');
+};
+
+/* --- (D)(E) 清冊產製與 Email 通知 --- */
+const CHK_SPECIAL = {
+  '科長未核符': ['軍職類科長未核符清冊', '政務／公務人員類科長未核符清冊', '教育人員類科長未核符清冊', '年撫卹科長未核符清冊'],
+  '未壓撥付日期': ['未壓撥付日期檢核表']
+};
+const _showChk = showBankChecklist;
+showBankChecklist = function (category, total) {
+  if (!CHK_SPECIAL[category]) return _showChk(category, total);
+  const rows = CHK_SPECIAL[category].map((nm, i) => '<tr><td>' + (i + 1) + '</td><td>' + nm + '</td><td>' + (i < (bankChecklistDone[category] || 0) ? '<span class="badge badge-success">已完成</span>' : '<span class="badge badge-secondary">待執行</span>') + '</td><td><button class="btn btn-sm btn-outline" onclick="runDownload(\'' + nm + '\',\'xlsx\')">下載</button></td></tr>').join('');
+  openDetailModal(category + '清冊', '<div class="detail-block"><div class="detail-block-title">' + (category === '科長未核符' ? '科長未核符清冊' : '未壓撥付日期檢核表') + '（共 ' + total + ' 項）</div><div class="table-wrapper"><table class="data-table"><thead><tr><th>序號</th><th>清冊名稱</th><th>狀態</th><th>下載</th></tr></thead><tbody>' + rows + '</tbody></table></div></div>');
+};
+bankChecklistDone['科長未核符'] = 0; bankChecklistDone['未壓撥付日期'] = 0;
+bankChecklistTotal['科長未核符'] = 4; bankChecklistTotal['未壓撥付日期'] = 1;
+const CHK_ALL = 12 + 25 + 4 + 1;
+const mailLog = [];
+sendReportNotifyEmail = function () {
+  const meta = reportStageMeta[currentReportStage];
+  const miss = [];
+  if (document.getElementById('report-merge-status').textContent !== '已產製') miss.push('定撥統計表合併 PDF（請先按「產製並合併輸出」）');
+  Object.keys(bankChecklistTotal).forEach(k => { if ((bankChecklistDone[k] || 0) < bankChecklistTotal[k]) miss.push(k + '清冊'); });
+  if (miss.length) { showToast('error', '尚無法發送通知', '以下項目尚未產製完成：' + miss.join('、')); return; }
+  const m = MH_DATA[MH_CUR];
+  const to = MH_DEPTS.map(d => d + '：' + [m[d].h + '（主辦）'].concat(m[d].staff.filter(s => s !== m[d].h)).join('、'));
+  mailLog.unshift({t: execNowStr(), st: meta.label, to: to, att: meta.filename + '、' + CHK_ALL + ' 項銀行核對清冊及檢核表（壓縮檔）'});
+  document.getElementById('report-mail-wrap').style.display = 'block';
+  document.getElementById('report-mail-log').innerHTML = mailLog.map(r => '<tr><td>' + r.t + '</td><td>' + r.st + '</td><td style="font-size:12px;line-height:1.7">' + r.to.map(htmlEsc).join('<br>') + '</td><td style="font-size:12px">' + htmlEsc(r.att) + '</td><td><span class="badge badge-success">已發送</span></td></tr>').join('');
+  showToast('success', 'Email 已發送', '已將統計表 PDF 與 ' + CHK_ALL + ' 項清冊通知三科主辦／承辦人員進行核對');
+};
+(function v16init() {
+  execParamDefaults();
+  ['exec-year', 'exec-month'].forEach(id => document.getElementById(id).addEventListener('change', execParamDefaults));
+  renderPrecheckNotify();
+  setInterval(execLedgerTick, 300);
+  execLedgerTick();
+})();
 </script>
 
 <div class="modal-overlay" id="sh-preview-modal"><div class="modal modal-lg">
