@@ -30,7 +30,7 @@ document.addEventListener('click', function(e) {
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>公務人員退休撫卹基金管理局 - 基金業務系統（V17 定撥資料異動需求對照）</title>
+<title>公務人員退休撫卹基金管理局 - 基金業務系統（V22 止付作業子系統需求對照）</title>
 <style>
 :root {
   --primary: #0a2647;
@@ -836,6 +836,38 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 .chg-sw input:checked+span::before{transform:translateX(20px)}
 .chg-sw input:disabled+span{opacity:.45;cursor:not-allowed}
 </style>
+<style>
+/* ===== V22 止付作業子系統 ===== */
+.sp-grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:1000px){.sp-grid2{grid-template-columns:1fr}}
+.sp-chips{display:flex;gap:8px;flex-wrap:wrap}
+.sp-chip{padding:5px 12px;border:1.5px solid var(--border);border-radius:16px;font-size:calc(12px * var(--font-scale));cursor:pointer;background:#fff;color:var(--text-secondary);font-weight:600}
+.sp-chip:hover{border-color:var(--secondary);color:var(--secondary)}
+.sp-chip.active{background:var(--primary);border-color:var(--primary);color:#fff}
+.sp-chip-link{display:inline-block;margin:2px 6px 2px 0;padding:2px 8px;border-radius:4px;background:#eef3ff;color:var(--secondary);cursor:pointer;font-size:calc(12px * var(--font-scale))}
+.sp-chip-link:hover{background:#dce7ff}
+.sp-mini-link{font-size:calc(12px * var(--font-scale));color:var(--text-secondary);text-decoration:underline;cursor:pointer}
+.sp-banner{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 16px;margin-bottom:16px;border-radius:var(--radius-card);background:#fff5f5;border:1px solid #ffcdd2;border-left:4px solid var(--danger);color:#721c24;font-size:calc(13px * var(--font-scale))}
+.sp-banner.ok{background:#f0fff4;border-color:#b2dfdb;border-left-color:var(--success);color:#155724}
+.sp-alert-item{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px dashed var(--border)}
+.sp-alert-item:last-child{border-bottom:none}
+.sp-alert-item.ack{opacity:.55}
+.sp-alert-title{font-weight:700;font-size:calc(13px * var(--font-scale))}
+.sp-alert-desc{font-size:calc(12px * var(--font-scale));color:var(--text-secondary);margin-top:2px}
+.sp-todo-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px dashed var(--border);font-size:calc(13px * var(--font-scale))}
+.sp-todo-row:last-child{border-bottom:none}
+.sp-sub{font-weight:700;font-size:calc(12px * var(--font-scale));color:var(--primary);margin:10px 0 4px}
+.sp-steps{margin-top:10px}
+.sp-step{padding:4px 0;font-size:calc(13px * var(--font-scale));color:var(--text-secondary)}
+.sp-step.run{color:var(--secondary);font-weight:700}
+.sp-step.done{color:var(--success)}
+.sp-step.fail{color:var(--danger);font-weight:700}
+.sp-doc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media (max-width:1100px){.sp-doc-grid{grid-template-columns:1fr}}
+.sp-doc-card{border:1px solid var(--border);border-radius:var(--radius-card);padding:14px 16px;background:#fff}
+.sp-doc-card h4{margin:0 0 4px;font-size:calc(14px * var(--font-scale));color:var(--primary)}
+.sp-doc-card p{margin:0 0 10px;font-size:calc(12px * var(--font-scale));color:var(--text-secondary)}
+</style>
 </head>
 <body>
 
@@ -1048,7 +1080,10 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div class="sidebar-item-arrow">▶</div>
       </div>
       <div class="sidebar-submenu" id="submenu-stop">
-        <div class="sidebar-sub-item" onclick="navigateTo('stop-payment')">止付文件生成</div>
+        <div class="sidebar-sub-item" onclick="navigateTo('stop-payment')">止付作業入口</div>
+        <div class="sidebar-sub-item" onclick="navigateTo('stop-register')">案件登錄與檢核</div>
+        <div class="sidebar-sub-item" onclick="navigateTo('stop-docs')">文件產製</div>
+        <div class="sidebar-sub-item" onclick="navigateTo('stop-index')">發文資訊索引</div>
         <div class="sidebar-sub-item" onclick="navigateTo('stop-tracking')">案件追蹤統計</div>
       </div>
       
@@ -1285,7 +1320,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
             </div>
           </div>
           <div class="quick-actions">
-            <button class="btn btn-sm btn-danger" onclick="event.stopPropagation();navigateTo('stop-payment')">執行止付</button>
+            <button class="btn btn-sm btn-danger" onclick="event.stopPropagation();navigateTo('stop-register')">登錄止付案件</button>
             <button class="btn btn-sm btn-outline" onclick="event.stopPropagation();navigateTo('stop-tracking')">追蹤查詢</button>
           </div>
         </div>
@@ -2092,79 +2127,182 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       </div>
     </div>
 
-    <!-- ===== STOP PAYMENT ===== -->
+    <!-- ===== STOP PAYMENT：止付作業入口 ===== -->
     <div class="view" id="view-stop-payment">
       <div class="breadcrumb">
         <span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span>
         <span class="breadcrumb-sep">›</span>
         <span class="breadcrumb-item">止付作業</span>
         <span class="breadcrumb-sep">›</span>
-        <span class="breadcrumb-item current">止付文件生成</span>
+        <span class="breadcrumb-item current">止付作業入口</span>
       </div>
       <div class="page-header">
-        <div class="page-title">止付文件生成</div>
-        <div class="page-subtitle">查詢領受人並執行止付作業，自動產製止付相關文件</div>
+        <div class="page-title">止付作業入口</div>
+        <div class="page-subtitle">承辦人辦理止付案件之單一作業入口：即時呈現案件處理狀態，集中顯示待辦、銀行回饋及異常資訊</div>
       </div>
 
-      <!-- 建置止付案件作業入口：集中呈現待辦、回饋及異常資訊 -->
-      <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
-        <div class="stat-card warning"><div class="stat-label">待辦止付案件</div><div class="stat-value" style="color:var(--warning)">8</div><div class="stat-sub">尚未登錄或待覆核</div></div>
-        <div class="stat-card danger"><div class="stat-label">銀行回饋失敗</div><div class="stat-value danger">2</div><div class="stat-sub">需重新聯繫銀行</div></div>
-        <div class="stat-card danger"><div class="stat-label">追蹤未回（逾時限）</div><div class="stat-value danger">1</div><div class="stat-sub">超過設定聯繫時限</div></div>
-        <div class="stat-card success"><div class="stat-label">本月止付成功</div><div class="stat-value success">14</div><div class="stat-sub">已同步溢領管理子系統</div></div>
-      </div>
-      
-      <div class="filter-bar">
-        <div class="filter-row">
-          <div class="filter-group" style="flex:1;max-width:300px">
-            <div class="filter-label">查詢姓名或身分證字號</div>
-            <input type="text" class="filter-control" placeholder="輸入姓名或身分證字號" style="width:100%">
-          </div>
-          <div class="filter-group">
-            <div class="filter-label">退撫類別</div>
-            <select class="filter-control"><option>全部</option><option>公務月退</option><option>教職月退</option><option>軍職月退</option></select>
-          </div>
-          <button class="btn btn-primary btn-sm" style="align-self:flex-end"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> 查詢</button>
-        </div>
-      </div>
+      <div id="sp-alert-banner"></div>
+      <div class="stats-grid" id="sp-stats"></div>
 
       <div class="card" style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-        <div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">勾選多筆案件後可批次產製文書，減少逐案整理與重複輸入作業</div>
-        <div style="display:flex;gap:8px">
-          <button class="btn btn-outline btn-sm" onclick="showToast('info','批次產製','已依勾選案件批次產製電話紀錄表，依銀行別彙整供傳真作業使用')">批次產製銀行電話紀錄表</button>
-          <button class="btn btn-outline btn-sm" onclick="showToast('info','批次產製','已依勾選案件批次產製止付明細及公文，並已介接公文系統取號')">批次產製公文及止付明細</button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-primary btn-sm" onclick="navigateTo('stop-register')">＋ 登錄止付案件</button>
+          <button class="btn btn-outline btn-sm" onclick="navigateTo('stop-docs')">產製文件（電話紀錄表／公文／止付明細）</button>
+          <button class="btn btn-outline btn-sm" onclick="navigateTo('stop-index')">發文資訊索引</button>
+          <button class="btn btn-outline btn-sm" onclick="navigateTo('stop-tracking')">案件追蹤統計</button>
+        </div>
+        <a href="javascript:void(0)" class="sp-mini-link" onclick="spSimAlert()">模擬接收銀行異常回饋（原型示意）</a>
+      </div>
+
+      <div class="sp-grid2">
+        <div class="card">
+          <div class="card-header"><div><div class="card-title">異常訊息</div><div class="card-subtitle">系統接收異常訊息時即時提示，請承辦人及時介入處理</div></div></div>
+          <div id="sp-alerts"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div><div class="card-title">待辦與銀行回饋</div><div class="card-subtitle">待辦事項及最新銀行回饋結果</div></div></div>
+          <div id="sp-todo"></div>
         </div>
       </div>
-      
-      <div class="table-card">
-        <div class="table-wrapper">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th style="width:32px"><input type="checkbox" onclick="document.querySelectorAll('#view-stop-payment tbody input[type=checkbox]').forEach(c=>c.checked=this.checked)"></th><th>姓名</th><th>身分證字號</th><th>退撫類別</th><th>服務機關</th><th>月退金額</th><th>撥付帳號</th><th>狀態</th><th>操作</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td><input type="checkbox"></td><td>王建民</td><td class="masked">A123***789</td><td>公務月退</td><td>臺北市政府</td><td>NT$ 68,500</td><td>台灣銀行 ***4521</td><td><span class="badge badge-success">正常撥付</span></td><td><button class="btn btn-sm btn-danger" onclick="openStopModal('王建民','A123456789','68,500','113/12')">執行止付</button></td></tr>
-            <tr><td><input type="checkbox"></td><td>孫大偉 <span class="badge badge-warning" style="margin-left:4px" title="同一身分證字號查得2筆以上尚未撥付之支領紀錄">2筆待撥</span></td><td class="masked">K234***567</td><td>軍職月退</td><td>國防部</td><td>NT$ 55,000</td><td>郵局 ***9012</td><td><span class="badge badge-success">正常撥付</span></td><td><button class="btn btn-sm btn-danger" onclick="showToast('warning','請注意','系統偵測到孫大偉尚有 2 筆以上未撥付支領紀錄，請先確認對應紀錄後再執行止付，以避免案件誤建或資料對應錯誤');openStopModal('孫大偉','K234567890','55,000','113/12')">執行止付</button></td></tr>
-            <tr><td><input type="checkbox"></td><td>陳美麗</td><td class="masked">B234***789</td><td>公務月退</td><td>臺北市政府教育局</td><td>NT$ 68,500</td><td>台灣銀行 ***4521</td><td><span class="badge badge-danger">止付中</span></td><td><button class="btn btn-sm btn-outline" disabled>已止付</button></td></tr>
-            <tr><td><input type="checkbox"></td><td>林志明</td><td class="masked">C345***678</td><td>公務月退</td><td>新北市政府</td><td>NT$ 71,000</td><td>合作金庫 ***7823</td><td><span class="badge badge-success">正常撥付</span></td><td><button class="btn btn-sm btn-danger" onclick="openStopModal('林志明','C345678901','71,000','113/12')">執行止付</button></td></tr>
-            <tr><td><input type="checkbox"></td><td>張淑芬</td><td class="masked">D456***789</td><td>教職月退</td><td>行政院</td><td>NT$ 142,000</td><td>第一銀行 ***2341</td><td><span class="badge badge-success">正常撥付</span></td><td><button class="btn btn-sm btn-danger" onclick="openStopModal('張淑芬','D456789012','142,000','113/12')">執行止付</button></td></tr>
-            <tr><td><input type="checkbox"></td><td>黃建國</td><td class="masked">E567***890</td><td>軍職月退</td><td>國防部</td><td>NT$ 55,000</td><td>郵局 ***9012</td><td><span class="badge badge-warning">處理中</span></td><td><button class="btn btn-sm btn-outline" disabled>處理中</button></td></tr>
-          </tbody>
-        </table>
+
+      <div class="table-card" style="margin-top:16px">
+        <div style="padding:14px 16px;border-bottom:1px solid var(--border)">
+          <div class="card-title">止付案件處理狀態</div>
+          <div class="sp-chips" id="sp-filter" style="margin-top:10px"></div>
         </div>
-        <div class="pagination">
-          <div class="pagination-info">顯示 1-5 / 共 1,247 筆</div>
-          <div class="pagination-controls">
-            <button class="page-btn" disabled>上一頁</button>
-            <button class="page-btn active">1</button>
-            <button class="page-btn">2</button>
-            <button class="page-btn">3</button>
-            <span style="font-size:calc(12px * var(--font-scale));padding:0 4px">...</span>
-            <button class="page-btn">250</button>
-            <button class="page-btn">下一頁</button>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead><tr><th>案件編號</th><th>領受人</th><th>身分證字號</th><th>退撫類別</th><th>銀行別</th><th>止付期間</th><th>止付金額</th><th>登錄時間</th><th>處理狀態</th><th>操作</th></tr></thead>
+            <tbody id="sp-case-body"></tbody>
+          </table>
+        </div>
+        <div style="padding:10px 16px;border-top:1px solid var(--border);font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">說明：止付失敗（款項已撥付）案件可轉入溢領管理子系統，作為後續追繳作業之起點；止付成功案件則排除於溢領處理流程之外。</div>
+      </div>
+    </div>
+
+    <!-- ===== STOP REGISTER：案件登錄與檢核 ===== -->
+    <div class="view" id="view-stop-register">
+      <div class="breadcrumb">
+        <span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item">止付作業</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item current">案件登錄與檢核</span>
+      </div>
+      <div class="page-header">
+        <div class="page-title">止付案件登錄與檢核</div>
+        <div class="page-subtitle">輸入領受人身分證字號，系統搜尋該人所有尚未撥付之支領紀錄、帶入案件資料並建立案件關聯；資料缺漏或不符條件時提示原因並阻擋後續作業</div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px">
+        <div class="section-title">一、輸入領受人身分證字號</div>
+        <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
+          <div class="form-group" style="margin:0;min-width:260px">
+            <label class="form-label">領受人身分證字號 <span class="required">*</span></label>
+            <input type="text" class="form-control" id="sp-reg-id" maxlength="10" placeholder="例：A123456789" onkeydown="if(event.key==='Enter')spRegSearch()">
           </div>
+          <button class="btn btn-primary" onclick="spRegSearch()">查詢未撥付支領紀錄</button>
+          <button class="btn btn-outline" onclick="spRegReset()">清除</button>
+        </div>
+        <div class="form-hint" style="margin-top:10px">原型示範身分證字號（點選帶入）：
+          <a class="sp-chip-link" onclick="spRegDemo('A123456789')">A123456789 單筆正常</a>
+          <a class="sp-chip-link" onclick="spRegDemo('K234567890')">K234567890 2筆待撥</a>
+          <a class="sp-chip-link" onclick="spRegDemo('B234567890')">B234567890 已建案（重複）</a>
+          <a class="sp-chip-link" onclick="spRegDemo('H890123456')">H890123456 資料缺漏</a>
+          <a class="sp-chip-link" onclick="spRegDemo('U201234567')">U201234567 條件不符</a>
+          <a class="sp-chip-link" onclick="spRegDemo('T200000001')">T200000001 無未撥付</a>
+          <a class="sp-chip-link" onclick="spRegDemo('Z200000000')">Z200000000 查無資料</a>
+        </div>
+      </div>
+      <div id="sp-reg-result"></div>
+    </div>
+
+    <!-- ===== STOP DOCS：文件產製 ===== -->
+    <div class="view" id="view-stop-docs">
+      <div class="breadcrumb">
+        <span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item">止付作業</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item current">文件產製</span>
+      </div>
+      <div class="page-header">
+        <div class="page-title">止付文件產製</div>
+        <div class="page-subtitle">依案源選取案件，產製銀行電話紀錄表、止付明細及公文；公文檔由後台直接介接公文系統取號與發文，資料由系統自動帶入</div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="filter-row">
+          <div class="filter-group"><div class="filter-label">銀行別</div>
+            <select class="filter-control" id="sp-doc-bank" onchange="spDocsRender()"><option value="">全部</option></select></div>
+          <div class="filter-group"><div class="filter-label">案件狀態</div>
+            <select class="filter-control" id="sp-doc-st" onchange="spDocsRender()"><option value="">全部（待產製／待發文）</option><option value="registered">已登錄，待產製文書</option><option value="docs">文書已產製，待發文</option></select></div>
+          <div class="filter-group" style="flex:1;max-width:300px"><div class="filter-label">關鍵字</div>
+            <input type="text" class="filter-control" id="sp-doc-kw" placeholder="案件編號／姓名／身分證字號" style="width:100%" oninput="spDocsRender()"></div>
+        </div>
+      </div>
+
+      <div class="table-card" style="margin-bottom:16px">
+        <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+          <div class="card-title">案源案件（可複選）</div>
+          <div id="sp-doc-sum" style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)"></div>
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead><tr><th style="width:32px"><input type="checkbox" id="sp-doc-all" onchange="spDocAll(this.checked)"></th><th>案件編號</th><th>領受人</th><th>身分證字號</th><th>銀行別</th><th>撥付帳號</th><th>止付期間</th><th>止付金額</th><th>止付原因</th><th>處理狀態</th></tr></thead>
+            <tbody id="sp-doc-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="sp-doc-cards"></div>
+
+      <div class="card" style="margin-top:16px">
+        <div class="card-header"><div><div class="card-title">發文紀錄與正本查閱</div><div class="card-subtitle">已介接公文系統發文之止付公文，留存發文字號、所用發文資訊及案件對應，供追溯查閱</div></div></div>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead><tr><th>發文字號</th><th>發文時間</th><th>受文銀行</th><th>件數</th><th>止付金額合計</th><th>發文資訊</th><th>承辦人</th><th>操作</th></tr></thead>
+            <tbody id="sp-disp-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== STOP INDEX：發文資訊索引 ===== -->
+    <div class="view" id="view-stop-index">
+      <div class="breadcrumb">
+        <span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item">止付作業</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item current">發文資訊索引</span>
+      </div>
+      <div class="page-header">
+        <div class="page-title">發文資訊索引維護</div>
+        <div class="page-subtitle">由主辦人員維護發文機關、字軌、速別、承辦聯絡資訊等；系統產製止付公文時自動讀取，並留存異動紀錄以符合發文正確性與可追溯性</div>
+      </div>
+
+      <div class="table-card">
+        <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+          <div class="card-title">發文資訊清單</div>
+          <button class="btn btn-primary btn-sm" onclick="spIdxEdit(null)">＋ 新增發文資訊</button>
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead><tr><th>索引代號</th><th>名稱／用途</th><th>發文機關</th><th>承辦單位</th><th>字軌</th><th>速別／密等</th><th>承辦聯絡人</th><th>已引用</th><th>狀態</th><th>最後維護</th><th>操作</th></tr></thead>
+            <tbody id="sp-idx-body"></tbody>
+          </table>
+        </div>
+        <div style="padding:10px 16px;border-top:1px solid var(--border);font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">說明：已被公文引用之發文資訊不可刪除，僅可停用；發文時系統會將當時採用之發文資訊內容留存於發文紀錄，後續修改不影響已發文之正本。</div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <div class="card-header"><div><div class="card-title">維護異動紀錄</div><div class="card-subtitle">記錄新增、修改、停用、預設變更之人員與時間</div></div></div>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead><tr><th>時間</th><th>索引代號</th><th>異動類型</th><th>維護人員</th><th>說明</th></tr></thead>
+            <tbody id="sp-idx-log"></tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -5311,7 +5449,10 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           <div class="perm-module">
             <div class="perm-module-header"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg> 止付作業</div>
             <div class="perm-items">
-              <label class="perm-item"><input type="checkbox" checked> 止付文件生成</label>
+              <label class="perm-item"><input type="checkbox" checked> 止付作業入口</label>
+              <label class="perm-item"><input type="checkbox" checked> 案件登錄與檢核</label>
+              <label class="perm-item"><input type="checkbox" checked> 文件產製（電話紀錄表／止付明細／公文）</label>
+              <label class="perm-item"><input type="checkbox" checked> 發文資訊索引維護（主辦人員）</label>
               <label class="perm-item"><input type="checkbox" checked> 案件追蹤統計</label>
             </div>
           </div>
@@ -6389,39 +6530,70 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 
 <!-- ===== MODALS ===== -->
 
-<!-- Stop Payment Modal -->
-<div class="modal-overlay" id="stop-modal">
+<!-- Stop Payment：銀行回饋登錄 -->
+<div class="modal-overlay" id="sp-fb-modal">
   <div class="modal modal-md">
     <div class="modal-header">
-      <div class="modal-title"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg> 執行止付確認</div>
-      <button class="modal-close" onclick="closeModal('stop-modal')">×</button>
+      <div class="modal-title">登錄銀行回饋結果</div>
+      <button class="modal-close" onclick="closeModal('sp-fb-modal')">×</button>
     </div>
     <div class="modal-body">
-      <div class="info-card danger" style="margin-bottom:16px">
-        <div style="font-size:calc(13px * var(--font-scale));font-weight:700;color:var(--danger);margin-bottom:8px"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a1 1 0 0 0 .86 1.5h18.64a1 1 0 0 0 .86-1.5L13.71 3.86a1 1 0 0 0-1.72 0z"/><line x1="12" y1="9" x2="12" y2="13"/><circle cx="12" cy="16.5" r="0.9" fill="currentColor" stroke="none"/></svg> 請確認以下止付資訊</div>
-        <div class="info-row"><div class="info-key">領受人姓名</div><div class="info-val" id="stop-name">-</div></div>
-        <div class="info-row"><div class="info-key">身分證字號</div><div class="info-val" id="stop-id">-</div></div>
-        <div class="info-row"><div class="info-key">預計撥付期間</div><div class="info-val" id="stop-period">-</div></div>
-        <div class="info-row"><div class="info-key">預計撥付金額</div><div class="info-val" id="stop-amount">-</div></div>
-      </div>
+      <div class="info-card" style="margin-bottom:14px" id="sp-fb-info"></div>
       <div class="form-group">
-        <label class="form-label">止付原因 <span class="required">*</span></label>
-        <select class="form-control">
-          <option>-- 請選擇 --</option>
-          <option selected>亡故</option>
-          <option>喪失資格</option>
-          <option>重複撥付</option>
-          <option>其他</option>
+        <label class="form-label">銀行回饋結果 <span class="required">*</span></label>
+        <select class="form-control" id="sp-fb-code">
+          <option value="">-- 請選擇 --</option>
+          <option value="R001">R001　止付成功（銀行已受理）</option>
+          <option value="E001">E001　銀行無法受理：帳戶已結清或不存在</option>
+          <option value="E002">E002　戶名或帳號與銀行資料不符</option>
+          <option value="E003">E003　款項已撥付入帳（止付失敗）</option>
         </select>
       </div>
       <div class="form-group">
-        <label class="form-label">補充說明</label>
-        <textarea class="form-control" rows="2" placeholder="請輸入補充說明...">領受人已亡故，需立即止付避免溢領。</textarea>
+        <label class="form-label">銀行回覆人員／受理編號</label>
+        <input type="text" class="form-control" id="sp-fb-who" placeholder="例：林小姐／受理編號 20241210-018">
+      </div>
+      <div class="form-group">
+        <label class="form-label">備註</label>
+        <textarea class="form-control" rows="2" id="sp-fb-note" placeholder="請輸入備註..."></textarea>
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-outline" onclick="closeModal('stop-modal')">取消</button>
-      <button class="btn btn-danger" onclick="confirmStop()"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg> 確認止付</button>
+      <button class="btn btn-outline" onclick="closeModal('sp-fb-modal')">取消</button>
+      <button class="btn btn-primary" onclick="spFbSubmit()">確認登錄</button>
+    </div>
+  </div>
+</div>
+
+<!-- Stop Payment：發文資訊維護 -->
+<div class="modal-overlay" id="sp-idx-modal">
+  <div class="modal modal-md">
+    <div class="modal-header">
+      <div class="modal-title" id="sp-idx-title">新增發文資訊</div>
+      <button class="modal-close" onclick="closeModal('sp-idx-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">名稱／用途 <span class="required">*</span></label><input type="text" class="form-control" id="sp-i-name" placeholder="例：止付通知公文（銀行函・一般）"></div>
+      <div class="form-row cols-2">
+        <div class="form-group"><label class="form-label">發文機關（全銜） <span class="required">*</span></label><input type="text" class="form-control" id="sp-i-org"></div>
+        <div class="form-group"><label class="form-label">承辦單位 <span class="required">*</span></label><input type="text" class="form-control" id="sp-i-unit"></div>
+      </div>
+      <div class="form-row cols-3">
+        <div class="form-group"><label class="form-label">發文字軌 <span class="required">*</span></label><input type="text" class="form-control" id="sp-i-prefix" placeholder="例：府退三字"></div>
+        <div class="form-group"><label class="form-label">速別</label><select class="form-control" id="sp-i-speed"><option>普通件</option><option>速件</option><option>最速件</option></select></div>
+        <div class="form-group"><label class="form-label">密等及解密條件</label><select class="form-control" id="sp-i-secret"><option>普通</option><option>密</option><option>機密</option></select></div>
+      </div>
+      <div class="form-row cols-3">
+        <div class="form-group"><label class="form-label">承辦聯絡人 <span class="required">*</span></label><input type="text" class="form-control" id="sp-i-contact"></div>
+        <div class="form-group"><label class="form-label">聯絡電話 <span class="required">*</span></label><input type="text" class="form-control" id="sp-i-tel" placeholder="例：02-2300-0001"></div>
+        <div class="form-group"><label class="form-label">傳真</label><input type="text" class="form-control" id="sp-i-fax"></div>
+      </div>
+      <div class="form-group"><label class="form-label">附件預設說明</label><input type="text" class="form-control" id="sp-i-attach" placeholder="例：止付名冊（止付明細）1份"></div>
+      <div class="form-group"><label class="form-label">備註</label><textarea class="form-control" rows="2" id="sp-i-note"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('sp-idx-modal')">取消</button>
+      <button class="btn btn-primary" onclick="spIdxSave()">儲存</button>
     </div>
   </div>
 </div>
@@ -7203,6 +7375,9 @@ function navigateTo(viewId) {
   
   if (viewId === 'direct-letter') dirLetterRender();
   if (viewId === 'direct-query') dirQueryRun(true);
+  if (viewId === 'stop-payment') spRenderEntry();
+  if (viewId === 'stop-docs') spDocsRender();
+  if (viewId === 'stop-index') spIdxRender();
 
   // Update sidebar active states
   document.querySelectorAll('.sidebar-item, .sidebar-sub-item').forEach(item => {
@@ -7228,7 +7403,7 @@ function navigateTo(viewId) {
   const menuMap = {
     'overflow-single': 'overflow', 'overflow-batch': 'overflow', 'overflow-docs': 'overflow',
     'overflow-recovery': 'overflow', 'overflow-stats': 'overflow',
-    'stop-payment': 'stop', 'stop-tracking': 'stop',
+    'stop-payment': 'stop', 'stop-register': 'stop', 'stop-docs': 'stop', 'stop-index': 'stop', 'stop-tracking': 'stop',
     'tax-calc': 'tax', 'tax-case': 'tax', 'tax-report': 'tax', 'tax-audit': 'tax',
     'direct-register': 'direct', 'direct-letter': 'direct', 'direct-query': 'direct',
     'monthly-dashboard': 'monthly', 'monthly-prep': 'monthly', 'admin-monthly-audit-perm': 'monthly',
@@ -7375,21 +7550,6 @@ document.querySelectorAll('.modal-overlay').forEach(overlay => {
     if (e.target === this) this.classList.remove('open');
   });
 });
-
-// ===== STOP PAYMENT =====
-function openStopModal(name, id, amount, period) {
-  document.getElementById('stop-name').textContent = name;
-  document.getElementById('stop-id').textContent = id.substring(0,4) + '***' + id.substring(7);
-  document.getElementById('stop-amount').textContent = 'NT$ ' + amount;
-  document.getElementById('stop-period').textContent = period;
-  openModal('stop-modal');
-}
-
-function confirmStop() {
-  closeModal('stop-modal');
-  showToast('success', '止付成功', '已成功執行止付，止付文件已產製，請下載並傳真銀行');
-  setTimeout(() => showToast('info', '文件已產製', '銀行止付傳真表及止付公文已產製完成'), 1000);
-}
 
 // ===== RECOVERY =====
 function openRecoveryModal(caseId, name, amount) {
@@ -12622,5 +12782,502 @@ navigateTo=function(id){_navSal(id);if(id.indexOf('salary-')===0){const sm=sEl('
   data-site-code="fms-site"
   data-assistant-code="fms-assistant"></script>
 
+<script>
+/* ===== V22：止付作業子系統（入口／案件登錄與檢核／文件產製／發文資訊索引） ===== */
+const SP_ST = {
+  registered: ['badge-warning', '已登錄，待產製文書'],
+  docs: ['badge-info', '文書已產製，待發文'],
+  sent: ['badge-primary', '已發文，待銀行回饋'],
+  success: ['badge-success', '止付成功'],
+  fail: ['badge-danger', '止付失敗'],
+  overdue: ['badge-danger', '逾時未回饋']
+};
+const SP_FB = {
+  R001: ['success', '止付成功（銀行已受理）'],
+  E001: ['fail', '銀行無法受理：帳戶已結清或不存在'],
+  E002: ['fail', '戶名或帳號與銀行資料不符'],
+  E003: ['fail', '款項已撥付入帳（止付失敗）']
+};
+const SP_BANKS = { '台灣銀行': '02-2000-0101', '郵局': '02-2000-0202', '合作金庫': '02-2000-0303', '第一銀行': '02-2000-0404', '土地銀行': '02-2000-0505' };
+const SP_REASONS = ['亡故', '喪失資格', '重複撥付', '其他'];
+const SP_DSTEPS = ['產製公文檔（DI），帶入主旨、說明及止付名冊', '傳送至本局公文管理系統', '公文系統依銀行別取號，取得發文字號', '回填發文字號至各止付案件', '歸檔電話紀錄表、止付明細及公文抄本'];
+
+/* ---- 領受人與尚未撥付之支領紀錄（原型示意資料；實務由撥付系統介接） ---- */
+const SP_DB = {
+  'A123456789': { name: '王建民', cat: '公務月退', unit: '臺北市政府', bank: '台灣銀行', acct: '012-345-004521', recs: [{ rid: 'PAY-1131225-0188', period: '113/12', pdate: '113/12/25', amt: 68500 }] },
+  'K234567890': { name: '孫大偉', cat: '軍職月退', unit: '國防部', bank: '郵局', acct: '0001234-5679012', recs: [{ rid: 'PAY-1131225-0412', period: '113/12', pdate: '113/12/25', amt: 55000 }, { rid: 'PAY-1140125-0097', period: '114/01', pdate: '114/01/25', amt: 55000 }] },
+  'C345678901': { name: '林志明', cat: '公務月退', unit: '新北市政府', bank: '合作金庫', acct: '006-123-007823', recs: [{ rid: 'PAY-1131225-0305', period: '113/12', pdate: '113/12/25', amt: 71000 }] },
+  'D456789012': { name: '張淑芬', cat: '教職月退', unit: '行政院', bank: '第一銀行', acct: '007-456-002341', recs: [{ rid: 'PAY-1131225-0377', period: '113/12', pdate: '113/12/25', amt: 142000 }] },
+  'B234567890': { name: '陳美麗', cat: '公務月退', unit: '臺北市政府教育局', bank: '台灣銀行', acct: '012-345-004521', recs: [{ rid: 'PAY-1131225-0231', period: '113/12', pdate: '113/12/25', amt: 68500 }] },
+  'H890123456': { name: '趙麗華', cat: '公務月退', unit: '臺北市政府教育局', bank: '', acct: '', recs: [{ rid: 'PAY-1131225-0560', period: '113/12', pdate: '113/12/25', amt: 61000 }] },
+  'U201234567': { name: '吳淑貞', cat: '一次退休金', unit: '臺北市政府', bank: '台灣銀行', acct: '012-777-001122', recs: [{ rid: 'PAY-1131230-0021', period: '113/12', pdate: '113/12/30', amt: 1850000 }] },
+  'T200000001': { name: '劉文彬', cat: '公務月退', unit: '新北市政府', bank: '第一銀行', acct: '007-200-009911', recs: [] }
+};
+
+const SP = {
+  handler: '王大明', baseSuccess: 12, seq: 22, docSeq: 12040, failNext: false,
+  cases: [], alerts: [], dispatches: [], idx: [], idxLog: [],
+  filter: 'all', reg: null, docSel: new Set(), gen: null, fbCase: null, idxEdit: null
+};
+(function spSeed() {
+  const mk = (no, id, name, cat, unit, bank, acct, rid, period, pdate, amt, reason, st, at, extra) => Object.assign({
+    no, id, name, cat, unit, bank, acct, rid, period, pdate, amt, reason, note: '', by: SP.handler, at, st,
+    chk: '檢核通過', docNo: '', sentAt: '', idxId: '', fb: [],
+    hist: [{ t: at, act: '登錄止付案件', by: SP.handler, desc: '依領受人身分證字號帶入未撥付支領紀錄並建立案件關聯' }]
+  }, extra || {});
+  SP.cases = [
+    mk('STP-113-0021', 'N223456789', '周淑惠', '公務月退', '臺北市政府', '台灣銀行', '012-300-004410', 'PAY-1131225-0601', '113/12', '113/12/25', 66000, '亡故', 'registered', '113/12/09 16:20'),
+    mk('STP-113-0022', 'M123456780', '鄭文雄', '公務月退', '新北市政府', '郵局', '0002345-6781234', 'PAY-1131225-0602', '113/12', '113/12/25', 58000, '喪失資格', 'registered', '113/12/09 16:41'),
+    mk('STP-113-0023', 'P198765432', '許志豪', '教職月退', '教育部', '台灣銀行', '012-410-003377', 'PAY-1131225-0603', '113/12', '113/12/25', 123000, '亡故', 'registered', '113/12/10 09:05'),
+    mk('STP-113-0024', 'Q223344556', '林淑華', '教職月退', '教育部', '第一銀行', '007-220-005566', 'PAY-1131225-0604', '113/12', '113/12/25', 98000, '重複撥付', 'registered', '113/12/10 09:12'),
+    mk('STP-113-0025', 'R155667788', '蕭正宏', '軍職月退', '國防部', '合作金庫', '006-155-001288', 'PAY-1131225-0605', '113/12', '113/12/25', 72000, '亡故', 'registered', '113/12/10 09:30'),
+    mk('STP-113-0026', 'W212345670', '曾國維', '公務月退', '臺北市政府', '台灣銀行', '012-560-007712', 'PAY-1131225-0606', '113/12', '113/12/25', 64500, '亡故', 'registered', '113/12/10 10:02'),
+    mk('STP-113-0027', 'V288776655', '方雅琪', '公務月退', '新北市政府', '第一銀行', '007-880-004433', 'PAY-1131225-0607', '113/12', '113/12/25', 69000, '喪失資格', 'registered', '113/12/10 10:18'),
+    mk('STP-113-0020', 'E567890123', '黃建國', '軍職月退', '國防部', '郵局', '0001234-5679012', 'PAY-1131225-0420', '113/12', '113/12/25', 55000, '亡故', 'docs', '113/12/09 11:30'),
+    mk('STP-113-0019', 'B234567890', '陳美麗', '公務月退', '臺北市政府教育局', '台灣銀行', '012-345-004521', 'PAY-1131225-0231', '113/12', '113/12/25', 68500, '亡故', 'sent', '113/12/05 14:23', { docNo: '府退三字第1130012031號', sentAt: '113/12/05 15:02', idxId: 'SPI-001' }),
+    mk('STP-113-0018', 'G789012345', '吳建成', '公務月退', '新北市政府', '合作金庫', '006-789-003210', 'PAY-1131225-0188B', '113/12', '113/12/25', 60500, '亡故', 'overdue', '113/12/03 10:20', { docNo: '府退三字第1130011987號', sentAt: '113/12/03 11:05', idxId: 'SPI-001' }),
+    mk('STP-113-0017', 'L122345678', '蔡明哲', '公務月退', '臺北市政府', '土地銀行', '005-122-006655', 'PAY-1131125-0912', '113/11', '113/11/25', 63000, '亡故', 'fail', '113/11/26 09:40', { docNo: '府退三字第1130011402號', sentAt: '113/11/26 10:30', idxId: 'SPI-001', fb: [{ t: '113/12/02 14:10', code: 'E001', who: '土地銀行 張先生', note: '帳戶已結清' }] }),
+    mk('STP-113-0016', 'S234567891', '楊雅婷', '教職月退', '教育部', '第一銀行', '007-234-001199', 'PAY-1131125-0745', '113/11', '113/11/25', 105000, '亡故', 'fail', '113/11/25 15:10', { docNo: '府退三字第1130011388號', sentAt: '113/11/25 16:00', idxId: 'SPI-001', fb: [{ t: '113/12/01 10:25', code: 'E002', who: '第一銀行 王小姐', note: '戶名與銀行資料不符' }] }),
+    mk('STP-113-0015', 'F223344556', '郭靜宜', '公務月退', '新北市政府', '台灣銀行', '012-223-004488', 'PAY-1131125-0651', '113/11', '113/11/25', 59000, '亡故', 'success', '113/11/20 10:08', { docNo: '府退三字第1130011290號', sentAt: '113/11/20 11:00', idxId: 'SPI-001', fb: [{ t: '113/11/22 09:30', code: 'R001', who: '台灣銀行 李先生', note: '' }] }),
+    mk('STP-113-0014', 'J112233445', '洪國棟', '軍職月退', '國防部', '郵局', '0003456-7894321', 'PAY-1131125-0633', '113/11', '113/11/25', 52000, '喪失資格', 'success', '113/11/18 11:30', { docNo: '府退三字第1130011246號', sentAt: '113/11/18 13:15', idxId: 'SPI-001', fb: [{ t: '113/11/20 15:00', code: 'R001', who: '郵局 陳小姐', note: '' }] })
+  ];
+  SP.alerts = [
+    { id: 'WRN-STP-0876', lvl: 'danger', title: '銀行端逾時限未回饋止付結果', desc: '吳建成（G789***012）・合作金庫・登錄 113/12/03 10:20，已逾設定時限 113/12/06（3個工作日）', at: '113/12/08 18:40', no: 'STP-113-0018', go: 'case', ack: false },
+    { id: 'ERR-STP-0412', lvl: 'warning', title: '銀行回饋止付失敗（E001 帳戶已結清）', desc: '蔡明哲（L122***678）・土地銀行，需重新聯繫銀行確認帳戶狀態', at: '113/12/02 14:10', no: 'STP-113-0017', go: 'case', ack: false },
+    { id: 'ERR-STP-0405', lvl: 'warning', title: '銀行回饋止付失敗（E002 戶名不符）', desc: '楊雅婷（S234***891）・第一銀行，需重新聯繫銀行並核對戶名', at: '113/12/01 10:25', no: 'STP-113-0016', go: 'case', ack: false }
+  ];
+  SP.idx = [
+    { id: 'SPI-001', name: '止付通知公文（銀行函・一般）', org: '公務人員退休撫卹基金管理局', unit: '基金業務科（止付作業）', prefix: '府退三字', speed: '普通件', secret: '普通', contact: '王大明', tel: '02-2300-0001', fax: '02-2300-0002', attach: '止付名冊（止付明細）1份', note: '', active: true, def: true, by: '李主辦', at: '113/10/01 09:30' },
+    { id: 'SPI-002', name: '止付通知公文（銀行函・速件）', org: '公務人員退休撫卹基金管理局', unit: '基金業務科（止付作業）', prefix: '府退三字', speed: '速件', secret: '普通', contact: '王大明', tel: '02-2300-0001', fax: '02-2300-0002', attach: '止付名冊（止付明細）1份', note: '亡故案件需即時止付時採用', active: true, def: false, by: '李主辦', at: '113/10/01 09:42' },
+    { id: 'SPI-003', name: '止付通知公文（舊版承辦資訊）', org: '公務人員退休撫卹基金管理局', unit: '基金業務科', prefix: '府退二字', speed: '普通件', secret: '普通', contact: '陳小玲', tel: '02-2300-0099', fax: '', attach: '止付名冊1份', note: '承辦人異動，已停用', active: false, def: false, by: '李主辦', at: '113/09/15 14:05' }
+  ];
+  SP.idxLog = [
+    { t: '113/10/01 09:42', id: 'SPI-002', act: '新增', by: '李主辦', desc: '新增速件版發文資訊' },
+    { t: '113/10/01 09:30', id: 'SPI-001', act: '設為預設', by: '李主辦', desc: '設定為止付公文預設發文資訊' },
+    { t: '113/09/15 14:05', id: 'SPI-003', act: '停用', by: '李主辦', desc: '承辦人異動，停用舊版承辦資訊' }
+  ];
+  const snap = i => { const x = SP.idx.find(v => v.id === i); return { name: x.name, org: x.org, unit: x.unit, prefix: x.prefix, speed: x.speed, secret: x.secret, contact: x.contact, tel: x.tel, fax: x.fax, attach: x.attach }; };
+  SP.dispatches = [
+    { docNo: '府退三字第1130012031號', bank: '台灣銀行', nos: ['STP-113-0019'], idxId: 'SPI-001', snap: snap('SPI-001'), at: '113/12/05 15:02', by: '王大明' },
+    { docNo: '府退三字第1130011987號', bank: '合作金庫', nos: ['STP-113-0018'], idxId: 'SPI-001', snap: snap('SPI-001'), at: '113/12/03 11:05', by: '王大明' }
+  ];
+})();
+
+/* ---- 共用小工具 ---- */
+const spG = id => document.getElementById(id);
+const spMaskAcct = a => a ? '***' + String(a).replace(/\D/g, '').slice(-4) : '—';
+const spByNo = no => SP.cases.find(c => c.no === no);
+const spIdxById = id => SP.idx.find(x => x.id === id);
+const spOpenCaseByRid = rid => SP.cases.find(c => c.rid === rid);
+const spWrap = inner => '<style>' + DIR_DOC_CSS + '</style>' + inner;
+const spCount = st => SP.cases.filter(c => st.includes(c.st)).length;
+function spUnacked() { return SP.alerts.filter(a => !a.ack); }
+function spUpdateBadge() {
+  const el = document.querySelector('#menu-stop .sidebar-item-text'); if (!el) return;
+  const n = spUnacked().length;
+  el.innerHTML = '止付作業' + (n ? ' <span class="badge badge-danger" style="margin-left:4px">' + n + '</span>' : '');
+}
+function spPushAlert(lvl, title, desc, no, go) {
+  const a = { id: 'STP-ALT-' + String(Date.now()).slice(-6), lvl, title, desc, at: dirNow(), no: no || '', go: go || (no ? 'case' : 'docs'), ack: false };
+  SP.alerts.unshift(a); spUpdateBadge();
+  if (spG('view-stop-payment') && spG('view-stop-payment').classList.contains('active')) spRenderEntry();
+  showToast(lvl === 'danger' ? 'error' : 'warning', '止付作業異常訊息', title);
+  return a;
+}
+function spHist(c, act, desc) { c.hist.unshift({ t: dirNow(), act, by: SP.handler, desc }); }
+
+/* =====================================================================
+   A. 止付作業入口
+   ===================================================================== */
+function spRenderEntry() {
+  const todo = spCount(['registered', 'docs']), fail = spCount(['fail']), over = spCount(['overdue']), succ = SP.baseSuccess + spCount(['success']);
+  const un = spUnacked();
+  spG('sp-alert-banner').innerHTML = un.length
+    ? '<div class="sp-banner"><div><b>⚠ 系統接收到 ' + un.length + ' 則尚未處理之異常訊息</b>　逾時未回饋 ' + un.filter(a => spByNo(a.no) && spByNo(a.no).st === 'overdue').length + ' 則、銀行回饋失敗／其他 ' + (un.length - un.filter(a => spByNo(a.no) && spByNo(a.no).st === 'overdue').length) + ' 則，請承辦人及時介入處理</div><a href="javascript:void(0)" class="btn btn-danger btn-sm" onclick="spG(\'sp-alerts\').scrollIntoView({behavior:\'smooth\'})">立即查看</a></div>'
+    : '<div class="sp-banner ok"><div>✔ 目前無待處理之異常訊息</div></div>';
+  const card = (cls, label, val, sub, f) => '<div class="stat-card ' + cls + '" style="cursor:pointer" onclick="spSetFilter(\'' + f + '\')"><div class="stat-label">' + label + '</div><div class="stat-value ' + (cls === 'warning' ? '' : cls) + '"' + (cls === 'warning' ? ' style="color:var(--warning)"' : '') + '>' + val + '</div><div class="stat-sub">' + sub + '</div></div>';
+  spG('sp-stats').innerHTML = card('warning', '待辦止付案件', todo, '待產製文書或待發文', 'todo') + card('danger', '銀行回饋失敗', fail, '需重新聯繫銀行或轉溢領管理', 'fail') + card('danger', '追蹤未回（逾時限）', over, '超過設定聯繫時限', 'overdue') + card('success', '本月止付成功', succ, '已同步溢領管理子系統', 'success');
+
+  // 異常訊息
+  spG('sp-alerts').innerHTML = SP.alerts.length ? SP.alerts.map((a, i) => {
+    const cls = a.lvl === 'danger' ? 'badge-danger' : (a.lvl === 'warning' ? 'badge-warning' : 'badge-info');
+    return '<div class="sp-alert-item' + (a.ack ? ' ack' : '') + '"><div><span class="badge ' + cls + '">' + (a.lvl === 'danger' ? '嚴重' : (a.lvl === 'warning' ? '注意' : '提示')) + '</span> <span class="sp-alert-title">' + dirEsc(a.title) + '</span>' +
+      '<div class="sp-alert-desc">' + dirEsc(a.desc) + '　<span style="white-space:nowrap">' + a.at + (a.no ? '・' + a.no : '') + '</span></div></div>' +
+      '<div style="display:flex;gap:6px;flex-shrink:0">' + (a.ack ? '<span class="badge badge-secondary">已知悉</span>' : '<button class="btn btn-sm btn-primary" onclick="spAlertGo(' + i + ')">前往處理</button><button class="btn btn-sm btn-outline" onclick="spAlertAck(' + i + ')">已知悉</button>') + '</div></div>';
+  }).join('') : '<div class="form-hint">目前無異常訊息</div>';
+
+  // 待辦與回饋
+  const fbs = []; SP.cases.forEach(c => c.fb.forEach(f => fbs.push({ c, f })));
+  fbs.sort((a, b) => b.f.t.localeCompare(a.f.t));
+  const row = (t, n, f) => '<div class="sp-todo-row"><span>' + t + '</span><a href="javascript:void(0)" onclick="spSetFilter(\'' + f + '\')"><b>' + n + '</b> 件 ›</a></div>';
+  spG('sp-todo').innerHTML = '<div class="sp-sub">待辦事項</div>' +
+    row('已登錄，待產製電話紀錄表／公文／止付明細', spCount(['registered']), 'registered') +
+    row('文書已產製，待介接公文系統發文', spCount(['docs']), 'docs') +
+    row('已發文，等待銀行回饋', spCount(['sent']), 'sent') +
+    '<div class="sp-sub">最新銀行回饋</div>' +
+    (fbs.slice(0, 4).map(x => '<div class="sp-todo-row"><span><span class="badge ' + (SP_FB[x.f.code][0] === 'success' ? 'badge-success' : 'badge-danger') + '">' + x.f.code + '</span> ' + dirEsc(x.c.name) + '・' + x.c.bank + '<div class="sp-alert-desc">' + SP_FB[x.f.code][1] + '</div></span><span class="sp-alert-desc">' + x.f.t + '</span></div>').join('') || '<div class="form-hint">尚無銀行回饋</div>');
+
+  // 案件清單
+  const F = SP.filter, defs = [['all', '全部'], ['todo', '待辦'], ['registered', '待產製'], ['docs', '待發文'], ['sent', '待回饋'], ['overdue', '逾時未回饋'], ['fail', '回饋失敗'], ['success', '止付成功']];
+  const match = c => F === 'all' || (F === 'todo' ? (c.st === 'registered' || c.st === 'docs') : c.st === F);
+  spG('sp-filter').innerHTML = defs.map(d => '<span class="sp-chip' + (F === d[0] ? ' active' : '') + '" onclick="spSetFilter(\'' + d[0] + '\')">' + d[1] + '（' + SP.cases.filter(c => d[0] === 'all' ? true : (d[0] === 'todo' ? (c.st === 'registered' || c.st === 'docs') : c.st === d[0])).length + '）</span>').join('');
+  const rows = SP.cases.filter(match).sort((a, b) => b.no.localeCompare(a.no));
+  spG('sp-case-body').innerHTML = rows.map(c => {
+    let act = '';
+    if (c.st === 'registered' || c.st === 'docs') act = '<button class="btn btn-sm btn-primary" onclick="spGoDocs([\'' + c.no + '\'])">產製文件</button>';
+    else if (c.st === 'sent' || c.st === 'overdue') act = '<button class="btn btn-sm btn-primary" onclick="spFbOpen(\'' + c.no + '\')">登錄銀行回饋</button>';
+    else if (c.st === 'fail') act = '<button class="btn btn-sm btn-outline-primary" onclick="spFbOpen(\'' + c.no + '\')">重新登錄回饋</button>' + (c.fb.length && c.fb[0].code === 'E003' ? ' <button class="btn btn-sm btn-outline-danger" onclick="navigateTo(\'overflow-single\')">轉入溢領管理</button>' : '');
+    return '<tr><td><a href="javascript:void(0)" onclick="spCaseView(\'' + c.no + '\')">' + c.no + '</a></td><td>' + dirEsc(c.name) + '</td><td class="masked">' + dirMaskId(c.id) + '</td><td>' + c.cat + '</td><td>' + c.bank + '</td><td>' + c.period + '</td><td>NT$ ' + dirFmt(c.amt) + '</td><td>' + c.at + '</td><td><span class="badge ' + SP_ST[c.st][0] + '">' + SP_ST[c.st][1] + '</span></td><td style="white-space:nowrap"><button class="btn btn-sm btn-outline" onclick="spCaseView(\'' + c.no + '\')">檢視</button> ' + act + '</td></tr>';
+  }).join('') || '<tr><td colspan="10" style="text-align:center;color:var(--text-secondary)">無符合條件之案件</td></tr>';
+}
+function spSetFilter(f) { SP.filter = f; navigateTo('stop-payment'); spG('sp-filter').scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+function spAlertAck(i) { SP.alerts[i].ack = true; spUpdateBadge(); spRenderEntry(); }
+function spAlertGo(i) {
+  const a = SP.alerts[i];
+  if (a.go === 'docs') { navigateTo('stop-docs'); return; }
+  const c = spByNo(a.no); if (!c) return;
+  if (c.st === 'sent' || c.st === 'overdue' || c.st === 'fail') spFbOpen(c.no); else spCaseView(c.no);
+}
+function spSimAlert() {
+  const c = SP.cases.find(x => x.st === 'sent'); if (!c) { showToast('info', '無可模擬案件', '目前沒有「已發文待回饋」之案件'); return; }
+  c.st = 'overdue'; spHist(c, '逾時未回饋', '超過設定聯繫時限仍未收到銀行回饋');
+  spPushAlert('danger', '銀行端逾時限未回饋止付結果', c.name + '（' + dirMaskId(c.id) + '）・' + c.bank + '・已發文 ' + c.sentAt + '，逾 3 個工作日未回饋，請聯繫銀行', c.no, 'case');
+}
+function spCaseView(no) {
+  const c = spByNo(no); if (!c) return;
+  const info = (k, v) => '<div class="info-row"><div class="info-key">' + k + '</div><div class="info-val">' + v + '</div></div>';
+  openDetailModal('止付案件 ' + c.no + ' · ' + c.name,
+    '<div class="info-card" style="margin-bottom:12px">' + info('領受人', dirEsc(c.name) + '（' + dirMaskId(c.id) + '）') + info('退撫類別／服務機關', c.cat + '／' + dirEsc(c.unit)) + info('撥付金融機構／帳號', c.bank + '　' + spMaskAcct(c.acct)) + info('關聯支領紀錄', c.rid + '（' + c.period + '，預定撥付 ' + c.pdate + '，NT$ ' + dirFmt(c.amt) + '）') + info('止付原因', dirEsc(c.reason) + (c.note ? '：' + dirEsc(c.note) : '')) + info('系統檢核結果', dirEsc(c.chk)) + info('處理狀態', '<span class="badge ' + SP_ST[c.st][0] + '">' + SP_ST[c.st][1] + '</span>') + info('發文字號', c.docNo ? dirEsc(c.docNo) + '（' + c.sentAt + '）' : '尚未發文') + '</div>' +
+    '<div class="detail-block-title" style="margin-bottom:6px">處理歷程</div>' + c.hist.map(h => '<div class="validation-item ok" style="align-items:flex-start"><span>●</span><span>' + h.t + '　' + dirEsc(h.by) + '　<b>' + dirEsc(h.act) + '</b>：' + dirEsc(h.desc) + '</span></div>').join(''));
+}
+
+/* ---- 銀行回饋登錄 ---- */
+function spFbOpen(no) {
+  const c = spByNo(no); if (!c) return; SP.fbCase = no;
+  spG('sp-fb-info').innerHTML = '<b>' + c.no + '</b>　' + dirEsc(c.name) + '（' + dirMaskId(c.id) + '）・' + c.bank + '・' + c.period + '・NT$ ' + dirFmt(c.amt) + '<div class="form-hint">銀行電話：' + SP_BANKS[c.bank] + '（原型示意）' + (c.docNo ? '　發文字號：' + dirEsc(c.docNo) : '') + '</div>';
+  spG('sp-fb-code').value = ''; spG('sp-fb-who').value = ''; spG('sp-fb-note').value = '';
+  openModal('sp-fb-modal');
+}
+function spFbSubmit() {
+  const c = spByNo(SP.fbCase), code = spG('sp-fb-code').value;
+  if (!c) return;
+  if (!code) { showToast('warning', '請選擇回饋結果', '請選擇銀行回饋結果代碼'); return; }
+  c.fb.unshift({ t: dirNow(), code, who: spG('sp-fb-who').value.trim(), note: spG('sp-fb-note').value.trim() });
+  c.st = SP_FB[code][0]; spHist(c, '登錄銀行回饋', code + '　' + SP_FB[code][1]);
+  SP.alerts.forEach(a => { if (a.no === c.no && !a.ack && c.st === 'success') a.ack = true; });
+  closeModal('sp-fb-modal');
+  if (c.st === 'fail') spPushAlert('warning', '銀行回饋止付失敗（' + code + '）', c.name + '（' + dirMaskId(c.id) + '）・' + c.bank + '：' + SP_FB[code][1] + (code === 'E003' ? '，請轉入溢領管理' : '，請重新聯繫銀行'), c.no, 'case');
+  else showToast('success', '已登錄銀行回饋', c.name + ' 止付成功，案件已排除於溢領處理流程');
+  spUpdateBadge(); spRenderEntry();
+}
+
+/* =====================================================================
+   B. 案件登錄與檢核
+   ===================================================================== */
+function spCheck(raw) {
+  const id = String(raw || '').trim().toUpperCase();
+  const r = { id, errors: [], warns: [], passes: [], payee: null, recs: [] };
+  if (!id) { r.errors.push('請輸入領受人身分證字號'); return r; }
+  if (!/^[A-Z]\d{9}$/.test(id)) { r.errors.push('身分證字號格式不正確（應為 1 碼英文字母加 9 碼數字）'); return r; }
+  r.passes.push('身分證字號格式檢核通過');
+  const p = SP_DB[id];
+  if (!p) { r.errors.push('查無此領受人於本局之支領資料，請確認身分證字號是否正確'); return r; }
+  r.payee = p; r.passes.push('已查得領受人：' + p.name);
+  if (!/月退|月撫慰/.test(p.cat)) { r.errors.push('退撫類別為「' + p.cat + '」，與本局提供之止付條件（月退休(職)金／月撫慰金）不符，無法登錄止付'); return r; }
+  r.passes.push('退撫類別（' + p.cat + '）符合止付條件');
+  if (!p.bank || !p.acct) { r.errors.push('資料缺漏：領受人缺少' + (!p.bank ? '撥付金融機構' : '撥付帳號') + '，無法產製銀行電話紀錄表及止付明細，請先補正支領資料'); return r; }
+  r.passes.push('撥付金融機構及帳號資料完整');
+  if (!p.recs.length) { r.errors.push('查無尚未撥付之支領紀錄（支領紀錄均已撥付），無須辦理止付；如款項已撥付，請轉入溢領管理子系統'); return r; }
+  r.recs = p.recs.map(x => Object.assign({}, x, { locked: (spOpenCaseByRid(x.rid) || {}).no || '' }));
+  r.passes.push('已搜尋到 ' + r.recs.length + ' 筆尚未撥付之支領紀錄');
+  const avail = r.recs.filter(x => !x.locked);
+  if (!avail.length) { r.errors.push('尚未撥付之支領紀錄均已建立止付案件（' + r.recs.map(x => x.locked).join('、') + '），為避免重複建案，已阻擋後續作業'); return r; }
+  if (avail.length < r.recs.length) r.warns.push('其中 ' + (r.recs.length - avail.length) + ' 筆已建立止付案件，不可重複登錄');
+  if (r.recs.length >= 2) r.warns.push('同一身分證字號查得 ' + r.recs.length + ' 筆尚未撥付之支領紀錄，請逐筆確認欲止付之紀錄，以避免案件誤建或資料對應錯誤');
+  return r;
+}
+function spRegDemo(id) { spG('sp-reg-id').value = id; spRegSearch(); }
+function spRegReset() { SP.reg = null; spG('sp-reg-id').value = ''; spG('sp-reg-result').innerHTML = ''; }
+function spRegSearch() {
+  const chk = spCheck(spG('sp-reg-id').value);
+  SP.reg = { chk, sel: new Set(), ack: false, reason: '', note: '', done: null };
+  const avail = chk.recs.filter(x => !x.locked);
+  if (!chk.errors.length && avail.length === 1) SP.reg.sel.add(avail[0].rid);
+  spRegRender();
+}
+function spRegRender() {
+  const R = SP.reg, box = spG('sp-reg-result'); if (!R) { box.innerHTML = ''; return; }
+  if (R.done) {
+    box.innerHTML = '<div class="card"><div class="info-card success" style="margin-bottom:12px"><b>✔ 已登錄 ' + R.done.length + ' 筆止付案件</b>　案件已建立與領受人、支領紀錄之關聯，並顯示於止付作業入口追蹤處理狀態</div>' +
+      '<div class="table-wrapper"><table class="data-table"><thead><tr><th>案件編號</th><th>領受人</th><th>關聯支領紀錄</th><th>止付期間</th><th>止付金額</th><th>銀行別</th><th>狀態</th></tr></thead><tbody>' +
+      R.done.map(no => { const c = spByNo(no); return '<tr><td>' + c.no + '</td><td>' + dirEsc(c.name) + '（' + dirMaskId(c.id) + '）</td><td>' + c.rid + '</td><td>' + c.period + '</td><td>NT$ ' + dirFmt(c.amt) + '</td><td>' + c.bank + '</td><td><span class="badge ' + SP_ST[c.st][0] + '">' + SP_ST[c.st][1] + '</span></td></tr>'; }).join('') +
+      '</tbody></table></div><div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap"><button class="btn btn-primary" onclick="spGoDocs(SP.reg.done)">前往產製文件</button><button class="btn btn-outline" onclick="spRegReset()">繼續登錄下一位</button><button class="btn btn-outline" onclick="navigateTo(\'stop-payment\')">回止付作業入口</button></div></div>';
+    return;
+  }
+  const c = R.chk;
+  let h = '<div class="card" style="margin-bottom:16px"><div class="section-title">二、系統檢核結果</div>' +
+    c.passes.map(t => '<div class="validation-item ok">✔ ' + dirEsc(t) + '</div>').join('') +
+    c.warns.map(t => '<div class="validation-item warn">⚠ ' + dirEsc(t) + '</div>').join('') +
+    c.errors.map(t => '<div class="validation-item fail">✖ ' + dirEsc(t) + '</div>').join('');
+  if (c.errors.length) {
+    h += '<div class="info-card danger" style="margin-top:12px"><b>已阻擋後續作業</b>：請承辦人依上述原因確認或補正資料後，重新查詢；系統不允許於檢核未通過時建立止付案件。</div></div>';
+    box.innerHTML = h; return;
+  }
+  h += '</div>';
+  const p = c.payee, avail = c.recs.filter(x => !x.locked), multi = c.recs.length >= 2;
+  h += '<div class="card" style="margin-bottom:16px"><div class="section-title">三、領受人資料（系統自動帶入）</div><div class="form-row cols-3">' +
+    [['領受人姓名', dirEsc(p.name)], ['身分證字號', dirMaskId(c.id)], ['退撫類別', p.cat], ['服務機關', dirEsc(p.unit)], ['撥付金融機構', p.bank], ['撥付帳號', spMaskAcct(p.acct)]].map(x => '<div class="info-row" style="margin:0"><div class="info-key">' + x[0] + '</div><div class="info-val">' + x[1] + '</div></div>').join('') + '</div></div>';
+  h += '<div class="card" style="margin-bottom:16px"><div class="section-title">四、尚未撥付之支領紀錄' + (multi ? '（請逐筆勾選）' : '') + '</div>' +
+    (multi ? '<div class="info-card warning" style="margin-bottom:12px">⚠ 同一身分證字號查得 <b>' + c.recs.length + '</b> 筆尚未撥付之支領紀錄，請確認欲止付之紀錄後勾選，並於下方勾選確認，避免案件誤建或資料對應錯誤。</div>' : '') +
+    '<div class="table-wrapper"><table class="data-table"><thead><tr><th style="width:32px"></th><th>支領紀錄編號</th><th>撥付期間</th><th>預定撥付日</th><th>撥付金額</th><th>撥付帳號</th><th>狀態</th></tr></thead><tbody>' +
+    c.recs.map(x => '<tr><td><input type="checkbox" ' + (x.locked ? 'disabled' : '') + (R.sel.has(x.rid) ? ' checked' : '') + ' onchange="spRegToggle(\'' + x.rid + '\',this.checked)"></td><td>' + x.rid + '</td><td>' + x.period + '</td><td>' + x.pdate + '</td><td>NT$ ' + dirFmt(x.amt) + '</td><td>' + p.bank + ' ' + spMaskAcct(p.acct) + '</td><td>' + (x.locked ? '<span class="badge badge-secondary">已建案 ' + x.locked + '</span>' : '<span class="badge badge-success">尚未撥付</span>') + '</td></tr>').join('') + '</tbody></table></div>' +
+    (multi ? '<label class="checkbox-item" style="margin-top:12px"><input type="checkbox" id="sp-ack" ' + (R.ack ? 'checked' : '') + ' onchange="SP.reg.ack=this.checked"> 我已逐筆確認勾選之支領紀錄與領受人對應無誤</label>' : '') + '</div>';
+  h += '<div class="card"><div class="section-title">五、止付資訊</div><div class="form-row cols-2"><div class="form-group"><label class="form-label">止付原因 <span class="required">*</span></label><select class="form-control" id="sp-reg-reason" onchange="SP.reg.reason=this.value"><option value="">-- 請選擇 --</option>' + SP_REASONS.map(x => '<option' + (R.reason === x ? ' selected' : '') + '>' + x + '</option>').join('') + '</select></div>' +
+    '<div class="form-group"><label class="form-label">補充說明</label><textarea class="form-control" rows="2" id="sp-reg-note" oninput="SP.reg.note=this.value" placeholder="請輸入補充說明...">' + dirEsc(R.note) + '</textarea></div></div>' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><div class="form-hint" id="sp-reg-sum"></div><button class="btn btn-danger" onclick="spRegSubmit()">登錄止付案件</button></div></div>';
+  box.innerHTML = h; spRegSum();
+}
+function spRegToggle(rid, on) { on ? SP.reg.sel.add(rid) : SP.reg.sel.delete(rid); spRegSum(); }
+function spRegSum() {
+  const el = spG('sp-reg-sum'); if (!el || !SP.reg) return;
+  const recs = SP.reg.chk.recs.filter(x => SP.reg.sel.has(x.rid));
+  el.textContent = '已選擇 ' + recs.length + ' 筆支領紀錄，止付金額合計 NT$ ' + dirFmt(recs.reduce((s, x) => s + x.amt, 0)) + '；每筆支領紀錄將各建立 1 件止付案件';
+}
+function spRegSubmit() {
+  const R = SP.reg; if (!R || R.chk.errors.length) return;
+  const recs = R.chk.recs.filter(x => R.sel.has(x.rid) && !x.locked);
+  if (!recs.length) { showToast('warning', '尚未選擇支領紀錄', '請勾選欲止付之支領紀錄'); return; }
+  if (R.chk.recs.length >= 2 && !R.ack) { showToast('warning', '請先確認對應關係', '同一身分證字號有 2 筆以上未撥付紀錄，請勾選確認欲止付之紀錄無誤'); return; }
+  if (!R.reason) { showToast('warning', '請選擇止付原因', '止付原因為必填'); return; }
+  const p = R.chk.payee, made = [];
+  recs.forEach(x => {
+    if (spOpenCaseByRid(x.rid)) return;
+    const no = 'STP-113-' + String(SP.seq++).padStart(4, '0'), t = dirNow();
+    SP.cases.unshift({ no, id: R.chk.id, name: p.name, cat: p.cat, unit: p.unit, bank: p.bank, acct: p.acct, rid: x.rid, period: x.period, pdate: x.pdate, amt: x.amt, reason: R.reason, note: R.note.trim(), by: SP.handler, at: t, st: 'registered',
+      chk: R.chk.recs.length >= 2 ? '檢核通過（同一身分證字號 ' + R.chk.recs.length + ' 筆未撥付，已由承辦人逐筆確認）' : '檢核通過', docNo: '', sentAt: '', idxId: '', fb: [],
+      hist: [{ t, act: '登錄止付案件', by: SP.handler, desc: '依身分證字號帶入未撥付支領紀錄 ' + x.rid + ' 並建立案件關聯；止付原因：' + R.reason }] });
+    made.push(no);
+  });
+  R.done = made; spUpdateBadge(); spRegRender();
+  showToast('success', '止付案件已登錄', '已建立 ' + made.length + ' 件止付案件，可前往產製文件');
+}
+function spGoDocs(nos) { SP.docSel = new Set(nos || []); SP.gen = null; navigateTo('stop-docs'); }
+
+/* =====================================================================
+   C. 文件產製
+   ===================================================================== */
+function spDocRows() {
+  const bank = spG('sp-doc-bank').value, st = spG('sp-doc-st').value, kw = spG('sp-doc-kw').value.trim();
+  return SP.cases.filter(c => (c.st === 'registered' || c.st === 'docs') && (!bank || c.bank === bank) && (!st || c.st === st) && (!kw || (c.no + c.name + c.id).indexOf(kw) >= 0)).sort((a, b) => a.no.localeCompare(b.no));
+}
+function spDocsRender() {
+  const sel = spG('sp-doc-bank');
+  if (sel.options.length === 1) Object.keys(SP_BANKS).forEach(b => { const o = document.createElement('option'); o.value = o.textContent = b; sel.appendChild(o); });
+  const rows = spDocRows();
+  spG('sp-doc-body').innerHTML = rows.map(c => '<tr><td><input type="checkbox" ' + (SP.docSel.has(c.no) ? 'checked' : '') + ' onchange="spDocToggle(\'' + c.no + '\',this.checked)"></td><td>' + c.no + '</td><td>' + dirEsc(c.name) + '</td><td class="masked">' + dirMaskId(c.id) + '</td><td>' + c.bank + '</td><td>' + spMaskAcct(c.acct) + '</td><td>' + c.period + '</td><td>NT$ ' + dirFmt(c.amt) + '</td><td>' + dirEsc(c.reason) + '</td><td><span class="badge ' + SP_ST[c.st][0] + '">' + SP_ST[c.st][1] + '</span></td></tr>').join('') || '<tr><td colspan="10" style="text-align:center;color:var(--text-secondary)">目前沒有待產製文件之案件，請先至「案件登錄與檢核」登錄止付案件</td></tr>';
+  spG('sp-doc-all').checked = rows.length > 0 && rows.every(c => SP.docSel.has(c.no));
+  const s = spSelCases(); const banks = [...new Set(s.map(c => c.bank))];
+  spG('sp-doc-sum').textContent = '已勾選 ' + s.length + ' 件，涉及 ' + banks.length + ' 家銀行' + (banks.length ? '（' + banks.join('、') + '）' : '') + '，止付金額合計 NT$ ' + dirFmt(s.reduce((a, c) => a + c.amt, 0));
+  spDocCards(); spDispRender();
+}
+function spSelCases() { return [...SP.docSel].map(spByNo).filter(c => c && (c.st === 'registered' || c.st === 'docs')); }
+function spDocToggle(no, on) { on ? SP.docSel.add(no) : SP.docSel.delete(no); SP.gen = null; spDocsRender(); }
+function spDocAll(on) { spDocRows().forEach(c => on ? SP.docSel.add(c.no) : SP.docSel.delete(c.no)); SP.gen = null; spDocsRender(); }
+function spIdxActive() { return SP.idx.filter(x => x.active); }
+function spDocCards() {
+  const g = SP.gen, n = spSelCases().length, act = spIdxActive();
+  if (g && g.busy) { return; }
+  const idxId = g && g.idxId || (act.find(x => x.def) || act[0] || {}).id || '';
+  const stat = ok => ok ? '<span class="badge badge-success">已產製</span>' : '<span class="badge badge-secondary">尚未產製</span>';
+  const dis = n ? '' : ' disabled';
+  let h = '<div class="card"><div class="card-header"><div><div class="card-title">文書產製</div><div class="card-subtitle">資料由系統自動帶入，不需人工截圖或逐案重複輸入</div></div><button class="btn btn-gold btn-sm"' + dis + ' onclick="spGen(\'all\')">一鍵產製全部文件</button></div><div class="sp-doc-grid">';
+  h += '<div class="sp-doc-card"><h4>① 銀行電話紀錄表</h4><p>依銀行別彙整，每家銀行一份，供電話聯繫止付時記錄受理情形</p><div style="margin-bottom:8px">' + stat(g && g.phone) + '</div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-sm btn-primary"' + dis + ' onclick="spGen(\'phone\')">產製</button><button class="btn btn-sm btn-outline"' + (g && g.phone ? '' : ' disabled') + ' onclick="spPreview(\'phone\')">預覽／下載</button></div></div>';
+  h += '<div class="sp-doc-card"><h4>② 止付明細</h4><p>含止付相關之支領紀錄、領受人資料及系統檢核結果</p><div style="margin-bottom:8px">' + stat(g && g.detail) + '</div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-sm btn-primary"' + dis + ' onclick="spGen(\'detail\')">產製</button><button class="btn btn-sm btn-outline"' + (g && g.detail ? '' : ' disabled') + ' onclick="spPreview(\'detail\')">預覽／下載PDF</button><button class="btn btn-sm btn-outline"' + (g && g.detail ? '' : ' disabled') + ' onclick="spDetailXlsx()">下載Excel</button></div></div>';
+  h += '<div class="sp-doc-card"><h4>③ 止付公文</h4><p>依銀行別產製，讀取「發文資訊索引」，可由後台介接公文系統取號與發文</p><div class="form-group" style="margin-bottom:8px"><select class="form-control" id="sp-doc-idx" onchange="spIdxPick(this.value)">' + (act.length ? act.map(x => '<option value="' + x.id + '"' + (x.id === idxId ? ' selected' : '') + '>' + dirEsc(x.name) + '（' + x.prefix + '・' + x.speed + '）' + (x.def ? ' ★預設' : '') + '</option>').join('') : '<option value="">（無啟用之發文資訊）</option>') + '</select></div>' +
+    (act.length ? '' : '<div class="validation-item fail">✖ 尚無啟用之發文資訊，請主辦人員至「發文資訊索引」維護後再產製公文</div>') +
+    '<div style="margin-bottom:8px">' + stat(g && g.doc) + (g && g.dispatched ? ' <span class="badge badge-primary">已發文</span>' : '') + '</div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-sm btn-primary"' + (n && act.length ? '' : ' disabled') + ' onclick="spGen(\'doc\')">產製</button><button class="btn btn-sm btn-outline"' + (g && g.doc ? '' : ' disabled') + ' onclick="spPreview(\'letter\')">預覽公文</button><button class="btn btn-sm btn-outline"' + (g && g.doc ? '' : ' disabled') + ' onclick="spPreview(\'di\')">公文DI檔</button></div></div>';
+  h += '</div>';
+  if (g && g.doc) {
+    const done = g.dispatched, label = done ? '已介接發文' : (g.failed ? '重新介接發文' : '介接公文系統取號並發文');
+    h += '<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><div style="font-size:calc(13px * var(--font-scale))">公文須經承辦人員預覽確認後，始可由後台介接公文管理系統取號發文。' + (g.previewed ? '<span class="badge badge-success" style="margin-left:6px">已預覽確認</span>' : '<span class="badge badge-warning" style="margin-left:6px">尚未預覽</span>') + '</div><button class="btn btn-primary"' + (done ? ' disabled' : '') + ' onclick="spDispatch()">' + label + '</button></div>' +
+      '<div class="sp-steps" id="sp-steps">' + spStepsHtml(g) + '</div>' +
+      '<div class="form-hint" style="margin-top:6px"><a href="javascript:void(0)" onclick="SP.failNext=true;showToast(\'info\',\'已設定\',\'下一次介接發文將模擬公文系統無回應（原型示意）\')">模擬介接失敗（原型示意）</a></div></div>';
+  }
+  spG('sp-doc-cards').innerHTML = h + '</div>';
+}
+function spStepsHtml(g) {
+  if (!g || !g.steps) return '';
+  let h = SP_DSTEPS.map((t, i) => { const s = g.steps[i] || 'wait'; return '<div class="sp-step ' + s + '">' + (s === 'done' ? '✔' : (s === 'fail' ? '✖' : (s === 'run' ? '▶' : '○'))) + ' ' + t + '</div>'; }).join('');
+  if (g.failed) h += '<div class="validation-item fail" style="margin-top:6px">✖ ' + dirEsc(g.failMsg) + '。電話紀錄表、止付明細及公文均已保留，未產生發文字號，請稍後按「重新介接發文」。</div>';
+  if (g.dispatched) h += '<div class="info-card success" style="margin-top:8px">' + g.result.map(r => '<div>' + r.bank + '：<b>' + dirEsc(r.docNo) + '</b>（' + r.n + ' 件）</div>').join('') + '<div class="form-hint">已回填發文字號至各止付案件，案件狀態更新為「已發文，待銀行回饋」。</div></div>';
+  return h;
+}
+function spIdxPick(v) { if (SP.gen) { SP.gen.idxId = v; if (SP.gen.doc && !SP.gen.dispatched) { SP.gen.doc = false; SP.gen.previewed = false; showToast('warning', '發文資訊已變更', '公文須重新產製以套用最新發文資訊'); } } spDocCards(); }
+function spGen(kind) {
+  const s = spSelCases(); if (!s.length) { showToast('warning', '尚未勾選案件', '請先勾選欲產製文件之案件'); return; }
+  const picked = spG('sp-doc-idx') ? spG('sp-doc-idx').value : '';
+  if ((kind === 'doc' || kind === 'all') && !picked) { showToast('warning', '無可用發文資訊', '請主辦人員先至「發文資訊索引」維護並啟用發文資訊'); return; }
+  if (!SP.gen) SP.gen = { nos: s.map(c => c.no), phone: false, detail: false, doc: false, previewed: false, dispatched: false, busy: false, failed: false, idxId: picked };
+  const g = SP.gen; if (picked) g.idxId = picked;
+  if (kind === 'phone' || kind === 'all') g.phone = true;
+  if (kind === 'detail' || kind === 'all') g.detail = true;
+  if (kind === 'doc' || kind === 'all') { g.doc = true; g.previewed = false; }
+  if (g.phone && g.detail && g.doc) s.forEach(c => { if (c.st === 'registered') { c.st = 'docs'; spHist(c, '產製止付文件', '已產製銀行電話紀錄表、止付明細及公文（待介接發文）'); } });
+  spDocsRender(); spUpdateBadge();
+  showToast('success', '文件已產製', (kind === 'all' ? '電話紀錄表、止付明細及公文' : (kind === 'phone' ? '銀行電話紀錄表' : (kind === 'detail' ? '止付明細' : '止付公文'))) + '已依選取案件自動帶入資料');
+}
+
+/* ---- 文件內容 ---- */
+function spByBank(cases) { const m = {}; cases.forEach(c => (m[c.bank] = m[c.bank] || []).push(c)); return m; }
+function spPhoneHtml(nos) {
+  const groups = spByBank(nos.map(spByNo)), today = dirNow().slice(0, 9);
+  const html = Object.keys(groups).map(b => {
+    const L = groups[b];
+    return '<div class="ltr" style="page-break-after:always"><h1>止付案件銀行電話紀錄表</h1><div class="sub">公務人員退休撫卹基金管理局　基金業務科</div>' +
+      '<p><b>銀行別：</b>' + b + '　<b>銀行止付專線：</b>' + SP_BANKS[b] + '　<b>聯繫日期：</b>' + dirRocText(today) + '　<b>承辦人：</b>' + SP.handler + '</p>' +
+      '<table><thead><tr><th>序號</th><th>案件編號</th><th>領受人</th><th>身分證字號</th><th>撥付帳號</th><th>止付期間</th><th class="num">止付金額</th><th>銀行回覆</th></tr></thead><tbody>' +
+      L.map((c, i) => '<tr><td>' + (i + 1) + '</td><td>' + c.no + '</td><td>' + dirEsc(c.name) + '</td><td>' + c.id + '</td><td>' + c.acct + '</td><td>' + c.period + '</td><td class="num">' + dirFmt(c.amt) + '</td><td>□已受理　□無法受理</td></tr>').join('') +
+      '<tr class="total"><td colspan="6">合計 ' + L.length + ' 件</td><td class="num">' + dirFmt(L.reduce((s, c) => s + c.amt, 0)) + '</td><td></td></tr></tbody></table>' +
+      '<table><tbody><tr><th style="width:18%">致電時間</th><td></td><th style="width:18%">銀行接聽人員</th><td></td></tr><tr><th>銀行受理編號</th><td></td><th>備註</th><td></td></tr></tbody></table>' +
+      '<div class="sign"><span>承辦人：' + SP.handler + '（簽章）</span><span>科長：（簽章）</span></div><div class="note">本紀錄表由系統依止付案件自動帶入產製，致電結果請填寫後歸檔，並於止付作業入口登錄銀行回饋。</div></div>';
+  }).join('');
+  return spWrap(html);
+}
+function spDetailRows(nos) { return nos.map(spByNo); }
+function spDetailHtml(nos) {
+  const L = spDetailRows(nos);
+  return spWrap('<div class="ltr"><h1>止付明細</h1><div class="sub">製表日期：' + dirNow().slice(0, 9) + '　製表人：' + SP.handler + '　件數：' + L.length + '</div>' +
+    '<table><thead><tr><th>序號</th><th>案件編號</th><th>領受人</th><th>身分證字號</th><th>退撫類別</th><th>服務機關</th><th>支領紀錄編號</th><th>撥付期間</th><th>預定撥付日</th><th class="num">止付金額</th><th>銀行／帳號</th><th>止付原因</th><th>系統檢核結果</th></tr></thead><tbody>' +
+    L.map((c, i) => '<tr><td>' + (i + 1) + '</td><td>' + c.no + '</td><td>' + dirEsc(c.name) + '</td><td>' + c.id + '</td><td>' + c.cat + '</td><td>' + dirEsc(c.unit) + '</td><td>' + c.rid + '</td><td>' + c.period + '</td><td>' + c.pdate + '</td><td class="num">' + dirFmt(c.amt) + '</td><td>' + c.bank + ' ' + c.acct + '</td><td>' + dirEsc(c.reason) + '</td><td>' + dirEsc(c.chk) + '</td></tr>').join('') +
+    '<tr class="total"><td colspan="9">合計 ' + L.length + ' 件</td><td class="num">' + dirFmt(L.reduce((s, c) => s + c.amt, 0)) + '</td><td colspan="3"></td></tr></tbody></table></div>');
+}
+function spDetailXlsx() {
+  const g = SP.gen; if (!g || !g.detail) return;
+  const L = spDetailRows(g.nos), H = ['序號', '案件編號', '領受人', '身分證字號', '退撫類別', '服務機關', '支領紀錄編號', '撥付期間', '預定撥付日', '止付金額', '銀行別', '撥付帳號', '止付原因', '系統檢核結果'];
+  const rows = [[{ b: true, v: '止付明細' }], ['製表日期', dirNow().slice(0, 9), '製表人', SP.handler], [], H.map(h => ({ b: true, v: h }))];
+  L.forEach((c, i) => rows.push([i + 1, c.no, c.name, c.id, c.cat, c.unit, c.rid, c.period, c.pdate, c.amt, c.bank, c.acct, c.reason, c.chk]));
+  rows.push(['合計', L.length + ' 件', '', '', '', '', '', '', '', L.reduce((s, c) => s + c.amt, 0)]);
+  dirDownloadXlsx('止付明細', rows, '止付明細', [6, 14, 10, 14, 10, 18, 20, 10, 12, 12, 12, 18, 10, 30]);
+}
+function spLetterHtml(bank, L, snap, docNo, sentAt) {
+  const total = L.reduce((s, c) => s + c.amt, 0);
+  return '<div class="ltr" style="page-break-after:always">' + (docNo ? '' : '<div class="stamp">預覽稿</div>') + '<h1>' + dirEsc(snap.org) + '　函</h1><div class="sub">承辦單位：' + dirEsc(snap.unit) + '　承辦人：' + dirEsc(snap.contact) + '　電話：' + dirEsc(snap.tel) + (snap.fax ? '　傳真：' + dirEsc(snap.fax) : '') + '</div>' +
+    '<p><b>受文者：</b>' + bank + '</p><p><b>發文日期：</b>' + dirRocText(sentAt || dirNow().slice(0, 9)) + '</p><p><b>發文字號：</b>' + (docNo ? dirEsc(docNo) : '（稿）發文時由公文管理系統取號（字軌：' + dirEsc(snap.prefix) + '）') + '</p>' +
+    '<p><b>速別：</b>' + dirEsc(snap.speed) + '　<b>密等及解密條件：</b>' + dirEsc(snap.secret) + '</p><p><b>主旨：</b>請貴行協助辦理下列領受人月退休(職)金止付（暫停匯入）事宜，並於 3 個工作日內回覆受理結果，請查照。</p>' +
+    '<p><b>說明：</b></p><p>一、依本局辦理退休(職)撫卹給與撥付相關規定，下列領受人經本局查核有止付事由，需暫停匯入其於貴行之帳戶。</p><p>二、本次止付計 ' + L.length + ' 件，止付金額合計新臺幣 ' + dirFmt(total) + ' 元，名冊如下。</p><p>三、' + (snap.attach ? '檢附：' + dirEsc(snap.attach) + '。' : '') + '如有疑義，請洽承辦人 ' + dirEsc(snap.contact) + '（電話 ' + dirEsc(snap.tel) + '）。</p>' +
+    '<table><thead><tr><th>序號</th><th>案件編號</th><th>領受人</th><th>身分證字號</th><th>撥付帳號</th><th>止付期間</th><th class="num">止付金額</th></tr></thead><tbody>' +
+    L.map((c, i) => '<tr><td>' + (i + 1) + '</td><td>' + c.no + '</td><td>' + dirEsc(c.name) + '</td><td>' + c.id + '</td><td>' + c.acct + '</td><td>' + c.period + '</td><td class="num">' + dirFmt(c.amt) + '</td></tr>').join('') +
+    '<tr class="total"><td colspan="6">合計 ' + L.length + ' 件</td><td class="num">' + dirFmt(total) + '</td></tr></tbody></table><div class="sign"><span>正本：' + bank + '</span><span>' + dirEsc(snap.org) + '</span></div></div>';
+}
+function spSnap(id) { const x = spIdxById(id); return { name: x.name, org: x.org, unit: x.unit, prefix: x.prefix, speed: x.speed, secret: x.secret, contact: x.contact, tel: x.tel, fax: x.fax, attach: x.attach }; }
+function spLettersHtml(nos, idxId) { const gr = spByBank(nos.map(spByNo)), sn = spSnap(idxId); return spWrap(Object.keys(gr).map(b => spLetterHtml(b, gr[b], sn)).join('')); }
+function spDiText(nos, idxId) {
+  const gr = spByBank(nos.map(spByNo)), sn = spSnap(idxId), out = [];
+  Object.keys(gr).forEach(b => {
+    const L = gr[b], total = L.reduce((s, c) => s + c.amt, 0);
+    out.push('[HEADER]', 'DOCTYPE=函', 'ORG=' + sn.org, 'UNIT=' + sn.unit, 'PREFIX=' + sn.prefix, 'SPEED=' + sn.speed, 'SECRET=' + sn.secret, 'TO=' + b, 'SUBJECT=請貴行協助辦理下列領受人月退休(職)金止付（暫停匯入）事宜，並於3個工作日內回覆受理結果，請查照。', 'DOCNO=', 'COUNT=' + L.length, 'AMOUNT=' + total, 'HANDLER=' + sn.contact, 'TEL=' + sn.tel,
+      '[ATTACHMENT]', 'NAME=' + (sn.attach || '止付名冊'), '[LIST] SEQ|CASENO|NAME|ID|ACCOUNT|PERIOD|AMOUNT');
+    L.forEach((c, i) => out.push([i + 1, c.no, c.name, c.id, c.acct, c.period, c.amt].join('|')));
+    out.push('');
+  });
+  return out.join('\r\n');
+}
+function spPreview(kind) {
+  const g = SP.gen; if (!g) return;
+  if (kind === 'phone') { const h = spPhoneHtml(g.nos); dirOpenDoc('銀行電話紀錄表（預覽）', h, { dlLabel: '止付案件銀行電話紀錄表', dlExt: 'pdf', dl: () => dirDownloadPdf('止付案件銀行電話紀錄表', h), print: () => dirPrintHtml('止付案件銀行電話紀錄表', h) }); }
+  else if (kind === 'detail') { const h = spDetailHtml(g.nos); dirOpenDoc('止付明細（預覽）', h, { dlLabel: '止付明細', dlExt: 'pdf', dl: () => dirDownloadPdf('止付明細', h, true), print: () => dirPrintHtml('止付明細', h, true) }); }
+  else if (kind === 'letter') { const h = spLettersHtml(g.nos, g.idxId); g.previewed = true; dirOpenDoc('止付公文（預覽稿，依銀行別）', h, { dlLabel: '止付公文預覽稿', dlExt: 'pdf', dl: () => dirDownloadPdf('止付公文預覽稿', h), print: () => dirPrintHtml('止付公文預覽稿', h) }); spDocCards(); }
+  else if (kind === 'di') { const t = spDiText(g.nos, g.idxId); dirOpenDoc('公文DI檔（介接公文管理系統用）', '<pre style="white-space:pre-wrap;font-size:12px;line-height:1.7;background:#f7f8fa;padding:12px;border-radius:6px">' + dirEsc(t) + '</pre>', { dlLabel: '止付公文DI檔', dlExt: 'txt', dl: () => dirDownloadText('止付公文DI檔', 'txt', t) }); }
+}
+
+/* ---- 介接公文系統取號與發文 ---- */
+function spDispatch() {
+  const g = SP.gen; if (!g || !g.doc) return;
+  if (!g.previewed) { showToast('warning', '請先預覽公文', '公文須經承辦人員預覽確認內容無誤後，始可介接公文管理系統發文'); return; }
+  if (g.busy || g.dispatched) return;
+  const idx = spIdxById(g.idxId); if (!idx || !idx.active) { showToast('warning', '發文資訊不可用', '所選發文資訊已停用，請重新選擇並重新產製公文'); return; }
+  g.busy = true; g.failed = false; g.steps = []; let i = 0;
+  const paint = () => { const el = spG('sp-steps'); if (el) el.innerHTML = spStepsHtml(g); };
+  showToast('info', '介接中', '後台正在介接公文管理系統辦理取號與發文...'); paint();
+  (function next() {
+    if (i >= SP_DSTEPS.length) { spFinish(g, idx); return; }
+    g.steps[i] = 'run'; paint();
+    setTimeout(() => {
+      if (SP.failNext && i === 1) {
+        SP.failNext = false; g.steps[1] = 'fail'; g.busy = false; g.failed = true; g.failMsg = '公文管理系統無回應（ERR-STP-2290，HTTP 503）';
+        g.nos.forEach(n => { const c = spByNo(n); if (c) spHist(c, '發文失敗', g.failMsg); });
+        spDocCards(); spPushAlert('danger', '公文系統介接失敗，尚未取得發文字號', g.failMsg + '；共 ' + g.nos.length + ' 件止付案件尚未發文，產製內容已保留，請重新介接', '', 'docs'); return;
+      }
+      g.steps[i] = 'done'; i++; next();
+    }, 450);
+  })();
+}
+function spFinish(g, idx) {
+  const gr = spByBank(g.nos.map(spByNo)), t = dirNow(), sn = spSnap(idx.id); g.result = [];
+  Object.keys(gr).forEach(b => {
+    const docNo = idx.prefix + '第113' + String(SP.docSeq++).padStart(7, '0') + '號';
+    gr[b].forEach(c => { c.st = 'sent'; c.docNo = docNo; c.sentAt = t; c.idxId = idx.id; spHist(c, '介接公文系統發文', '發文字號 ' + docNo + '，受文銀行：' + b + '；採用發文資訊 ' + idx.id); });
+    SP.dispatches.unshift({ docNo, bank: b, nos: gr[b].map(c => c.no), idxId: idx.id, snap: sn, at: t, by: SP.handler });
+    g.result.push({ bank: b, docNo, n: gr[b].length });
+  });
+  g.busy = false; g.dispatched = true; SP.docSel = new Set(); spUpdateBadge(); spDocsRender();
+  showToast('success', '介接發文完成', '公文管理系統已受理並取號，共 ' + g.result.length + ' 份公文，已回填至止付案件');
+}
+function spDispRender() {
+  spG('sp-disp-body').innerHTML = SP.dispatches.map((d, i) => {
+    const L = d.nos.map(spByNo).filter(Boolean), idx = spIdxById(d.idxId);
+    return '<tr><td>' + dirEsc(d.docNo) + '</td><td>' + d.at + '</td><td>' + d.bank + '</td><td>' + L.length + '</td><td>NT$ ' + dirFmt(L.reduce((s, c) => s + c.amt, 0)) + '</td><td>' + d.idxId + (idx ? '・' + dirEsc(idx.name) : '') + '</td><td>' + dirEsc(d.by) + '</td><td><button class="btn btn-sm btn-outline" onclick="spViewDispatch(' + i + ')">預覽正本</button></td></tr>';
+  }).join('') || '<tr><td colspan="8" style="text-align:center;color:var(--text-secondary)">尚無發文紀錄</td></tr>';
+}
+function spViewDispatch(i) {
+  const d = SP.dispatches[i], L = d.nos.map(spByNo).filter(Boolean), h = spWrap(spLetterHtml(d.bank, L, d.snap, d.docNo, d.at));
+  dirOpenDoc('止付公文正本 · ' + d.docNo, h, { dlLabel: '止付公文_' + d.docNo, dlExt: 'pdf', dl: () => dirDownloadPdf('止付公文_' + d.docNo, h), print: () => dirPrintHtml('止付公文_' + d.docNo, h) });
+}
+
+/* =====================================================================
+   D. 發文資訊索引維護
+   ===================================================================== */
+function spIdxUsed(id) { return SP.dispatches.filter(d => d.idxId === id).length; }
+function spIdxRender() {
+  spG('sp-idx-body').innerHTML = SP.idx.map(x => '<tr><td>' + x.id + (x.def ? ' <span class="badge badge-gold">預設</span>' : '') + '</td><td>' + dirEsc(x.name) + (x.note ? '<div class="sp-alert-desc">' + dirEsc(x.note) + '</div>' : '') + '</td><td>' + dirEsc(x.org) + '</td><td>' + dirEsc(x.unit) + '</td><td>' + dirEsc(x.prefix) + '</td><td>' + x.speed + '／' + x.secret + '</td><td>' + dirEsc(x.contact) + '<div class="sp-alert-desc">' + dirEsc(x.tel) + '</div></td><td>' + spIdxUsed(x.id) + ' 份</td><td>' + (x.active ? '<span class="badge badge-success">啟用</span>' : '<span class="badge badge-secondary">停用</span>') + '</td><td>' + x.by + '<div class="sp-alert-desc">' + x.at + '</div></td><td style="white-space:nowrap"><button class="btn btn-sm btn-outline" onclick="spIdxEdit(\'' + x.id + '\')">編輯</button> ' + (x.active && !x.def ? '<button class="btn btn-sm btn-outline" onclick="spIdxDefault(\'' + x.id + '\')">設為預設</button> ' : '') + '<button class="btn btn-sm ' + (x.active ? 'btn-outline-danger' : 'btn-outline-primary') + '" onclick="spIdxToggle(\'' + x.id + '\')">' + (x.active ? '停用' : '啟用') + '</button></td></tr>').join('');
+  spG('sp-idx-log').innerHTML = SP.idxLog.map(l => '<tr><td>' + l.t + '</td><td>' + l.id + '</td><td><span class="badge badge-info">' + l.act + '</span></td><td>' + dirEsc(l.by) + '</td><td>' + dirEsc(l.desc) + '</td></tr>').join('');
+}
+const SP_IF = { name: 'sp-i-name', org: 'sp-i-org', unit: 'sp-i-unit', prefix: 'sp-i-prefix', speed: 'sp-i-speed', secret: 'sp-i-secret', contact: 'sp-i-contact', tel: 'sp-i-tel', fax: 'sp-i-fax', attach: 'sp-i-attach', note: 'sp-i-note' };
+function spIdxEdit(id) {
+  SP.idxEdit = id; const x = id ? spIdxById(id) : { name: '', org: '公務人員退休撫卹基金管理局', unit: '', prefix: '', speed: '普通件', secret: '普通', contact: '', tel: '', fax: '', attach: '止付名冊（止付明細）1份', note: '' };
+  spG('sp-idx-title').textContent = id ? '編輯發文資訊 ' + id : '新增發文資訊';
+  Object.keys(SP_IF).forEach(k => { spG(SP_IF[k]).value = x[k] || ''; });
+  openModal('sp-idx-modal');
+}
+function spIdxSave() {
+  const v = {}; Object.keys(SP_IF).forEach(k => { v[k] = spG(SP_IF[k]).value.trim(); });
+  const miss = [['name', '名稱／用途'], ['org', '發文機關'], ['unit', '承辦單位'], ['prefix', '發文字軌'], ['contact', '承辦聯絡人'], ['tel', '聯絡電話']].filter(f => !v[f[0]]).map(f => f[1]);
+  if (miss.length) { showToast('warning', '資料未填妥', '請填寫：' + miss.join('、')); return; }
+  const t = dirNow();
+  if (SP.idxEdit) {
+    const x = spIdxById(SP.idxEdit), chg = Object.keys(SP_IF).filter(k => x[k] !== v[k]);
+    if (!chg.length) { closeModal('sp-idx-modal'); return; }
+    Object.assign(x, v, { by: '李主辦', at: t });
+    SP.idxLog.unshift({ t, id: x.id, act: '修改', by: '李主辦', desc: '修改欄位：' + chg.map(k => ({ name: '名稱', org: '發文機關', unit: '承辦單位', prefix: '字軌', speed: '速別', secret: '密等', contact: '聯絡人', tel: '電話', fax: '傳真', attach: '附件說明', note: '備註' })[k]).join('、') });
+  } else {
+    const id = 'SPI-' + String(SP.idx.length + 1).padStart(3, '0');
+    SP.idx.push(Object.assign({ id, active: true, def: false, by: '李主辦', at: t }, v));
+    SP.idxLog.unshift({ t, id, act: '新增', by: '李主辦', desc: '新增發文資訊：' + v.name });
+  }
+  closeModal('sp-idx-modal'); spIdxRender(); showToast('success', '發文資訊已儲存', '系統產製止付公文時將讀取最新內容，並留存維護紀錄');
+}
+function spIdxToggle(id) {
+  const x = spIdxById(id); if (x.active && SP.idx.filter(y => y.active).length === 1) { showToast('warning', '無法停用', '至少需保留一筆啟用之發文資訊，以供公文產製讀取'); return; }
+  x.active = !x.active; if (!x.active && x.def) { x.def = false; const n = SP.idx.find(y => y.active); if (n) { n.def = true; } }
+  x.by = '李主辦'; x.at = dirNow(); SP.idxLog.unshift({ t: x.at, id, act: x.active ? '啟用' : '停用', by: '李主辦', desc: (x.active ? '啟用' : '停用') + '發文資訊' });
+  spIdxRender();
+}
+function spIdxDefault(id) {
+  SP.idx.forEach(y => { y.def = y.id === id; }); const x = spIdxById(id); x.by = '李主辦'; x.at = dirNow();
+  SP.idxLog.unshift({ t: x.at, id, act: '設為預設', by: '李主辦', desc: '設定為止付公文預設發文資訊' }); spIdxRender();
+}
+spUpdateBadge();
+
+</script>
 </body>
 </html>
