@@ -4904,77 +4904,45 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div class="card" style="margin-bottom:16px">
           <div class="filter-row" style="display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap">
             <div class="filter-group" style="flex:1;max-width:200px">
-              <div class="filter-label">身分證字號 <span style="color:var(--danger)">*</span></div>
-              <input type="text" class="filter-control" id="query-id" placeholder="請輸入身分證字號" value="A123456789" style="width:100%">
+              <div class="filter-label">領受人身分證字號 <span style="color:var(--danger)">*</span></div>
+              <input type="text" class="filter-control" id="query-id" placeholder="請輸入身分證字號" value="B234567890" maxlength="10" style="width:100%" onkeydown="if(event.key==='Enter')doQuery()">
             </div>
             <div class="filter-group">
-              <div class="filter-label">查詢起始年月</div>
-              <input type="text" class="filter-control" value="113/01">
+              <div class="filter-label">查詢起始年月 <span style="color:var(--danger)">*</span></div>
+              <input type="text" class="filter-control" id="qi-from" value="113/01" placeholder="YYY/MM" style="width:110px">
             </div>
             <div class="filter-group">
-              <div class="filter-label">查詢終止年月</div>
-              <input type="text" class="filter-control" value="113/12">
+              <div class="filter-label">查詢終止年月 <span style="color:var(--danger)">*</span></div>
+              <input type="text" class="filter-control" id="qi-to" value="113/12" placeholder="YYY/MM" style="width:110px">
             </div>
             <div class="filter-group">
               <div class="filter-label">身分別</div>
-              <select class="filter-control"><option>全部</option><option>公務人員</option><option>教職人員</option><option>軍職人員</option></select>
+              <select class="filter-control" id="qi-ident"><option>全部</option><option>公務人員</option><option>教育人員</option><option>軍職人員</option></select>
             </div>
-            <button class="btn btn-primary btn-sm" style="align-self:flex-end" onclick="doQuery()"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> 查詢</button>
+            <div class="filter-group">
+              <div class="filter-label">退撫給與種類</div>
+              <select class="filter-control" id="qi-type"><option>全部</option><option>月退休金</option><option>月撫慰金</option><option>年撫卹金</option></select>
+            </div>
+            <div class="filter-group">
+              <div class="filter-label">給付方式</div>
+              <select class="filter-control" id="qi-method"><option>全部</option><option>帳戶</option><option>支票</option></select>
+            </div>
+            <button class="btn btn-primary btn-sm" style="align-self:flex-end" onclick="doQuery()"> 查詢</button>
             <button class="btn btn-outline btn-sm" style="align-self:flex-end" onclick="clearQuery()">清除</button>
           </div>
-        </div>
-        
-        <div id="query-result" style="display:none">
-          <div class="card" style="margin-bottom:16px">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-              <div>
-                <span style="font-size:calc(15px * var(--font-scale));font-weight:700;color:var(--primary)">王建民</span>
-                <span style="margin-left:8px;font-size:calc(13px * var(--font-scale));color:var(--text-secondary)">A123***789</span>
-                <button class="mask-toggle" style="margin-left:4px" onclick="toggleMask('query-id-display','A123456789')">顯示完整</button>
-              </div>
-              <div style="display:flex;gap:8px">
-                <button class="btn btn-success btn-sm" onclick="runDownload('個人支領查詢結果','xlsx')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="20" x2="4" y2="12"/><line x1="10" y1="20" x2="10" y2="6"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="20" y1="20" x2="4" y2="20"/></svg> 匯出Excel</button>
-                <button class="btn btn-danger btn-sm" onclick="runDownload('個人支領查詢結果','pdf')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><line x1="8" y1="13" x2="14" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg> 匯出PDF</button>
-              </div>
-            </div>
-            <div class="info-card" style="margin-bottom:16px">
-              <div class="form-row cols-4" style="gap:12px">
-                <div><div class="info-key" style="font-size:calc(11px * var(--font-scale))">退撫類別</div><div style="font-weight:600;margin-top:2px">公務人員月退</div></div>
-                <div><div class="info-key" style="font-size:calc(11px * var(--font-scale))">服務機關</div><div style="font-weight:600;margin-top:2px">臺北市政府</div></div>
-                <div><div class="info-key" style="font-size:calc(11px * var(--font-scale))">月退金額</div><div style="font-weight:600;margin-top:2px">NT$ 68,500</div></div>
-                <div><div class="info-key" style="font-size:calc(11px * var(--font-scale))">撥付帳號</div><div style="font-weight:600;margin-top:2px">台灣銀行 ***4521</div></div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="table-card">
-            <div class="table-wrapper">
-            <table class="data-table">
-              <thead>
-                <tr><th>撥付期間</th><th>退撫給與種類</th><th>撥付金額</th><th>撥付日期</th><th>撥付狀態</th><th>備註</th></tr>
-              </thead>
-              <tbody>
-                <tr><td>113/01</td><td>公務月退</td><td>NT$ 68,500</td><td>113/01/15</td><td><span class="badge badge-success">已撥付</span></td><td>-</td></tr>
-                <tr><td>113/02</td><td>公務月退</td><td>NT$ 68,500</td><td>113/02/15</td><td><span class="badge badge-success">已撥付</span></td><td>-</td></tr>
-                <tr><td>113/03</td><td>公務月退</td><td>NT$ 68,500</td><td>113/03/15</td><td><span class="badge badge-success">已撥付</span></td><td>-</td></tr>
-                <tr><td>113/04</td><td>公務月退</td><td>NT$ 68,500</td><td>113/04/15</td><td><span class="badge badge-success">已撥付</span></td><td>-</td></tr>
-                <tr><td>113/05</td><td>公務月退</td><td>NT$ 68,500</td><td>113/05/15</td><td><span class="badge badge-success">已撥付</span></td><td>-</td></tr>
-                <tr><td>113/10</td><td>公務月退</td><td>NT$ 68,500</td><td>113/10/15</td><td><span class="badge badge-danger">溢領</span></td><td>已亡故</td></tr>
-                <tr><td>113/11</td><td>公務月退</td><td>NT$ 68,500</td><td>113/11/15</td><td><span class="badge badge-danger">溢領</span></td><td>已亡故</td></tr>
-              </tbody>
-            </table>
-            </div>
-            <div style="padding:12px 16px;border-top:1px solid var(--border);background:#f8f9fa;display:flex;justify-content:space-between;font-size:calc(13px * var(--font-scale))">
-              <span>查詢期間合計：<strong>NT$ 479,500</strong></span>
-              <span>溢領金額：<strong style="color:var(--danger)">NT$ 137,000</strong></span>
-            </div>
+          <div class="form-hint" style="margin-top:10px">基本條件為「領受人身分證字號」與「查詢起訖年月」，身分別、給與種類、給付方式為輔助條件。示範資料：
+            <a href="javascript:qiPick('A123456789')">A123456789（單一身分）</a>、
+            <a href="javascript:qiPick('B234567890')">B234567890（公、教、軍多重來源）</a>、
+            <a href="javascript:qiPick('C345678901')">C345678901（教育人員）</a>
           </div>
         </div>
-        
+
+        <div id="query-result" style="display:none"></div>
+
         <div id="query-empty" class="empty-state">
-          <div class="empty-state-icon"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+          <div class="empty-state-icon"></div>
           <div class="empty-state-text">尚無查詢紀錄</div>
-          <div class="empty-state-hint">請輸入身分證字號並點擊查詢</div>
+          <div class="empty-state-hint">請輸入領受人身分證字號與查詢起訖年月後點擊查詢</div>
         </div>
       </div>
     </div>
@@ -13579,6 +13547,151 @@ function spTrkRender(toast) {
 })();
 
 spUpdateBadge();
+
+/* ===== V23：退撫給與支領紀錄查詢子系統－個人查詢（多來源整合、定期給與期間查詢、資料一致性核對） ===== */
+const QI_NOW_YM = '115/09';
+const QI_PERSONS = {
+  'A123456789': {name:'王建民', birth:'045/08/12', addr:'臺北市大安區和平東路二段100號5樓', sources:[
+    {caseNo:'PAY-G-105-00123', ident:'公務人員', type:'月退休金', rel:'本人', pensioner:null, eff:'105/03/01', org:'臺北市政府', base:68500, adjusts:[], from:'112/01', to:'113/11', pay:{kind:'帳戶', bank:'臺灣銀行', acct:'***4521'}, over:{from:'113/10', to:'113/11', note:'領受人已亡故，本期溢領'}}
+  ]},
+  'B234567890': {name:'陳淑芬', birth:'048/03/05', addr:'新北市板橋區文化路一段188號12樓之3', sources:[
+    {caseNo:'PAY-G-110-00457', ident:'公務人員', type:'月撫慰金', rel:'配偶（遺屬）', pensioner:{name:'陳大明', id:'B123456781', birth:'042/11/20'}, eff:'110/05/01', org:'內政部', base:32400, adjusts:[{from:'113/07', amt:33200, note:'年度調整'}], from:'112/01', to:QI_NOW_YM, pay:{kind:'帳戶', bank:'合作金庫', acct:'***8830'}},
+    {caseNo:'PAY-E-108-00922', ident:'教育人員', type:'月退休金', rel:'本人', pensioner:null, eff:'108/02/01', org:'國立臺灣師範大學附屬高級中學', base:45800, adjusts:[], from:'112/01', to:QI_NOW_YM, pay:{kind:'帳戶', bank:'中華郵政', acct:'***1275'}, payChanges:[{ym:'113/09', kind:'支票', note:'帳戶退匯，改以支票發放'}]},
+    {caseNo:'PAY-M-099-00031', ident:'軍職人員', type:'年撫卹金', rel:'配偶（遺屬）', pensioner:{name:'陳大明', id:'B123456781', birth:'042/11/20'}, eff:'099/01/01', org:'國防部陸軍司令部', base:96000, adjusts:[], from:'112/01', to:QI_NOW_YM, annualMonth:'01', pay:{kind:'支票'}}
+  ]},
+  'C345678901': {name:'李美華', birth:'050/12/30', addr:'臺中市西屯區臺灣大道三段99號', sources:[
+    {caseNo:'PAY-E-111-01288', ident:'教育人員', type:'月退休金', rel:'本人', pensioner:null, eff:'111/08/01', org:'臺中市立文華高級中等學校', base:51200, adjusts:[{from:'114/01', amt:52600, note:'年度調整'}], from:'112/01', to:QI_NOW_YM, pay:{kind:'帳戶', bank:'第一銀行', acct:'***6609'}}
+  ]}
+};
+const qiYmNum = t => { const m = /^(\d{3})\/(\d{2})$/.exec(t); return m ? +m[1] * 12 + +m[2] : null; };
+const qiYm = n => String(Math.floor((n - 1) / 12)).padStart(3, '0') + '/' + String(((n - 1) % 12) + 1).padStart(2, '0');
+const qiLastDay = ym => { const [y, m] = ym.split('/').map(Number); return String(new Date(y + 1911, m, 0).getDate()).padStart(2, '0'); };
+const qiNT = n => 'NT$ ' + Number(n).toLocaleString();
+function qiMethodText(pay) { return pay.kind === '支票' ? '支票' : '帳戶：' + pay.bank + ' ' + pay.acct; }
+/* 原始撥付系統資料（以案號為鍵）：由來源定義產生各期發放紀錄 */
+const PAYSYS = {};
+Object.keys(QI_PERSONS).forEach(id => QI_PERSONS[id].sources.forEach(src => {
+  const rows = [];
+  for (let n = Math.max(qiYmNum(src.from), qiYmNum(src.eff.slice(0, 6) === '099/01' ? '099/01' : src.eff.slice(0, 6))); n <= qiYmNum(src.to); n++) {
+    const ym = qiYm(n);
+    if (src.annualMonth && ym.slice(4) !== src.annualMonth) continue;
+    let amt = src.base, note = '-', kind = src.pay.kind, status = '已撥付';
+    (src.adjusts || []).forEach(a => { if (n >= qiYmNum(a.from)) { amt = a.amt; if (n === qiYmNum(a.from)) note = a.note; } });
+    (src.payChanges || []).forEach(c => { if (n === qiYmNum(c.ym)) { kind = c.kind; note = c.note; } });
+    if (src.over && n >= qiYmNum(src.over.from) && n <= qiYmNum(src.over.to)) { status = '溢領'; note = src.over.note; }
+    const payDate = ym + (src.annualMonth ? '/10' : '/15');
+    rows.push({ym:ym, payDate:payDate, start:ym + '/01', end:ym + '/' + qiLastDay(ym), amt:amt, method: kind === '支票' ? '支票' : qiMethodText(src.pay), kind:kind, status:status, note:note});
+  }
+  PAYSYS[src.caseNo] = rows;
+}));
+const QI = {cur:null};
+function qiPick(id) { document.getElementById('query-id').value = id; doQuery(); }
+function qiMaskId(id) { return id.slice(0, 4) + '***' + id.slice(7); }
+function qiToggleId(btn, full) { const sp = btn.previousElementSibling; const shown = sp.getAttribute('data-shown') === '1'; sp.textContent = shown ? qiMaskId(full) : full; sp.setAttribute('data-shown', shown ? '0' : '1'); btn.textContent = shown ? '顯示完整' : '遮蔽'; }
+function qiRow(k, v) { return '<div style="display:flex;gap:8px;padding:5px 0;border-bottom:1px dashed var(--border);font-size:calc(13px * var(--font-scale))"><div style="width:118px;color:var(--text-secondary);flex-shrink:0">' + k + '</div><div style="font-weight:600;min-width:0">' + v + '</div></div>'; }
+const QI_BADGE = {'公務人員':'badge-info', '教育人員':'badge-success', '軍職人員':'badge-warning'};
+const QI_COLOR = {'公務人員':'#2f80ed', '教育人員':'#27ae60', '軍職人員':'#f2994a'};
+
+function doQuery() {
+  const id = document.getElementById('query-id').value.trim().toUpperCase();
+  const from = document.getElementById('qi-from').value.trim(), to = document.getElementById('qi-to').value.trim();
+  const ident = document.getElementById('qi-ident').value, type = document.getElementById('qi-type').value, meth = document.getElementById('qi-method').value;
+  const idRe = (typeof ID_FORMAT_REGEX !== 'undefined') ? ID_FORMAT_REGEX : /^[A-Z]\d{9}$/;
+  if (!id) { showToast('error', '查詢失敗', '請輸入領受人身分證字號'); return; }
+  if (!idRe.test(id)) { showToast('error', '查詢失敗', '身分證字號格式不正確（第1碼為大寫英文字母，後接9碼數字）'); return; }
+  if (qiYmNum(from) == null || qiYmNum(to) == null) { showToast('error', '查詢失敗', '查詢起訖年月格式須為 YYY/MM（例：113/01）'); return; }
+  if (qiYmNum(from) > qiYmNum(to)) { showToast('error', '查詢失敗', '查詢起始年月不得晚於終止年月'); return; }
+  document.getElementById('query-id').value = id;
+  const person = QI_PERSONS[id];
+  document.getElementById('query-empty').style.display = 'none';
+  const box = document.getElementById('query-result');
+  box.style.display = 'block';
+  if (!person) {
+    QI.cur = null;
+    box.innerHTML = '<div class="card"><div class="empty-state"><div class="empty-state-text">查無退撫給與資料</div><div class="empty-state-hint">查無領受人 ' + qiMaskId(id) + ' 之退撫給與資料，請確認身分證字號</div></div></div>';
+    showToast('warning', '查無資料', '查無此領受人之退撫給與資料');
+    return;
+  }
+  /* 即時介接撥付系統資料並依條件過濾 */
+  const matched = person.sources.filter(s => (ident === '全部' || s.ident === ident) && (type === '全部' || s.type === type));
+  const srcs = matched.map(s => {
+    const all = PAYSYS[s.caseNo].map(r => Object.assign({}, r));
+    const rows = all.filter(r => qiYmNum(r.ym) >= qiYmNum(from) && qiYmNum(r.ym) <= qiYmNum(to) && (meth === '全部' || r.kind === meth));
+    const last = all[all.length - 1];
+    return {src:s, rows:rows, last:last};
+  });
+  QI.cur = {id:id, from:from, to:to, srcs:srcs, at:execNowStrQ()};
+  qiRender(person, id, from, to, ident, type, meth, srcs, person.sources.length - matched.length);
+  const n = srcs.reduce((a, x) => a + x.rows.length, 0);
+  showToast('success', '查詢完成', '共整合 ' + srcs.length + ' 種退撫給與來源、' + n + ' 筆支領紀錄');
+}
+function execNowStrQ() { const d = new Date(); return TODAY_ROC + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') + ':' + String(d.getSeconds()).padStart(2, '0'); }
+function qiRender(person, id, from, to, ident, type, meth, srcs, hiddenN) {
+  const box = document.getElementById('query-result');
+  const latestAll = srcs.map(x => x.last.ym).sort().pop();
+  const total = srcs.reduce((a, x) => a + x.rows.reduce((b, r) => b + r.amt, 0), 0);
+  const over = srcs.reduce((a, x) => a + x.rows.filter(r => r.status === '溢領').reduce((b, r) => b + r.amt, 0), 0);
+  let h = '';
+  /* 領受人基本資料 */
+  h += '<div class="card" style="margin-bottom:16px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px"><div class="card-title" style="margin:0">領受人基本資料</div><div style="display:flex;gap:8px"><button class="btn btn-success btn-sm" onclick="runDownload(\'個人支領查詢結果_' + qiMaskId(id) + '\',\'xlsx\')"> 匯出Excel</button><button class="btn btn-danger btn-sm" onclick="runDownload(\'個人支領查詢結果_' + qiMaskId(id) + '\',\'pdf\')"> 匯出PDF</button></div></div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0 32px">' +
+    qiRow('姓名', htmlEsc(person.name)) +
+    qiRow('身分證字號', '<span data-shown="0">' + qiMaskId(id) + '</span> <button class="mask-toggle" onclick="qiToggleId(this,\'' + id + '\')">顯示完整</button>') +
+    qiRow('出生年月日', person.birth) + qiRow('地址', htmlEsc(person.addr)) +
+    qiRow('查詢起訖年月', from + ' ～ ' + to) + qiRow('最近一期發放年月', latestAll ? latestAll : '-') +
+    qiRow('查詢條件', '身分別：' + ident + '；給與種類：' + type + '；給付方式：' + meth) + qiRow('查詢時間', QI.cur.at) +
+    '</div></div>';
+  if (!srcs.length) { box.innerHTML = h + '<div class="card"><div class="empty-state"><div class="empty-state-text">符合條件之退撫給與來源 0 筆</div><div class="empty-state-hint">此領受人另有 ' + hiddenN + ' 種來源因身分別／給與種類條件未顯示，請調整條件</div></div></div>'; return; }
+  /* 整合摘要 */
+  h += '<div class="card" style="margin-bottom:16px"><div class="card-title" style="margin-bottom:4px">退撫給與來源整合摘要（共 ' + srcs.length + ' 種）</div><div class="card-subtitle" style="margin-bottom:10px">同一領受人對應多種退撫給與或身分別時，整合列示並依來源區分' + (hiddenN ? '；另有 ' + hiddenN + ' 種來源因輔助條件未顯示' : '') + '</div>' +
+    '<div class="table-wrapper"><table class="data-table"><thead><tr><th>來源</th><th>身分別</th><th>退撫給與種類</th><th>退撫人</th><th>生效日期</th><th>服務機關（學校）</th><th>最近一期</th><th>查詢期間筆數</th><th>查詢期間合計</th></tr></thead><tbody>' +
+    srcs.map((x, i) => '<tr><td><strong>來源 ' + (i + 1) + '</strong></td><td><span class="badge ' + QI_BADGE[x.src.ident] + '">' + x.src.ident + '</span></td><td>' + x.src.type + '</td><td>' + htmlEsc(x.src.pensioner ? x.src.pensioner.name : person.name + '（本人）') + '</td><td>' + x.src.eff + '</td><td>' + htmlEsc(x.src.org) + '</td><td>' + x.last.ym + '</td><td>' + x.rows.length + '</td><td>' + qiNT(x.rows.reduce((a, r) => a + r.amt, 0)) + '</td></tr>').join('') +
+    '</tbody></table></div><div style="margin-top:10px;display:flex;justify-content:space-between;font-size:calc(13px * var(--font-scale))"><span>查詢期間總計：<strong>' + qiNT(total) + '</strong></span>' + (over ? '<span>其中溢領金額：<strong style="color:var(--danger)">' + qiNT(over) + '</strong></span>' : '<span></span>') + '</div></div>';
+  /* 各來源明細 */
+  srcs.forEach((x, i) => {
+    const s = x.src, pen = s.pensioner;
+    h += '<div class="card" style="margin-bottom:16px;border-left:4px solid ' + QI_COLOR[s.ident] + '"><div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap"><span style="font-weight:700;font-size:calc(15px * var(--font-scale))">來源 ' + (i + 1) + '</span><span class="badge ' + QI_BADGE[s.ident] + '">' + s.ident + '</span><span class="badge badge-secondary">' + s.type + '</span><span style="font-size:12px;color:var(--text-secondary)">撥付案號 ' + s.caseNo + '</span></div>' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0 32px;margin-bottom:12px">' +
+      qiRow('退撫人姓名', htmlEsc(pen ? pen.name : person.name)) +
+      qiRow('退撫人身分證字號', pen ? qiMaskId(pen.id) : qiMaskId(id)) +
+      qiRow('退撫人出生年月日', pen ? pen.birth : person.birth) +
+      qiRow('領受人與退撫人關係', s.rel) +
+      qiRow('身分別', s.ident) + qiRow('退撫給與種類', s.type) +
+      qiRow('退撫給與生效日期', s.eff) + qiRow('服務機關（或學校）', htmlEsc(s.org)) +
+      qiRow('現行給付方式', htmlEsc(qiMethodText(s.pay))) + qiRow('最近一期發放年月', x.last.ym + '（' + qiNT(x.last.amt) + '）') +
+      '</div>' +
+      '<div class="table-wrapper" style="max-height:360px;overflow:auto"><table class="data-table"><thead><tr><th>序號</th><th>支領日期</th><th>支領期間</th><th>支領金額</th><th>給付方式</th><th>狀態</th><th>備註</th></tr></thead><tbody>' +
+      (x.rows.length ? x.rows.map((r, k) => '<tr><td>' + (k + 1) + '</td><td>' + r.payDate + '</td><td>' + r.start + ' ～ ' + r.end + '</td><td>' + qiNT(r.amt) + '</td><td>' + htmlEsc(r.method) + '</td><td>' + (r.status === '溢領' ? '<span class="badge badge-danger">溢領</span>' : '<span class="badge badge-success">已撥付</span>') + '</td><td>' + htmlEsc(r.note) + '</td></tr>').join('') : '<tr><td colspan="7" style="text-align:center;color:var(--text-secondary)">查詢期間無支領紀錄</td></tr>') +
+      '</tbody></table></div><div style="padding:10px 0 0;font-size:calc(13px * var(--font-scale));display:flex;justify-content:space-between"><span>本來源 ' + x.rows.length + ' 筆，合計 <strong>' + qiNT(x.rows.reduce((a, r) => a + r.amt, 0)) + '</strong></span><span style="color:var(--text-secondary)">資料來源：撥付系統</span></div></div>';
+  });
+  /* 資料一致性核對 */
+  h += '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><div><div class="card-title" style="margin:0">資料一致性核對</div><div class="card-subtitle">查詢結果之金額、支領明細均直接取自原始撥付系統；可重新比對本畫面資料與撥付系統當下資料是否一致</div></div><button class="btn btn-outline btn-sm" onclick="qiVerify()">與撥付系統核對</button></div><div id="qi-verify" style="margin-top:10px"></div></div>';
+  box.innerHTML = h;
+}
+function qiVerify() {
+  const c = QI.cur;
+  if (!c) return;
+  let allOk = true;
+  const rows = c.srcs.map(x => {
+    const src = PAYSYS[x.src.caseNo].filter(r => qiYmNum(r.ym) >= qiYmNum(c.from) && qiYmNum(r.ym) <= qiYmNum(c.to) && (document.getElementById('qi-method').value === '全部' || r.kind === document.getElementById('qi-method').value));
+    const sumA = x.rows.reduce((a, r) => a + r.amt, 0), sumB = src.reduce((a, r) => a + r.amt, 0);
+    const diff = [];
+    x.rows.forEach((r, i) => { const o = src[i]; if (!o || o.amt !== r.amt || o.payDate !== r.payDate || o.method !== r.method || o.start !== r.start || o.end !== r.end) diff.push(r.ym); });
+    const ok = x.rows.length === src.length && sumA === sumB && !diff.length;
+    if (!ok) allOk = false;
+    return '<tr><td>' + x.src.ident + '／' + x.src.type + '</td><td>' + x.src.caseNo + '</td><td>' + x.rows.length + ' / ' + src.length + '</td><td>' + qiNT(sumA) + ' / ' + qiNT(sumB) + '</td><td>' + (ok ? '<span class="badge badge-success">一致</span>' : '<span class="badge badge-danger">不一致：' + (diff.join('、') || '筆數或合計不同') + '</span>') + '</td></tr>';
+  }).join('');
+  document.getElementById('qi-verify').innerHTML = '<div class="table-wrapper"><table class="data-table"><thead><tr><th>來源</th><th>撥付案號</th><th>筆數（本系統 / 撥付系統）</th><th>金額合計（本系統 / 撥付系統）</th><th>逐筆核對（日期、期間、金額、給付方式）</th></tr></thead><tbody>' + rows + '</tbody></table></div><div class="form-hint" style="margin-top:6px">核對時間：' + execNowStrQ() + '　結果：' + (allOk ? '全部一致' : '發現不一致，請通知撥付系統管理人員查證') + '</div>';
+  showToast(allOk ? 'success' : 'error', allOk ? '核對一致' : '核對不一致', allOk ? '查詢結果與撥付系統資料完全一致' : '部分資料與撥付系統不一致');
+}
+function clearQuery() {
+  document.getElementById('query-id').value = '';
+  document.getElementById('qi-from').value = '113/01'; document.getElementById('qi-to').value = '113/12';
+  ['qi-ident', 'qi-type', 'qi-method'].forEach(i => { document.getElementById(i).selectedIndex = 0; });
+  document.getElementById('query-result').style.display = 'none';
+  document.getElementById('query-empty').style.display = 'block';
+  QI.cur = null;
+}
 
 </script>
 </body>
