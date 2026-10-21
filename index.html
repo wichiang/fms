@@ -1059,34 +1059,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
     <div class="sidebar-section">
       <div class="sidebar-section-label">業務功能</div>
       
-      <!-- 溢領管理 -->
-      <div class="sidebar-item" id="menu-overflow" onclick="toggleMenu('overflow')">
-        <div class="sidebar-item-icon"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="4" width="12" height="17" rx="2"/><rect x="9" y="2" width="6" height="4" rx="1"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="15" y2="15"/></svg></div>
-        <div class="sidebar-item-text">溢領管理</div>
-        <div class="sidebar-item-arrow">▶</div>
-      </div>
-      <div class="sidebar-submenu" id="submenu-overflow">
-        <div class="sidebar-sub-item" onclick="navigateTo('overflow-single')">單筆溢領控管</div>
-        <div class="sidebar-sub-item" onclick="navigateTo('overflow-batch')">批次溢領計算</div>
-        <div class="sidebar-sub-item" onclick="navigateTo('overflow-docs')">追繳與圈存函表</div>
-        <div class="sidebar-sub-item" onclick="navigateTo('overflow-recovery')">溢領收回與轉檔</div>
-        <div class="sidebar-sub-item" onclick="navigateTo('overflow-stats')">統計查詢與檢核</div>
-      </div>
-      
-      <!-- 止付作業 -->
-      <div class="sidebar-item" id="menu-stop" onclick="toggleMenu('stop')">
-        <div class="sidebar-item-icon"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg></div>
-        <div class="sidebar-item-text">止付作業</div>
-        <div class="sidebar-item-arrow">▶</div>
-      </div>
-      <div class="sidebar-submenu" id="submenu-stop">
-        <div class="sidebar-sub-item" onclick="navigateTo('stop-payment')">止付作業入口</div>
-        <div class="sidebar-sub-item" onclick="navigateTo('stop-register')">案件登錄與檢核</div>
-        <div class="sidebar-sub-item" onclick="navigateTo('stop-docs')">文件產製</div>
-        <div class="sidebar-sub-item" onclick="navigateTo('stop-index')">發文資訊索引</div>
-        <div class="sidebar-sub-item" onclick="navigateTo('stop-tracking')">案件追蹤統計</div>
-      </div>
-      
+
       <!-- 課稅管理 -->
       <div class="sidebar-item" id="menu-tax" onclick="toggleMenu('tax')">
         <div class="sidebar-item-icon"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><line x1="12" y1="7" x2="12" y2="17"/><path d="M15 9.5c0-1.4-1.3-2.5-3-2.5s-3 1.1-3 2.5 1.3 2 3 2.5 3 1.1 3 2.5-1.3 2.5-3 2.5-3-1.1-3-2.5"/></svg></div>
@@ -1158,7 +1131,35 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div class="sidebar-sub-item" onclick="navigateTo('extdata-veterans')">退輔會資料</div>
         <div class="sidebar-sub-item" onclick="navigateTo('extdata-mohw')">衛生福利部資料</div>
       </div>
+       <!-- 溢領管理 -->
+      <div class="sidebar-item" id="menu-overflow" onclick="toggleMenu('overflow')">
+        <div class="sidebar-item-icon"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="4" width="12" height="17" rx="2"/><rect x="9" y="2" width="6" height="4" rx="1"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="15" y2="15"/></svg></div>
+        <div class="sidebar-item-text">溢領管理</div>
+        <div class="sidebar-item-arrow">▶</div>
+      </div>
+      <div class="sidebar-submenu" id="submenu-overflow">
+        <div class="sidebar-sub-item" onclick="navigateTo('overflow-single')">單筆溢領控管</div>
+        <div class="sidebar-sub-item" onclick="navigateTo('overflow-batch')">批次溢領計算</div>
+        <div class="sidebar-sub-item" onclick="navigateTo('overflow-docs')">追繳與圈存函表</div>
+        <div class="sidebar-sub-item" onclick="navigateTo('overflow-recovery')">溢領收回與轉檔</div>
+        <div class="sidebar-sub-item" onclick="navigateTo('overflow-stats')">統計查詢與檢核</div>
+      </div>
       
+      <!-- 止付作業 -->
+      <div class="sidebar-item" id="menu-stop" onclick="toggleMenu('stop')">
+        <div class="sidebar-item-icon"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg></div>
+        <div class="sidebar-item-text">止付作業</div>
+        <div class="sidebar-item-arrow">▶</div>
+      </div>
+      <div class="sidebar-submenu" id="submenu-stop">
+        <div class="sidebar-sub-item" onclick="navigateTo('stop-payment')">止付作業入口</div>
+        <div class="sidebar-sub-item" onclick="navigateTo('stop-register')">案件登錄與檢核</div>
+        <div class="sidebar-sub-item" onclick="navigateTo('stop-docs')">文件產製</div>
+        <div class="sidebar-sub-item" onclick="navigateTo('stop-index')">發文資訊索引</div>
+        <div class="sidebar-sub-item" onclick="navigateTo('stop-tracking')">案件追蹤統計</div>
+        <div class="sidebar-sub-item" onclick="navigateTo('stop-recon')">時限設定與異常勾稽</div>
+      </div>
+           
       <!-- 給與支領紀錄查詢 -->
       <div class="sidebar-item" id="menu-query" onclick="toggleMenu('query')">
         <div class="sidebar-item-icon"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
@@ -2150,6 +2151,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           <button class="btn btn-outline btn-sm" onclick="navigateTo('stop-docs')">產製文件（電話紀錄表／公文／止付明細）</button>
           <button class="btn btn-outline btn-sm" onclick="navigateTo('stop-index')">發文資訊索引</button>
           <button class="btn btn-outline btn-sm" onclick="navigateTo('stop-tracking')">案件追蹤統計</button>
+          <button class="btn btn-outline btn-sm" onclick="navigateTo('stop-recon')">時限設定與異常勾稽</button>
         </div>
         <a href="javascript:void(0)" class="sp-mini-link" onclick="spSimAlert()">模擬接收銀行異常回饋（原型示意）</a>
       </div>
@@ -2211,6 +2213,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           <a class="sp-chip-link" onclick="spRegDemo('H890123456')">H890123456 資料缺漏</a>
           <a class="sp-chip-link" onclick="spRegDemo('U201234567')">U201234567 條件不符</a>
           <a class="sp-chip-link" onclick="spRegDemo('T200000001')">T200000001 無未撥付</a>
+          <a class="sp-chip-link" onclick="spRegDemo('X234567891')">X234567891 直撥案件（無法預先註記停發）</a>
           <a class="sp-chip-link" onclick="spRegDemo('Z200000000')">Z200000000 查無資料</a>
         </div>
       </div>
@@ -2325,15 +2328,13 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div class="card-header">
           <div>
             <div class="card-title">銀行回饋時限監控</div>
-            <div class="card-subtitle">逾設定作業時限（3個工作日）未回傳確認受理狀態者，系統主動推送警示</div>
+            <div class="card-subtitle" id="sp-trk-sub"></div>
           </div>
         </div>
         <div class="table-wrapper">
           <table class="data-table">
-            <thead><tr><th>姓名</th><th>身分證字號</th><th>銀行別</th><th>登錄時間</th><th>設定時限</th><th>目前狀態</th></tr></thead>
-            <tbody>
-              <tr><td>吳建成</td><td class="masked">G789***012</td><td>合作金庫</td><td>113/12/03 10:20</td><td>113/12/06</td><td><span class="badge badge-danger">已逾時限，尚未回饋</span></td></tr>
-            </tbody>
+            <thead><tr><th>姓名</th><th>身分證字號</th><th>銀行別</th><th>發文時間</th><th>設定時限（到期日）</th><th>剩餘／逾期</th><th>目前狀態</th></tr></thead>
+            <tbody id="sp-trk-limit"></tbody>
           </table>
         </div>
       </div>
@@ -2342,9 +2343,9 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div class="filter-row">
           <div class="filter-group"><div class="filter-label">止付日期起</div><input type="text" class="filter-control" value="113/11/01"></div>
           <div class="filter-group"><div class="filter-label">止付日期迄</div><input type="text" class="filter-control" value="113/12/10"></div>
-          <div class="filter-group"><div class="filter-label">承辦人</div><select class="filter-control"><option>全部</option><option>王大明</option><option>李小華</option></select></div>
-          <div class="filter-group"><div class="filter-label">止付結果</div><select class="filter-control"><option>全部</option><option>成功</option><option>失敗</option></select></div>
-          <button class="btn btn-primary btn-sm" style="align-self:flex-end" onclick="showToast('success','查詢完成','已查詢符合條件之止付案件，共 3 筆')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> 查詢</button>
+          <div class="filter-group"><div class="filter-label">承辦人</div><select class="filter-control" id="sp-trk-by"><option>全部</option><option>王大明</option><option>李小華</option></select></div>
+          <div class="filter-group"><div class="filter-label">止付結果</div><select class="filter-control" id="sp-trk-res"><option>全部</option><option>成功</option><option>失敗</option><option>未回饋</option><option>未明確</option></select></div>
+          <button class="btn btn-primary btn-sm" style="align-self:flex-end" onclick="spTrkRender(true)">查詢</button>
         </div>
       </div>
       
@@ -2360,30 +2361,33 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <table class="data-table">
           <thead>
             <tr>
-              <th>姓名</th><th>身分證字號</th><th>止付期間</th><th>止付金額</th><th>承辦人</th><th>止付時間</th><th>撥付狀態</th><th>止付結果</th><th>銀行回饋代碼</th><th>後續處理</th>
+              <th>姓名</th><th>身分證字號</th><th>止付期間</th><th>止付金額</th><th>承辦人</th><th>止付時間</th><th>撥付狀態</th><th>止付結果</th><th>銀行回饋代碼</th><th>勾稽結果</th><th>後續處理</th>
             </tr>
           </thead>
-          <tbody>
-            <tr><td>陳美麗</td><td class="masked">B234***789</td><td>113/12</td><td>NT$ 68,500</td><td>王大明</td><td>113/12/05 14:23</td><td><span class="badge badge-danger">撥付失敗</span></td><td><span class="badge badge-success">止付成功</span></td><td>R001</td><td><span style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary)">已排除溢領流程</span></td></tr>
-            <tr><td>王建民</td><td class="masked">A123***789</td><td>113/11</td><td>NT$ 68,500</td><td>王大明</td><td>113/11/28 09:15</td><td><span class="badge badge-danger">撥付失敗</span></td><td><span class="badge badge-success">止付成功</span></td><td>R001</td><td><span style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary)">已排除溢領流程</span></td></tr>
-            <tr><td>張淑芬</td><td class="masked">D456***789</td><td>113/11</td><td>NT$ 142,000</td><td>李小華</td><td>113/11/25 16:42</td><td><span class="badge badge-success">撥付成功</span></td><td><span class="badge badge-danger">止付失敗</span></td><td>E003</td><td><button class="btn btn-sm btn-outline-primary" onclick="navigateTo('overflow-single')">轉入溢領管理 →</button></td></tr>
-            <tr><td>林志明</td><td class="masked">C345***678</td><td>113/11</td><td>NT$ 71,000</td><td>王大明</td><td>113/11/20 10:08</td><td><span class="badge badge-danger">撥付失敗</span></td><td><span class="badge badge-success">止付成功</span></td><td>R001</td><td><span style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary)">已排除溢領流程</span></td></tr>
-            <tr><td>黃建國</td><td class="masked">E567***890</td><td>113/11</td><td>NT$ 55,000</td><td>陳志明</td><td>113/11/18 11:30</td><td><span class="badge badge-danger">撥付失敗</span></td><td><span class="badge badge-success">止付成功</span></td><td>R001</td><td><span style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary)">已排除溢領流程</span></td></tr>
-          </tbody>
+          <tbody id="sp-trk-body"></tbody>
         </table>
         </div>
         <div style="padding:10px 16px;border-top:1px solid var(--border);font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">說明：止付失敗（即撥付成功）案件將自動提供予溢領管理子系統，作為後續追繳作業之起點；止付成功案件則排除於溢領處理流程之外。針對無法預先註記停發之直撥案件，系統於偵測撥付結果回饋後，將主動通知承辦人返回業務系統補登停發註記。</div>
-        <div class="pagination">
-          <div class="pagination-info">顯示 1-5 / 共 12 筆</div>
-          <div class="pagination-controls">
-            <button class="page-btn" disabled>上一頁</button>
-            <button class="page-btn active">1</button>
-            <button class="page-btn">2</button>
-            <button class="page-btn">3</button>
-            <button class="page-btn">下一頁</button>
-          </div>
-        </div>
+        <div class="pagination"><div class="pagination-info" id="sp-trk-info"></div></div>
       </div>
+    </div>
+
+        <!-- ===== STOP RECON：時限設定與異常勾稽 ===== -->
+    <div class="view" id="view-stop-recon">
+      <div class="breadcrumb">
+        <span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span><span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item">止付作業</span><span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item current">時限設定與異常勾稽</span>
+      </div>
+      <div class="page-header">
+        <div class="page-title">時限設定、直撥補登與止付異常勾稽</div>
+        <div class="page-subtitle">設定銀行回饋作業時限；追蹤直撥案件停發註記補登；排程勾稽撥付系統支領紀錄與撥付狀態，針對止付失敗（撥付成功）、結果未明案件產製異常清單並通知承辦人</div>
+      </div>
+      <div id="sp-rc-cfg"></div>
+      <div id="sp-rc-mark"></div>
+      <div id="sp-rc-sched"></div>
+      <div id="sp-rc-exc"></div>
+      <div id="sp-rc-runs"></div>
     </div>
 
     <!-- ===== TAX CALC ===== -->
@@ -5454,6 +5458,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
               <label class="perm-item"><input type="checkbox" checked> 文件產製（電話紀錄表／止付明細／公文）</label>
               <label class="perm-item"><input type="checkbox" checked> 發文資訊索引維護（主辦人員）</label>
               <label class="perm-item"><input type="checkbox" checked> 案件追蹤統計</label>
+              <label class="perm-item"><input type="checkbox" checked> 時限設定與異常勾稽（時限／排程設定限主辦人員）</label>
             </div>
           </div>
           <div class="perm-module">
@@ -6547,11 +6552,14 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           <option value="E001">E001　銀行無法受理：帳戶已結清或不存在</option>
           <option value="E002">E002　戶名或帳號與銀行資料不符</option>
           <option value="E003">E003　款項已撥付入帳（止付失敗）</option>
+          <option value="U001">U001　回覆未明確（銀行僅口頭告知、無法確認受理）</option>
+          <option value="U002">U002　無法判定（須銀行再查證，暫無結論）</option>
         </select>
       </div>
       <div class="form-group">
         <label class="form-label">銀行回覆人員／受理編號</label>
         <input type="text" class="form-control" id="sp-fb-who" placeholder="例：林小姐／受理編號 20241210-018">
+        <div class="form-hint">選擇「止付成功」時須填寫受理人員或編號；選擇 U001／U002 時請於備註說明待確認事項</div>
       </div>
       <div class="form-group">
         <label class="form-label">備註</label>
@@ -6562,6 +6570,19 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       <button class="btn btn-outline" onclick="closeModal('sp-fb-modal')">取消</button>
       <button class="btn btn-primary" onclick="spFbSubmit()">確認登錄</button>
     </div>
+  </div>
+</div>
+
+<!-- Stop Payment：通用確認（補登停發註記／異常處理） -->
+<div class="modal-overlay" id="sp-act-modal">
+  <div class="modal modal-md">
+    <div class="modal-header"><div class="modal-title" id="sp-act-title"></div><button class="modal-close" onclick="closeModal('sp-act-modal')">×</button></div>
+    <div class="modal-body">
+      <div class="info-card" style="margin-bottom:14px" id="sp-act-info"></div>
+      <label class="checkbox-item" id="sp-act-chkrow" style="display:none;margin-bottom:12px"><input type="checkbox" id="sp-act-chk"> <span id="sp-act-chklbl"></span></label>
+      <div class="form-group"><label class="form-label" id="sp-act-notelbl">處理說明</label><textarea class="form-control" rows="3" id="sp-act-note"></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('sp-act-modal')">取消</button><button class="btn btn-primary" id="sp-act-ok" onclick="spActOk()">確認</button></div>
   </div>
 </div>
 
@@ -7378,6 +7399,8 @@ function navigateTo(viewId) {
   if (viewId === 'stop-payment') spRenderEntry();
   if (viewId === 'stop-docs') spDocsRender();
   if (viewId === 'stop-index') spIdxRender();
+  if (viewId === 'stop-recon') spReconRender();
+  if (viewId === 'stop-tracking') spTrkRender();
 
   // Update sidebar active states
   document.querySelectorAll('.sidebar-item, .sidebar-sub-item').forEach(item => {
@@ -7403,7 +7426,7 @@ function navigateTo(viewId) {
   const menuMap = {
     'overflow-single': 'overflow', 'overflow-batch': 'overflow', 'overflow-docs': 'overflow',
     'overflow-recovery': 'overflow', 'overflow-stats': 'overflow',
-    'stop-payment': 'stop', 'stop-register': 'stop', 'stop-docs': 'stop', 'stop-index': 'stop', 'stop-tracking': 'stop',
+    'stop-payment': 'stop', 'stop-register': 'stop', 'stop-docs': 'stop', 'stop-index': 'stop', 'stop-tracking': 'stop', 'stop-recon': 'stop',
     'tax-calc': 'tax', 'tax-case': 'tax', 'tax-report': 'tax', 'tax-audit': 'tax',
     'direct-register': 'direct', 'direct-letter': 'direct', 'direct-query': 'direct',
     'monthly-dashboard': 'monthly', 'monthly-prep': 'monthly', 'admin-monthly-audit-perm': 'monthly',
@@ -12790,13 +12813,16 @@ const SP_ST = {
   sent: ['badge-primary', '已發文，待銀行回饋'],
   success: ['badge-success', '止付成功'],
   fail: ['badge-danger', '止付失敗'],
-  overdue: ['badge-danger', '逾時未回饋']
+  overdue: ['badge-danger', '逾時未回饋'],
+  unclear: ['badge-warning', '結果未明，待確認']
 };
 const SP_FB = {
   R001: ['success', '止付成功（銀行已受理）'],
   E001: ['fail', '銀行無法受理：帳戶已結清或不存在'],
   E002: ['fail', '戶名或帳號與銀行資料不符'],
-  E003: ['fail', '款項已撥付入帳（止付失敗）']
+  E003: ['fail', '款項已撥付入帳（止付失敗）'],
+  U001: ['unclear', '回覆未明確，無法確認受理'],
+  U002: ['unclear', '無法判定，須銀行再查證']
 };
 const SP_BANKS = { '台灣銀行': '02-2000-0101', '郵局': '02-2000-0202', '合作金庫': '02-2000-0303', '第一銀行': '02-2000-0404', '土地銀行': '02-2000-0505' };
 const SP_REASONS = ['亡故', '喪失資格', '重複撥付', '其他'];
@@ -12811,18 +12837,19 @@ const SP_DB = {
   'B234567890': { name: '陳美麗', cat: '公務月退', unit: '臺北市政府教育局', bank: '台灣銀行', acct: '012-345-004521', recs: [{ rid: 'PAY-1131225-0231', period: '113/12', pdate: '113/12/25', amt: 68500 }] },
   'H890123456': { name: '趙麗華', cat: '公務月退', unit: '臺北市政府教育局', bank: '', acct: '', recs: [{ rid: 'PAY-1131225-0560', period: '113/12', pdate: '113/12/25', amt: 61000 }] },
   'U201234567': { name: '吳淑貞', cat: '一次退休金', unit: '臺北市政府', bank: '台灣銀行', acct: '012-777-001122', recs: [{ rid: 'PAY-1131230-0021', period: '113/12', pdate: '113/12/30', amt: 1850000 }] },
+  'X234567891': { name: '魏明德', cat: '公務月退', unit: '桃園市政府', bank: '台灣銀行', acct: '012-880-003355', direct: true, recs: [{ rid: 'PAY-1131225-0701', period: '113/12', pdate: '113/12/25', amt: 63000 }] },
   'T200000001': { name: '劉文彬', cat: '公務月退', unit: '新北市政府', bank: '第一銀行', acct: '007-200-009911', recs: [] }
 };
 
 const SP = {
-  handler: '王大明', baseSuccess: 12, seq: 22, docSeq: 12040, failNext: false,
+  handler: '王大明', baseSuccess: 10, seq: 22, docSeq: 12040, failNext: false,
   cases: [], alerts: [], dispatches: [], idx: [], idxLog: [],
   filter: 'all', reg: null, docSel: new Set(), gen: null, fbCase: null, idxEdit: null
 };
 (function spSeed() {
   const mk = (no, id, name, cat, unit, bank, acct, rid, period, pdate, amt, reason, st, at, extra) => Object.assign({
     no, id, name, cat, unit, bank, acct, rid, period, pdate, amt, reason, note: '', by: SP.handler, at, st,
-    chk: '檢核通過', docNo: '', sentAt: '', idxId: '', fb: [],
+    chk: '檢核通過', docNo: '', sentAt: '', idxId: '', fb: [], direct: false, mark: '', markInfo: null,
     hist: [{ t: at, act: '登錄止付案件', by: SP.handler, desc: '依領受人身分證字號帶入未撥付支領紀錄並建立案件關聯' }]
   }, extra || {});
   SP.cases = [
@@ -12839,7 +12866,11 @@ const SP = {
     mk('STP-113-0017', 'L122345678', '蔡明哲', '公務月退', '臺北市政府', '土地銀行', '005-122-006655', 'PAY-1131125-0912', '113/11', '113/11/25', 63000, '亡故', 'fail', '113/11/26 09:40', { docNo: '府退三字第1130011402號', sentAt: '113/11/26 10:30', idxId: 'SPI-001', fb: [{ t: '113/12/02 14:10', code: 'E001', who: '土地銀行 張先生', note: '帳戶已結清' }] }),
     mk('STP-113-0016', 'S234567891', '楊雅婷', '教職月退', '教育部', '第一銀行', '007-234-001199', 'PAY-1131125-0745', '113/11', '113/11/25', 105000, '亡故', 'fail', '113/11/25 15:10', { docNo: '府退三字第1130011388號', sentAt: '113/11/25 16:00', idxId: 'SPI-001', fb: [{ t: '113/12/01 10:25', code: 'E002', who: '第一銀行 王小姐', note: '戶名與銀行資料不符' }] }),
     mk('STP-113-0015', 'F223344556', '郭靜宜', '公務月退', '新北市政府', '台灣銀行', '012-223-004488', 'PAY-1131125-0651', '113/11', '113/11/25', 59000, '亡故', 'success', '113/11/20 10:08', { docNo: '府退三字第1130011290號', sentAt: '113/11/20 11:00', idxId: 'SPI-001', fb: [{ t: '113/11/22 09:30', code: 'R001', who: '台灣銀行 李先生', note: '' }] }),
-    mk('STP-113-0014', 'J112233445', '洪國棟', '軍職月退', '國防部', '郵局', '0003456-7894321', 'PAY-1131125-0633', '113/11', '113/11/25', 52000, '喪失資格', 'success', '113/11/18 11:30', { docNo: '府退三字第1130011246號', sentAt: '113/11/18 13:15', idxId: 'SPI-001', fb: [{ t: '113/11/20 15:00', code: 'R001', who: '郵局 陳小姐', note: '' }] })
+    mk('STP-113-0014', 'J112233445', '洪國棟', '軍職月退', '國防部', '郵局', '0003456-7894321', 'PAY-1131125-0633', '113/11', '113/11/25', 52000, '喪失資格', 'success', '113/11/18 11:30', { docNo: '府退三字第1130011246號', sentAt: '113/11/18 13:15', idxId: 'SPI-001', fb: [{ t: '113/11/20 15:00', code: 'R001', who: '郵局 陳小姐', note: '' }] }),
+    mk('STP-113-0013', 'Y187654321', '馮國強', '公務月退', '桃園市政府', '台灣銀行', '012-187-004321', 'PAY-1131225-0618', '113/12', '113/12/25', 64000, '亡故', 'success', '113/12/06 09:40', { docNo: '府退三字第1130012110號', sentAt: '113/12/06 10:30', idxId: 'SPI-001', direct: true, mark: 'pending', fb: [{ t: '113/12/09 10:12', code: 'R001', who: '台灣銀行 吳先生／受理編號 20241209-007', note: '' }] }),
+    mk('STP-113-0012', 'U223344551', '莊美玲', '公務月退', '臺中市政府', '第一銀行', '007-223-004455', 'PAY-1131125-0655', '113/11', '113/11/25', 61000, '喪失資格', 'success', '113/11/20 14:00', { docNo: '府退三字第1130011300號', sentAt: '113/11/20 15:00', idxId: 'SPI-001', direct: true, mark: 'done', markInfo: { t: '113/11/22 14:05', by: '王大明', note: '已於直撥登錄補登' }, fb: [{ t: '113/11/22 09:30', code: 'R001', who: '第一銀行 林小姐／受理編號 20241122-003', note: '' }] }),
+    mk('STP-113-0011', 'H112233445', '賴正義', '公務月退', '高雄市政府', '台灣銀行', '012-112-003344', 'PAY-1131225-0619', '113/12', '113/12/25', 59500, '亡故', 'sent', '113/12/09 13:20', { docNo: '府退三字第1130012125號', sentAt: '113/12/09 14:00', idxId: 'SPI-001', direct: true }),
+    mk('STP-113-0010', 'M200112233', '范秀英', '教職月退', '教育部', '土地銀行', '005-200-001122', 'PAY-1131125-0999', '113/11', '113/11/25', 87000, '亡故', 'unclear', '113/12/02 10:00', { docNo: '府退三字第1130011900號', sentAt: '113/12/02 11:00', idxId: 'SPI-001', fb: [{ t: '113/12/05 15:30', code: 'U001', who: '土地銀行 值機人員', note: '銀行僅口頭表示「應已處理」，無受理編號' }] })
   ];
   SP.alerts = [
     { id: 'WRN-STP-0876', lvl: 'danger', title: '銀行端逾時限未回饋止付結果', desc: '吳建成（G789***012）・合作金庫・登錄 113/12/03 10:20，已逾設定時限 113/12/06（3個工作日）', at: '113/12/08 18:40', no: 'STP-113-0018', go: 'case', ack: false },
@@ -12877,11 +12908,11 @@ function spUpdateBadge() {
   const n = spUnacked().length;
   el.innerHTML = '止付作業' + (n ? ' <span class="badge badge-danger" style="margin-left:4px">' + n + '</span>' : '');
 }
-function spPushAlert(lvl, title, desc, no, go) {
-  const a = { id: 'STP-ALT-' + String(Date.now()).slice(-6), lvl, title, desc, at: dirNow(), no: no || '', go: go || (no ? 'case' : 'docs'), ack: false };
+function spPushAlert(lvl, title, desc, no, go, silent) {
+  const a = { id: 'STP-ALT-' + String(Date.now()).slice(-6) + (SP._an = (SP._an || 0) + 1), lvl, title, desc, at: dirNow(), no: no || '', go: go || (no ? 'case' : 'docs'), ack: false };
   SP.alerts.unshift(a); spUpdateBadge();
   if (spG('view-stop-payment') && spG('view-stop-payment').classList.contains('active')) spRenderEntry();
-  showToast(lvl === 'danger' ? 'error' : 'warning', '止付作業異常訊息', title);
+  if (!silent) showToast(lvl === 'danger' ? 'error' : 'warning', '止付作業異常訊息', title);
   return a;
 }
 function spHist(c, act, desc) { c.hist.unshift({ t: dirNow(), act, by: SP.handler, desc }); }
@@ -12890,20 +12921,21 @@ function spHist(c, act, desc) { c.hist.unshift({ t: dirNow(), act, by: SP.handle
    A. 止付作業入口
    ===================================================================== */
 function spRenderEntry() {
+  spRefreshOverdue();
   const todo = spCount(['registered', 'docs']), fail = spCount(['fail']), over = spCount(['overdue']), succ = SP.baseSuccess + spCount(['success']);
   const un = spUnacked();
   spG('sp-alert-banner').innerHTML = un.length
     ? '<div class="sp-banner"><div><b>⚠ 系統接收到 ' + un.length + ' 則尚未處理之異常訊息</b>　逾時未回饋 ' + un.filter(a => spByNo(a.no) && spByNo(a.no).st === 'overdue').length + ' 則、銀行回饋失敗／其他 ' + (un.length - un.filter(a => spByNo(a.no) && spByNo(a.no).st === 'overdue').length) + ' 則，請承辦人及時介入處理</div><a href="javascript:void(0)" class="btn btn-danger btn-sm" onclick="spG(\'sp-alerts\').scrollIntoView({behavior:\'smooth\'})">立即查看</a></div>'
     : '<div class="sp-banner ok"><div>✔ 目前無待處理之異常訊息</div></div>';
   const card = (cls, label, val, sub, f) => '<div class="stat-card ' + cls + '" style="cursor:pointer" onclick="spSetFilter(\'' + f + '\')"><div class="stat-label">' + label + '</div><div class="stat-value ' + (cls === 'warning' ? '' : cls) + '"' + (cls === 'warning' ? ' style="color:var(--warning)"' : '') + '>' + val + '</div><div class="stat-sub">' + sub + '</div></div>';
-  spG('sp-stats').innerHTML = card('warning', '待辦止付案件', todo, '待產製文書或待發文', 'todo') + card('danger', '銀行回饋失敗', fail, '需重新聯繫銀行或轉溢領管理', 'fail') + card('danger', '追蹤未回（逾時限）', over, '超過設定聯繫時限', 'overdue') + card('success', '本月止付成功', succ, '已同步溢領管理子系統', 'success');
+  spG('sp-stats').innerHTML = card('warning', '待辦止付案件', todo, '待產製文書或待發文', 'todo') + card('danger', '銀行回饋失敗', fail, '需重新聯繫銀行或轉溢領管理', 'fail') + card('danger', '追蹤未回（逾時限）', over, '超過設定聯繫時限', 'overdue') + card('warning', '結果未明待確認', spCount(['unclear']), '銀行回饋未明確，須再確認', 'unclear') + card('danger', '待補登停發註記', SP.cases.filter(c => c.mark === 'pending').length, '直撥案件須返回業務系統補登', 'mark') + card('danger', '勾稽異常待處理', SP.exc.filter(e => e.st === '待處理').length, '止付失敗（撥付成功）等', 'exc') + card('success', '本月止付成功', succ, '已同步溢領管理子系統', 'success');
 
   // 異常訊息
   spG('sp-alerts').innerHTML = SP.alerts.length ? SP.alerts.map((a, i) => {
     const cls = a.lvl === 'danger' ? 'badge-danger' : (a.lvl === 'warning' ? 'badge-warning' : 'badge-info');
     return '<div class="sp-alert-item' + (a.ack ? ' ack' : '') + '"><div><span class="badge ' + cls + '">' + (a.lvl === 'danger' ? '嚴重' : (a.lvl === 'warning' ? '注意' : '提示')) + '</span> <span class="sp-alert-title">' + dirEsc(a.title) + '</span>' +
       '<div class="sp-alert-desc">' + dirEsc(a.desc) + '　<span style="white-space:nowrap">' + a.at + (a.no ? '・' + a.no : '') + '</span></div></div>' +
-      '<div style="display:flex;gap:6px;flex-shrink:0">' + (a.ack ? '<span class="badge badge-secondary">已知悉</span>' : '<button class="btn btn-sm btn-primary" onclick="spAlertGo(' + i + ')">前往處理</button><button class="btn btn-sm btn-outline" onclick="spAlertAck(' + i + ')">已知悉</button>') + '</div></div>';
+      '<div style="display:flex;gap:6px;flex-shrink:0">' + (a.ack ? '<span class="badge badge-secondary">已知悉</span>' : '<button class="btn btn-sm btn-primary" onclick="spAlertGo(' + i + ')">前往處理</button>' + (a.go === 'mark' && spByNo(a.no) && spByNo(a.no).mark === 'pending' ? '' : '<button class="btn btn-sm btn-outline" onclick="spAlertAck(' + i + ')">已知悉</button>')) + '</div></div>';
   }).join('') : '<div class="form-hint">目前無異常訊息</div>';
 
   // 待辦與回饋
@@ -12914,47 +12946,54 @@ function spRenderEntry() {
     row('已登錄，待產製電話紀錄表／公文／止付明細', spCount(['registered']), 'registered') +
     row('文書已產製，待介接公文系統發文', spCount(['docs']), 'docs') +
     row('已發文，等待銀行回饋', spCount(['sent']), 'sent') +
+    row('銀行回饋未明確／無法判定，待再確認', spCount(['unclear']), 'unclear') +
+    row('直撥案件待補登停發註記', SP.cases.filter(c => c.mark === 'pending').length, 'mark') +
+    row('勾稽異常清單待處理', SP.exc.filter(e => e.st === '待處理').length, 'exc') +
     '<div class="sp-sub">最新銀行回饋</div>' +
-    (fbs.slice(0, 4).map(x => '<div class="sp-todo-row"><span><span class="badge ' + (SP_FB[x.f.code][0] === 'success' ? 'badge-success' : 'badge-danger') + '">' + x.f.code + '</span> ' + dirEsc(x.c.name) + '・' + x.c.bank + '<div class="sp-alert-desc">' + SP_FB[x.f.code][1] + '</div></span><span class="sp-alert-desc">' + x.f.t + '</span></div>').join('') || '<div class="form-hint">尚無銀行回饋</div>');
+    (fbs.slice(0, 4).map(x => '<div class="sp-todo-row"><span><span class="badge ' + (SP_FB[x.f.code][0] === 'success' ? 'badge-success' : (SP_FB[x.f.code][0] === 'unclear' ? 'badge-warning' : 'badge-danger')) + '">' + x.f.code + '</span> ' + dirEsc(x.c.name) + '・' + x.c.bank + '<div class="sp-alert-desc">' + SP_FB[x.f.code][1] + '</div></span><span class="sp-alert-desc">' + x.f.t + '</span></div>').join('') || '<div class="form-hint">尚無銀行回饋</div>');
 
   // 案件清單
-  const F = SP.filter, defs = [['all', '全部'], ['todo', '待辦'], ['registered', '待產製'], ['docs', '待發文'], ['sent', '待回饋'], ['overdue', '逾時未回饋'], ['fail', '回饋失敗'], ['success', '止付成功']];
-  const match = c => F === 'all' || (F === 'todo' ? (c.st === 'registered' || c.st === 'docs') : c.st === F);
-  spG('sp-filter').innerHTML = defs.map(d => '<span class="sp-chip' + (F === d[0] ? ' active' : '') + '" onclick="spSetFilter(\'' + d[0] + '\')">' + d[1] + '（' + SP.cases.filter(c => d[0] === 'all' ? true : (d[0] === 'todo' ? (c.st === 'registered' || c.st === 'docs') : c.st === d[0])).length + '）</span>').join('');
+  const F = SP.filter, defs = [['all', '全部'], ['todo', '待辦'], ['registered', '待產製'], ['docs', '待發文'], ['sent', '待回饋'], ['overdue', '逾時未回饋'], ['unclear', '結果未明'], ['mark', '待補登停發註記'], ['fail', '回饋失敗'], ['success', '止付成功']];
+  const inF = (c, f) => f === 'all' || (f === 'todo' ? (c.st === 'registered' || c.st === 'docs') : (f === 'mark' ? c.mark === 'pending' : c.st === f));
+  const match = c => inF(c, F);
+  spG('sp-filter').innerHTML = defs.map(d => '<span class="sp-chip' + (F === d[0] ? ' active' : '') + '" onclick="spSetFilter(\'' + d[0] + '\')">' + d[1] + '（' + SP.cases.filter(c => inF(c, d[0])).length + '）</span>').join('');
   const rows = SP.cases.filter(match).sort((a, b) => b.no.localeCompare(a.no));
   spG('sp-case-body').innerHTML = rows.map(c => {
     let act = '';
     if (c.st === 'registered' || c.st === 'docs') act = '<button class="btn btn-sm btn-primary" onclick="spGoDocs([\'' + c.no + '\'])">產製文件</button>';
-    else if (c.st === 'sent' || c.st === 'overdue') act = '<button class="btn btn-sm btn-primary" onclick="spFbOpen(\'' + c.no + '\')">登錄銀行回饋</button>';
+    else if (c.st === 'sent' || c.st === 'overdue' || c.st === 'unclear') act = '<button class="btn btn-sm btn-primary" onclick="spFbOpen(\'' + c.no + '\')">' + (c.st === 'unclear' ? '重新確認回饋' : '登錄銀行回饋') + '</button>';
     else if (c.st === 'fail') act = '<button class="btn btn-sm btn-outline-primary" onclick="spFbOpen(\'' + c.no + '\')">重新登錄回饋</button>' + (c.fb.length && c.fb[0].code === 'E003' ? ' <button class="btn btn-sm btn-outline-danger" onclick="navigateTo(\'overflow-single\')">轉入溢領管理</button>' : '');
-    return '<tr><td><a href="javascript:void(0)" onclick="spCaseView(\'' + c.no + '\')">' + c.no + '</a></td><td>' + dirEsc(c.name) + '</td><td class="masked">' + dirMaskId(c.id) + '</td><td>' + c.cat + '</td><td>' + c.bank + '</td><td>' + c.period + '</td><td>NT$ ' + dirFmt(c.amt) + '</td><td>' + c.at + '</td><td><span class="badge ' + SP_ST[c.st][0] + '">' + SP_ST[c.st][1] + '</span></td><td style="white-space:nowrap"><button class="btn btn-sm btn-outline" onclick="spCaseView(\'' + c.no + '\')">檢視</button> ' + act + '</td></tr>';
+    if (c.mark === 'pending') act += ' <button class="btn btn-sm btn-gold" onclick="spMarkOpen(\'' + c.no + '\')">補登停發註記</button>';
+    return '<tr><td><a href="javascript:void(0)" onclick="spCaseView(\'' + c.no + '\')">' + c.no + '</a></td><td>' + dirEsc(c.name) + '</td><td class="masked">' + dirMaskId(c.id) + '</td><td>' + c.cat + '</td><td>' + c.bank + '</td><td>' + c.period + '</td><td>NT$ ' + dirFmt(c.amt) + '</td><td>' + c.at + '</td><td><span class="badge ' + SP_ST[c.st][0] + '">' + SP_ST[c.st][1] + '</span>' + ((c.st === 'sent' || c.st === 'overdue') && c.sentAt ? '<div class="sp-alert-desc">時限 ' + spDue(c) + '（' + spRemainText(c) + '）</div>' : '') + (c.mark === 'pending' ? '<div><span class="badge badge-warning">待補登停發註記</span></div>' : (c.mark === 'done' ? '<div class="sp-alert-desc">已補登停發註記</div>' : '')) + '</td><td style="white-space:nowrap"><button class="btn btn-sm btn-outline" onclick="spCaseView(\'' + c.no + '\')">檢視</button> ' + act + '</td></tr>';
   }).join('') || '<tr><td colspan="10" style="text-align:center;color:var(--text-secondary)">無符合條件之案件</td></tr>';
 }
-function spSetFilter(f) { SP.filter = f; navigateTo('stop-payment'); spG('sp-filter').scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+function spSetFilter(f) { if (f === 'exc') { navigateTo('stop-recon'); return; } SP.filter = f; navigateTo('stop-payment'); spG('sp-filter').scrollIntoView({ behavior: 'smooth', block: 'center' }); }
 function spAlertAck(i) { SP.alerts[i].ack = true; spUpdateBadge(); spRenderEntry(); }
 function spAlertGo(i) {
   const a = SP.alerts[i];
   if (a.go === 'docs') { navigateTo('stop-docs'); return; }
+  if (a.go === 'recon') { navigateTo('stop-recon'); return; }
+  if (a.go === 'mark') { spMarkOpen(a.no); return; }
   const c = spByNo(a.no); if (!c) return;
   if (c.st === 'sent' || c.st === 'overdue' || c.st === 'fail') spFbOpen(c.no); else spCaseView(c.no);
 }
 function spSimAlert() {
   const c = SP.cases.find(x => x.st === 'sent'); if (!c) { showToast('info', '無可模擬案件', '目前沒有「已發文待回饋」之案件'); return; }
   c.st = 'overdue'; spHist(c, '逾時未回饋', '超過設定聯繫時限仍未收到銀行回饋');
-  spPushAlert('danger', '銀行端逾時限未回饋止付結果', c.name + '（' + dirMaskId(c.id) + '）・' + c.bank + '・已發文 ' + c.sentAt + '，逾 3 個工作日未回饋，請聯繫銀行', c.no, 'case');
+  spPushAlert('danger', '銀行端逾時限未回饋止付結果', c.name + '（' + dirMaskId(c.id) + '）・' + c.bank + '・已發文 ' + c.sentAt + '，逾 ' + spLimit(c) + ' 個工作日未回饋，請聯繫銀行', c.no, 'case');
 }
 function spCaseView(no) {
   const c = spByNo(no); if (!c) return;
   const info = (k, v) => '<div class="info-row"><div class="info-key">' + k + '</div><div class="info-val">' + v + '</div></div>';
   openDetailModal('止付案件 ' + c.no + ' · ' + c.name,
-    '<div class="info-card" style="margin-bottom:12px">' + info('領受人', dirEsc(c.name) + '（' + dirMaskId(c.id) + '）') + info('退撫類別／服務機關', c.cat + '／' + dirEsc(c.unit)) + info('撥付金融機構／帳號', c.bank + '　' + spMaskAcct(c.acct)) + info('關聯支領紀錄', c.rid + '（' + c.period + '，預定撥付 ' + c.pdate + '，NT$ ' + dirFmt(c.amt) + '）') + info('止付原因', dirEsc(c.reason) + (c.note ? '：' + dirEsc(c.note) : '')) + info('系統檢核結果', dirEsc(c.chk)) + info('處理狀態', '<span class="badge ' + SP_ST[c.st][0] + '">' + SP_ST[c.st][1] + '</span>') + info('發文字號', c.docNo ? dirEsc(c.docNo) + '（' + c.sentAt + '）' : '尚未發文') + '</div>' +
+    '<div class="info-card" style="margin-bottom:12px">' + info('領受人', dirEsc(c.name) + '（' + dirMaskId(c.id) + '）') + info('退撫類別／服務機關', c.cat + '／' + dirEsc(c.unit)) + info('撥付金融機構／帳號', c.bank + '　' + spMaskAcct(c.acct)) + info('關聯支領紀錄', c.rid + '（' + c.period + '，預定撥付 ' + c.pdate + '，NT$ ' + dirFmt(c.amt) + '）') + info('止付原因', dirEsc(c.reason) + (c.note ? '：' + dirEsc(c.note) : '')) + info('系統檢核結果', dirEsc(c.chk)) + info('處理狀態', '<span class="badge ' + SP_ST[c.st][0] + '">' + SP_ST[c.st][1] + '</span>') + info('發文字號', c.docNo ? dirEsc(c.docNo) + '（' + c.sentAt + '）' : '尚未發文') + (c.sentAt ? info('作業時限', spLimit(c) + ' 個工作日（' + spDue(c) + '）' + ((c.st === 'sent' || c.st === 'overdue') ? '，' + spRemainText(c) : '')) : '') + info('撥付系統狀態', spPay(c)) + (c.direct ? info('停發註記', c.mark === 'done' ? '已補登（' + dirEsc(c.markInfo.by) + '　' + c.markInfo.t + '）' : (c.mark === 'pending' ? '<span style="color:var(--danger);font-weight:700">待補登（直撥案件，無法預先註記停發）</span>' : '待銀行回饋後補登')) : '') + '</div>' +
     '<div class="detail-block-title" style="margin-bottom:6px">處理歷程</div>' + c.hist.map(h => '<div class="validation-item ok" style="align-items:flex-start"><span>●</span><span>' + h.t + '　' + dirEsc(h.by) + '　<b>' + dirEsc(h.act) + '</b>：' + dirEsc(h.desc) + '</span></div>').join(''));
 }
 
 /* ---- 銀行回饋登錄 ---- */
 function spFbOpen(no) {
   const c = spByNo(no); if (!c) return; SP.fbCase = no;
-  spG('sp-fb-info').innerHTML = '<b>' + c.no + '</b>　' + dirEsc(c.name) + '（' + dirMaskId(c.id) + '）・' + c.bank + '・' + c.period + '・NT$ ' + dirFmt(c.amt) + '<div class="form-hint">銀行電話：' + SP_BANKS[c.bank] + '（原型示意）' + (c.docNo ? '　發文字號：' + dirEsc(c.docNo) : '') + '</div>';
+  spG('sp-fb-info').innerHTML = '<b>' + c.no + '</b>　' + dirEsc(c.name) + '（' + dirMaskId(c.id) + '）・' + c.bank + '・' + c.period + '・NT$ ' + dirFmt(c.amt) + '<div class="form-hint">銀行電話：' + SP_BANKS[c.bank] + '（原型示意）' + (c.docNo ? '　發文字號：' + dirEsc(c.docNo) : '') + '</div>' + spDueText(c) + (c.direct ? '<div class="form-hint" style="color:var(--danger)">直撥案件（無法預先註記停發）：登錄回饋後系統將通知補登停發註記</div>' : '');
   spG('sp-fb-code').value = ''; spG('sp-fb-who').value = ''; spG('sp-fb-note').value = '';
   openModal('sp-fb-modal');
 }
@@ -12962,13 +13001,23 @@ function spFbSubmit() {
   const c = spByNo(SP.fbCase), code = spG('sp-fb-code').value;
   if (!c) return;
   if (!code) { showToast('warning', '請選擇回饋結果', '請選擇銀行回饋結果代碼'); return; }
-  c.fb.unshift({ t: dirNow(), code, who: spG('sp-fb-who').value.trim(), note: spG('sp-fb-note').value.trim() });
-  c.st = SP_FB[code][0]; spHist(c, '登錄銀行回饋', code + '　' + SP_FB[code][1]);
-  SP.alerts.forEach(a => { if (a.no === c.no && !a.ack && c.st === 'success') a.ack = true; });
+  const kind = SP_FB[code][0], who = spG('sp-fb-who').value.trim(), note = spG('sp-fb-note').value.trim();
+  if (kind === 'success' && !who) { showToast('warning', '請填寫受理人員／編號', '銀行回覆止付成功須留存受理人員或編號；若銀行未提供，請改選「回覆未明確（U001）」'); return; }
+  if (kind === 'unclear' && !note) { showToast('warning', '請於備註說明', '回饋未明確／無法判定時，請說明銀行回覆內容及待確認事項'); return; }
+  c.fb.unshift({ t: dirNow(), code, who, note });
+  c.st = kind === 'success' ? 'success' : (kind === 'fail' ? 'fail' : 'unclear');
+  spHist(c, '登錄銀行回饋', code + '　' + SP_FB[code][1]);
+  SP.alerts.forEach(a => { if (a.no === c.no && !a.ack && a.go === 'case' && (c.st === 'success' || /逾時限|屆期/.test(a.title))) a.ack = true; });
   closeModal('sp-fb-modal');
   if (c.st === 'fail') spPushAlert('warning', '銀行回饋止付失敗（' + code + '）', c.name + '（' + dirMaskId(c.id) + '）・' + c.bank + '：' + SP_FB[code][1] + (code === 'E003' ? '，請轉入溢領管理' : '，請重新聯繫銀行'), c.no, 'case');
-  else showToast('success', '已登錄銀行回饋', c.name + ' 止付成功，案件已排除於溢領處理流程');
-  spUpdateBadge(); spRenderEntry();
+  else if (c.st === 'unclear') spPushAlert('warning', '銀行回饋未明確，須再確認（' + code + '）', c.name + '（' + dirMaskId(c.id) + '）・' + c.bank + '：' + SP_FB[code][1] + '。未確認前不得視為止付成功，並由勾稽排程持續列管', c.no, 'case');
+  else showToast('success', '已登錄銀行回饋', c.name + ' 止付成功，案件已排除於溢領處理流程（仍由勾稽排程核對撥付狀態）');
+  if (c.direct && c.mark !== 'done') {
+    c.mark = 'pending'; spHist(c, '通知補登停發註記', '直撥案件無法預先註記停發，系統已通知承辦人返回業務系統補登');
+    if (!SP.alerts.some(a => a.no === c.no && a.go === 'mark' && !a.ack)) spPushAlert('warning', '請返回業務系統補登停發註記（直撥案件）', c.name + '（' + dirMaskId(c.id) + '）・' + c.bank + '・銀行回饋已登錄（' + code + '），此案無法預先註記停發，請補登以避免次月誤發', c.no, 'mark');
+  }
+  spUpdateBadge(); spRenderEntry(); if (spG('view-stop-recon') && spG('view-stop-recon').classList.contains('active')) spReconRender();
+  if (spG('view-stop-tracking') && spG('view-stop-tracking').classList.contains('active')) spTrkRender();
 }
 
 /* =====================================================================
@@ -13000,7 +13049,7 @@ function spRegDemo(id) { spG('sp-reg-id').value = id; spRegSearch(); }
 function spRegReset() { SP.reg = null; spG('sp-reg-id').value = ''; spG('sp-reg-result').innerHTML = ''; }
 function spRegSearch() {
   const chk = spCheck(spG('sp-reg-id').value);
-  SP.reg = { chk, sel: new Set(), ack: false, reason: '', note: '', done: null };
+  SP.reg = { chk, sel: new Set(), ack: false, reason: '', note: '', done: null, direct: !!(chk.payee && chk.payee.direct) };
   const avail = chk.recs.filter(x => !x.locked);
   if (!chk.errors.length && avail.length === 1) SP.reg.sel.add(avail[0].rid);
   spRegRender();
@@ -13034,6 +13083,7 @@ function spRegRender() {
     (multi ? '<label class="checkbox-item" style="margin-top:12px"><input type="checkbox" id="sp-ack" ' + (R.ack ? 'checked' : '') + ' onchange="SP.reg.ack=this.checked"> 我已逐筆確認勾選之支領紀錄與領受人對應無誤</label>' : '') + '</div>';
   h += '<div class="card"><div class="section-title">五、止付資訊</div><div class="form-row cols-2"><div class="form-group"><label class="form-label">止付原因 <span class="required">*</span></label><select class="form-control" id="sp-reg-reason" onchange="SP.reg.reason=this.value"><option value="">-- 請選擇 --</option>' + SP_REASONS.map(x => '<option' + (R.reason === x ? ' selected' : '') + '>' + x + '</option>').join('') + '</select></div>' +
     '<div class="form-group"><label class="form-label">補充說明</label><textarea class="form-control" rows="2" id="sp-reg-note" oninput="SP.reg.note=this.value" placeholder="請輸入補充說明...">' + dirEsc(R.note) + '</textarea></div></div>' +
+    '<label class="checkbox-item" style="margin-bottom:12px"><input type="checkbox" ' + (R.direct ? 'checked' : '') + ' onchange="SP.reg.direct=this.checked"> 本案屬<b>直撥案件且無法預先註記停發</b>（登錄銀行回饋後，系統將通知承辦人返回業務系統補登停發註記）</label>' +
     '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><div class="form-hint" id="sp-reg-sum"></div><button class="btn btn-danger" onclick="spRegSubmit()">登錄止付案件</button></div></div>';
   box.innerHTML = h; spRegSum();
 }
@@ -13053,7 +13103,7 @@ function spRegSubmit() {
   recs.forEach(x => {
     if (spOpenCaseByRid(x.rid)) return;
     const no = 'STP-113-' + String(SP.seq++).padStart(4, '0'), t = dirNow();
-    SP.cases.unshift({ no, id: R.chk.id, name: p.name, cat: p.cat, unit: p.unit, bank: p.bank, acct: p.acct, rid: x.rid, period: x.period, pdate: x.pdate, amt: x.amt, reason: R.reason, note: R.note.trim(), by: SP.handler, at: t, st: 'registered',
+    SP.cases.unshift({ no, id: R.chk.id, name: p.name, cat: p.cat, unit: p.unit, bank: p.bank, acct: p.acct, rid: x.rid, period: x.period, pdate: x.pdate, amt: x.amt, reason: R.reason, note: R.note.trim(), by: SP.handler, at: t, st: 'registered', direct: !!R.direct, mark: '', markInfo: null,
       chk: R.chk.recs.length >= 2 ? '檢核通過（同一身分證字號 ' + R.chk.recs.length + ' 筆未撥付，已由承辦人逐筆確認）' : '檢核通過', docNo: '', sentAt: '', idxId: '', fb: [],
       hist: [{ t, act: '登錄止付案件', by: SP.handler, desc: '依身分證字號帶入未撥付支領紀錄 ' + x.rid + ' 並建立案件關聯；止付原因：' + R.reason }] });
     made.push(no);
@@ -13163,7 +13213,7 @@ function spLetterHtml(bank, L, snap, docNo, sentAt) {
   const total = L.reduce((s, c) => s + c.amt, 0);
   return '<div class="ltr" style="page-break-after:always">' + (docNo ? '' : '<div class="stamp">預覽稿</div>') + '<h1>' + dirEsc(snap.org) + '　函</h1><div class="sub">承辦單位：' + dirEsc(snap.unit) + '　承辦人：' + dirEsc(snap.contact) + '　電話：' + dirEsc(snap.tel) + (snap.fax ? '　傳真：' + dirEsc(snap.fax) : '') + '</div>' +
     '<p><b>受文者：</b>' + bank + '</p><p><b>發文日期：</b>' + dirRocText(sentAt || dirNow().slice(0, 9)) + '</p><p><b>發文字號：</b>' + (docNo ? dirEsc(docNo) : '（稿）發文時由公文管理系統取號（字軌：' + dirEsc(snap.prefix) + '）') + '</p>' +
-    '<p><b>速別：</b>' + dirEsc(snap.speed) + '　<b>密等及解密條件：</b>' + dirEsc(snap.secret) + '</p><p><b>主旨：</b>請貴行協助辦理下列領受人月退休(職)金止付（暫停匯入）事宜，並於 3 個工作日內回覆受理結果，請查照。</p>' +
+    '<p><b>速別：</b>' + dirEsc(snap.speed) + '　<b>密等及解密條件：</b>' + dirEsc(snap.secret) + '</p><p><b>主旨：</b>請貴行協助辦理下列領受人月退休(職)金止付（暫停匯入）事宜，並於 ' + spLimit({ bank: bank }) + ' 個工作日內回覆受理結果，請查照。</p>' +
     '<p><b>說明：</b></p><p>一、依本局辦理退休(職)撫卹給與撥付相關規定，下列領受人經本局查核有止付事由，需暫停匯入其於貴行之帳戶。</p><p>二、本次止付計 ' + L.length + ' 件，止付金額合計新臺幣 ' + dirFmt(total) + ' 元，名冊如下。</p><p>三、' + (snap.attach ? '檢附：' + dirEsc(snap.attach) + '。' : '') + '如有疑義，請洽承辦人 ' + dirEsc(snap.contact) + '（電話 ' + dirEsc(snap.tel) + '）。</p>' +
     '<table><thead><tr><th>序號</th><th>案件編號</th><th>領受人</th><th>身分證字號</th><th>撥付帳號</th><th>止付期間</th><th class="num">止付金額</th></tr></thead><tbody>' +
     L.map((c, i) => '<tr><td>' + (i + 1) + '</td><td>' + c.no + '</td><td>' + dirEsc(c.name) + '</td><td>' + c.id + '</td><td>' + c.acct + '</td><td>' + c.period + '</td><td class="num">' + dirFmt(c.amt) + '</td></tr>').join('') +
@@ -13175,7 +13225,7 @@ function spDiText(nos, idxId) {
   const gr = spByBank(nos.map(spByNo)), sn = spSnap(idxId), out = [];
   Object.keys(gr).forEach(b => {
     const L = gr[b], total = L.reduce((s, c) => s + c.amt, 0);
-    out.push('[HEADER]', 'DOCTYPE=函', 'ORG=' + sn.org, 'UNIT=' + sn.unit, 'PREFIX=' + sn.prefix, 'SPEED=' + sn.speed, 'SECRET=' + sn.secret, 'TO=' + b, 'SUBJECT=請貴行協助辦理下列領受人月退休(職)金止付（暫停匯入）事宜，並於3個工作日內回覆受理結果，請查照。', 'DOCNO=', 'COUNT=' + L.length, 'AMOUNT=' + total, 'HANDLER=' + sn.contact, 'TEL=' + sn.tel,
+    out.push('[HEADER]', 'DOCTYPE=函', 'ORG=' + sn.org, 'UNIT=' + sn.unit, 'PREFIX=' + sn.prefix, 'SPEED=' + sn.speed, 'SECRET=' + sn.secret, 'TO=' + b, 'SUBJECT=請貴行協助辦理下列領受人月退休(職)金止付（暫停匯入）事宜，並於' + spLimit({ bank: b }) + '個工作日內回覆受理結果，請查照。', 'DOCNO=', 'COUNT=' + L.length, 'AMOUNT=' + total, 'HANDLER=' + sn.contact, 'TEL=' + sn.tel,
       '[ATTACHMENT]', 'NAME=' + (sn.attach || '止付名冊'), '[LIST] SEQ|CASENO|NAME|ID|ACCOUNT|PERIOD|AMOUNT');
     L.forEach((c, i) => out.push([i + 1, c.no, c.name, c.id, c.acct, c.period, c.amt].join('|')));
     out.push('');
@@ -13276,6 +13326,258 @@ function spIdxDefault(id) {
   SP.idx.forEach(y => { y.def = y.id === id; }); const x = spIdxById(id); x.by = '李主辦'; x.at = dirNow();
   SP.idxLog.unshift({ t: x.at, id, act: '設為預設', by: '李主辦', desc: '設定為止付公文預設發文資訊' }); spIdxRender();
 }
+
+/* =====================================================================
+   V22-2：作業時限設定／直撥停發註記補登／止付異常勾稽
+   ===================================================================== */
+const SP_TODAY = '113/12/10';           // 原型系統日
+Object.assign(SP, {
+  cfg: { wd: 3, remind: 1, byBank: {} },
+  cfgLog: [
+    { t: '113/10/01 09:50', by: '李主辦', kind: '時限', desc: '預設時限 3 個工作日；提前提醒 1 日；銀行別指定：無' },
+    { t: '113/10/01 10:00', by: '李主辦', kind: '排程', desc: '勾稽排程：啟用／每日 03:00／通知承辦人（系統訊息＋電子郵件）' }
+  ],
+  sched: { on: true, freq: '每日', time: '03:00', mail: true, next: '113/12/11 03:00' },
+  pay: { 'PAY-1131125-0651': '撥付失敗', 'PAY-1131125-0633': '撥付成功', 'PAY-1131125-0912': '撥付成功', 'PAY-1131125-0745': '撥付成功', 'PAY-1131125-0655': '撥付失敗', 'PAY-1131125-0999': '查無紀錄' },
+  exc: [], excSeq: 0, runSeq: 3,
+  runs: [
+    { id: 'RUN-0002', at: '113/12/09 03:00', by: '系統排程', scanned: 9, found: 0, fail: 0, auto: 0 },
+    { id: 'RUN-0001', at: '113/12/08 03:00', by: '系統排程', scanned: 9, found: 0, fail: 0, auto: 0 }
+  ]
+});
+const spPay = c => SP.pay[c.rid] || '待撥付';
+
+/* ---- 工作日與時限計算 ---- */
+const spD = s => { const m = String(s).match(/(\d{3})\/(\d{2})\/(\d{2})/); return new Date(+m[1] + 1911, +m[2] - 1, +m[3]); };
+const spFmtD = d => (d.getFullYear() - 1911) + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + String(d.getDate()).padStart(2, '0');
+function spAddWd(s, n) { const d = spD(s); while (n > 0) { d.setDate(d.getDate() + 1); if (d.getDay() !== 0 && d.getDay() !== 6) n--; } return spFmtD(d); }
+function spWdDiff(a, b) {
+  const da = spD(a), db = spD(b); if (+da === +db) return 0;
+  const s = db > da ? 1 : -1, d = new Date(da); let n = 0;
+  while (+d !== +db) { d.setDate(d.getDate() + s); if (d.getDay() !== 0 && d.getDay() !== 6) n += s; }
+  return n;
+}
+const spLimit = c => SP.cfg.byBank[c.bank] || SP.cfg.wd;
+const spDue = c => c.sentAt ? spAddWd(c.sentAt, spLimit(c)) : '';
+const spRemain = c => { const d = spDue(c); return d ? spWdDiff(SP_TODAY, d) : null; };
+function spRemainText(c) { const r = spRemain(c); if (r === null) return ''; return r < 0 ? '已逾 ' + (-r) + ' 個工作日' : (r === 0 ? '今日屆期' : '剩 ' + r + ' 個工作日'); }
+function spDueText(c) { return c.sentAt ? `<div class="form-hint">作業時限：發文後 ${spLimit(c)} 個工作日（${spDue(c)} 止），${spRemainText(c)}</div>` : ''; }
+
+/* 逾時／屆期檢查：進入頁面或調整時限時執行 */
+function spRefreshOverdue() {
+  const late = [], soon = [];
+  SP.cases.forEach(c => {
+    if (c.st !== 'sent' && c.st !== 'overdue') return;
+    const r = spRemain(c); if (r === null) return;
+    if (c.st === 'sent' && r < 0) { c.st = 'overdue'; spHist(c, '逾時未回饋', `超過設定時限（${spLimit(c)} 個工作日，${spDue(c)}）仍未收到銀行回饋`); late.push(c); }
+    else if (c.st === 'sent' && r <= SP.cfg.remind && !c.remind) { c.remind = true; soon.push(c); }
+  });
+  late.forEach(c => spPushAlert('danger', '銀行端逾時限未回饋止付結果', `${c.name}（${dirMaskId(c.id)}）・${c.bank}・已發文 ${c.sentAt}，已逾設定時限 ${spDue(c)}（${spLimit(c)} 個工作日），請聯繫銀行`, c.no, 'case', true));
+  soon.forEach(c => spPushAlert('info', '銀行回饋時限即將屆期', `${c.name}（${dirMaskId(c.id)}）・${c.bank}・時限 ${spDue(c)}，${spRemainText(c)}，請提前聯繫銀行`, c.no, 'case', true));
+}
+
+/* ---- A. 作業時限設定 ---- */
+function spCfgSave() {
+  const wd = +spG('sp-cfg-wd').value, rm = +spG('sp-cfg-rm').value;
+  if (!Number.isInteger(wd) || wd < 1 || wd > 10) { showToast('warning', '時限不合理', '預設時限須為 1～10 個工作日之整數'); return; }
+  if (!Number.isInteger(rm) || rm < 0 || rm >= wd) { showToast('warning', '提醒日數不合理', '提前提醒須為 0 至「時限－1」個工作日'); return; }
+  const by = {}, bad = [];
+  Object.keys(SP_BANKS).forEach((b, i) => { const v = spG('sp-cfg-b' + i).value.trim(); if (v === '') return; const n = +v; if (!Number.isInteger(n) || n < 1 || n > 10) bad.push(b); else if (n !== wd) by[b] = n; });
+  if (bad.length) { showToast('warning', '銀行別時限不合理', bad.join('、') + ' 須為 1～10 個工作日之整數，或留空沿用預設'); return; }
+  if (JSON.stringify([SP.cfg.wd, SP.cfg.remind, SP.cfg.byBank]) === JSON.stringify([wd, rm, by])) { showToast('info', '設定未變更', '時限設定與目前相同'); return; }
+  SP.cfg.wd = wd; SP.cfg.remind = rm; SP.cfg.byBank = by;
+  SP.cfgLog.unshift({ t: dirNow(), by: '李主辦', kind: '時限', desc: `預設時限 ${wd} 個工作日；提前提醒 ${rm} 日；銀行別指定：${Object.keys(by).map(b => b + ' ' + by[b] + ' 日').join('、') || '無'}` });
+  SP.cases.forEach(c => {   // 時限放寬後，尚未逾時者回復待回饋
+    if (c.st === 'overdue' && c.sentAt && spRemain(c) >= 0) {
+      c.st = 'sent'; c.remind = false; spHist(c, '時限調整', '依新設時限重新計算，尚未逾時，回復「待銀行回饋」');
+      SP.alerts.forEach(a => { if (a.no === c.no && /逾時限/.test(a.title)) a.ack = true; });
+    }
+  });
+  spRefreshOverdue(); spUpdateBadge(); spReconRender();
+  showToast('success', '作業時限已儲存', '已依新設定重新計算所有已發文案件之到期日，並留存設定紀錄');
+}
+
+/* ---- 共用確認視窗 ---- */
+const SPA = { cb: null, need: false, chk: false };
+function spActOpen(title, info, okLabel, needNote, cb, chkLabel) {
+  SPA.cb = cb; SPA.need = needNote; SPA.chk = !!chkLabel;
+  spG('sp-act-title').textContent = title; spG('sp-act-info').innerHTML = info;
+  spG('sp-act-chkrow').style.display = chkLabel ? '' : 'none'; spG('sp-act-chk').checked = false; spG('sp-act-chklbl').textContent = chkLabel || '';
+  spG('sp-act-notelbl').innerHTML = '處理說明' + (needNote ? ' <span class="required">*</span>' : '（選填）'); spG('sp-act-note').value = '';
+  spG('sp-act-ok').textContent = okLabel; openModal('sp-act-modal');
+}
+function spActOk() {
+  const note = spG('sp-act-note').value.trim();
+  if (SPA.chk && !spG('sp-act-chk').checked) { showToast('warning', '請先確認', '請勾選確認已於業務系統完成補登'); return; }
+  if (SPA.need && !note) { showToast('warning', '請填寫處理說明', '處理說明為必填'); return; }
+  closeModal('sp-act-modal'); if (SPA.cb) SPA.cb(note);
+}
+
+/* ---- B(A). 直撥案件停發註記補登 ---- */
+function spMarkOpen(no) {
+  const c = spByNo(no); if (!c) return;
+  const info = `<b>${c.no}</b>　${dirEsc(c.name)}（${dirMaskId(c.id)}）・${c.bank}・${c.period}・NT$ ${dirFmt(c.amt)}` +
+    `<div class="form-hint">此案屬<b>無法預先註記停發之直撥案件</b>，銀行撥付結果回饋已登錄。為降低次月誤發風險，請返回業務系統補登停發註記。</div>` +
+    `<div style="margin-top:8px"><a href="javascript:void(0)" class="btn btn-sm btn-outline-primary" onclick="closeModal('sp-act-modal');navigateTo('direct-register')">前往業務系統（手動直撥建置）補登 ›</a></div>`;
+  spActOpen('補登停發註記 · ' + c.no, info, '確認已補登', false, note => {
+    c.mark = 'done'; c.markInfo = { t: dirNow(), by: SP.handler, note };
+    spHist(c, '補登停發註記', '承辦人已返回業務系統補登停發註記' + (note ? '：' + note : ''));
+    SP.alerts.forEach(a => { if (a.no === c.no && a.go === 'mark') a.ack = true; });
+    spUpdateBadge(); spRenderEntry(); spReconRender();
+    showToast('success', '已完成補登', c.name + ' 停發註記已補登，次月誤發風險已排除');
+  }, '我已於業務系統完成該領受人之停發註記補登');
+}
+
+/* ---- B(B). 排程勾稽撥付系統 ---- */
+function spReconRun(by, at, silent) {
+  at = at || dirNow();
+  const scope = SP.cases.filter(c => ['sent', 'overdue', 'unclear', 'success', 'fail'].includes(c.st) && !c.ovf);
+  const found = []; let auto = 0;
+  scope.forEach(c => {
+    const ps = spPay(c); let type = '', detail = '';
+    if (ps === '撥付成功') {
+      type = '止付失敗（撥付成功）';
+      detail = { success: '銀行回饋止付成功，惟撥付系統顯示該支領紀錄已撥付成功（回饋與撥付不一致）', fail: '銀行回饋止付失敗，款項已撥付成功', sent: '尚未取得銀行回饋，撥付系統顯示款項已撥付成功', overdue: '逾時未取得銀行回饋，撥付系統顯示款項已撥付成功', unclear: '銀行回饋未明確，撥付系統顯示款項已撥付成功' }[c.st];
+    } else if (ps === '查無紀錄') {
+      type = '查無關聯支領紀錄'; detail = `撥付系統查無支領紀錄 ${c.rid}，止付結果無法判定，請確認支領紀錄是否異動`;
+    } else if (c.st === 'unclear' && ps === '撥付失敗') {
+      c.st = 'success'; c.fb.unshift({ t: at, code: 'R001', who: '撥付系統勾稽', note: '系統依撥付狀態輔助判定' });
+      spHist(c, '勾稽判定', '撥付系統顯示撥付失敗，與止付目的相符，系統輔助判定為止付成功'); auto++; return;
+    } else if (c.st === 'unclear') {
+      type = '止付結果未明（待確認）'; detail = `銀行回饋未明確，且撥付狀態（${ps}）尚無法佐證，請再向銀行確認`;
+    }
+    if (!type || SP.exc.find(e => e.no === c.no && e.type === type && e.st === '待處理')) return;
+    if (type === '止付失敗（撥付成功）') {
+      if (c.st !== 'fail') c.st = 'fail';
+      if (!c.fb.length || c.fb[0].code !== 'E003') c.fb.unshift({ t: at, code: 'E003', who: '撥付系統勾稽', note: '撥付系統顯示已撥付成功' });
+      SP.alerts.forEach(a => { if (a.no === c.no && a.go === 'case' && /逾時限|屆期/.test(a.title)) a.ack = true; });
+    }
+    const e = { id: 'EXC-' + String(++SP.excSeq).padStart(4, '0'), no: c.no, name: c.name, idn: c.id, bank: c.bank, rid: c.rid, period: c.period, amt: c.amt, ps, type, detail, at, by: c.by, st: '待處理', handle: '' };
+    SP.exc.unshift(e); found.push(e); spHist(c, '勾稽異常', type + '：' + detail);
+  });
+  const nFail = found.filter(e => e.type === '止付失敗（撥付成功）').length;
+  const run = { id: 'RUN-' + String(SP.runSeq++).padStart(4, '0'), at, by, scanned: scope.length, found: found.length, fail: nFail, auto };
+  SP.runs.unshift(run);
+  if (found.length) {
+    const hs = [...new Set(found.map(e => e.by))].join('、');
+    spPushAlert('danger', `止付勾稽發現 ${found.length} 筆異常（止付失敗／撥付成功 ${nFail} 筆）`, `異常清單已產製，並以系統訊息${SP.sched.mail ? '及電子郵件' : ''}通知承辦人（${hs}）：${found.slice(0, 3).map(e => e.name).join('、')}${found.length > 3 ? ' 等' : ''}`, '', 'recon', silent);
+  }
+  return run;
+}
+function spReconManual() {
+  const r = spReconRun(SP.handler + '（手動）');
+  spUpdateBadge(); spRenderEntry(); spReconRender();
+  showToast(r.found ? 'warning' : 'success', '勾稽完成', `掃描 ${r.scanned} 件，發現異常 ${r.found} 筆` + (r.auto ? `；系統輔助判定 ${r.auto} 筆` : ''));
+}
+function spSimPay() {
+  const a = SP.cases.find(c => c.st === 'overdue'), b = SP.cases.find(c => c.st === 'sent');
+  if (a) SP.pay[a.rid] = '撥付成功'; if (b) SP.pay[b.rid] = '撥付失敗';
+  showToast('info', '已模擬撥付系統回傳', (a ? a.name + ' 撥付成功（異常）' : '') + (a && b ? '；' : '') + (b ? b.name + ' 撥付失敗（符合預期）' : '') + '。請按「立即執行勾稽」');
+}
+function spNextRun(freq, time) {
+  const d = spD(SP_TODAY);
+  if (freq === '每日') d.setDate(d.getDate() + 1);
+  else if (freq === '每週一') { do { d.setDate(d.getDate() + 1); } while (d.getDay() !== 1); }
+  else { d.setMonth(d.getMonth() + 1); d.setDate(1); }
+  return spFmtD(d) + ' ' + time;
+}
+function spSchedSave() {
+  const on = spG('sp-sc-on').value === '1', freq = spG('sp-sc-freq').value, time = spG('sp-sc-time').value, mail = spG('sp-sc-mail').checked;
+  if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(time)) { showToast('warning', '時間格式不正確', '請輸入 24 小時制時間，例如 03:00'); return; }
+  Object.assign(SP.sched, { on, freq, time, mail, next: on ? spNextRun(freq, time) : '—' });
+  SP.cfgLog.unshift({ t: dirNow(), by: '李主辦', kind: '排程', desc: `勾稽排程：${on ? '啟用' : '停用'}／${freq} ${time}／通知承辦人（系統訊息${mail ? '＋電子郵件' : ''}）` });
+  spReconRender(); showToast('success', '勾稽排程已儲存', on ? '下次執行：' + SP.sched.next : '排程已停用，請留意仍須定期人工勾稽');
+}
+function spExcOvf(id) {
+  const e = SP.exc.find(x => x.id === id), c = e && spByNo(e.no); if (!c) return;
+  spActOpen('轉入溢領管理 · ' + e.no, `<b>${dirEsc(e.name)}</b>・${e.bank}・${e.period}・NT$ ${dirFmt(e.amt)}<div class="form-hint">${dirEsc(e.detail)}。確認後本案作為追繳起點提供予溢領管理子系統。</div>`, '確認轉入', false, note => {
+    e.st = '已轉入溢領管理'; e.handle = note || '轉入溢領管理子系統'; e.hat = dirNow(); c.ovf = true;
+    spHist(c, '轉入溢領管理', '勾稽異常 ' + e.id + ' 轉入溢領管理子系統' + (note ? '：' + note : ''));
+    spUpdateBadge(); spRenderEntry(); spReconRender(); showToast('success', '已轉入溢領管理', e.name + ' 已提供予溢領管理子系統');
+  });
+}
+function spExcClose(id) {
+  const e = SP.exc.find(x => x.id === id), c = e && spByNo(e.no); if (!c) return;
+  spActOpen('登錄異常處理說明 · ' + e.no, `<b>${dirEsc(e.name)}</b>・${e.type}<div class="form-hint">${dirEsc(e.detail)}</div>`, '確認結案', true, note => {
+    e.st = '已處理'; e.handle = note; e.hat = dirNow(); spHist(c, '異常處理', e.id + '：' + note);
+    spReconRender(); showToast('success', '異常已結案', '處理說明已留存');
+  });
+}
+function spExcXlsx() {
+  const H = ['異常編號', '案件編號', '領受人', '身分證字號', '銀行別', '關聯支領紀錄', '撥付期間', '金額', '撥付狀態', '異常類型', '說明', '產製時間', '通知承辦人', '處理狀態', '處理說明'];
+  const rows = [[{ b: true, v: '止付異常清單' }], ['製表日期', dirNow().slice(0, 9)], [], H.map(h => ({ b: true, v: h }))];
+  SP.exc.forEach(e => rows.push([e.id, e.no, e.name, e.idn, e.bank, e.rid, e.period, e.amt, e.ps, e.type, e.detail, e.at, e.by, e.st, e.handle]));
+  dirDownloadXlsx('止付異常清單', rows, '異常清單', [12, 14, 10, 14, 10, 20, 10, 10, 10, 20, 44, 16, 10, 14, 24]);
+}
+
+/* ---- 畫面：時限設定／直撥補登／勾稽 ---- */
+function spReconRender() {
+  if (!spG('sp-rc-cfg')) return; spRefreshOverdue();
+  const th = a => '<thead><tr>' + a.map(x => '<th>' + x + '</th>').join('') + '</tr></thead>';
+  const wrap = (t, body) => '<div class="table-wrapper"><table class="data-table">' + th(t) + '<tbody>' + body + '</tbody></table></div>';
+  const bks = Object.keys(SP_BANKS);
+  spG('sp-rc-cfg').innerHTML = `<div class="card" style="margin-bottom:16px"><div class="card-header"><div><div class="card-title">一、銀行回饋作業時限設定</div><div class="card-subtitle">由主辦人員設定：自公文發文日起算工作日（排除週六、日），逾時限仍無銀行回饋者標示「逾時未回饋」並推送警示；屆期前提醒承辦人</div></div></div>
+    <div class="form-row cols-3"><div class="form-group"><label class="form-label">預設作業時限（工作日）<span class="required">*</span></label><input type="number" min="1" max="10" class="form-control" id="sp-cfg-wd" value="${SP.cfg.wd}"></div>
+    <div class="form-group"><label class="form-label">屆期前提醒（工作日）</label><input type="number" min="0" max="9" class="form-control" id="sp-cfg-rm" value="${SP.cfg.remind}"></div></div>
+    <div class="sp-sub">銀行別指定時限（留空＝沿用預設）</div>
+    <div class="form-row cols-3">${bks.map((b, i) => `<div class="form-group"><label class="form-label">${b}</label><input type="number" min="1" max="10" class="form-control" id="sp-cfg-b${i}" value="${SP.cfg.byBank[b] || ''}" placeholder="沿用預設"></div>`).join('')}</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><div class="form-hint">目前有 ${SP.cases.filter(c => c.st === 'sent').length} 件待回饋、${SP.cases.filter(c => c.st === 'overdue').length} 件逾時；儲存後即重新計算到期日。止付公文「請於 N 個工作日內回覆」之 N 值亦同步採用本設定。</div><button class="btn btn-primary" onclick="spCfgSave()">儲存時限設定</button></div></div>`;
+  const dm = SP.cases.filter(c => c.direct);
+  spG('sp-rc-mark').innerHTML = `<div class="card" style="margin-bottom:16px"><div class="card-header"><div><div class="card-title">二、直撥案件停發註記補登追蹤</div><div class="card-subtitle">無法預先註記停發之直撥案件，承辦人登錄銀行撥付結果回饋後，系統即通知返回業務系統補登停發註記；未補登前持續列管，以降低次月誤發風險</div></div></div>` +
+    wrap(['案件編號', '領受人', '銀行別', '止付期間', '最新銀行回饋', '補登狀態', '補登人員／時間', '操作'], dm.map(c => {
+      const f = c.fb[0], st = c.mark === 'pending' ? '<span class="badge badge-danger">待補登停發註記</span>' : (c.mark === 'done' ? '<span class="badge badge-success">已補登</span>' : '<span class="badge badge-secondary">待銀行回饋</span>');
+      return `<tr><td><a href="javascript:void(0)" onclick="spCaseView('${c.no}')">${c.no}</a></td><td>${dirEsc(c.name)}（${dirMaskId(c.id)}）</td><td>${c.bank}</td><td>${c.period}</td><td>${f ? f.code + '　' + f.t : '—'}</td><td>${st}</td><td>${c.markInfo ? dirEsc(c.markInfo.by) + '　' + c.markInfo.t : '—'}</td><td>${c.mark === 'pending' ? `<button class="btn btn-sm btn-primary" onclick="spMarkOpen('${c.no}')">補登停發註記</button>` : (c.mark === 'done' ? '' : `<button class="btn btn-sm btn-outline" onclick="spFbOpen('${c.no}')">登錄銀行回饋</button>`)}</td></tr>`;
+    }).join('') || '<tr><td colspan="8" style="text-align:center;color:var(--text-secondary)">目前無直撥案件</td></tr>') + '</div>';
+  const S = SP.sched;
+  spG('sp-rc-sched').innerHTML = `<div class="card" style="margin-bottom:16px"><div class="card-header"><div><div class="card-title">三、止付結果勾稽排程設定</div><div class="card-subtitle">定期勾稽撥付系統之關聯支領紀錄與撥付狀態；止付失敗（撥付成功）、結果未明、查無支領紀錄者產製異常清單並通知承辦人</div></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-outline btn-sm" onclick="spSimPay()">模擬撥付系統回傳（原型示意）</button><button class="btn btn-gold btn-sm" onclick="spReconManual()">立即執行勾稽</button></div></div>
+    <div class="form-row cols-3"><div class="form-group"><label class="form-label">排程狀態</label><select class="form-control" id="sp-sc-on"><option value="1"${S.on ? ' selected' : ''}>啟用</option><option value="0"${S.on ? '' : ' selected'}>停用</option></select></div>
+    <div class="form-group"><label class="form-label">執行頻率</label><select class="form-control" id="sp-sc-freq">${['每日', '每週一', '每月1日'].map(x => `<option${S.freq === x ? ' selected' : ''}>${x}</option>`).join('')}</select></div>
+    <div class="form-group"><label class="form-label">執行時間（24 小時制）</label><input type="text" class="form-control" id="sp-sc-time" value="${S.time}" maxlength="5"></div></div>
+    <label class="checkbox-item" style="margin-bottom:10px"><input type="checkbox" id="sp-sc-mail" ${S.mail ? 'checked' : ''}> 異常時除系統訊息外，併以電子郵件通知承辦人</label>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><div class="form-hint">勾稽範圍：已發文待回饋、逾時未回饋、結果未明、止付成功及止付失敗之案件（已轉溢領者除外）｜下次執行：${S.next}</div><button class="btn btn-primary" onclick="spSchedSave()">儲存排程設定</button></div></div>`;
+  const open = SP.exc.filter(e => e.st === '待處理').length;
+  spG('sp-rc-exc').innerHTML = `<div class="table-card" style="margin-bottom:16px"><div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><div><div class="card-title">四、止付異常清單（待處理 ${open} 筆／共 ${SP.exc.length} 筆）</div><div class="card-subtitle">止付失敗（撥付成功）案件可轉入溢領管理；結果未明或查無紀錄者須重新確認銀行回饋，未結案前持續列管</div></div><button class="btn btn-success btn-sm" onclick="spExcXlsx()">匯出異常清單 Excel</button></div>` +
+    wrap(['異常編號', '案件編號', '領受人', '銀行別', '關聯支領紀錄', '撥付狀態', '異常類型', '說明', '產製時間', '承辦人（已通知）', '狀態', '操作'], SP.exc.map(e => {
+      const pend = e.st === '待處理', fail = e.type === '止付失敗（撥付成功）';
+      const act = pend ? (fail ? `<button class="btn btn-sm btn-outline-danger" onclick="spExcOvf('${e.id}')">轉入溢領管理</button> ` : `<button class="btn btn-sm btn-primary" onclick="spFbOpen('${e.no}')">重新確認回饋</button> `) + `<button class="btn btn-sm btn-outline" onclick="spExcClose('${e.id}')">處理說明結案</button>` : dirEsc(e.handle);
+      return `<tr><td>${e.id}</td><td><a href="javascript:void(0)" onclick="spCaseView('${e.no}')">${e.no}</a></td><td>${dirEsc(e.name)}（${dirMaskId(e.idn)}）</td><td>${e.bank}</td><td>${e.rid}</td><td><span class="badge ${e.ps === '撥付成功' ? 'badge-danger' : 'badge-warning'}">${e.ps}</span></td><td><span class="badge ${fail ? 'badge-danger' : 'badge-warning'}">${e.type}</span></td><td style="min-width:220px">${dirEsc(e.detail)}</td><td>${e.at}</td><td>${dirEsc(e.by)}</td><td><span class="badge ${pend ? 'badge-danger' : 'badge-success'}">${e.st}</span></td><td style="white-space:nowrap">${act}</td></tr>`;
+    }).join('') || '<tr><td colspan="12" style="text-align:center;color:var(--text-secondary)">目前無異常</td></tr>') + '</div>';
+  spG('sp-rc-runs').innerHTML = `<div class="sp-grid2"><div class="table-card"><div style="padding:14px 16px;border-bottom:1px solid var(--border)"><div class="card-title">五、勾稽執行紀錄</div></div>` +
+    wrap(['批次', '執行時間', '執行者', '掃描件數', '異常筆數', '系統輔助判定'], SP.runs.slice(0, 8).map(r => `<tr><td>${r.id}</td><td>${r.at}</td><td>${dirEsc(r.by)}</td><td>${r.scanned}</td><td>${r.found ? `<span class="badge badge-danger">${r.found}</span>` : 0}</td><td>${r.auto || 0}</td></tr>`).join('')) +
+    `</div><div class="table-card"><div style="padding:14px 16px;border-bottom:1px solid var(--border)"><div class="card-title">設定異動紀錄</div></div>` +
+    wrap(['時間', '維護人員', '類別', '內容'], SP.cfgLog.slice(0, 8).map(l => `<tr><td>${l.t}</td><td>${dirEsc(l.by)}</td><td><span class="badge badge-info">${l.kind}</span></td><td>${dirEsc(l.desc)}</td></tr>`).join('')) + '</div></div>';
+}
+
+/* ---- 案件追蹤統計（動態） ---- */
+function spTrkRender(toast) {
+  if (!spG('sp-trk-body')) return; spRefreshOverdue();
+  spG('sp-trk-sub').textContent = `逾設定作業時限（預設 ${SP.cfg.wd} 個工作日${Object.keys(SP.cfg.byBank).length ? '，部分銀行另訂' : ''}）未回傳確認受理狀態者，系統主動推送警示`;
+  const lim = SP.cases.filter(c => c.st === 'sent' || c.st === 'overdue').sort((a, b) => spRemain(a) - spRemain(b));
+  spG('sp-trk-limit').innerHTML = lim.map(c => { const r = spRemain(c); return `<tr><td>${dirEsc(c.name)}</td><td class="masked">${dirMaskId(c.id)}</td><td>${c.bank}</td><td>${c.sentAt}</td><td>${spLimit(c)} 個工作日（${spDue(c)}）</td><td>${spRemainText(c)}</td><td><span class="badge ${r < 0 ? 'badge-danger' : (r <= SP.cfg.remind ? 'badge-warning' : 'badge-primary')}">${r < 0 ? '已逾時限，尚未回饋' : '待銀行回饋'}</span></td></tr>`; }).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--text-secondary)">目前無待回饋案件</td></tr>';
+  const by = spG('sp-trk-by').value, res = spG('sp-trk-res').value;
+  const resOf = c => ({ success: '成功', fail: '失敗', sent: '未回饋', overdue: '未回饋', unclear: '未明確' }[c.st]);
+  const rows = SP.cases.filter(c => resOf(c) && (by === '全部' || c.by === by) && (res === '全部' || resOf(c) === res)).sort((a, b) => b.no.localeCompare(a.no));
+  spG('sp-trk-body').innerHTML = rows.map(c => {
+    const ps = spPay(c), ex = SP.exc.filter(e => e.no === c.no && e.st === '待處理').length;
+    const rb = { success: 'badge-success', fail: 'badge-danger', unclear: 'badge-warning', sent: 'badge-primary', overdue: 'badge-danger' }[c.st];
+    let nx = '—';
+    if (c.mark === 'pending') nx = `<button class="btn btn-sm btn-primary" onclick="spMarkOpen('${c.no}')">補登停發註記</button>`;
+    else if (c.st === 'fail' && !c.ovf) nx = `<button class="btn btn-sm btn-outline-danger" onclick="navigateTo('overflow-single')">轉入溢領管理</button>`;
+    else if (c.st === 'unclear' || c.st === 'overdue') nx = `<button class="btn btn-sm btn-outline-primary" onclick="spFbOpen('${c.no}')">重新確認回饋</button>`;
+    else if (c.ovf) nx = '已轉溢領管理';
+    return `<tr><td>${dirEsc(c.name)}</td><td class="masked">${dirMaskId(c.id)}</td><td>${c.period}</td><td>NT$ ${dirFmt(c.amt)}</td><td>${dirEsc(c.by)}</td><td>${c.at}</td><td><span class="badge ${ps === '撥付成功' ? 'badge-success' : (ps === '撥付失敗' ? 'badge-danger' : 'badge-secondary')}">${ps}</span></td><td><span class="badge ${rb}">${SP_ST[c.st][1]}</span></td><td>${c.fb.length ? c.fb[0].code : '—'}</td><td>${ex ? '<span class="badge badge-danger">異常待處理</span>' : '<span class="badge badge-success">無異常</span>'}</td><td>${nx}</td></tr>`;
+  }).join('') || '<tr><td colspan="11" style="text-align:center;color:var(--text-secondary)">無符合條件之案件</td></tr>';
+  spG('sp-trk-info').textContent = '共 ' + rows.length + ' 筆';
+  if (toast) showToast('success', '查詢完成', '已查詢符合條件之止付案件，共 ' + rows.length + ' 筆');
+}
+
+/* ---- 初始：建立直撥案件示意資料與首次排程勾稽 ---- */
+(function spSeed2() {
+  SP.alerts.unshift({ id: 'MRK-STP-0013', lvl: 'warning', title: '請返回業務系統補登停發註記（直撥案件）', desc: '馮國強（Y187***321）・台灣銀行・銀行回饋已登錄 113/12/09 10:12，此案無法預先註記停發，請補登以避免次月誤發', at: '113/12/09 10:12', no: 'STP-113-0013', go: 'mark', ack: false });
+  spReconRun('系統排程', '113/12/10 03:00', true);
+})();
+
 spUpdateBadge();
 
 </script>
