@@ -825,6 +825,32 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 .cns-font{font-family:"AgencyCNS","TW-Sung-Ext-B","HanaMinB","MingLiU-ExtB","Noto Serif CJK TC","PMingLiU-ExtB",serif}
 .cns-font td,td.cns-font{font-family:inherit}
 @media print{.no-print{display:none!important}}
+
+/* ===== V28 ===== */
+.perm-hide{display:none !important}
+.perm-banner{margin:0 0 14px;padding:9px 14px;border-radius:8px;background:#fff8e1;border:1px solid #f0d58a;color:#7a5b00;font-size:calc(13px * var(--font-scale))}
+.al-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.al-chip{padding:5px 12px;border-radius:16px;border:1px solid var(--border);font-size:calc(12px * var(--font-scale));cursor:pointer;background:#fff;color:var(--text-secondary)}
+.al-chip.active{background:var(--primary);border-color:var(--primary);color:#fff}
+.al-row{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:10px 4px;border-bottom:1px dashed var(--border)}
+.al-row:last-child{border-bottom:none}
+.al-title{font-weight:700;font-size:calc(13px * var(--font-scale))}
+.al-desc{font-size:calc(12px * var(--font-scale));color:var(--text-secondary);margin-top:2px}
+.al-mod{display:inline-block;font-size:calc(11px * var(--font-scale));color:var(--primary);background:#eef2ff;border-radius:4px;padding:1px 6px;margin-right:6px}
+.al-flash{animation:alflash 1.2s ease 1}
+@keyframes alflash{0%,100%{box-shadow:var(--shadow-sm)}40%{box-shadow:0 0 0 4px rgba(192,57,43,.35)}}
+.ql-group{margin-bottom:14px}
+.ql-title{font-weight:700;color:var(--primary);font-size:calc(13px * var(--font-scale));margin-bottom:6px}
+.ql-chip{display:inline-flex;align-items:center;gap:6px;margin:0 8px 8px 0;padding:6px 12px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;font-size:calc(13px * var(--font-scale));color:var(--text-primary)}
+.ql-chip:hover{border-color:var(--primary);background:#eef2ff}
+.ql-chip.locked{opacity:.45;cursor:not-allowed;background:#f5f7fa}
+.ql-chip small{font-size:calc(10px * var(--font-scale));color:var(--text-secondary)}
+#tour-mask{position:fixed;inset:0;z-index:20000;display:none}
+#tour-spot{position:fixed;border-radius:10px;box-shadow:0 0 0 9999px rgba(15,25,50,.62);border:2px solid var(--accent-gold);transition:all .25s ease;pointer-events:none}
+#tour-pop{position:fixed;width:340px;max-width:calc(100vw - 24px);background:#fff;border-radius:12px;padding:16px 18px;box-shadow:0 12px 40px rgba(0,0,0,.35)}
+#tour-pop h4{margin:0 0 6px;color:var(--primary);font-size:calc(15px * var(--font-scale))}
+#tour-pop p{margin:0 0 12px;font-size:calc(13px * var(--font-scale));line-height:1.7;color:var(--text-secondary)}
+#tour-pop .tour-foot{display:flex;justify-content:space-between;align-items:center;gap:8px}
 </style>
 
 <style>
@@ -1008,18 +1034,18 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <button class="font-size-btn" data-size="medium" onclick="setFontSize('medium')" title="中">A</button>
         <button class="font-size-btn" data-size="large" onclick="setFontSize('large')" title="大">A+</button>
       </div>
-      <button class="header-btn" onclick="showToast('info','系統通知','您有 3 則未讀通知')">
+      <button class="header-btn" title="系統告警" onclick="dashBell()">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         <span class="notif-badge"></span>
       </button>
-      <button class="header-btn" onclick="showToast('info','說明','開啟線上說明文件')">
+      <button class="header-btn" title="網站說明／導覽" onclick="navigateTo('site-help')">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg>
       </button>
       <div class="header-user" onclick="toggleUserDropdown()">
-        <div class="header-user-avatar">王</div>
+        <div class="header-user-avatar" id="hdr-avatar">管</div>
         <div class="header-user-info">
-          <div class="header-user-name">王大明</div>
-          <div class="header-user-role">給付科 · 承辦人員</div>
+          <div class="header-user-name" id="hdr-name">系統管理員</div>
+          <div class="header-user-role" id="hdr-role">資訊室 · 最高管理者</div>
         </div>
         <svg width="12" height="12" viewBox="0 0 12 8" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" stroke-linecap="round"><path d="M1 1l5 5 5-5"/></svg>
       </div>
@@ -1038,7 +1064,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       <span><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span> 網站說明
     </div>
     <div class="user-dropdown-divider"></div>
-    <div class="user-dropdown-item" onclick="openSimModal()">
+    <div class="user-dropdown-item" id="ud-sim" onclick="openSimModal()">
       <span><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="5"/><circle cx="15" cy="15" r="5"/></svg></span> 模擬登入
     </div>
     <div class="user-dropdown-divider"></div>
@@ -1220,13 +1246,20 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       <div id="dash-banner"></div>
       <div class="page-header">
         <div><div class="page-title">系統儀表板</div><div class="page-subtitle" id="dash-sub"></div></div>
-        <div class="page-actions"><span id="dash-date" style="font-size:calc(13px * var(--font-scale));color:var(--text-secondary)"></span></div>
+        <div class="page-actions"><button class="btn btn-outline btn-sm" style="margin-right:10px" onclick="tourStart()">網站導覽</button><span id="dash-date" style="font-size:calc(13px * var(--font-scale));color:var(--text-secondary)"></span></div>
       </div>
       <div class="stats-grid" id="dash-stats"></div>
       <div class="dashboard-grid" id="dash-cards"></div>
+      <div class="dashboard-grid" style="grid-template-columns:1fr;margin-top:0" id="dash-alert-wrap">
+        <div class="dashboard-card" id="dash-alert-card" style="cursor:default">
+          <div class="dashboard-card-header"><div class="dashboard-card-icon warning" style="background:linear-gradient(135deg,var(--danger),#922b21)"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:24px;height:24px"><path d="M10.29 3.86L1.82 18a1 1 0 0 0 .86 1.5h18.64a1 1 0 0 0 .86-1.5L13.71 3.86a1 1 0 0 0-1.72 0z"/><line x1="12" y1="9" x2="12" y2="13"/><circle cx="12" cy="16.5" r="0.9" fill="currentColor" stroke="none"/></svg></div><div><div class="dashboard-card-title">系統異常告警彙整</div><div class="dashboard-card-sub">彙整各業務模組之告警（止付、定撥、外部資料、直撥、課稅、溢領、調薪），依登入者之功能權限顯示，可直接前往對應頁面處理</div></div></div>
+          <div id="dash-alert-chips" class="al-chips"></div>
+          <div id="dash-alert-list"></div>
+        </div>
+      </div>
       <div class="dashboard-grid" style="margin-top:16px">
-        <div class="dashboard-card"><div class="dashboard-card-header"><div class="dashboard-card-icon warning"></div><div><div class="dashboard-card-title">待辦與提醒</div><div class="dashboard-card-sub">依目前登入角色之功能權限，彙整各模組待處理事項</div></div></div><div id="dash-todo"></div></div>
-        <div class="dashboard-card"><div class="dashboard-card-header"><div class="dashboard-card-icon warning"></div><div><div class="dashboard-card-title">系統公告</div><div class="dashboard-card-sub" id="dash-ann-sub">System Announcements</div></div></div><ul class="announcement-list" id="dash-ann"></ul></div>
+        <div class="dashboard-card"><div class="dashboard-card-header"><div class="dashboard-card-icon warning"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:24px;height:24px"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div><div><div class="dashboard-card-title">待辦與提醒</div><div class="dashboard-card-sub">依目前登入角色之功能權限，彙整各模組待處理事項</div></div></div><div id="dash-todo"></div></div>
+        <div class="dashboard-card"><div class="dashboard-card-header"><div class="dashboard-card-icon warning"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:24px;height:24px"><path d="M3 11v2a1 1 0 0 0 1 1h3l8 4V6L7 10H4a1 1 0 0 0-1 1z"/><path d="M18.5 9a4 4 0 0 1 0 6"/></svg></div><div><div class="dashboard-card-title">系統公告</div><div class="dashboard-card-sub" id="dash-ann-sub">System Announcements</div></div></div><ul class="announcement-list" id="dash-ann"></ul></div>
       </div>
     </div>
 
@@ -4716,7 +4749,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div id="query-result" style="display:none"></div>
 
         <div id="query-empty" class="empty-state">
-          <div class="empty-state-icon"></div>
+          <div class="empty-state-icon"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:48px;height:48px"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg></div>
           <div class="empty-state-text">尚無查詢紀錄</div>
           <div class="empty-state-hint">請輸入領受人身分證字號與查詢起訖年月後點擊查詢</div>
         </div>
@@ -4785,7 +4818,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 
       <div id="qb-result" style="display:none"></div>
       <div id="qb-empty" class="empty-state">
-        <div class="empty-state-icon"></div>
+        <div class="empty-state-icon"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:48px;height:48px"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg></div>
         <div class="empty-state-text">尚未執行批次查詢</div>
         <div class="empty-state-hint">請輸入或匯入身分證字號（最多 10 組）後執行查詢</div>
       </div>
@@ -5267,14 +5300,11 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div class="card">
           <div class="section-title"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="5"/><circle cx="15" cy="15" r="5"/></svg> 模擬登入設定</div>
           <div class="form-group">
-            <label class="form-label">目標使用者帳號 <span class="required">*</span></label>
-            <input type="text" class="form-control" id="sim-target-user" placeholder="請輸入目標使用者身分證字號" value="A123456789">
-            <div class="form-hint">輸入欲模擬的使用者身分證字號</div>
+            <label class="form-label">模擬登入之使用者 <span class="required">*</span></label>
+            <select class="form-control" id="sim-target-sel" onchange="simPreview('sim-target-sel','sim-target-prev')"></select>
+            <div class="form-hint">預設以「系統管理員」登入；選擇使用者後，系統將以其角色及個別調整之功能權限呈現功能選單與頁面</div>
           </div>
-          <div class="form-group">
-            <label class="form-label">目標使用者姓名</label>
-            <input type="text" class="form-control" value="王大明" readonly style="background:#f5f7fa">
-          </div>
+          <div class="info-card" id="sim-target-prev" style="margin-bottom:16px"></div>
           <div class="form-group">
             <label class="form-label">管理者密碼確認 <span class="required">*</span></label>
             <input type="password" class="form-control" id="sim-admin-pwd" placeholder="請再次輸入管理者密碼">
@@ -5287,7 +5317,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
               3. 可隨時點擊「退出模擬模式」結束模擬
             </div>
           </div>
-          <button class="btn btn-warning" style="width:100%" onclick="startSimMode()"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="5"/><circle cx="15" cy="15" r="5"/></svg> 開始模擬登入</button>
+          <button class="btn btn-warning" style="width:100%" onclick="startSimMode('sim-target-sel')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="5"/><circle cx="15" cy="15" r="5"/></svg> 開始模擬登入</button>
         </div>
         
         <div class="card">
@@ -5521,6 +5551,19 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       <div class="page-header">
         <div><div class="page-title" id="shf-title">網站說明</div><div class="page-subtitle" id="shf-sub"></div></div>
         <div class="page-actions"><button class="btn btn-gold" onclick="shDownloadCurrent()"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 下載系統操作手冊</button></div>
+      </div>
+      <div class="card" style="margin-bottom:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+          <div><div class="card-title">網站導覽</div><div class="card-subtitle">以互動式步驟帶您認識首頁統計、異常告警、功能選單與常用工具列（約 1 分鐘）</div></div>
+          <button class="btn btn-gold" onclick="tourStart()">開始網站導覽</button>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:10px">
+          <div><div class="card-title">功能快速連結</div><div class="card-subtitle" id="ql-sub">全站主要功能選單，點選即可前往；灰色項目表示目前登入身分無使用權限</div></div>
+          <input type="text" class="form-control" id="ql-search" placeholder="搜尋功能名稱…" style="max-width:240px" oninput="quickLinksRender()">
+        </div>
+        <div id="ql-box"></div>
       </div>
       <div class="help-layout">
         <div class="card"><div class="help-content" id="shf-content"></div></div>
@@ -6689,8 +6732,9 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
     </div>
     <div class="modal-body">
       <div class="form-group">
-        <label class="form-label">目標使用者帳號</label>
-        <input type="text" class="form-control" id="sim-modal-user" placeholder="請輸入身分證字號" value="A123456789">
+        <label class="form-label">模擬登入之使用者</label>
+        <select class="form-control" id="sim-modal-sel" onchange="simPreview('sim-modal-sel','sim-modal-prev')"></select>
+        <div class="form-hint" id="sim-modal-prev" style="margin-top:6px"></div>
       </div>
       <div class="form-group">
         <label class="form-label">管理者密碼</label>
@@ -6699,7 +6743,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
     </div>
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="closeModal('sim-modal')">取消</button>
-      <button class="btn btn-warning" onclick="closeModal('sim-modal');startSimMode()"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="5"/><circle cx="15" cy="15" r="5"/></svg> 開始模擬</button>
+      <button class="btn btn-warning" onclick="closeModal('sim-modal');startSimMode('sim-modal-sel')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="5"/><circle cx="15" cy="15" r="5"/></svg> 開始模擬</button>
     </div>
   </div>
 </div>
@@ -6713,16 +6757,16 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
     </div>
     <div class="modal-body">
       <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)">
-        <div style="width:64px;height:64px;flex-shrink:0;background:linear-gradient(135deg,var(--accent-gold),#b8922a);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:calc(24px * var(--font-scale));font-weight:700;color:#fff">王</div>
+        <div style="width:64px;height:64px;flex-shrink:0;background:linear-gradient(135deg,var(--accent-gold),#b8922a);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:calc(24px * var(--font-scale));font-weight:700;color:#fff"><span class="pf-av">王</span></div>
         <div>
-          <div style="font-size:calc(16px * var(--font-scale));font-weight:700;color:var(--text-primary)">王大明</div>
-          <div style="font-size:calc(13px * var(--font-scale));color:var(--text-secondary);margin-top:2px">給付科 · 承辦人員</div>
-          <div style="margin-top:6px"><span class="badge badge-info">承辦人員</span></div>
+          <div style="font-size:calc(16px * var(--font-scale));font-weight:700;color:var(--text-primary)"><span class="pf-name">王大明</span></div>
+          <div style="font-size:calc(13px * var(--font-scale));color:var(--text-secondary);margin-top:2px"><span class="pf-dept">給付科</span> · <span class="pf-role">承辦人員</span></div>
+          <div style="margin-top:6px"><span class="badge badge-info"><span class="pf-role">承辦人員</span></span></div>
         </div>
       </div>
       <div class="info-card" style="margin-bottom:16px">
         <div class="info-row"><div class="info-key">帳號（身分證字號）</div><div class="info-val">A123456789</div></div>
-        <div class="info-row"><div class="info-key">所屬單位</div><div class="info-val">給付科</div></div>
+        <div class="info-row"><div class="info-key">所屬單位</div><div class="info-val"><span class="pf-dept">給付科</span></div></div>
         <div class="info-row"><div class="info-key">職稱</div><div class="info-val">承辦人</div></div>
         <div class="info-row"><div class="info-key">帳號狀態</div><div class="info-val"><span class="badge badge-success">啟用</span></div></div>
         <div class="info-row"><div class="info-key">帳號建立日期</div><div class="info-val">112/02/14</div></div>
@@ -12592,7 +12636,7 @@ function saveAnnouncementDisplayCount(){
 function dashAnn(id){const a=ANN.list.find(x=>x.id===id);openDetailModal(a.title,`<div class="info-card"><div class="info-row"><div class="info-key">類型／重要度</div><div class="info-val">${a.type}／${a.sev}</div></div><div class="info-row"><div class="info-key">上下架期間</div><div class="info-val">${a.up} ～ ${a.down}</div></div><div class="info-row"><div class="info-key">發布人</div><div class="info-val">${a.by}</div></div></div><div style="margin-top:12px;line-height:1.8">${a.content}</div>`);}
 
 /* ---- 統計來源（各模組實際資料） ---- */
-const dLvl=fn=>{const u=PM.users['王大明'];const o=u.ov[fn];return o!==undefined?o:PM.cur[u.role][fn];};
+var PERM_CUR='系統管理員';const dLvl=fn=>{const u=PM.users[PERM_CUR];const o=u.ov[fn];return o!==undefined?o:PM.cur[u.role][fn];};
 function dOvf(){ /* 溢領管理：讀取「統計查詢與檢核」之統計卡 */
  const o={};document.querySelectorAll('#view-overflow-stats .stats-grid .stat-card').forEach(c=>{const k=c.querySelector('.stat-label').textContent.trim();o[k]={n:+c.querySelector('.stat-value').textContent.replace(/,/g,''),sub:c.querySelector('.stat-sub').textContent.trim()};});
  const amt=k=>+((o[k]&&o[k].sub.match(/[\d,]+/)||['0'])[0].replace(/,/g,''));
@@ -12614,13 +12658,13 @@ function dashMonthlyRender(){
 
 /* ---- 儀表板 ---- */
 function dashRender(){
- const T=dT(),wk='日一二三四五六'[dD(T).getDay()],u=PM.users['王大明'];
+ const T=dT(),wk='日一二三四五六'[dD(T).getDay()],u=PM.users[PERM_CUR];
  const g=(f,d)=>{try{return f();}catch(e){console.warn(e);return d;}};
- dEl('dash-sub').textContent='歡迎回來，王大明 ｜ 單位：'+u.dept+' ｜ 角色：'+pmRN(u.role)+' ｜ 最後登入：113/12/10 09:23';
+ dEl('dash-sub').textContent='歡迎回來，'+PERM_CUR+' ｜ 單位：'+u.dept+' ｜ 角色：'+pmRN(u.role)+' ｜ 最後登入：113/12/10 09:23';
  dEl('dash-date').textContent=T.replace(/(\d+)\/(\d+)\/(\d+)/,'$1年$2月$3日')+' ('+wk+')';
  /* 公告 */
  const live=annLive(),show=live.slice(0,ANN.cnt),urg=live.find(a=>a.sev==='緊急');
- dEl('dash-banner').innerHTML=urg?`<div class="announcement-banner" style="cursor:pointer" onclick="dashAnn('${urg.id}')"><span class="announcement-icon"></span><div class="announcement-text"><strong>【重要公告】</strong> ${urg.title}：${urg.content.split('。')[0]}。</div></div>`:'';
+ dEl('dash-banner').innerHTML=urg?`<div class="announcement-banner" style="cursor:pointer" onclick="dashAnn('${urg.id}')"><span class="announcement-icon">${dIco('ann')}</span><div class="announcement-text"><strong>【重要公告】</strong> ${urg.title}：${urg.content.split('。')[0]}。</div></div>`:'';
  dEl('dash-ann').innerHTML=show.map(a=>`<li style="cursor:pointer" onclick="dashAnn('${a.id}')"><span class="announcement-tag ${annTag(a.sev)}">${a.sev}</span><span>${a.title}</span><span class="announcement-date">${a.up}</span></li>`).join('')||'<li><span style="color:var(--text-secondary)">目前無上架中之系統公告</span></li>';
  dEl('dash-ann-sub').textContent='依「公告管理」上下架內容同步，顯示 '+show.length+' / '+live.length+' 筆';
  const la=dEl('login-ann');if(la)la.innerHTML=show.map(a=>`<div class="login-announcement-item">【${a.sev==='緊急'?'重要':a.sev}】${a.title}</div>`).join('')||'<div class="login-announcement-item">目前無系統公告</div>';
@@ -12634,7 +12678,7 @@ function dashRender(){
  const ext=g(()=>{const bl=EX_AG.filter(a=>EX_ST[a.k]&&EX_ST[a.k].status==='blocked').length;return {bl,ok:EX_AG.length-bl,n:EX_AG.length};},null);
  const rul=g(()=>(dEl('view-ruling-search').textContent.match(/共\s*(\d+)\s*筆/)||[0,'-'])[1],'-');
  const chg=g(()=>CHG.status,'edit');
- const alerts=(sp?sp.alert+sp.exc:0)+(mo?mo.anom:0)+(ext?ext.bl:0);
+ const AL=g(dashAlerts,[]);const alerts=AL.length;
  /* 統計卡 */
  const sc=(cls,fn,label,val,sub,trend,go,vc)=>dLvl(fn)>0?`<div class="stat-card ${cls}" style="cursor:pointer" onclick="navigateTo('${go}')"><div class="stat-label">${label}</div><div class="stat-value ${vc||''}">${val}</div><div class="stat-sub">${sub}</div><div class="stat-trend">${trend}</div></div>`:'';
  dEl('dash-stats').innerHTML=[
@@ -12643,11 +12687,11 @@ function dashRender(){
   sp&&sc('success','stop-payment','止付案件處理中',sp.run,'逾時未回饋 '+sp.over+'｜結果未明 '+sp.unc+'｜失敗 '+sp.fail,'累計止付成功 '+sp.succ+' 件','stop-payment','success'),
   tx&&sc('info','tax-uncalc','未完成課稅計算',tx.todo,'逾 7 日 '+tx.over+' 件','課稅案件 '+tx.cases+' 件｜註銷待覆核 '+tx.pend+' 件','tax-uncalc',''),
   mo&&sc('teal','monthly-dashboard',mo.ym.replace('/','年')+'月定撥（'+mo.stage+'）',mo.core+(mo.core==='執行中'?' '+mo.pct+'%':''),'報表 '+mo.rep+' / '+mo.repTotal+' 項','前置作業：'+(mo.prep?'已完成':'進行中'),'monthly-dashboard',''),
-  sc('warning','monthly-anomaly','系統異常告警',alerts,'止付 '+(sp?sp.alert+sp.exc:0)+'｜定撥 '+(mo?mo.anom:0)+'｜外部資料 '+(ext?ext.bl:0),alerts?'請盡速處理':'目前無待處理告警','monthly-anomaly','warning')
+  dashAlertStat(AL)
  ].join('');
  /* 模組卡 */
  const mt=(v,l,c)=>`<div class="dashboard-metric"><div class="dashboard-metric-val" ${c?`style="color:var(--${c})"`:''}>${v}</div><div class="dashboard-metric-label">${l}</div></div>`;
- const mc=(fn,go,ic,title,sub,mets,acts)=>dLvl(fn)>0?`<div class="dashboard-card" onclick="navigateTo('${go}')"><div class="dashboard-card-header"><div class="dashboard-card-icon ${ic}"></div><div><div class="dashboard-card-title">${title}</div><div class="dashboard-card-sub">${sub}</div></div></div><div class="dashboard-metrics">${mets.join('')}</div><div class="quick-actions">${acts.filter(a=>dLvl(a[0])>=(a[3]||1)).map((a,i)=>`<button class="btn btn-sm ${i?'btn-outline':'btn-primary'}" onclick="event.stopPropagation();navigateTo('${a[0]}')">${a[1]}</button>`).join('')}</div></div>`:'';
+ const mc=(fn,go,ic,title,sub,mets,acts)=>dLvl(fn)>0?`<div class="dashboard-card" onclick="navigateTo('${go}')"><div class="dashboard-card-header"><div class="dashboard-card-icon ${ic}">${dIco(go)}</div><div><div class="dashboard-card-title">${title}</div><div class="dashboard-card-sub">${sub}</div></div></div><div class="dashboard-metrics">${mets.join('')}</div><div class="quick-actions">${acts.filter(a=>dLvl(a[0])>=(a[3]||1)).map((a,i)=>`<button class="btn btn-sm ${i?'btn-outline':'btn-primary'}" onclick="event.stopPropagation();navigateTo('${a[0]}')">${a[1]}</button>`).join('')}</div></div>`:'';
  dEl('dash-cards').innerHTML=[
   dir&&mc('direct-register','direct-register','navy','直撥登錄','Direct Payment',[mt(dir.pend,'待核符','warning'),mt(dir.appr,'已核符','success'),mt(dir.canc,'已取消','danger')],[['direct-register','手動建置'],['supervisor-approval','科長核符'],['direct-letter','書函產製']]),
   ovf&&mc('overflow-single','overflow-single','navy','溢領管理','Overpayment Management',[mt(ovf.open+ovf.part,'待處理','warning'),mt(ovf.total,'本年累計'),mt(ovf.done,'已收回','success')],[['overflow-single','單筆建置'],['overflow-batch','批次計算'],['overflow-docs','產製函表']]),
@@ -12668,6 +12712,7 @@ function dashRender(){
  if(sal){add('salary-retdiff','salary-retdiff','warning','退職調薪案期間差額尚未寫入支領紀錄',sal.pend);add('salary-active','salary-active','warning','現職調薪流程進行中（'+sal.n+'/5）',sal.n>0&&sal.n<4?1:0);}
  if(ext)add('extdata-military','extdata-military','danger','外部資料轉檔遭阻斷',ext.bl);
  dEl('dash-todo').innerHTML=td.length?td.map(t=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 4px;border-bottom:1px solid var(--border);cursor:pointer;font-size:calc(13px * var(--font-scale))" onclick="navigateTo('${t[0]}')"><span><span class="badge badge-${t[1]}">${t[1]==='danger'?'急':'待'}</span> ${t[2]}</span><b>${t[3]} ›</b></div>`).join(''):'<div class="form-hint" style="padding:8px">目前無待處理事項</div>';
+ dashAlertRender(AL);
 }
 const _navDash=navigateTo;
 navigateTo=function(id){_navDash(id);if(id==='dashboard')dashRender();if(id==='monthly-dashboard')dashMonthlyRender();if(id==='admin-announcements')annRender();};
@@ -14027,6 +14072,255 @@ function qrXlsx(s) {
 const _navV25 = navigateTo;
 navigateTo = function (id) { _navV25(id); if (id === 'query-flexible') { qrNotesUI(); qrPreview(); qrRenderSnaps(); } };
 qrInitUI(); qrRenderSnaps();
+
+</script>
+<div id="tour-mask"><div id="tour-spot"></div><div id="tour-pop"></div></div>
+<script>
+/* ===== V28：儀表板告警彙整／圖示／角色權限模擬登入／網站導覽 ===== */
+const D_SV = p => '<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:24px;height:24px">' + p + '</svg>';
+const D_ICONS = {
+  direct: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+  overflow: '<circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.5c0-1 1.1-1.8 2.5-1.8s2.5.8 2.5 1.8-1.1 1.6-2.5 2-2.5 1-2.5 2 1.1 1.8 2.5 1.8 2.5-.8 2.5-1.8"/>',
+  stop: '<circle cx="12" cy="12" r="9"/><line x1="5.6" y1="5.6" x2="18.4" y2="18.4"/>',
+  tax: '<line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/>',
+  monthly: '<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
+  salary: '<polyline points="3 17 9 11 13 15 21 7"/><polyline points="15 7 21 7 21 13"/>',
+  query: '<circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+  ann: '<path d="M3 11v2a1 1 0 0 0 1 1h3l8 4V6L7 10H4a1 1 0 0 0-1 1z"/><path d="M18.5 9a4 4 0 0 1 0 6"/>'
+};
+const D_ICO_MAP = {'direct-register':'direct','overflow-single':'overflow','stop-payment':'stop','tax-calc':'tax','monthly-dashboard':'monthly','salary-active':'salary','salary-retdiff':'salary','query-individual':'query','ann':'ann'};
+function dIco(k) { return D_SV(D_ICONS[D_ICO_MAP[k] || 'query']); }
+
+/* ---------- 1. 異常告警彙整（跨業務模組） ---------- */
+const DASH_AL = { mod: '全部', list: [] };
+const AL_MODS = ['止付作業', '定撥作業', '外部資料交換', '直撥登錄', '課稅管理', '溢領管理', '調薪作業'];
+function dashAlerts() {
+  const L = [], T = dT();
+  const add = (mod, perm, lvl, title, desc, at, act) => { if (dLvl(perm) > 0) L.push({ mod, perm, lvl, title, desc, at: at || '', act }); };
+  const g = f => { try { f(); } catch (e) { console.warn('dashAlerts', e); } };
+  g(() => SP.alerts.forEach((a, i) => { if (!a.ack) add('止付作業', 'stop-payment', a.lvl, a.title, a.desc, a.at, "navigateTo('stop-payment');spAlertGo(" + i + ")"); }));
+  g(() => SP.exc.filter(e => e.st === '待處理').forEach(e => add('止付作業', 'stop-recon', 'warning', '勾稽異常：' + e.type, e.name + '・' + e.detail, e.at, "navigateTo('stop-recon')")));
+  g(() => document.querySelectorAll('#view-monthly-anomaly tbody tr:not(.expanded-detail)').forEach(r => {
+    const td = r.children; if (td.length < 7) return;
+    if (/已處理|完成|已修正/.test(td[6].textContent)) return;
+    const ty = td[3].textContent.trim();
+    add('定撥作業', 'monthly-anomaly', /帳號|失敗/.test(ty) ? 'danger' : 'warning', '定撥異常：' + ty + '（' + td[1].textContent.trim() + '）', td[4].textContent.trim(), td[5].textContent.trim(), "navigateTo('monthly-anomaly')");
+  }));
+  g(() => EX_AG.forEach(a => { const s = EX_ST[a.k]; if (s && s.status === 'blocked') add('外部資料交換', 'monthly-prep', 'danger', '外部資料轉檔遭阻斷：' + a.ag, (a.view || '') + (s.reason ? '・' + s.reason : '・筆數偏差超過檢核值，待覆核放行'), s.time, "navigateTo('monthly-prep')"); }));
+  g(() => dirAllRows().filter(x => x.status === 'pending' && dDays(x.submitTime, T) > 3).forEach(x => add('直撥登錄', 'supervisor-approval', 'warning', '直撥案件逾期未核符：' + x.caseNo, x.name + '・撥付期間 ' + x.period + '・NT$ ' + dFm(x.amount) + '・已逾 ' + dDays(x.submitTime, T) + ' 日', x.submitTime, "navigateTo('supervisor-approval')")));
+  g(() => TXN.list.filter(c => c.st !== 'done' && daysSince(c.pay) > 7).forEach(c => add('課稅管理', 'tax-uncalc', 'warning', '撥付案逾期未完成稅額計算：' + c.name, c.doc + '・撥付日 ' + c.pay + '・逾 ' + daysSince(c.pay) + ' 日・承辦 ' + c.who, c.pay, "navigateTo('tax-uncalc')")));
+  g(() => TXC.list.filter(c => c.status === '註銷待覆核').forEach(c => add('課稅管理', 'tax-case', 'warning', '課稅案件註銷待覆核：' + (c.name || c.no), '案件 ' + c.no + ' 待覆核主管核准', '', "navigateTo('tax-case')")));
+  g(() => { const o = dOvf(); if (o.open > 0) add('溢領管理', 'overflow-stats', 'danger', '溢領案件未收回 ' + o.open + ' 件', '未收回金額 NT$ ' + dFm(o.openAmt) + '；部分／分期 ' + o.part + ' 件', T, "navigateTo('overflow-stats')"); });
+  g(() => { const n = SAL.adj.filter(a => sM(a.eff, a.pay) > 0 && !a.done).length; if (n > 0) add('調薪作業', 'salary-retdiff', 'warning', '退職調薪期間差額尚未寫入支領紀錄', '共 ' + n + ' 件待處理', T, "navigateTo('salary-retdiff')"); });
+  const ord = { danger: 0, warning: 1, info: 2 };
+  L.sort((a, b) => (ord[a.lvl] - ord[b.lvl]) || AL_MODS.indexOf(a.mod) - AL_MODS.indexOf(b.mod));
+  return L;
+}
+function dashAlertStat(AL) {
+  const by = {}; AL.forEach(a => by[a.mod] = (by[a.mod] || 0) + 1);
+  const sub = AL_MODS.filter(m => by[m]).map(m => m.replace(/作業|管理|登錄|交換/g, '') + ' ' + by[m]).join('｜') || '各業務模組目前無告警';
+  return '<div class="stat-card warning" style="cursor:pointer" onclick="dashAlertFocus()"><div class="stat-label">系統異常告警</div><div class="stat-value warning">' + AL.length + '</div><div class="stat-sub">' + sub + '</div><div class="stat-trend">' + (AL.length ? '點選檢視各業務告警清單' : '目前無待處理告警') + '</div></div>';
+}
+function dashAlertRender(AL) {
+  DASH_AL.list = AL;
+  const card = document.getElementById('dash-alert-card'); if (!card) return;
+  document.getElementById('dash-alert-wrap').style.display = dLvl('dashboard') > 0 ? '' : 'none';
+  const by = {}; AL.forEach(a => by[a.mod] = (by[a.mod] || 0) + 1);
+  if (DASH_AL.mod !== '全部' && !by[DASH_AL.mod]) DASH_AL.mod = '全部';
+  const chips = [['全部', AL.length]].concat(AL_MODS.filter(m => by[m]).map(m => [m, by[m]]));
+  document.getElementById('dash-alert-chips').innerHTML = chips.map(c => '<span class="al-chip' + (DASH_AL.mod === c[0] ? ' active' : '') + '" onclick="dashAlertFilter(\'' + c[0] + '\')">' + c[0] + '（' + c[1] + '）</span>').join('');
+  const rows = AL.filter(a => DASH_AL.mod === '全部' || a.mod === DASH_AL.mod);
+  const bc = { danger: 'badge-danger', warning: 'badge-warning', info: 'badge-info' }, bl = { danger: '嚴重', warning: '注意', info: '提示' };
+  document.getElementById('dash-alert-list').innerHTML = rows.length ? rows.map(a => '<div class="al-row"><div><span class="badge ' + bc[a.lvl] + '">' + bl[a.lvl] + '</span> <span class="al-mod">' + a.mod + '</span><span class="al-title">' + a.title + '</span><div class="al-desc">' + a.desc + (a.at ? '　' + a.at : '') + '</div></div><button class="btn btn-sm btn-primary" style="flex-shrink:0" onclick="' + a.act + '">前往處理</button></div>').join('') : '<div class="form-hint" style="padding:8px">目前無待處理告警（僅顯示您有權限之業務模組）</div>';
+}
+function dashAlertFilter(m) { DASH_AL.mod = m; dashAlertRender(DASH_AL.list); }
+function dashAlertFocus() { const c = document.getElementById('dash-alert-card'); if (!c) return; c.scrollIntoView({ behavior: 'smooth', block: 'center' }); c.classList.remove('al-flash'); void c.offsetWidth; c.classList.add('al-flash'); }
+function dashBell() { navigateTo('dashboard'); setTimeout(dashAlertFocus, 200); }
+
+/* ---------- 3. 角色權限：選單／頁面／模擬登入 ---------- */
+const PERM_ADMIN = '系統管理員';
+const PERM_ACT = /新增|建置|建立|儲存|送審|送出|核符|核准|覆核|刪除|註銷|寫入|產製|發文|轉檔|執行|匯入|上傳|修改|登錄|計算|開通|設定|發布|修正|通知|停用|啟用|還原|退回|補登|更新|調整|撤銷|同步|新增|維護|解除|指派/;
+const PERM_KEEP = /查詢|檢視|明細|預覽|列印|下載|匯出|關閉|返回|篩選|搜尋|清除|重設|詳情|展開|收合|取消$|知悉/;
+const PERM_APPR = /核符|核准|覆核/;
+function permUser() { return PM.users[PERM_CUR]; }
+function permApplyMenu() {
+  document.querySelectorAll('#sidebar .sidebar-item, #sidebar .sidebar-sub-item').forEach(el => {
+    const m = (el.getAttribute('onclick') || '').match(/navigateTo\('([^']+)'\)/); if (!m) return;
+    if (!PM.fns.find(x => x[1] === m[1])) return;
+    el.classList.toggle('perm-hide', dLvl(m[1]) <= 0);
+  });
+  document.querySelectorAll('#sidebar .sidebar-submenu').forEach(sub => {
+    const any = [...sub.querySelectorAll('.sidebar-sub-item')].some(e => !e.classList.contains('perm-hide'));
+    sub.classList.toggle('perm-hide', !any);
+    const head = sub.previousElementSibling; if (head && head.classList.contains('sidebar-item')) head.classList.toggle('perm-hide', !any);
+  });
+  document.querySelectorAll('#sidebar .sidebar-section').forEach(sec => {
+    sec.classList.toggle('perm-hide', ![...sec.querySelectorAll('.sidebar-item')].some(e => !e.classList.contains('perm-hide')));
+  });
+}
+function permApplyUser() {
+  const u = permUser(), role = pmRN(u.role), set = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+  set('hdr-avatar', PERM_CUR.charAt(0)); set('hdr-name', PERM_CUR); set('hdr-role', u.dept + ' · ' + role);
+  document.querySelectorAll('.pf-name').forEach(e => e.textContent = PERM_CUR);
+  document.querySelectorAll('.pf-dept').forEach(e => e.textContent = u.dept);
+  document.querySelectorAll('.pf-role').forEach(e => e.textContent = role);
+  document.querySelectorAll('.pf-av').forEach(e => e.textContent = PERM_CUR.charAt(0));
+  const sim = document.getElementById('ud-sim'); if (sim) { const hide = dLvl('admin-simulate') < 1 || simMode; sim.style.display = hide ? 'none' : ''; }
+  const sn = document.getElementById('sim-user-name'); if (sn && simMode) sn.textContent = PERM_CUR;
+}
+let permObs = null;
+function permApplyView(id) {
+  const root = document.getElementById('view-' + id); if (!root) return;
+  if (permObs) permObs.disconnect();
+  root.querySelectorAll('[data-perm-dis]').forEach(b => { b.disabled = false; b.classList.remove('perm-disabled'); b.removeAttribute('data-perm-dis'); b.removeAttribute('title'); });
+  root.querySelectorAll('.perm-banner').forEach(b => b.remove());
+  const f = PM.fns.find(x => x[1] === id);
+  if (f && id !== 'dashboard') {
+    const lv = dLvl(id); let n = 0;
+    if (lv < 3) root.querySelectorAll('button, a.btn').forEach(b => {
+      if (b.disabled) return;
+      const tx = b.textContent.trim(); if (!tx || PERM_KEEP.test(tx)) return;
+      const need = lv < 2 ? PERM_ACT.test(tx) : PERM_APPR.test(tx);
+      if (!need) return;
+      b.disabled = true; b.setAttribute('data-perm-dis', '1'); b.classList.add('perm-disabled'); b.title = '權限不足：目前權限為「' + PM.lv[lv] + '」'; n++;
+    });
+    if (n) {
+      const ph = root.querySelector('.page-header');
+      const bn = document.createElement('div'); bn.className = 'perm-banner';
+      bn.textContent = '您目前對「' + f[2] + '」之權限為「' + PM.lv[lv] + '」（' + pmRN(permUser().role) + '）：' + (lv < 2 ? '僅可瀏覽及查詢，新增、修改、產製等操作已停用' : '可建置及修改，核符／核准等管理功能已停用') + '，共 ' + n + ' 項功能受限。';
+      if (ph) ph.insertAdjacentElement('afterend', bn); else root.insertBefore(bn, root.firstChild);
+    }
+  }
+  permObsOn();
+}
+function permObsOn() {
+  const main = document.getElementById('main'); if (!main) return;
+  if (!permObs) {
+    let tm = null;
+    permObs = new MutationObserver(() => { clearTimeout(tm); tm = setTimeout(() => { const v = document.querySelector('.view.active'); if (v) permApplyView(v.id.replace('view-', '')); }, 150); });
+  }
+  permObs.observe(main, { childList: true, subtree: true });
+}
+function permApplyAll() {
+  permApplyMenu(); permApplyUser();
+  const v = document.querySelector('.view.active'); if (v) permApplyView(v.id.replace('view-', ''));
+}
+const _navV28 = navigateTo;
+navigateTo = function (id) {
+  const f = PM.fns.find(x => x[1] === id);
+  if (f && dLvl(id) <= 0) { showToast('error', '無使用權限', '「' + PERM_CUR + '」（' + pmRN(permUser().role) + '）無「' + f[2] + '」之使用權限，請洽系統管理者'); return; }
+  _navV28(id); permApplyView(id);
+  if (id === 'site-help') helpExtrasRender();
+};
+
+/* 模擬登入 */
+function simFillSelects() {
+  const opts = Object.keys(PM.users).filter(n => n !== PERM_ADMIN).map(n => '<option value="' + n + '"' + (n === '王大明' ? ' selected' : '') + '>' + n + '（' + PM.users[n].dept + '・' + pmRN(PM.users[n].role) + '）</option>').join('');
+  [['sim-modal-sel', 'sim-modal-prev'], ['sim-target-sel', 'sim-target-prev']].forEach(p => { const s = document.getElementById(p[0]); if (s) { const keep = s.value; s.innerHTML = opts; if (keep) s.value = keep; simPreview(p[0], p[1]); } });
+}
+function simPreview(selId, boxId) {
+  const s = document.getElementById(selId), b = document.getElementById(boxId); if (!s || !b) return;
+  const u = PM.users[s.value]; if (!u) return;
+  const ov = PM.fns.map(f => { const o = u.ov[f[1]]; return o !== undefined ? o : PM.cur[u.role][f[1]]; });
+  const yes = ov.filter(x => x > 0).length, no = ov.length - yes, adj = Object.keys(u.ov).length;
+  b.innerHTML = '身分證字號：' + u.id + '｜單位：' + u.dept + '｜角色：' + pmRN(u.role) + '<br>可使用功能 <b>' + yes + '</b> 項、無權限 <b>' + no + '</b> 項' + (adj ? '（含個別調整 ' + adj + ' 項）' : '') + '；其中「操作」以上 ' + ov.filter(x => x >= 2).length + ' 項、「核准／管理」 ' + ov.filter(x => x >= 3).length + ' 項';
+}
+startSimMode = function (src) {
+  const sel = document.getElementById(src || 'sim-target-sel') || document.getElementById('sim-modal-sel');
+  const name = sel ? sel.value : '王大明'; if (!PM.users[name]) return;
+  simMode = true; PERM_CUR = name;
+  document.getElementById('sim-bar').classList.add('active');
+  ['header', 'sidebar', 'main'].forEach(i => document.getElementById(i).classList.add('sim-offset'));
+  const tb = document.querySelector('#view-admin-simulate tbody');
+  if (tb) { const d = new Date(), tm = '113/12/10 ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); const r = document.createElement('tr'); r.id = 'sim-live-row'; r.innerHTML = '<td>' + PERM_ADMIN + '</td><td>' + name + '</td><td>' + tm + '</td><td>模擬中</td><td>-</td>'; tb.insertBefore(r, tb.firstChild); }
+  permApplyAll(); navigateTo('dashboard');
+  showToast('warning', '模擬模式已啟動', '目前以「' + name + '」（' + pmRN(PM.users[name].role) + '）身分操作，功能選單與頁面依其實際權限呈現；所有操作均記錄為模擬模式');
+};
+exitSimMode = function () {
+  simMode = false; PERM_CUR = PERM_ADMIN;
+  document.getElementById('sim-bar').classList.remove('active');
+  ['header', 'sidebar', 'main'].forEach(i => document.getElementById(i).classList.remove('sim-offset'));
+  const r = document.getElementById('sim-live-row'); if (r) { const d = new Date(); r.children[3].textContent = '113/12/10 ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); r.removeAttribute('id'); }
+  permApplyAll(); navigateTo('dashboard');
+  showToast('info', '已退出模擬模式', '已恢復為「' + PERM_ADMIN + '」身分');
+};
+const _doLogoutV28 = doLogout;
+doLogout = function () { if (simMode) { simMode = false; document.getElementById('sim-bar').classList.remove('active'); ['header', 'sidebar', 'main'].forEach(i => document.getElementById(i).classList.remove('sim-offset')); } PERM_CUR = PERM_ADMIN; _doLogoutV28(); permApplyAll(); };
+
+/* ---------- 4. 網站導覽與功能快速連結 ---------- */
+function quickLinksRender() {
+  const box = document.getElementById('ql-box'); if (!box) return;
+  const q = ((document.getElementById('ql-search') || {}).value || '').trim();
+  const groups = [], gmap = {};
+  let total = 0, locked = 0;
+  document.querySelectorAll('#sidebar > .sidebar-section').forEach(sec => {
+    const secName = sec.querySelector('.sidebar-section-label').textContent.trim();
+    sec.querySelectorAll(':scope > .sidebar-item').forEach(it => {
+      const nm = it.querySelector('.sidebar-item-text').textContent.trim();
+      const sub = it.nextElementSibling && it.nextElementSibling.classList.contains('sidebar-submenu') ? it.nextElementSibling : null;
+      const gt = sub ? secName + '・' + nm : secName;
+      const kids = sub ? [...sub.querySelectorAll(':scope > .sidebar-sub-item')].map(c => ({ k: (c.getAttribute('onclick').match(/navigateTo\('([^']+)'\)/) || [])[1], n: c.childNodes[0] ? c.childNodes[0].textContent.trim() : c.textContent.trim() })) : [{ k: (it.getAttribute('onclick').match(/navigateTo\('([^']+)'\)/) || [])[1], n: nm }];
+      kids.filter(c => c.k && (!q || (c.n + nm).indexOf(q) > -1)).forEach(c => {
+        if (!gmap[gt]) { gmap[gt] = { t: gt, items: [] }; groups.push(gmap[gt]); }
+        gmap[gt].items.push(c);
+      });
+    });
+  });
+  const html = groups.map(g => '<div class="ql-group"><div class="ql-title">' + g.t + '</div>' + g.items.map(c => {
+    const f = PM.fns.find(x => x[1] === c.k), lv = f ? dLvl(c.k) : 1; total++;
+    if (lv <= 0) { locked++; return '<span class="ql-chip locked" title="目前登入身分無此功能權限">' + c.n + ' <small>無權限</small></span>'; }
+    return '<span class="ql-chip" onclick="navigateTo(\'' + c.k + '\')">' + c.n + (f ? ' <small>' + PM.lv[lv] + '</small>' : '') + '</span>';
+  }).join('') + '</div>').join('');
+  box.innerHTML = html || '<div class="form-hint">查無符合之功能</div>';
+  const s = document.getElementById('ql-sub'); if (s) s.textContent = '目前身分：' + PERM_CUR + '（' + pmRN(permUser().role) + '）｜共 ' + total + ' 項功能，可使用 ' + (total - locked) + ' 項；灰色項目表示無使用權限，點選可用項目即可前往';
+}
+function helpExtrasRender() { quickLinksRender(); }
+
+const TOUR = [
+  { sel: '#header', title: '歡迎使用基金業務管理系統', body: '本導覽將帶您認識首頁與主要操作區域。可隨時按「略過」結束，或在「網站說明」重新開始。', view: 'dashboard' },
+  { sel: '#sidebar', title: '左側功能選單', body: '依登入者的角色及個別權限顯示功能；點選模組可展開子功能。模擬登入不同使用者時，選單會隨之改變。', view: 'dashboard' },
+  { sel: '#dash-stats', title: '業務統計卡', body: '即時彙整直撥、溢領、止付、課稅、定撥等關鍵數字，點選卡片可直接進入對應業務頁面。', view: 'dashboard' },
+  { sel: '#dash-alert-card', title: '系統異常告警彙整', body: '集中顯示止付、定撥、外部資料、直撥、課稅、溢領、調薪等所有業務告警，可依業務別篩選，並以「前往處理」直接進入對應頁面。', view: 'dashboard' },
+  { sel: '#dash-todo', title: '待辦與提醒', body: '依您的功能權限彙整各模組待處理事項，點選任一項即可前往處理。', view: 'dashboard' },
+  { sel: '#font-size-toggle', title: '字體大小', body: '可切換小、中、大三種字級，方便閱讀。' },
+  { sel: '.header-actions .header-btn:nth-of-type(1)', title: '系統告警', body: '點選鈴鐺可回到首頁並定位至異常告警彙整。' },
+  { sel: '.header-user', title: '使用者選單', body: '可查看個人資料、變更密碼、開啟網站說明；系統管理者並可「模擬登入」其他使用者驗證其權限，最後可登出系統。' },
+  { sel: '#sidebar .sidebar-item[onclick*="site-help"]', title: '網站說明與功能快速連結', body: '「網站說明」提供操作手冊下載，並列出全站功能快速連結；點選即可前往，無權限之功能以灰色顯示。', last: true }
+];
+let tourI = 0;
+function tourStart() { tourI = 0; document.getElementById('tour-mask').style.display = 'block'; tourShow(1); document.addEventListener('keydown', tourKey); }
+function tourKey(e) { if (e.key === 'Escape') tourEnd(); if (e.key === 'ArrowRight') tourGo(1); if (e.key === 'ArrowLeft') tourGo(-1); }
+function tourEnd() { document.getElementById('tour-mask').style.display = 'none'; document.removeEventListener('keydown', tourKey); }
+function tourGo(d) { if (tourI + d < 0) return; if (tourI + d >= TOUR.length) { tourEnd(); return; } tourI += d; tourShow(d); }
+function tourShow(dir) {
+  let s = TOUR[tourI], el = null;
+  while (tourI >= 0 && tourI < TOUR.length) {
+    s = TOUR[tourI];
+    if (s.view && (!document.getElementById('view-' + s.view) || !document.getElementById('view-' + s.view).classList.contains('active'))) navigateTo(s.view);
+    el = document.querySelector(s.sel);
+    if (el && el.offsetParent !== null || (el && getComputedStyle(el).position === 'fixed')) break;
+    tourI += dir || 1; el = null;
+  }
+  if (tourI >= TOUR.length) { tourEnd(); return; }
+  if (tourI < 0) { tourI = 0; }
+  if (!el) { tourEnd(); return; }
+  el.scrollIntoView({ block: 'center', behavior: 'instant' });
+  setTimeout(() => {
+    const r = el.getBoundingClientRect(), sp = document.getElementById('tour-spot'), pop = document.getElementById('tour-pop'), pad = 6;
+    sp.style.left = (r.left - pad) + 'px'; sp.style.top = (r.top - pad) + 'px'; sp.style.width = (r.width + pad * 2) + 'px'; sp.style.height = (r.height + pad * 2) + 'px';
+    const n = TOUR.length;
+    pop.innerHTML = '<h4>' + s.title + '</h4><p>' + s.body + '</p><div class="tour-foot"><span style="font-size:12px;color:var(--text-secondary)">' + (tourI + 1) + ' / ' + n + '</span><span style="display:flex;gap:6px"><button class="btn btn-outline btn-sm" onclick="tourEnd()">略過</button>' + (tourI > 0 ? '<button class="btn btn-outline btn-sm" onclick="tourGo(-1)">上一步</button>' : '') + (s.last ? '<button class="btn btn-gold btn-sm" onclick="tourEnd();navigateTo(\'site-help\')">前往功能快速連結</button>' : '<button class="btn btn-primary btn-sm" onclick="tourGo(1)">下一步</button>') + '</span></div>';
+    const pw = pop.offsetWidth, ph = pop.offsetHeight, vw = innerWidth, vh = innerHeight;
+    let x, y;
+    if (r.height > vh * 0.55) { x = r.right + 18; y = Math.max(80, r.top + 24); if (x + pw > vw - 12) { x = Math.max(12, r.left + 20); y = Math.max(80, r.top + 80); } }
+    else if (r.bottom + ph + 20 < vh) { x = r.left; y = r.bottom + 16; }
+    else { x = r.left; y = Math.max(12, r.top - ph - 16); }
+    x = Math.min(Math.max(12, x), vw - pw - 12); y = Math.min(Math.max(12, y), vh - ph - 12);
+    pop.style.left = x + 'px'; pop.style.top = y + 'px';
+  }, 60);
+}
+
+window.addEventListener('load', function () { simFillSelects(); permApplyAll(); dashRender(); });
 
 </script>
 </body>
