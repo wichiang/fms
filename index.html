@@ -3051,109 +3051,119 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       </div>
       <div class="page-header">
         <div class="page-title">直撥書函產製</div>
-        <div class="page-subtitle">比照撥付系統自動核算案件產製書函及登錄資料明細，並可介接本局公文管理系統完成發文</div>
+        <div class="page-subtitle">比照撥付系統自動核算案件產製書函及登錄資料明細，並可介接本局公文管理系統完成發文；發文後系統自動產出抄本供留存查閱</div>
       </div>
-      
+
       <div class="table-card" style="margin-bottom:16px">
-        <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
           <div class="card-title">已核符案件清單</div>
-          <span style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">已勾選 2 筆，將依系統核算資料產製書函</span>
+          <span style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)" id="dir-let-sel-info">已勾選 0 筆</span>
         </div>
         <div class="table-wrapper">
         <table class="data-table">
           <thead>
-            <tr><th><input type="checkbox" class="table-checkbox"></th><th>案件編號</th><th>姓名</th><th>撥付期間</th><th>撥付金額</th><th>核符時間</th><th>核符人</th><th>狀態</th></tr>
+            <tr><th style="width:32px"><input type="checkbox" class="table-checkbox" id="dir-let-all" onchange="dirLetToggleAll(this)"></th><th>案件編號</th><th>姓名</th><th>身分別</th><th>撥付期間</th><th>撥付金額</th><th>核符時間</th><th>核符人</th><th>書函狀態</th></tr>
           </thead>
-          <tbody>
-            <tr><td><input type="checkbox" class="table-checkbox" checked></td><td>DIR-113-0045</td><td>林建志</td><td>113/12</td><td>NT$ 71,000</td><td>113/12/09 14:30</td><td>科長 陳主任</td><td><span class="badge badge-success">已核符</span></td></tr>
-            <tr><td><input type="checkbox" class="table-checkbox" checked></td><td>DIR-113-0044</td><td>張美玲</td><td>113/11</td><td>NT$ 68,500</td><td>113/12/08 10:15</td><td>科長 陳主任</td><td><span class="badge badge-success">已核符</span></td></tr>
-            <tr><td><input type="checkbox" class="table-checkbox"></td><td>DIR-113-0043</td><td>王志明</td><td>113/12</td><td>NT$ 85,000</td><td>113/12/07 16:22</td><td>科長 陳主任</td><td><span class="badge badge-success">已核符</span></td></tr>
-          </tbody>
+          <tbody id="dir-let-body"></tbody>
         </table>
         </div>
+        <div class="form-hint" style="margin:10px 16px 12px">僅列出已核符案件；已發文案件不可重複勾選產製。勾選內容異動時，尚未發文之文件須重新產製，以維持書函、明細表與公文檔之一致。</div>
       </div>
 
       <div class="card" style="margin-bottom:16px">
         <div class="section-title"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg> 補充說明</div>
         <div class="form-group" style="margin-bottom:8px">
-          <label class="form-label">承辦人員補充說明（將併入書函說明段落）</label>
-          <textarea class="form-control" id="direct-letter-note" rows="3" placeholder="請輸入補充說明內容，如：因112年度定期調整案，予以補發差額..."></textarea>
+          <label class="form-label">承辦人員補充說明（將併入書函說明段落，並同步載於登錄資料明細表、公文DI檔及發文後之抄本）</label>
+          <textarea class="form-control" id="direct-letter-note" rows="3" maxlength="300" oninput="dirLetterNoteInput()" placeholder="請輸入補充說明內容，如：因112年度定期調整案，予以補發差額..."></textarea>
+          <div class="form-hint" style="text-align:right;margin-top:2px"><span id="dir-let-note-cnt">0</span> / 300 字</div>
         </div>
-        <button class="btn btn-gold btn-sm" onclick="generateDirectLetterDocs()"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> 產製書函及登錄資料明細</button>
-        <div class="form-hint" style="margin-top:8px">系統將比照撥付系統自動核算之已核符案件產製書函及登錄資料明細，承辦人員填寫之補充說明將併入書函說明段落一併產出。</div>
+        <button class="btn btn-gold btn-sm" onclick="dirLetterGenerate()"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> 產製書函及登錄資料明細</button>
+        <div class="form-hint" style="margin-top:8px">系統依所勾選之已核符案件，比照撥付系統核算資料產製書函及登錄資料明細表，補充說明併入書函說明段落一併產出。</div>
       </div>
 
       <div class="card" id="direct-letter-doc-card" style="margin-bottom:16px;display:none">
         <div class="card-header">
           <div>
             <div class="card-title">已產製文件</div>
-            <div class="card-subtitle">文件產製完成後，可供承辦人員預覽、列印及下載；書函可直接介接公文管理系統辦理發文</div>
+            <div class="card-subtitle" id="dir-let-gen-sub">-</div>
           </div>
-          <button class="btn btn-outline btn-sm" onclick="generateDirectLetterDocs()"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> 重新產製文件</button>
+          <button class="btn btn-outline btn-sm" id="dir-let-regen" onclick="dirLetterGenerate()">重新產製文件</button>
         </div>
 
         <!-- 文件一：直撥通知書函 -->
         <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid var(--border);flex-wrap:wrap">
-          <div style="display:flex;align-items:center;gap:10px">
-            <div style="width:38px;height:38px;border-radius:8px;background:#f0f4ff;display:flex;align-items:center;justify-content:center;color:var(--primary);flex-shrink:0"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:20px;height:20px"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><line x1="8" y1="13" x2="14" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg></div>
-            <div>
-              <div style="font-weight:700;font-size:calc(14px * var(--font-scale))">直撥通知書函</div>
-              <div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)" id="direct-doc-letter-status">尚未產製</div>
-            </div>
+          <div>
+            <div style="font-weight:700;font-size:calc(14px * var(--font-scale))">直撥通知書函</div>
+            <div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)" id="direct-doc-letter-status">-</div>
           </div>
           <div style="display:flex;gap:6px;flex-wrap:wrap">
-            <button class="btn btn-outline btn-sm" id="direct-doc-letter-preview" disabled onclick="previewDirectLetter()">預覽</button>
-            <button class="btn btn-outline btn-sm" id="direct-doc-letter-print" disabled onclick="showToast('info','列印中','正在準備列印直撥通知書函...')">列印</button>
-            <button class="btn btn-outline btn-sm" id="direct-doc-letter-download" disabled onclick="runDownload('直撥通知書函','pdf')">下載PDF</button>
-            <button class="btn btn-primary btn-sm" id="direct-doc-letter-dispatch" disabled onclick="dispatchDirectLetter()"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> 介接公文系統發文</button>
+            <button class="btn btn-outline btn-sm" onclick="dirLetView('cur','letter')">預覽</button>
+            <button class="btn btn-outline btn-sm" onclick="dirLetPrint('cur','letter')">列印</button>
+            <button class="btn btn-outline btn-sm" onclick="dirLetPdf('cur','letter')">下載PDF</button>
+            <button class="btn btn-primary btn-sm" id="direct-doc-letter-dispatch" onclick="dirDispatch()">介接公文系統發文</button>
           </div>
+        </div>
+        <div id="dir-let-steps" style="display:none;margin:10px 0 0;padding:12px 14px;border:1px solid var(--border);border-radius:var(--radius-card);background:var(--bg-secondary,#f7f8fa)">
+          <div style="font-weight:700;font-size:calc(13px * var(--font-scale));margin-bottom:6px">公文管理系統介接進度</div>
+          <div id="dir-let-steps-list" style="display:grid;gap:6px;font-size:calc(12px * var(--font-scale))"></div>
+          <div id="dir-let-fail" style="display:none;margin-top:8px"></div>
         </div>
 
         <!-- 文件二：登錄資料明細表 -->
         <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid var(--border);flex-wrap:wrap">
-          <div style="display:flex;align-items:center;gap:10px">
-            <div style="width:38px;height:38px;border-radius:8px;background:#f0fff4;display:flex;align-items:center;justify-content:center;color:var(--success);flex-shrink:0"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:20px;height:20px"><rect x="6" y="4" width="12" height="17" rx="2"/><rect x="9" y="2" width="6" height="4" rx="1"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="15" y2="15"/></svg></div>
-            <div>
-              <div style="font-weight:700;font-size:calc(14px * var(--font-scale))">直撥登錄資料明細表</div>
-              <div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)" id="direct-doc-detail-status">尚未產製</div>
-            </div>
+          <div>
+            <div style="font-weight:700;font-size:calc(14px * var(--font-scale))">直撥登錄資料明細表</div>
+            <div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)" id="direct-doc-detail-status">-</div>
           </div>
           <div style="display:flex;gap:6px;flex-wrap:wrap">
-            <button class="btn btn-outline btn-sm" id="direct-doc-detail-preview" disabled onclick="previewDirectRegisterDetail()">預覽</button>
-            <button class="btn btn-outline btn-sm" id="direct-doc-detail-print" disabled onclick="showToast('info','列印中','正在準備列印直撥登錄資料明細表...')">列印</button>
-            <button class="btn btn-outline btn-sm" id="direct-doc-detail-download" disabled onclick="runDownload('直撥登錄資料明細表','xlsx')">下載Excel</button>
+            <button class="btn btn-outline btn-sm" onclick="dirDetView('cur')">預覽</button>
+            <button class="btn btn-outline btn-sm" onclick="dirDetPrint('cur')">列印</button>
+            <button class="btn btn-outline btn-sm" onclick="dirDetXlsx('cur')">下載Excel</button>
           </div>
         </div>
 
         <!-- 文件三：公文DI檔 -->
         <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0 4px;flex-wrap:wrap">
-          <div style="display:flex;align-items:center;gap:10px">
-            <div style="width:38px;height:38px;border-radius:8px;background:#fff8f0;display:flex;align-items:center;justify-content:center;color:var(--warning);flex-shrink:0"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:20px;height:20px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
-            <div>
-              <div style="font-weight:700;font-size:calc(14px * var(--font-scale))">公文DI檔（介接公文管理系統用）</div>
-              <div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)" id="direct-doc-di-status">尚未產製</div>
-            </div>
+          <div>
+            <div style="font-weight:700;font-size:calc(14px * var(--font-scale))">公文DI檔（介接公文管理系統用）</div>
+            <div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)" id="direct-doc-di-status">-</div>
           </div>
           <div style="display:flex;gap:6px;flex-wrap:wrap">
-            <button class="btn btn-outline btn-sm" id="direct-doc-di-download" disabled onclick="runDownload('公文DI檔','txt')">下載DI</button>
+            <button class="btn btn-outline btn-sm" onclick="dirDiView('cur')">檢視</button>
+            <button class="btn btn-outline btn-sm" onclick="dirDiDl('cur')">下載DI</button>
           </div>
         </div>
 
+        <!-- 抄本 -->
         <div id="direct-letter-copy-row" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
           <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-            <div style="width:38px;height:38px;border-radius:8px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;color:var(--text-secondary);flex-shrink:0"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:20px;height:20px"><path d="M9 2H4a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-4"/><path d="M13 2l7 7-9 9H7v-4z"/></svg></div>
             <div>
               <div style="font-weight:700;font-size:calc(14px * var(--font-scale))">存查抄本</div>
-              <div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">發文完成後系統自動產出抄本，供留存查閱，發文字號：<b id="direct-letter-copy-docno">-</b></div>
+              <div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">發文完成後系統自動產出抄本（內容與正本一致）供留存查閱，發文字號：<b id="direct-letter-copy-docno">-</b></div>
             </div>
             <div style="display:flex;gap:6px;margin-left:auto;flex-wrap:wrap">
-              <button class="btn btn-outline btn-sm" onclick="previewDirectLetterCopy()">預覽抄本</button>
-              <button class="btn btn-secondary btn-sm" onclick="runDownload('直撥通知書函_抄本','pdf')">下載抄本PDF</button>
+              <button class="btn btn-outline btn-sm" onclick="dirLetView('cur','copy')">預覽抄本</button>
+              <button class="btn btn-outline btn-sm" onclick="dirLetPrint('cur','copy')">列印抄本</button>
+              <button class="btn btn-secondary btn-sm" onclick="dirLetPdf('cur','copy')">下載抄本PDF</button>
             </div>
           </div>
         </div>
 
-        <div class="form-hint" style="margin-top:10px">書函經承辦人員預覽確認後，可直接介接公文管理系統辦理發文；登錄資料明細表及公文DI檔則隨案保存，供陳核及稽核查閱使用。</div>
+        <div class="form-hint" style="margin-top:10px">書函須經承辦人員預覽確認後，始可介接公文管理系統發文；發文字號將自動回填至各直撥案件，登錄資料明細表及公文DI檔隨案保存，供陳核及稽核查閱使用。
+          <a href="javascript:void(0)" onclick="dirLet.failNext=true;showToast('info','已設定','下一次介接發文將模擬公文系統無回應（原型示意）')" style="margin-left:6px">模擬介接失敗（原型示意）</a></div>
+      </div>
+
+      <div class="table-card" style="margin-bottom:16px">
+        <div style="padding:14px 16px;border-bottom:1px solid var(--border)">
+          <div class="card-title">書函發文紀錄與抄本查閱</div>
+          <div class="card-subtitle">歷次已發文之直撥書函均留存正本與抄本，可隨時預覽、列印或下載，供留存查閱及後續查核</div>
+        </div>
+        <div class="table-wrapper" style="max-height:360px;overflow:auto">
+        <table class="data-table">
+          <thead><tr><th>發文字號</th><th>發文時間</th><th>件數</th><th>撥付金額合計</th><th>補充說明</th><th>承辦人</th><th>操作</th></tr></thead>
+          <tbody id="dir-let-arch-body"></tbody>
+        </table>
+        </div>
       </div>
     </div>
 
@@ -3169,71 +3179,68 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       </div>
       <div class="page-header">
         <div class="page-title">直撥案件查詢與統計</div>
-        <div class="page-subtitle">依區間及身分別查詢直撥案件，並產製按件統計表</div>
+        <div class="page-subtitle">依指定區間及身分別（公、教、軍職）查詢直撥案件，產製按件統計表；報表支援列印，並可下載 PDF 及 Excel</div>
       </div>
 
       <div class="filter-bar">
         <div class="filter-row">
-          <div class="filter-group"><div class="filter-label">查詢區間起</div><input type="text" class="filter-control" value="113/01"></div>
-          <div class="filter-group"><div class="filter-label">查詢區間迄</div><input type="text" class="filter-control" value="113/12"></div>
-          <div class="filter-group"><div class="filter-label">身分別</div><select class="filter-control"><option>全部</option><option>公務人員</option><option>教育人員</option><option>軍職人員</option></select></div>
-          <div class="filter-group"><div class="filter-label">核符狀態</div><select class="filter-control"><option>全部</option><option>待核符</option><option>已核符</option><option>已取消</option></select></div>
-          <button class="btn btn-primary btn-sm" style="align-self:flex-end" onclick="showToast('success','查詢完成','已查詢符合條件之直撥案件，共 45 筆')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> 查詢</button>
+          <div class="filter-group"><div class="filter-label">區間基準</div><select class="filter-control" id="dq-basis"><option value="period">撥付期間</option><option value="submit">建檔（送審）月份</option></select></div>
+          <div class="filter-group"><div class="filter-label">區間起（民國年/月）</div><input type="text" class="filter-control" id="dq-from" value="113/01" placeholder="113/01" maxlength="6"></div>
+          <div class="filter-group"><div class="filter-label">區間迄（民國年/月）</div><input type="text" class="filter-control" id="dq-to" value="113/12" placeholder="113/12" maxlength="6"></div>
+          <div class="filter-group"><div class="filter-label">身分別</div><select class="filter-control" id="dq-idtype"><option>全部</option><option>公務人員</option><option>教育人員</option><option>軍職人員</option></select></div>
+          <div class="filter-group"><div class="filter-label">核符狀態</div><select class="filter-control" id="dq-status"><option value="">全部</option><option value="pending">待核符</option><option value="approved">已核符</option><option value="cancelled">已取消</option></select></div>
+          <div class="filter-group"><div class="filter-label">書函發文</div><select class="filter-control" id="dq-letter"><option value="">全部</option><option value="no">尚未發文</option><option value="yes">已發文</option></select></div>
+        </div>
+        <div class="filter-row" style="margin-top:8px">
+          <div class="filter-group" style="flex:1;max-width:340px"><div class="filter-label">關鍵字</div><input type="text" class="filter-control" id="dq-kw" placeholder="案件編號／姓名／身分證字號／公文文號／發文字號" onkeydown="if(event.key==='Enter')dirQueryRun(false)"></div>
+          <button class="btn btn-primary btn-sm" style="align-self:flex-end" onclick="dirQueryRun(false)">查詢</button>
+          <button class="btn btn-outline btn-sm" style="align-self:flex-end" onclick="dirQueryReset()">重設</button>
         </div>
       </div>
 
       <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
-        <div class="stat-card gold"><div class="stat-label">本年度直撥件數</div><div class="stat-value gold">45</div><div class="stat-sub">公38／教5／軍2</div></div>
-        <div class="stat-card success"><div class="stat-label">已核符</div><div class="stat-value success">41</div><div class="stat-sub">NT$ 3,215,800</div></div>
-        <div class="stat-card warning"><div class="stat-label">待科長核符</div><div class="stat-value" style="color:var(--warning)">3</div><div class="stat-sub">需盡速確認</div></div>
-        <div class="stat-card danger"><div class="stat-label">科長取消核准</div><div class="stat-value danger">1</div><div class="stat-sub">已刪除支領紀錄</div></div>
+        <div class="stat-card gold"><div class="stat-label">符合條件件數</div><div class="stat-value gold" id="dq-s-total">0</div><div class="stat-sub" id="dq-s-total-sub">-</div></div>
+        <div class="stat-card success"><div class="stat-label">已核符</div><div class="stat-value success" id="dq-s-ok">0</div><div class="stat-sub" id="dq-s-ok-sub">-</div></div>
+        <div class="stat-card warning"><div class="stat-label">待科長核符</div><div class="stat-value" style="color:var(--warning)" id="dq-s-pend">0</div><div class="stat-sub" id="dq-s-pend-sub">-</div></div>
+        <div class="stat-card danger"><div class="stat-label">已取消</div><div class="stat-value danger" id="dq-s-cancel">0</div><div class="stat-sub">不計入撥付金額</div></div>
       </div>
 
       <div class="table-card" style="margin-bottom:16px">
         <div style="padding:14px 16px;border-bottom:1px solid var(--border)">
           <div class="card-title">依身分別統計摘要</div>
+          <div class="card-subtitle" id="dq-cond">-</div>
         </div>
         <div class="table-wrapper">
         <table class="data-table">
-          <thead><tr><th>身分別</th><th>件數</th><th>已核符</th><th>待核符</th><th>已取消</th><th>撥付金額合計</th><th>平均金額</th></tr></thead>
-          <tbody>
-            <tr><td>公務人員</td><td>38</td><td>35</td><td>2</td><td>1</td><td>NT$ 2,758,000</td><td>NT$ 72,579</td></tr>
-            <tr><td>教育人員</td><td>5</td><td>5</td><td>0</td><td>0</td><td>NT$ 343,500</td><td>NT$ 68,700</td></tr>
-            <tr><td>軍職人員</td><td>2</td><td>1</td><td>1</td><td>0</td><td>NT$ 114,300</td><td>NT$ 57,150</td></tr>
-            <tr style="font-weight:700;background:var(--bg-secondary)"><td>合計</td><td>45</td><td>41</td><td>3</td><td>1</td><td>NT$ 3,215,800</td><td>NT$ 71,462</td></tr>
-          </tbody>
+          <thead><tr><th>身分別</th><th>件數</th><th>已核符</th><th>待核符</th><th>已取消</th><th>撥付金額合計（不含已取消）</th><th>平均金額</th></tr></thead>
+          <tbody id="dq-sum-body"></tbody>
         </table>
         </div>
       </div>
 
       <div class="table-card">
         <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-          <div class="card-title">直撥案件按件統計表</div>
-          <div style="display:flex;gap:8px">
-            <button class="btn btn-outline btn-sm" onclick="showToast('info','列印中','正在準備列印直撥案件按件統計表...')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> 列印</button>
-            <button class="btn btn-success btn-sm" onclick="runDownload('直撥案件統計表','xlsx')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="20" x2="4" y2="12"/><line x1="10" y1="20" x2="10" y2="6"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="20" y1="20" x2="4" y2="20"/></svg> 匯出Excel</button>
-            <button class="btn btn-danger btn-sm" onclick="runDownload('直撥案件統計表','pdf')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><line x1="8" y1="13" x2="14" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg> 匯出PDF</button>
+          <div>
+            <div class="card-title">直撥案件按件統計表</div>
+            <div class="card-subtitle" id="dq-sel-info">可勾選「已核符且尚未發文」之案件，直接引用至書函產製</div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-gold btn-sm" onclick="dirQUseInLetter()">引用至書函產製</button>
+            <button class="btn btn-outline btn-sm" onclick="dirQPrint()"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> 列印</button>
+            <button class="btn btn-success btn-sm" onclick="dirQXlsx()"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="20" x2="4" y2="12"/><line x1="10" y1="20" x2="10" y2="6"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="20" y1="20" x2="4" y2="20"/></svg> 匯出Excel</button>
+            <button class="btn btn-danger btn-sm" onclick="dirQPdf()"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><line x1="8" y1="13" x2="14" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg> 匯出PDF</button>
           </div>
         </div>
         <div class="table-wrapper">
         <table class="data-table">
-          <thead><tr><th>案件編號</th><th>姓名</th><th>身分別</th><th>撥付期間</th><th>撥付金額</th><th>核符人</th><th>核符時間</th><th>狀態</th><th>操作</th></tr></thead>
-          <tbody>
-            <tr><td>DIR-113-0045</td><td>林建志</td><td>軍職人員</td><td>113/12</td><td>NT$ 71,000</td><td>科長 陳主任</td><td>113/12/09 14:30</td><td><span class="badge badge-success">已核符</span></td><td><button class="btn btn-sm btn-outline" onclick="showDirectCaseDetail('DIR-113-0045')">明細</button></td></tr>
-            <tr><td>DIR-113-0044</td><td>張美玲</td><td>公務人員</td><td>113/11</td><td>NT$ 68,500</td><td>科長 陳主任</td><td>113/12/08 10:15</td><td><span class="badge badge-success">已核符</span></td><td><button class="btn btn-sm btn-outline" onclick="showDirectCaseDetail('DIR-113-0044')">明細</button></td></tr>
-            <tr><td>DIR-113-0046</td><td>吳文雄</td><td>公務人員</td><td>113/12</td><td>NT$ 71,000</td><td>-</td><td>-</td><td><span class="badge badge-warning">待核符</span></td><td><button class="btn btn-sm btn-outline" onclick="showDirectCaseDetail('DIR-113-0046')">明細</button></td></tr>
-            <tr><td>DIR-113-0042</td><td>孫大偉</td><td>軍職人員</td><td>113/10</td><td>NT$ 55,000</td><td>-</td><td>科長取消：113/11/02</td><td><span class="badge badge-secondary">已取消</span></td><td><button class="btn btn-sm btn-outline" onclick="showDirectCaseDetail('DIR-113-0042')">明細</button></td></tr>
-          </tbody>
+          <thead><tr><th style="width:32px"><input type="checkbox" class="table-checkbox" id="dq-all" onchange="dirQToggleAll(this)"></th><th>案件編號</th><th>姓名</th><th>身分證字號</th><th>身分別</th><th>撥付期間</th><th>撥付金額</th><th>公文文號</th><th>核符人／時間</th><th>書函發文字號</th><th>狀態</th><th>操作</th></tr></thead>
+          <tbody id="dq-body"></tbody>
         </table>
         </div>
+        <div class="form-hint" id="dq-empty" style="margin:12px 16px;display:none">查無符合條件之直撥案件，請調整查詢條件。</div>
         <div class="pagination">
-          <div class="pagination-info">顯示 1-4 / 共 45 筆</div>
-          <div class="pagination-controls">
-            <button class="page-btn" disabled>上一頁</button>
-            <button class="page-btn active">1</button>
-            <button class="page-btn">2</button>
-            <button class="page-btn">下一頁</button>
-          </div>
+          <div class="pagination-info" id="dq-info">-</div>
+          <div class="pagination-controls" id="dq-pager"></div>
         </div>
       </div>
     </div>
@@ -7019,6 +7026,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
     <div class="modal-body" id="detail-modal-body"></div>
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="closeModal('detail-modal')">關閉</button>
+      <button class="btn btn-outline" id="detail-modal-print-btn" style="display:none" onclick="dirModalPrint()">列印</button>
       <button class="btn btn-primary" id="detail-modal-dl-btn" onclick="runDownload('明細清單','xlsx')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 下載清單</button>
     </div>
   </div>
@@ -7193,6 +7201,9 @@ function navigateTo(viewId) {
     renderSupervisorQueue();
   }
   
+  if (viewId === 'direct-letter') dirLetterRender();
+  if (viewId === 'direct-query') dirQueryRun(true);
+
   // Update sidebar active states
   document.querySelectorAll('.sidebar-item, .sidebar-sub-item').forEach(item => {
     item.classList.remove('active');
@@ -8742,137 +8753,475 @@ function viewSupervisorCaseDetail(caseNo) {
   openDetailModal('直撥案件明細 · ' + c.pensionerName, html + dirHistoryHtml(c), '直撥案件明細_' + c.caseNo, 'pdf');
 }
 
-const directLetterCases = [
-  { caseNo:'DIR-113-0045', name:'林建志', id:'C345***678', category:'軍職人員月退', period:'113/12', amount:'71,000', docNum:'府退一字第1130012395號', approver:'科長 陳主任', approveTime:'113/12/09 14:30' },
-  { caseNo:'DIR-113-0044', name:'張美玲', id:'D456***789', category:'公務人員月退', period:'113/11', amount:'68,500', docNum:'府退一字第1130012390號', approver:'科長 陳主任', approveTime:'113/12/08 10:15' }
-];
-let directLetterDispatched = false;
-let directLetterDocNo = '';
+// ===== 直撥書函產製與公文介接／查詢與統計 =====
+const DIR_ORG = '公務人員退休撫卹基金管理局';
+const DIR_DOC_PREFIX = '府退一字';
+let dirDocSeq = 12410;
+function dirEsc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+function dirFmt(n) { return Number(n).toLocaleString('en-US'); }
+function dirP2(n) { return String(n).padStart(2, '0'); }
+function dirRocText(t) { const m = String(t).match(/(\d{3})\/(\d{2})\/(\d{2})/); return m ? '中華民國' + Number(m[1]) + '年' + Number(m[2]) + '月' + Number(m[3]) + '日' : t; }
+function dirNextDocNo() { return DIR_DOC_PREFIX + '第113' + String(dirDocSeq++).padStart(7, '0') + '號'; }
 
-function generateDirectLetterDocs() {
-  ['letter-preview','letter-print','letter-download','letter-dispatch','detail-preview','detail-print','detail-download','di-download'].forEach(key => {
-    const btn = document.getElementById('direct-doc-' + key);
-    if (btn) btn.disabled = false;
+/* ---------- 共用：列印／下載（PDF 以瀏覽器列印「另存為PDF」、Excel 為原生 .xlsx） ---------- */
+const DIR_DOC_CSS = '.ltr{font-family:"Noto Sans TC","Microsoft JhengHei","PingFang TC",sans-serif;color:#1a1a1a;font-size:14px;line-height:1.8;position:relative}' +
+  '.ltr h1{text-align:center;font-size:20px;margin:0 0 2px;color:#0a2647}.ltr .sub{text-align:center;font-size:12px;color:#666;margin-bottom:14px}' +
+  '.ltr p{margin:6px 0}.ltr table{width:100%;border-collapse:collapse;margin:8px 0;font-size:12.5px}.ltr th,.ltr td{border:1px solid #888;padding:5px 7px;text-align:left}' +
+  '.ltr th{background:#eef1f6}.ltr .num{text-align:right}.ltr tr.total td{font-weight:700;background:#f7f7f7}.ltr .sign{display:flex;justify-content:space-between;margin-top:26px;font-size:13px}' +
+  '.ltr .note{margin-top:14px;font-size:11.5px;color:#666}.ltr .stamp{position:absolute;top:0;right:0;color:#c0392b;border:2px solid #c0392b;border-radius:6px;padding:2px 12px;font-weight:700;transform:rotate(8deg)}';
+function dirPrintHtml(title, html, landscape) {
+  const f = document.createElement('iframe');
+  f.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0';
+  document.body.appendChild(f);
+  const d = f.contentWindow.document;
+  d.open();
+  d.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + dirEsc(title) + '</title><style>body{margin:0;padding:14px}@page{size:A4' + (landscape ? ' landscape' : '') + ';margin:12mm}' + DIR_DOC_CSS + '</style></head><body>' + html.replace(/<style>[\s\S]*?<\/style>/, '') + '</body></html>');
+  d.close();
+  setTimeout(function () {
+    try { f.contentWindow.focus(); f.contentWindow.print(); } catch (e) { showToast('error', '無法列印', '瀏覽器未允許列印，請改用下載功能'); }
+    setTimeout(function () { f.remove(); }, 60000);
+  }, 300);
+}
+function dirSaveBlob(name, blob) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
+  setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+}
+function dirDownloadPdf(label, html, landscape) {
+  runDownload(label, 'pdf', { verb: '正在產製PDF', onDone: function () { dirPrintHtml(label, html, landscape); showToast('info', '請選擇「另存為 PDF」', '已開啟列印視窗，列印目的地選擇「另存為 PDF」即可儲存檔案'); } });
+}
+function dirDownloadXlsx(label, rows, sheet, widths) {
+  runDownload(label, 'xlsx', { verb: '正在產製Excel', onDone: function () { dirSaveBlob(label + '.xlsx', new Blob(dirXlsxBuild(rows, sheet, widths), { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })); } });
+}
+function dirDownloadText(label, ext, text) {
+  runDownload(label, ext, { onDone: function () { dirSaveBlob(label + '.' + ext, new Blob([text], { type: 'text/plain;charset=utf-8' })); } });
+}
+let dirModalCtx = null;
+function dirOpenDoc(title, html, ctx) {
+  dirModalCtx = ctx;
+  openDetailModal(title, html, ctx.dlLabel, ctx.dlExt);
+  document.getElementById('detail-modal-dl-btn').setAttribute('onclick', 'dirModalDl()');
+  document.getElementById('detail-modal-print-btn').style.display = ctx.print ? 'inline-flex' : 'none';
+}
+function dirModalDl() { if (dirModalCtx && dirModalCtx.dl) dirModalCtx.dl(); }
+function dirModalPrint() { if (dirModalCtx && dirModalCtx.print) dirModalCtx.print(); }
+
+/* ---------- 最小化 .xlsx 產生器（ZIP 採 store 無壓縮，不依賴外部函式庫） ---------- */
+function dirCrc32(u8) {
+  let t = dirCrc32.t;
+  if (!t) { t = dirCrc32.t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1); t[n] = c >>> 0; } }
+  let crc = 0xFFFFFFFF;
+  for (let i = 0; i < u8.length; i++) crc = t[(crc ^ u8[i]) & 0xFF] ^ (crc >>> 8);
+  return (crc ^ 0xFFFFFFFF) >>> 0;
+}
+function dirZip(files) {
+  const enc = new TextEncoder(), parts = [], central = [];
+  let offset = 0;
+  files.forEach(function (f) {
+    const name = enc.encode(f.name), data = enc.encode(f.data), crc = dirCrc32(data);
+    const lh = new DataView(new ArrayBuffer(30));
+    lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0x0800, true); lh.setUint16(8, 0, true);
+    lh.setUint16(10, 0, true); lh.setUint16(12, 0x21, true); lh.setUint32(14, crc, true);
+    lh.setUint32(18, data.length, true); lh.setUint32(22, data.length, true); lh.setUint16(26, name.length, true); lh.setUint16(28, 0, true);
+    parts.push(new Uint8Array(lh.buffer), name, data);
+    const ch = new DataView(new ArrayBuffer(46));
+    ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, 20, true); ch.setUint16(8, 0x0800, true); ch.setUint16(10, 0, true);
+    ch.setUint16(12, 0, true); ch.setUint16(14, 0x21, true); ch.setUint32(16, crc, true); ch.setUint32(20, data.length, true); ch.setUint32(24, data.length, true);
+    ch.setUint16(28, name.length, true); ch.setUint32(42, offset, true);
+    central.push(new Uint8Array(ch.buffer), name);
+    offset += 30 + name.length + data.length;
   });
-  document.getElementById('direct-doc-letter-status').textContent = '已產製，待介接發文';
-  document.getElementById('direct-doc-detail-status').textContent = '已產製 · ' + directLetterCases.length + ' 筆案件';
-  document.getElementById('direct-doc-di-status').textContent = '已產製，可供介接公文管理系統使用';
-  document.getElementById('direct-letter-doc-card').style.display = 'block';
+  const csize = central.reduce(function (s, p) { return s + p.length; }, 0);
+  const end = new DataView(new ArrayBuffer(22));
+  end.setUint32(0, 0x06054b50, true); end.setUint16(8, files.length, true); end.setUint16(10, files.length, true);
+  end.setUint32(12, csize, true); end.setUint32(16, offset, true);
+  return parts.concat(central, [new Uint8Array(end.buffer)]);
+}
+function dirColName(i) { let s = ''; i++; while (i > 0) { const m = (i - 1) % 26; s = String.fromCharCode(65 + m) + s; i = Math.floor((i - 1) / 26); } return s; }
+function dirXlsxBuild(rows, sheetName, widths) {
+  const sd = rows.map(function (r, ri) {
+    return '<row r="' + (ri + 1) + '">' + r.map(function (c, ci) {
+      let bold = false, v = c;
+      if (c && typeof c === 'object') { bold = !!c.b; v = c.v; }
+      if (v === null || v === undefined || v === '') return '';
+      const ref = dirColName(ci) + (ri + 1), st = bold ? ' s="1"' : '';
+      return typeof v === 'number' ? '<c r="' + ref + '"' + st + '><v>' + v + '</v></c>' : '<c r="' + ref + '"' + st + ' t="inlineStr"><is><t xml:space="preserve">' + dirEsc(v) + '</t></is></c>';
+    }).join('') + '</row>';
+  }).join('');
+  const cols = widths ? '<cols>' + widths.map(function (w, i) { return '<col min="' + (i + 1) + '" max="' + (i + 1) + '" width="' + w + '" customWidth="1"/>'; }).join('') + '</cols>' : '';
+  const X = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n';
+  return dirZip([
+    { name: '[Content_Types].xml', data: X + '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>' },
+    { name: '_rels/.rels', data: X + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>' },
+    { name: 'xl/workbook.xml', data: X + '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="' + dirEsc(sheetName || 'Sheet1') + '" sheetId="1" r:id="rId1"/></sheets></workbook>' },
+    { name: 'xl/_rels/workbook.xml.rels', data: X + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>' },
+    { name: 'xl/styles.xml', data: X + '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts><fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>' },
+    { name: 'xl/worksheets/sheet1.xml', data: X + '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' + cols + '<sheetData>' + sd + '</sheetData></worksheet>' }
+  ]);
+}
 
-  const dispatchBtn = document.getElementById('direct-doc-letter-dispatch');
-  if (dispatchBtn && !directLetterDispatched) {
-    dispatchBtn.disabled = false;
-    dispatchBtn.innerHTML = '<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> 介接公文系統發文';
-    dispatchBtn.classList.remove('btn-outline');
-    dispatchBtn.classList.add('btn-primary');
+/* ---------- 直撥案件資料（即時案件取自科長核符作業，歷史案件為既有資料） ---------- */
+const DIR_DOCNUM = { 'DIR-113-0042': '府退一字第1130012380號', 'DIR-113-0043': '府退一字第1130012385號', 'DIR-113-0044': '府退一字第1130012390號', 'DIR-113-0045': '府退一字第1130012395號', 'DIR-113-0046': '府退一字第1130012399號', 'DIR-113-0047': '府退一字第1130012402號', 'DIR-113-0048': '府退一字第1130012396號' };
+const DIR_REASON = { 'DIR-113-0042': '人工更正撥付', 'DIR-113-0044': '系統異常補撥' };
+const DIR_HIST_NAMES = ['陳志豪', '林雅婷', '黃偉倫', '張家豪', '李欣怡', '王淑惠', '吳俊傑', '劉美玲', '蔡明哲', '楊淑芬', '許文雄', '鄭佩珊', '謝宗翰', '郭秀英', '洪國棟', '曾淑華', '邱建宏', '廖美惠', '賴志偉', '徐慧君', '周明德', '葉秀琴', '蘇慶祥', '呂淑貞', '江文傑', '何美珠', '蕭建民', '羅素琴', '高志強', '潘玉蘭', '簡國華', '朱雅雯', '顏榮輝', '魏秋香', '方仁傑', '石美鳳', '譚家銘', '盧春嬌', '施建成', '游淑慧', '丁文彬'];
+const DIR_HIST = (function () {
+  const L = 'ABCDEFGHJKLMNPQRSTUVWXYZ', rs = ['補發短少金額', '系統異常補撥', '人工更正撥付', '追溯調整補發'];
+  const edu = [6, 13, 19, 27, 34], mil = [9, 31], out = [];
+  for (let i = 1; i <= 41; i++) {
+    const m = ((i - 1) % 11) + 1, day = 3 + (i * 5) % 22, ym = '113/' + dirP2(m);
+    out.push({
+      caseNo: 'DIR-113-' + String(i).padStart(4, '0'), name: DIR_HIST_NAMES[i - 1],
+      id: L[(i * 3) % L.length] + String(100 + (i * 37) % 900) + '***' + String(100 + (i * 53) % 900),
+      idType: edu.indexOf(i) >= 0 ? '教育人員' : (mil.indexOf(i) >= 0 ? '軍職人員' : '公務人員'),
+      period: ym, periodText: ym, amount: 52000 + ((i * 7) % 35) * 1000 + (i % 2) * 500, status: 'approved',
+      approver: '科長 陳主任', submitTime: ym + '/' + dirP2(day) + ' 10:15', approveTime: ym + '/' + dirP2(day + 1) + ' 14:30',
+      docNum: '府退一字第113' + String(10000 + i * 37).padStart(7, '0') + '號', reason: rs[i % 4], group: Math.ceil(i / 3), live: false, letterDocNo: '', letterAt: ''
+    });
   }
+  return out;
+})();
+const dirLetArchive = [];
+(function () {
+  const groups = {};
+  DIR_HIST.forEach(function (r) { (groups[r.group] = groups[r.group] || []).push(r); });
+  Object.keys(groups).forEach(function (k) {
+    const L = groups[k], last = L[L.length - 1];
+    const docNo = DIR_DOC_PREFIX + '第113' + String(11000 + Number(k) * 17).padStart(7, '0') + '號', at = last.approveTime.slice(0, 9) + ' 16:30';
+    L.forEach(function (r) { r.letterDocNo = docNo; r.letterAt = at; });
+    dirLetArchive.push({ docNo: docNo, sentAt: at, genAt: at, by: DIR_HANDLER, note: '', cases: L.map(dirSnap) });
+  });
+  dirLetArchive.sort(function (a, b) { return a.sentAt < b.sentAt ? 1 : -1; });
+})();
+function dirSnap(r) {
+  return { caseNo: r.caseNo, name: r.name, id: r.id, idType: r.idType, category: r.idType + '月退', period: r.period, periodText: r.periodText || r.period, amount: r.amount, docNum: r.docNum, reason: r.reason, approver: r.approver, approveTime: r.approveTime };
+}
+function dirAllRows() {
+  const live = supervisorCases.map(function (c) {
+    const per = String(c.period || ''), m = per.match(/\d{3}\/\d{2}/);
+    return { caseNo: c.caseNo, name: c.pensionerName, id: c.pensionerId, idType: c.idType, period: m ? m[0] : per, periodText: per, amount: c.amount,
+      status: c.status === 'approved' ? 'approved' : 'pending', approver: c.approver || '-', approveTime: c.approveTime || '-', docNum: DIR_DOCNUM[c.caseNo] || '-',
+      reason: DIR_REASON[c.caseNo] || '補發短少金額', submitTime: c.submitTime || '', letterDocNo: c.letterDocNo || '', letterAt: c.letterAt || '', live: true };
+  });
+  const cancelled = [{ caseNo: 'DIR-113-0042', name: '孫大偉', id: 'K234***567', idType: '軍職人員', period: '113/10', periodText: '113/10', amount: 55000, status: 'cancelled', approver: '-', approveTime: '科長取消：113/11/02', docNum: DIR_DOCNUM['DIR-113-0042'], reason: DIR_REASON['DIR-113-0042'], submitTime: '113/10/28 09:00', letterDocNo: '', letterAt: '', live: false }];
+  return live.concat(cancelled, DIR_HIST);
+}
+
+/* ---------- 書函／登錄資料明細表／DI檔／抄本 內容（同一份快照產出，確保文書一致） ---------- */
+function dirLetterHtml(g, mode) {
+  const total = g.cases.reduce(function (s, c) { return s + c.amount; }, 0);
+  const docNo = g.docNo ? dirEsc(g.docNo) : '（稿）發文時由公文管理系統取號';
+  const rows = g.cases.map(function (c, i) { return '<tr><td>' + (i + 1) + '</td><td>' + dirEsc(c.name) + '</td><td>' + dirEsc(c.id) + '</td><td>' + dirEsc(c.periodText) + '</td><td class="num">NT$ ' + dirFmt(c.amount) + '</td><td>' + dirEsc(c.docNum) + '</td></tr>'; }).join('');
+  const explain = '一、依《公務人員退休撫卹基金管理條例》相關規定辦理。<br>二、本案計 ' + g.cases.length + ' 筆直撥案件業經科長核符，並已介接撥付系統登錄支領紀錄，合計 NT$ ' + dirFmt(total) + '。' + (g.note ? '<br>三、' + dirEsc(g.note).replace(/\n/g, '<br>') : '');
+  return '<style>' + DIR_DOC_CSS + '</style><div class="ltr">' + (mode === 'copy' ? '<div class="stamp">抄本</div>' : '') +
+    '<h1>' + DIR_ORG + '　書函</h1><div class="sub">（直撥通知書函' + (mode === 'copy' ? ' · 存查抄本' : '') + '）</div>' +
+    '<p><b>發文日期：</b>' + dirRocText(g.sentAt || dirNow()) + '</p><p><b>發文字號：</b>' + docNo + '</p><p><b>速別：</b>普通件　<b>密等及解密條件：</b>普通</p>' +
+    '<p><b>受文者：</b>如受文者名冊（本案計 ' + g.cases.length + ' 筆，合計 NT$ ' + dirFmt(total) + '）</p>' +
+    '<p><b>主旨：</b>貴（台端）所屬退撫給與直撥案業經科長核符，檢附直撥通知名冊，請查照。</p><p><b>說明：</b><br>' + explain + '</p>' +
+    '<p><b>附件：</b>直撥通知受文者名冊（' + g.cases.length + ' 筆）</p>' +
+    '<table><thead><tr><th>序號</th><th>姓名</th><th>身分證字號</th><th>撥付期間</th><th class="num">撥付金額</th><th>公文文號</th></tr></thead><tbody>' + rows +
+    '<tr class="total"><td colspan="4">合計</td><td class="num">NT$ ' + dirFmt(total) + '</td><td></td></tr></tbody></table>' +
+    '<div class="sign"><span>承辦人：' + (g.by || DIR_HANDLER) + '</span><span>承辦單位：給付科</span></div>' +
+    '<div class="note">' + (mode === 'copy' ? '本抄本由系統於發文完成後自動產出，供機關留存查閱；內容與已發文正本一致（發文字號 ' + dirEsc(g.docNo) + '，發文時間 ' + dirEsc(g.sentAt) + '）。' : (g.docNo ? '本書函已於 ' + dirEsc(g.sentAt) + ' 介接公文管理系統發文。' : '本書函為預覽稿，經承辦人員確認後可介接公文管理系統發文。')) + '</div></div>';
+}
+function dirDetailHtml(g) {
+  const total = g.cases.reduce(function (s, c) { return s + c.amount; }, 0);
+  const rows = g.cases.map(function (c, i) { return '<tr><td>' + (i + 1) + '</td><td>' + c.caseNo + '</td><td>' + dirEsc(c.name) + '</td><td>' + dirEsc(c.id) + '</td><td>' + dirEsc(c.category) + '</td><td>' + dirEsc(c.periodText) + '</td><td class="num">' + dirFmt(c.amount) + '</td><td>' + dirEsc(c.docNum) + '</td><td>' + dirEsc(c.reason) + '</td><td>' + dirEsc(c.approver) + '<br>' + dirEsc(c.approveTime) + '</td></tr>'; }).join('');
+  return '<style>' + DIR_DOC_CSS + '</style><div class="ltr"><h1>直撥登錄資料明細表</h1><div class="sub">製表日期：' + dirNow().slice(0, 9) + '　製表人：' + (g.by || DIR_HANDLER) + '　件數：' + g.cases.length + (g.docNo ? '　書函發文字號：' + dirEsc(g.docNo) : '') + '</div>' +
+    '<table><thead><tr><th>序號</th><th>案件編號</th><th>姓名</th><th>身分證字號</th><th>退撫類別</th><th>撥付期間</th><th class="num">撥付金額</th><th>公文文號</th><th>直撥原因</th><th>核符人／時間</th></tr></thead><tbody>' + rows +
+    '<tr class="total"><td colspan="6">合計</td><td class="num">' + dirFmt(total) + '</td><td colspan="3"></td></tr></tbody></table>' +
+    '<p><b>承辦人員補充說明：</b>' + (g.note ? dirEsc(g.note).replace(/\n/g, '<br>') : '（無）') + '</p><div class="note">本明細表比照撥付系統核算資料自動產製，供陳核及後續稽核查閱使用。</div></div>';
+}
+function dirDetailRows(g) {
+  const total = g.cases.reduce(function (s, c) { return s + c.amount; }, 0);
+  const out = [[{ b: true, v: '直撥登錄資料明細表' }], ['製表日期', dirNow().slice(0, 9), '製表人', g.by || DIR_HANDLER, '書函發文字號', g.docNo || '（尚未發文）'], ['承辦人員補充說明', g.note || '（無）'], [],
+    ['序號', '案件編號', '姓名', '身分證字號', '退撫類別', '撥付期間', '撥付金額', '公文文號', '直撥原因', '核符人', '核符時間'].map(function (h) { return { b: true, v: h }; })];
+  g.cases.forEach(function (c, i) { out.push([i + 1, c.caseNo, c.name, c.id, c.category, c.periodText, c.amount, c.docNum, c.reason, c.approver, c.approveTime]); });
+  out.push([{ b: true, v: '合計' }, '', '', '', '', '', { b: true, v: total }]);
+  return out;
+}
+function dirDiText(g) {
+  const total = g.cases.reduce(function (s, c) { return s + c.amount; }, 0);
+  const L = ['[HEADER]', 'DOCTYPE=書函', 'ORG=' + DIR_ORG, 'SPEED=普通件', 'SUBJECT=貴（台端）所屬退撫給與直撥案業經科長核符，檢附直撥通知名冊，請查照。', 'DOCNO=' + (g.docNo || ''), 'COUNT=' + g.cases.length, 'AMOUNT=' + total, 'HANDLER=' + (g.by || DIR_HANDLER),
+    '[EXPLAIN]', '1=依《公務人員退休撫卹基金管理條例》相關規定辦理。', '2=本案計 ' + g.cases.length + ' 筆直撥案件業經科長核符，並已介接撥付系統登錄支領紀錄，合計 NT$ ' + dirFmt(total) + '。'];
+  if (g.note) L.push('3=' + g.note.replace(/\r?\n/g, ' '));
+  L.push('[ATTACHMENT]', 'NAME=直撥通知受文者名冊', '[LIST] SEQ|CASENO|NAME|ID|PERIOD|AMOUNT|DOCNUM');
+  g.cases.forEach(function (c, i) { L.push([i + 1, c.caseNo, c.name, c.id, c.periodText, c.amount, c.docNum].join('|')); });
+  return L.join('\r\n');
+}
+
+/* ---------- 書函產製頁 ---------- */
+const dirLet = { sel: new Set(['DIR-113-0045', 'DIR-113-0044']), gen: null, failNext: false };
+function dirLetEligible() { return supervisorCases.filter(function (c) { return c.status === 'approved'; }); }
+function dirLetterRender() {
+  const list = dirLetEligible();
+  Array.from(dirLet.sel).forEach(function (no) { const c = list.find(function (x) { return x.caseNo === no; }); if (!c || c.letterDocNo) dirLet.sel.delete(no); });
+  document.getElementById('dir-let-body').innerHTML = list.map(function (c) {
+    const sent = !!c.letterDocNo;
+    return '<tr><td><input type="checkbox" class="table-checkbox" ' + (sent ? 'disabled ' : '') + (dirLet.sel.has(c.caseNo) ? 'checked ' : '') + 'onchange="dirLetToggle(\'' + c.caseNo + '\',this.checked)"></td><td>' + c.caseNo + '</td><td>' + dirEsc(c.pensionerName) + '</td><td>' + dirEsc(c.idType) + '</td><td>' + dirEsc(c.period) + '</td><td>NT$ ' + dirFmt(c.amount) + '</td><td>' + dirEsc(c.approveTime) + '</td><td>' + dirEsc(c.approver) + '</td><td>' +
+      (sent ? '<span class="badge badge-success">已發文</span><div style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary)">' + dirEsc(c.letterDocNo) + '</div>' : '<span class="badge badge-secondary">尚未發文</span>') + '</td></tr>';
+  }).join('') || '<tr><td colspan="9" style="text-align:center;color:var(--text-secondary)">目前無已核符案件</td></tr>';
+  const open = list.filter(function (c) { return !c.letterDocNo; });
+  const sel = open.filter(function (c) { return dirLet.sel.has(c.caseNo); });
+  document.getElementById('dir-let-sel-info').textContent = '已勾選 ' + sel.length + ' 筆' + (sel.length ? '，合計 NT$ ' + dirFmt(sel.reduce(function (s, c) { return s + c.amount; }, 0)) : '') + '；將依系統核算資料產製書函';
+  document.getElementById('dir-let-all').checked = open.length > 0 && sel.length === open.length;
+  document.getElementById('dir-let-note-cnt').textContent = (document.getElementById('direct-letter-note').value || '').length;
+  dirLetterRenderDoc();
+  dirLetterRenderArchive();
+}
+function dirLetToggle(no, on) { if (on) dirLet.sel.add(no); else dirLet.sel.delete(no); dirLetSelChanged(); }
+function dirLetToggleAll(cb) { dirLetEligible().forEach(function (c) { if (c.letterDocNo) return; if (cb.checked) dirLet.sel.add(c.caseNo); else dirLet.sel.delete(c.caseNo); }); dirLetSelChanged(); }
+function dirLetSelChanged() {
+  const g = dirLet.gen;
+  if (g) { dirLet.gen = null; if (!g.dispatched) showToast('warning', '需重新產製', '勾選案件已變更，為維持書函與明細表一致，請重新產製文件'); }
+  dirLetterRender();
+}
+function dirLetterNoteInput() {
+  document.getElementById('dir-let-note-cnt').textContent = (document.getElementById('direct-letter-note').value || '').length;
+  const g = dirLet.gen;
+  if (g && !g.dispatched && !g.busy) { dirLet.gen = null; dirLetterRender(); showToast('warning', '需重新產製', '補充說明已修改，尚未發文之文件請重新產製以套用最新內容'); }
+}
+function dirLetterGenerate() {
+  const list = dirLetEligible().filter(function (c) { return dirLet.sel.has(c.caseNo) && !c.letterDocNo; });
+  if (!list.length) { showToast('warning', '尚未勾選案件', '請先勾選已核符且尚未發文之案件'); return; }
+  if (dirLet.gen && dirLet.gen.busy) { showToast('warning', '介接中', '公文系統介接進行中，請待完成後再重新產製'); return; }
+  const note = (document.getElementById('direct-letter-note').value || '').trim();
+  const rows = dirAllRows();
+  dirLet.gen = { cases: list.map(function (c) { return dirSnap(rows.find(function (r) { return r.caseNo === c.caseNo; })); }), note: note, genAt: dirNow(), by: DIR_HANDLER, dispatched: false, busy: false, failed: false, previewed: false, docNo: '', sentAt: '', steps: null };
+  list.forEach(function (c) { appendAuditLog('書函', '產製直撥通知書函及登錄資料明細表' + (note ? '（含承辦人補充說明）' : ''), DIR_HANDLER, c.caseNo); });
+  dirLetterRender();
   showToast('success', '文件已產製', '已比照撥付系統核算資料，產製直撥通知書函及登錄資料明細表，補充說明已併入書函說明段落');
 }
-
-// ===== 書函：預覽 =====
-function previewDirectLetter() {
-  const note = (document.getElementById('direct-letter-note') || {}).value || '';
-  const total = directLetterCases.reduce((s,c) => s + parseInt(c.amount.replace(/,/g,''),10), 0);
-  const rows = directLetterCases.map((c,i) => '<tr><td>' + (i+1) + '</td><td>' + c.name + '</td><td class="masked">' + c.id + '</td><td>' + c.period + '</td><td>NT$ ' + c.amount + '</td><td style="font-size:calc(11px * var(--font-scale))">' + c.docNum + '</td></tr>').join('');
-  const html = `
-    <div class="detail-block">
-      <div style="text-align:center;margin-bottom:16px">
-        <div style="font-weight:700;font-size:calc(15px * var(--font-scale));color:var(--primary)">公務人員退休撫卹基金管理局　書函</div>
-        <div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary);margin-top:4px">（直撥通知書函）</div>
-      </div>
-      <div class="info-card">
-        <div class="info-row"><div class="info-key">發文字號</div><div class="info-val">（稿）府退一字第1130012400號</div></div>
-        <div class="info-row"><div class="info-key">受文者</div><div class="info-val">如受文者名冊（本案計 ${directLetterCases.length} 筆，合計 NT$ ${total.toLocaleString('en-US')}）</div></div>
-        <div class="info-row"><div class="info-key">主旨</div><div class="info-val">貴（台端）所屬退撫給與直撥案業經科長核符，檢附直撥通知名冊，請查照。</div></div>
-        <div class="info-row"><div class="info-key">說明</div><div class="info-val">一、依《公務人員退休撫卹基金管理條例》相關規定辦理。<br>二、本案已完成核符並介接撥付系統登錄支領紀錄。${note ? '<br>三、' + note.replace(/</g,'&lt;') : ''}</div></div>
-        <div class="info-row"><div class="info-key">承辦人</div><div class="info-val">王大明</div></div>
-      </div>
-      <div class="detail-block-title" style="margin-top:16px">附件：直撥通知受文者名冊</div>
-      <div class="table-wrapper">
-        <table class="data-table">
-          <thead><tr><th>序號</th><th>姓名</th><th>身分證字號</th><th>撥付期間</th><th>撥付金額</th><th>公文文號</th></tr></thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>
-    </div>
-    <div class="form-hint" style="margin-top:8px">本書函經承辦人員確認無誤後，可直接介接公文管理系統辦理發文；發文完成後系統將自動產出抄本供留存查閱。</div>`;
-  openDetailModal('直撥通知書函（預覽稿）', html, '直撥通知書函', 'pdf');
-}
-
-// ===== 登錄資料明細表：預覽 =====
-function previewDirectRegisterDetail() {
-  const rows = directLetterCases.map(c => '<tr><td>' + c.caseNo + '</td><td>' + c.name + '</td><td class="masked">' + c.id + '</td><td>' + c.category + '</td><td>' + c.period + '</td><td>NT$ ' + c.amount + '</td><td style="font-size:calc(11px * var(--font-scale))">' + c.docNum + '</td><td>' + c.approver + '</td><td style="font-size:calc(11px * var(--font-scale))">' + c.approveTime + '</td></tr>').join('');
-  const html = `
-    <div class="detail-block">
-      <div class="detail-block-title">直撥登錄資料明細表</div>
-      <div class="table-wrapper">
-        <table class="data-table">
-          <thead><tr><th>案件編號</th><th>姓名</th><th>身分證字號</th><th>退撫類別</th><th>撥付期間</th><th>撥付金額</th><th>公文文號</th><th>核符人</th><th>核符時間</th></tr></thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>
-    </div>
-    <div class="form-hint" style="margin-top:8px">本明細表隨案介接撥付系統核算資料自動產製，供陳核及後續稽核查閱使用，並支援 Excel 格式下載及列印。</div>`;
-  openDetailModal('直撥登錄資料明細表', html, '直撥登錄資料明細表', 'xlsx');
-}
-
-// ===== 書函：介接公文系統發文 =====
-function dispatchDirectLetter() {
+const DIR_STEPS = ['產製公文檔（DI），帶入書函主旨、說明（含補充說明）及受文者名冊', '傳送至本局公文管理系統', '公文系統取號，取得發文字號', '回填發文字號至各直撥案件', '產出存查抄本並歸檔'];
+function dirLetterRenderDoc() {
+  const g = dirLet.gen, card = document.getElementById('direct-letter-doc-card');
+  card.style.display = g ? 'block' : 'none';
+  if (!g) return;
+  const total = g.cases.reduce(function (s, c) { return s + c.amount; }, 0);
+  document.getElementById('dir-let-gen-sub').textContent = g.cases.length + ' 筆案件，合計 NT$ ' + dirFmt(total) + '；補充說明：' + (g.note ? '已併入書函說明（' + g.note.length + ' 字）' : '無') + '；產製時間 ' + g.genAt;
+  document.getElementById('direct-doc-letter-status').innerHTML = g.dispatched ? '<span style="color:var(--success);font-weight:600">已發文</span> · 發文字號：' + dirEsc(g.docNo) + '（' + g.sentAt + '）' :
+    (g.busy ? '介接公文管理系統中…' : (g.failed ? '<span style="color:var(--danger);font-weight:600">介接失敗，尚未發文</span>（產製內容已保留，可重新介接）' : '已產製，' + (g.previewed ? '已預覽確認，可介接發文' : '請先預覽確認後介接發文')));
   const btn = document.getElementById('direct-doc-letter-dispatch');
-  if (!btn || btn.disabled) return;
-  btn.disabled = true;
-  btn.textContent = '介接發文中...';
-  showToast('info', '介接中', '正在將直撥通知書函介接公文管理系統辦理發文...');
-  setTimeout(() => {
-    directLetterDocNo = '府退一字第113' + Math.floor(1000000 + Math.random() * 8999999) + '號';
-    directLetterDispatched = true;
-    document.getElementById('direct-doc-letter-status').innerHTML = '<span style="color:var(--success);font-weight:600">已發文</span> · 發文文號：' + directLetterDocNo;
-    btn.innerHTML = '<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="8 12.5 11 15.5 16 9"/></svg> 已介接發文';
-    btn.classList.remove('btn-primary');
-    btn.classList.add('btn-outline');
-    document.getElementById('direct-letter-copy-docno').textContent = directLetterDocNo;
-    document.getElementById('direct-letter-copy-row').style.display = 'block';
-    showToast('success', '介接發文完成', '公文管理系統已受理並完成發文，發文文號：' + directLetterDocNo + '，系統已自動產出抄本供留存查閱');
-  }, 900);
+  btn.disabled = g.dispatched || g.busy;
+  btn.textContent = g.dispatched ? '已介接發文' : (g.busy ? '介接發文中...' : (g.failed ? '重新介接發文' : '介接公文系統發文'));
+  btn.className = 'btn btn-sm ' + (g.dispatched ? 'btn-outline' : 'btn-primary');
+  document.getElementById('dir-let-regen').disabled = g.busy || g.dispatched;
+  document.getElementById('direct-doc-detail-status').textContent = '已產製 · ' + g.cases.length + ' 筆案件';
+  document.getElementById('direct-doc-di-status').textContent = g.dispatched ? '已隨發文送交公文管理系統' : '已產製，可供介接公文管理系統使用';
+  document.getElementById('direct-letter-copy-row').style.display = g.dispatched ? 'block' : 'none';
+  document.getElementById('direct-letter-copy-docno').textContent = g.docNo || '-';
+  const sb = document.getElementById('dir-let-steps');
+  sb.style.display = g.steps ? 'block' : 'none';
+  if (g.steps) {
+    document.getElementById('dir-let-steps-list').innerHTML = DIR_STEPS.map(function (t, i) {
+      const s = g.steps[i];
+      const icon = s === 'done' ? '<span style="color:var(--success);font-weight:700">✔</span>' : (s === 'active' ? '<span style="color:var(--primary);font-weight:700">…</span>' : (s === 'fail' ? '<span style="color:var(--danger);font-weight:700">✖</span>' : '<span style="color:var(--text-secondary)">○</span>'));
+      return '<div style="display:flex;gap:8px;align-items:center;' + (s === 'pending' ? 'color:var(--text-secondary)' : '') + '">' + icon + '<span>' + (i + 1) + '. ' + t + (i === 2 && (s === 'done' || (s === 'active' && g.docNo)) && g.docNo ? '　<b>' + dirEsc(g.docNo) + '</b>' : '') + '</span></div>';
+    }).join('');
+    const fl = document.getElementById('dir-let-fail');
+    fl.style.display = g.failed ? 'block' : 'none';
+    fl.innerHTML = g.failed ? '<div class="validation-item fail">✖ ' + dirEsc(g.failMsg) + '。書函、明細表及DI檔均已保留，未產生發文字號，請稍後按「重新介接發文」。</div>' : '';
+  }
+}
+function dirGetEntry(ref) { return ref === 'cur' ? dirLet.gen : dirLetArchive[ref]; }
+function dirLetView(ref, mode) {
+  const g = dirGetEntry(ref); if (!g) return;
+  mode = mode || 'letter';
+  if (ref === 'cur' && mode === 'letter') { g.previewed = true; dirLetterRenderDoc(); }
+  const html = dirLetterHtml(g, mode === 'copy' ? 'copy' : 'letter');
+  const nm = mode === 'copy' ? '直撥通知書函_抄本' : '直撥通知書函' + (g.docNo ? '' : '_稿');
+  dirOpenDoc(mode === 'copy' ? '直撥通知書函 · 存查抄本' : (g.docNo ? '直撥通知書函（已發文）' : '直撥通知書函（預覽稿）'), html, { dlLabel: nm, dlExt: 'pdf', dl: function () { dirDownloadPdf(nm + (g.docNo ? '_' + g.docNo : ''), html); }, print: function () { dirPrintHtml(nm, html); } });
+}
+function dirLetPrint(ref, mode) { const g = dirGetEntry(ref); if (!g) return; dirPrintHtml(mode === 'copy' ? '直撥通知書函_抄本' : '直撥通知書函', dirLetterHtml(g, mode === 'copy' ? 'copy' : 'letter')); }
+function dirLetPdf(ref, mode) { const g = dirGetEntry(ref); if (!g) return; const nm = (mode === 'copy' ? '直撥通知書函_抄本' : '直撥通知書函' + (g.docNo ? '' : '_稿')) + (g.docNo ? '_' + g.docNo : ''); dirDownloadPdf(nm, dirLetterHtml(g, mode === 'copy' ? 'copy' : 'letter')); }
+function dirDetView(ref) {
+  const g = dirGetEntry(ref); if (!g) return;
+  const html = dirDetailHtml(g);
+  dirOpenDoc('直撥登錄資料明細表', html, { dlLabel: '直撥登錄資料明細表', dlExt: 'xlsx', dl: function () { dirDetXlsx(ref); }, print: function () { dirPrintHtml('直撥登錄資料明細表', html, true); } });
+}
+function dirDetPrint(ref) { const g = dirGetEntry(ref); if (g) dirPrintHtml('直撥登錄資料明細表', dirDetailHtml(g), true); }
+function dirDetXlsx(ref) { const g = dirGetEntry(ref); if (g) dirDownloadXlsx('直撥登錄資料明細表' + (g.docNo ? '_' + g.docNo : ''), dirDetailRows(g), '登錄資料明細', [6, 15, 12, 14, 14, 12, 12, 24, 14, 12, 18]); }
+function dirDiView(ref) {
+  const g = dirGetEntry(ref); if (!g) return;
+  dirOpenDoc('公文DI檔（介接公文管理系統用）', '<pre style="white-space:pre-wrap;font-size:calc(12px * var(--font-scale));line-height:1.7;background:var(--bg-secondary,#f7f8fa);padding:12px;border-radius:var(--radius-card)">' + dirEsc(dirDiText(g)) + '</pre>', { dlLabel: '公文DI檔', dlExt: 'txt', dl: function () { dirDiDl(ref); } });
+}
+function dirDiDl(ref) { const g = dirGetEntry(ref); if (g) dirDownloadText('公文DI檔_直撥' + g.cases.length + '筆', 'txt', dirDiText(g)); }
+function dirDispatch() {
+  const g = dirLet.gen;
+  if (!g || g.dispatched || g.busy) return;
+  if (!g.previewed) { showToast('warning', '請先預覽書函', '書函須經承辦人員預覽確認內容無誤後，始可介接公文管理系統發文'); return; }
+  g.busy = true; g.failed = false; g.steps = DIR_STEPS.map(function () { return 'pending'; });
+  dirLetterRenderDoc();
+  showToast('info', '介接中', '後台正在介接公文管理系統辦理取號與發文...');
+  let i = 0;
+  (function tick() {
+    if (i > 0) g.steps[i - 1] = 'done';
+    if (i === DIR_STEPS.length) { dirFinishDispatch(g); return; }
+    if (i === 1 && dirLet.failNext) {
+      dirLet.failNext = false; g.steps[1] = 'fail'; g.busy = false; g.failed = true; g.failMsg = '公文管理系統無回應（ERR-DIR-2290，HTTP 503）';
+      g.cases.forEach(function (c) { appendAuditLog('發文失敗', '書函介接公文管理系統失敗：' + g.failMsg, DIR_HANDLER, c.caseNo); });
+      dirLetterRenderDoc();
+      showToast('error', '公文系統介接失敗', g.failMsg + '，文件已保留，請稍後重新介接');
+      return;
+    }
+    g.steps[i] = 'active';
+    if (i === 2 && !g.docNo) g.docNo = dirNextDocNo();
+    dirLetterRenderDoc();
+    i++;
+    setTimeout(tick, 450);
+  })();
+}
+function dirFinishDispatch(g) {
+  g.busy = false; g.dispatched = true; g.sentAt = dirNow();
+  g.cases.forEach(function (s) {
+    const c = supervisorCases.find(function (x) { return x.caseNo === s.caseNo; });
+    if (c) { c.letterDocNo = g.docNo; c.letterAt = g.sentAt; }
+    dirLet.sel.delete(s.caseNo);
+    appendAuditLog('發文', '書函已介接公文管理系統發文，發文字號 ' + g.docNo + '，已回填案件並產出存查抄本', DIR_HANDLER, s.caseNo);
+  });
+  dirLetArchive.unshift(g);
+  document.getElementById('direct-letter-note').value = '';
+  dirLetterRender();
+  showToast('success', '介接發文完成', '公文管理系統已受理並完成發文，發文文號：' + g.docNo + '，系統已自動產出抄本供留存查閱');
+}
+function dirLetterRenderArchive() {
+  document.getElementById('dir-let-arch-body').innerHTML = dirLetArchive.length ? dirLetArchive.map(function (e, i) {
+    const total = e.cases.reduce(function (s, c) { return s + c.amount; }, 0);
+    return '<tr><td style="font-size:calc(12px * var(--font-scale))">' + dirEsc(e.docNo) + '</td><td>' + e.sentAt + '</td><td>' + e.cases.length + '</td><td>NT$ ' + dirFmt(total) + '</td><td style="max-width:200px;font-size:calc(12px * var(--font-scale))">' + (e.note ? dirEsc(e.note.length > 24 ? e.note.slice(0, 24) + '…' : e.note) : '-') + '</td><td>' + dirEsc(e.by) + '</td><td style="white-space:nowrap"><button class="btn btn-sm btn-outline" onclick="dirLetView(' + i + ',\'letter\')">正本</button> <button class="btn btn-sm btn-outline" onclick="dirLetView(' + i + ',\'copy\')">抄本</button> <button class="btn btn-sm btn-outline" onclick="dirLetPrint(' + i + ',\'copy\')">列印抄本</button> <button class="btn btn-sm btn-secondary" onclick="dirLetPdf(' + i + ',\'copy\')">抄本PDF</button></td></tr>';
+  }).join('') : '<tr><td colspan="7" style="text-align:center;color:var(--text-secondary)">尚無發文紀錄</td></tr>';
 }
 
-// ===== 抄本：預覽 =====
-function previewDirectLetterCopy() {
-  if (!directLetterDispatched) { showToast('warning', '尚未發文', '請先完成介接公文系統發文後，系統始會產出抄本'); return; }
-  const total = directLetterCases.reduce((s,c) => s + parseInt(c.amount.replace(/,/g,''),10), 0);
-  const rows = directLetterCases.map((c,i) => '<tr><td>' + (i+1) + '</td><td>' + c.name + '</td><td class="masked">' + c.id + '</td><td>' + c.period + '</td><td>NT$ ' + c.amount + '</td></tr>').join('');
-  const html = `
-    <div class="detail-block">
-      <div style="text-align:center;margin-bottom:16px;position:relative">
-        <div style="position:absolute;top:0;right:0;color:var(--danger);border:2px solid var(--danger);border-radius:6px;padding:2px 10px;font-weight:700;font-size:calc(12px * var(--font-scale));transform:rotate(8deg)">抄本</div>
-        <div style="font-weight:700;font-size:calc(15px * var(--font-scale));color:var(--primary)">公務人員退休撫卹基金管理局　書函</div>
-        <div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary);margin-top:4px">（直撥通知書函 · 存查抄本）</div>
-      </div>
-      <div class="info-card">
-        <div class="info-row"><div class="info-key">發文字號</div><div class="info-val">${directLetterDocNo}</div></div>
-        <div class="info-row"><div class="info-key">受文者</div><div class="info-val">如受文者名冊（本案計 ${directLetterCases.length} 筆，合計 NT$ ${total.toLocaleString('en-US')}）</div></div>
-        <div class="info-row"><div class="info-key">主旨</div><div class="info-val">貴（台端）所屬退撫給與直撥案業經科長核符，檢附直撥通知名冊，請查照。</div></div>
-      </div>
-      <div class="detail-block-title" style="margin-top:16px">附件：直撥通知受文者名冊</div>
-      <div class="table-wrapper">
-        <table class="data-table">
-          <thead><tr><th>序號</th><th>姓名</th><th>身分證字號</th><th>撥付期間</th><th>撥付金額</th></tr></thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>
-    </div>
-    <div class="form-hint" style="margin-top:8px">本抄本由系統於發文完成後自動產出，供機關留存查閱，內容與已發文之正本一致。</div>`;
-  openDetailModal('直撥通知書函 · 存查抄本', html, '直撥通知書函_抄本', 'pdf');
+/* ---------- 查詢與統計 ---------- */
+const dirQ = { rows: [], cond: '', page: 1, per: 10, sel: new Set(), sum: null };
+const DIR_ST = { approved: ['badge-success', '已核符'], pending: ['badge-warning', '待核符'], cancelled: ['badge-secondary', '已取消'] };
+const DIR_TYPES = ['公務人員', '教育人員', '軍職人員'];
+function dirQv(id) { return document.getElementById(id).value; }
+function dirQueryRun(silent) {
+  const basis = dirQv('dq-basis'), from = dirQv('dq-from').trim(), to = dirQv('dq-to').trim(), re = /^\d{3}\/(0[1-9]|1[0-2])$/;
+  if (!re.test(from) || !re.test(to)) { if (!silent) showToast('warning', '區間格式錯誤', '請輸入民國年/月，例如 113/01'); return; }
+  if (from > to) { if (!silent) showToast('warning', '區間不正確', '區間起不得大於區間迄'); return; }
+  const idt = dirQv('dq-idtype'), st = dirQv('dq-status'), lt = dirQv('dq-letter'), kw = dirQv('dq-kw').trim();
+  const list = dirAllRows().filter(function (r) {
+    const k = basis === 'submit' ? r.submitTime.slice(0, 6) : r.period;
+    if (k < from || k > to) return false;
+    if (idt !== '全部' && r.idType !== idt) return false;
+    if (st && r.status !== st) return false;
+    if (lt === 'yes' && !r.letterDocNo) return false;
+    if (lt === 'no' && r.letterDocNo) return false;
+    if (kw && [r.caseNo, r.name, r.id, r.docNum, r.letterDocNo].join('|').indexOf(kw) < 0) return false;
+    return true;
+  }).sort(function (a, b) { return a.caseNo < b.caseNo ? 1 : -1; });
+  dirQ.rows = list; dirQ.page = 1;
+  dirQ.sel = new Set(Array.from(dirQ.sel).filter(function (no) { return list.some(function (r) { return r.caseNo === no && dirQEligible(r); }); }));
+  dirQ.cond = '區間基準：' + (basis === 'submit' ? '建檔（送審）月份' : '撥付期間') + '　區間：' + from + ' ～ ' + to + '　身分別：' + idt + '　核符狀態：' + (st ? DIR_ST[st][1] : '全部') + '　書函發文：' + (lt === 'yes' ? '已發文' : (lt === 'no' ? '尚未發文' : '全部')) + (kw ? '　關鍵字：' + kw : '');
+  dirQ.sum = dirQSummary(list);
+  dirQRender();
+  if (!silent) showToast('success', '查詢完成', '已查詢符合條件之直撥案件，共 ' + list.length + ' 筆');
 }
+function dirQueryReset() {
+  document.getElementById('dq-basis').value = 'period'; document.getElementById('dq-from').value = '113/01'; document.getElementById('dq-to').value = '113/12';
+  ['dq-idtype'].forEach(function (id) { document.getElementById(id).value = '全部'; });
+  ['dq-status', 'dq-letter', 'dq-kw'].forEach(function (id) { document.getElementById(id).value = ''; });
+  dirQueryRun(true);
+}
+function dirQSummary(list) {
+  const rows = DIR_TYPES.map(function (t) {
+    const L = list.filter(function (r) { return r.idType === t; });
+    const ok = L.filter(function (r) { return r.status === 'approved'; }), pd = L.filter(function (r) { return r.status === 'pending'; }), cn = L.filter(function (r) { return r.status === 'cancelled'; });
+    const eff = L.filter(function (r) { return r.status !== 'cancelled'; }), amt = eff.reduce(function (s, r) { return s + r.amount; }, 0);
+    return { t: t, n: L.length, ok: ok.length, pd: pd.length, cn: cn.length, amt: amt, avg: eff.length ? Math.round(amt / eff.length) : 0, eff: eff.length, okAmt: ok.reduce(function (s, r) { return s + r.amount; }, 0), pdAmt: pd.reduce(function (s, r) { return s + r.amount; }, 0) };
+  });
+  const tot = rows.reduce(function (a, r) { ['n', 'ok', 'pd', 'cn', 'amt', 'eff', 'okAmt', 'pdAmt'].forEach(function (k) { a[k] += r[k]; }); return a; }, { t: '合計', n: 0, ok: 0, pd: 0, cn: 0, amt: 0, eff: 0, okAmt: 0, pdAmt: 0 });
+  tot.avg = tot.eff ? Math.round(tot.amt / tot.eff) : 0;
+  return { rows: rows, tot: tot };
+}
+function dirQEligible(r) { return r.live && r.status === 'approved' && !r.letterDocNo; }
+function dirQRender() {
+  const S = dirQ.sum, T = S.tot, set = function (id, v) { document.getElementById(id).textContent = v; };
+  const split = function (k) { return S.rows.map(function (r) { return r.t.slice(0, 1) + r[k]; }).join('／'); };
+  set('dq-s-total', T.n); set('dq-s-total-sub', S.rows.map(function (r) { return r.t.slice(0, 1) + r.n; }).join('／'));
+  set('dq-s-ok', T.ok); set('dq-s-ok-sub', 'NT$ ' + dirFmt(T.okAmt));
+  set('dq-s-pend', T.pd); set('dq-s-pend-sub', T.pd ? 'NT$ ' + dirFmt(T.pdAmt) + '，需盡速確認' : '無待核符案件');
+  set('dq-s-cancel', T.cn);
+  set('dq-cond', dirQ.cond + '　共 ' + T.n + ' 筆');
+  document.getElementById('dq-sum-body').innerHTML = S.rows.concat([T]).map(function (r, i, a) {
+    return '<tr' + (i === a.length - 1 ? ' style="font-weight:700;background:var(--bg-secondary)"' : '') + '><td>' + r.t + '</td><td>' + r.n + '</td><td>' + r.ok + '</td><td>' + r.pd + '</td><td>' + r.cn + '</td><td>NT$ ' + dirFmt(r.amt) + '</td><td>NT$ ' + dirFmt(r.avg) + '</td></tr>';
+  }).join('');
+  const n = dirQ.rows.length, pages = Math.max(1, Math.ceil(n / dirQ.per));
+  if (dirQ.page > pages) dirQ.page = pages;
+  const a = (dirQ.page - 1) * dirQ.per, pageRows = dirQ.rows.slice(a, a + dirQ.per);
+  document.getElementById('dq-body').innerHTML = pageRows.map(function (r) {
+    const b = DIR_ST[r.status];
+    return '<tr><td><input type="checkbox" class="table-checkbox" ' + (dirQEligible(r) ? '' : 'disabled ') + (dirQ.sel.has(r.caseNo) ? 'checked ' : '') + 'onchange="dirQToggle(\'' + r.caseNo + '\',this.checked)"></td><td>' + r.caseNo + '</td><td>' + dirEsc(r.name) + '</td><td class="masked">' + dirEsc(r.id) + '</td><td>' + r.idType + '</td><td>' + dirEsc(r.periodText) + '</td><td>NT$ ' + dirFmt(r.amount) + '</td><td style="font-size:calc(11px * var(--font-scale))">' + dirEsc(r.docNum) + '</td><td style="font-size:calc(12px * var(--font-scale))">' + (r.status === 'approved' ? dirEsc(r.approver) + '<br>' + r.approveTime : (r.status === 'cancelled' ? dirEsc(r.approveTime) : '-')) + '</td><td style="font-size:calc(11px * var(--font-scale))">' + (r.letterDocNo ? dirEsc(r.letterDocNo) : '-') + '</td><td><span class="badge ' + b[0] + '">' + b[1] + '</span></td><td><button class="btn btn-sm btn-outline" onclick="showDirectCaseDetail(\'' + r.caseNo + '\')">明細</button></td></tr>';
+  }).join('');
+  document.getElementById('dq-empty').style.display = n ? 'none' : 'block';
+  document.getElementById('dq-info').textContent = n ? '顯示 ' + (a + 1) + '-' + (a + pageRows.length) + ' / 共 ' + n + ' 筆' : '共 0 筆';
+  let pg = '<button class="page-btn" ' + (dirQ.page === 1 ? 'disabled' : '') + ' onclick="dirQPage(' + (dirQ.page - 1) + ')">上一頁</button>';
+  for (let p = 1; p <= pages; p++) pg += '<button class="page-btn' + (p === dirQ.page ? ' active' : '') + '" onclick="dirQPage(' + p + ')">' + p + '</button>';
+  pg += '<button class="page-btn" ' + (dirQ.page === pages ? 'disabled' : '') + ' onclick="dirQPage(' + (dirQ.page + 1) + ')">下一頁</button>';
+  document.getElementById('dq-pager').innerHTML = pg;
+  const boxes = pageRows.filter(dirQEligible);
+  document.getElementById('dq-all').checked = boxes.length > 0 && boxes.every(function (r) { return dirQ.sel.has(r.caseNo); });
+  document.getElementById('dq-sel-info').textContent = '已勾選 ' + dirQ.sel.size + ' 筆；可勾選「已核符且尚未發文」之案件，直接引用至書函產製';
+}
+function dirQPage(p) { dirQ.page = p; dirQRender(); }
+function dirQToggle(no, on) { if (on) dirQ.sel.add(no); else dirQ.sel.delete(no); dirQRender(); }
+function dirQToggleAll(cb) {
+  const a = (dirQ.page - 1) * dirQ.per;
+  dirQ.rows.slice(a, a + dirQ.per).filter(dirQEligible).forEach(function (r) { if (cb.checked) dirQ.sel.add(r.caseNo); else dirQ.sel.delete(r.caseNo); });
+  dirQRender();
+}
+function dirQUseInLetter() {
+  const picks = Array.from(dirQ.sel);
+  if (!picks.length) { showToast('warning', '尚未勾選案件', '請勾選「已核符且尚未發文」之案件後，再引用至書函產製'); return; }
+  dirLet.sel = new Set(picks); dirLet.gen = null;
+  navigateTo('direct-letter');
+  showToast('success', '已引用案件', '已將 ' + picks.length + ' 筆案件帶入書函產製，請填寫補充說明後產製文件');
+}
+function dirQReportHtml() {
+  const S = dirQ.sum, T = S.tot;
+  const sum = S.rows.concat([T]).map(function (r, i, a) { return '<tr' + (i === a.length - 1 ? ' class="total"' : '') + '><td>' + r.t + '</td><td class="num">' + r.n + '</td><td class="num">' + r.ok + '</td><td class="num">' + r.pd + '</td><td class="num">' + r.cn + '</td><td class="num">' + dirFmt(r.amt) + '</td><td class="num">' + dirFmt(r.avg) + '</td></tr>'; }).join('');
+  const rows = dirQ.rows.map(function (r, i) { return '<tr><td>' + (i + 1) + '</td><td>' + r.caseNo + '</td><td>' + dirEsc(r.name) + '</td><td>' + dirEsc(r.id) + '</td><td>' + r.idType + '</td><td>' + dirEsc(r.periodText) + '</td><td class="num">' + dirFmt(r.amount) + '</td><td>' + dirEsc(r.docNum) + '</td><td>' + (r.status === 'cancelled' ? dirEsc(r.approveTime) : dirEsc(r.approver) + ' ' + r.approveTime) + '</td><td>' + (r.letterDocNo ? dirEsc(r.letterDocNo) : '-') + '</td><td>' + DIR_ST[r.status][1] + '</td></tr>'; }).join('');
+  return '<style>' + DIR_DOC_CSS + '</style><div class="ltr"><h1>直撥案件按件統計表</h1><div class="sub">製表日期：' + dirNow().slice(0, 9) + '　製表人：' + DIR_HANDLER + '　共 ' + T.n + ' 筆</div><p style="font-size:12px">查詢條件：' + dirEsc(dirQ.cond) + '</p>' +
+    '<table><thead><tr><th>身分別</th><th class="num">件數</th><th class="num">已核符</th><th class="num">待核符</th><th class="num">已取消</th><th class="num">撥付金額合計（不含已取消）</th><th class="num">平均金額</th></tr></thead><tbody>' + sum + '</tbody></table>' +
+    '<table><thead><tr><th>序號</th><th>案件編號</th><th>姓名</th><th>身分證字號</th><th>身分別</th><th>撥付期間</th><th class="num">撥付金額</th><th>公文文號</th><th>核符人／時間</th><th>書函發文字號</th><th>狀態</th></tr></thead><tbody>' + rows + '</tbody></table><div class="note">金額單位：新臺幣元。已取消案件不計入撥付金額。</div></div>';
+}
+function dirQReportRows() {
+  const S = dirQ.sum, out = [[{ b: true, v: '直撥案件按件統計表' }], ['製表日期', dirNow().slice(0, 9), '製表人', DIR_HANDLER], ['查詢條件', dirQ.cond], [],
+    ['身分別', '件數', '已核符', '待核符', '已取消', '撥付金額合計（不含已取消）', '平均金額'].map(function (h) { return { b: true, v: h }; })];
+  S.rows.concat([S.tot]).forEach(function (r) { out.push([r.t, r.n, r.ok, r.pd, r.cn, r.amt, r.avg]); });
+  out.push([], ['序號', '案件編號', '姓名', '身分證字號', '身分別', '撥付期間', '撥付金額', '公文文號', '核符人', '核符時間', '書函發文字號', '狀態'].map(function (h) { return { b: true, v: h }; }));
+  dirQ.rows.forEach(function (r, i) { out.push([i + 1, r.caseNo, r.name, r.id, r.idType, r.periodText, r.amount, r.docNum, r.status === 'approved' ? r.approver : '-', r.approveTime, r.letterDocNo || '-', DIR_ST[r.status][1]]); });
+  return out;
+}
+function dirQCheck() { if (!dirQ.rows.length) { showToast('warning', '無資料可輸出', '目前查詢結果為 0 筆，請調整條件後重新查詢'); return false; } return true; }
+function dirQPrint() { if (dirQCheck()) dirPrintHtml('直撥案件按件統計表', dirQReportHtml(), true); }
+function dirQPdf() { if (dirQCheck()) dirDownloadPdf('直撥案件按件統計表_' + dirQv('dq-from').replace('/', '') + '-' + dirQv('dq-to').replace('/', ''), dirQReportHtml(), true); }
+function dirQXlsx() { if (dirQCheck()) dirDownloadXlsx('直撥案件按件統計表_' + dirQv('dq-from').replace('/', '') + '-' + dirQv('dq-to').replace('/', ''), dirQReportRows(), '按件統計表', [6, 15, 12, 14, 12, 12, 12, 24, 12, 18, 24, 10]); }
 
-
-// ===== 直撥案件查詢與統計：查看案件明細 =====
-const directCaseDB = {
-  'DIR-113-0045': { name:'林建志', id:'C345***678', idType:'軍職人員', period:'113/12', amount:'71,000', docNum:'府退一字第1130012395號', status:'已核符', approver:'科長 陳主任', approveTime:'113/12/09 14:30', reason:'補發短少金額' },
-  'DIR-113-0044': { name:'張美玲', id:'D456***789', idType:'公務人員', period:'113/11', amount:'68,500', docNum:'府退一字第1130012390號', status:'已核符', approver:'科長 陳主任', approveTime:'113/12/08 10:15', reason:'系統異常補撥' },
-  'DIR-113-0046': { name:'吳文雄', id:'G789***345', idType:'公務人員', period:'113/12', amount:'71,000', docNum:'府退一字第1130012399號', status:'待核符', approver:'-', approveTime:'-', reason:'補發短少金額' },
-  'DIR-113-0042': { name:'孫大偉', id:'K234***567', idType:'軍職人員', period:'113/10', amount:'55,000', docNum:'府退一字第1130012380號', status:'已取消', approver:'-', approveTime:'科長取消：113/11/02', reason:'人工更正撥付' }
-};
+/* ---------- 案件明細 ---------- */
+function showDirectCaseDetail(caseNo) {
+  const r = dirAllRows().find(function (x) { return x.caseNo === caseNo; });
+  if (!r) return;
+  const b = DIR_ST[r.status];
+  const ai = r.letterDocNo ? dirLetArchive.findIndex(function (e) { return e.docNo === r.letterDocNo; }) : -1;
+  const letter = r.letterDocNo ? dirEsc(r.letterDocNo) + '（' + r.letterAt + '）' + (ai >= 0 ? '　<button class="btn btn-sm btn-outline" onclick="dirLetView(' + ai + ',\'letter\')">正本</button> <button class="btn btn-sm btn-outline" onclick="dirLetView(' + ai + ',\'copy\')">抄本</button>' : '') : '尚未發文';
+  let hist = '';
+  if (r.live) { const c = supervisorCases.find(function (x) { return x.caseNo === caseNo; }); if (c && typeof dirHistoryHtml === 'function') hist = dirHistoryHtml(c); }
+  const html = '<div class="info-card">' +
+    '<div class="info-row"><div class="info-key">案件編號</div><div class="info-val">' + r.caseNo + '</div></div>' +
+    '<div class="info-row"><div class="info-key">姓名</div><div class="info-val">' + dirEsc(r.name) + '</div></div>' +
+    '<div class="info-row"><div class="info-key">身分證字號</div><div class="info-val masked">' + dirEsc(r.id) + '</div></div>' +
+    '<div class="info-row"><div class="info-key">身分別</div><div class="info-val">' + r.idType + '</div></div>' +
+    '<div class="info-row"><div class="info-key">撥付期間</div><div class="info-val">' + dirEsc(r.periodText) + '</div></div>' +
+    '<div class="info-row"><div class="info-key">撥付金額</div><div class="info-val" style="font-weight:700">NT$ ' + dirFmt(r.amount) + '</div></div>' +
+    '<div class="info-row"><div class="info-key">公文文號</div><div class="info-val">' + dirEsc(r.docNum) + '</div></div>' +
+    '<div class="info-row"><div class="info-key">直撥原因</div><div class="info-val">' + dirEsc(r.reason) + '</div></div>' +
+    '<div class="info-row"><div class="info-key">核符狀態</div><div class="info-val"><span class="badge ' + b[0] + '">' + b[1] + '</span></div></div>' +
+    '<div class="info-row"><div class="info-key">核符人</div><div class="info-val">' + dirEsc(r.status === 'approved' ? r.approver : '-') + '</div></div>' +
+    '<div class="info-row"><div class="info-key">核符（異動）時間</div><div class="info-val">' + dirEsc(r.approveTime) + '</div></div>' +
+    '<div class="info-row"><div class="info-key">書函發文字號</div><div class="info-val">' + letter + '</div></div></div>' + hist;
+  dirOpenDoc('直撥案件明細 · ' + r.name, html, { dlLabel: '直撥案件明細_' + caseNo, dlExt: 'pdf', dl: function () { dirDownloadPdf('直撥案件明細_' + caseNo, '<div class="ltr"><h1>直撥案件明細</h1>' + html + '</div>'); } });
+}
 // ===== 溢領管理：明細 / 分期查看 =====
 function previewOverdueDoc(caseNo, name, idMasked, period, amount) {
   const html = `
@@ -8938,26 +9287,6 @@ function showInstallmentDetail(caseNo, name, idMasked, overAmt, recovered, remai
   openDetailModal('分期繳回明細 · ' + name, html, '分期繳回明細_' + caseNo, 'pdf');
 }
 
-function showDirectCaseDetail(caseNo) {
-  const c = directCaseDB[caseNo];
-  if (!c) return;
-  const statusBadge = c.status === '已核符' ? '<span class="badge badge-success">已核符</span>' : (c.status === '待核符' ? '<span class="badge badge-warning">待核符</span>' : '<span class="badge badge-secondary">已取消</span>');
-  const html = `
-    <div class="info-card">
-      <div class="info-row"><div class="info-key">案件編號</div><div class="info-val">${caseNo}</div></div>
-      <div class="info-row"><div class="info-key">姓名</div><div class="info-val">${c.name}</div></div>
-      <div class="info-row"><div class="info-key">身分證字號</div><div class="info-val masked">${c.id}</div></div>
-      <div class="info-row"><div class="info-key">身分別</div><div class="info-val">${c.idType}</div></div>
-      <div class="info-row"><div class="info-key">撥付期間</div><div class="info-val">${c.period}</div></div>
-      <div class="info-row"><div class="info-key">撥付金額</div><div class="info-val" style="font-weight:700">NT$ ${c.amount}</div></div>
-      <div class="info-row"><div class="info-key">公文文號</div><div class="info-val">${c.docNum}</div></div>
-      <div class="info-row"><div class="info-key">直撥原因</div><div class="info-val">${c.reason}</div></div>
-      <div class="info-row"><div class="info-key">核符狀態</div><div class="info-val">${statusBadge}</div></div>
-      <div class="info-row"><div class="info-key">核符人</div><div class="info-val">${c.approver}</div></div>
-      <div class="info-row"><div class="info-key">核符（異動）時間</div><div class="info-val">${c.approveTime}</div></div>
-    </div>`;
-  openDetailModal('直撥案件明細 · ' + c.name, html, '直撥案件明細_' + caseNo, 'pdf');
-}
 
 
 // ===== 外部資料交換：軍職資料 =====
@@ -10096,6 +10425,7 @@ document.addEventListener('click', function(e) {
 // ===== GENERIC DETAIL MODAL =====
 // 供各頁「查看詳細」「差異清單」「異常清單」等重要按鈕開啟，顯示對應的資料內容。
 function openDetailModal(titleText, bodyHtml, dlLabel, dlExt) {
+  const dirPb = document.getElementById('detail-modal-print-btn'); if (dirPb) dirPb.style.display = 'none';
   document.querySelector('#detail-modal-title span').textContent = titleText;
   document.getElementById('detail-modal-body').innerHTML = bodyHtml;
   const dlBtn = document.getElementById('detail-modal-dl-btn');
