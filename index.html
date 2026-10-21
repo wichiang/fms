@@ -851,6 +851,66 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 #tour-pop h4{margin:0 0 6px;color:var(--primary);font-size:calc(15px * var(--font-scale))}
 #tour-pop p{margin:0 0 12px;font-size:calc(13px * var(--font-scale));line-height:1.7;color:var(--text-secondary)}
 #tour-pop .tour-foot{display:flex;justify-content:space-between;align-items:center;gap:8px}
+
+/* ===== V29 防呆 ===== */
+.fv-invalid{border-color:var(--danger) !important;background:#fff6f6 !important}
+.fv-msg{color:var(--danger);font-size:calc(12px * var(--font-scale));margin-top:3px;line-height:1.4}
+.date-picker-day.disabled{opacity:.3;cursor:not-allowed}
+
+/* ===== V30 ===== */
+.mnc-overlay{position:fixed;inset:0;z-index:30000;background:rgba(15,25,50,.72);display:flex;align-items:center;justify-content:center;padding:16px;overflow:auto}
+.mnc-box{display:flex;gap:28px;background:#fff;border-radius:16px;padding:26px 28px;max-width:960px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.45);flex-wrap:wrap;justify-content:center}
+.mnc-web{flex:1 1 380px;min-width:300px;display:flex;flex-direction:column;gap:10px}
+.mnc-title{font-size:calc(20px * var(--font-scale));font-weight:700;color:var(--primary)}
+.mnc-subt{font-size:calc(12px * var(--font-scale));color:var(--text-secondary)}
+.mnc-steps{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+.mnc-st{display:flex;align-items:center;gap:6px;font-size:calc(12px * var(--font-scale));color:#8892a6;padding:4px 8px;border-radius:14px;background:#f1f3f8}
+.mnc-st span{display:inline-flex;width:18px;height:18px;border-radius:50%;background:#cfd5e3;color:#fff;align-items:center;justify-content:center;font-size:11px}
+.mnc-st.cur{background:#eef2ff;color:var(--primary);font-weight:700}.mnc-st.cur span{background:var(--primary)}
+.mnc-st.done{color:#1e8e4a}.mnc-st.done span{background:#1e8e4a}
+.mnc-main{border:1px dashed var(--border);border-radius:12px;padding:16px;text-align:center;min-height:290px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+.mnc-qr{padding:8px;background:#fff;border:1px solid var(--border);border-radius:8px;position:relative}.mnc-qr.exp svg{opacity:.15}.mnc-qr.scanned{outline:3px solid #1e8e4a}
+.mnc-hint{font-size:calc(13px * var(--font-scale));color:var(--text-primary);line-height:1.7}
+.mnc-sess{font-size:calc(11px * var(--font-scale));color:var(--text-secondary)}
+.mnc-code{font-size:56px;font-weight:800;letter-spacing:6px;color:var(--primary);background:#eef2ff;border-radius:14px;padding:6px 30px}
+.mnc-pushico{width:76px;height:76px;border-radius:50%;background:#eef2ff;color:var(--primary);display:flex;align-items:center;justify-content:center}
+.mnc-ok{color:#1e8e4a}
+.mnc-pill{padding:7px 12px;border-radius:8px;font-size:calc(13px * var(--font-scale));font-weight:600}
+.mnc-pill.wait{background:#fff8e1;color:#7a5b00}.mnc-pill.ok{background:#e7f6ec;color:#1e8e4a}.mnc-pill.err{background:#fdecea;color:#c0392b}
+.mnc-timerrow{display:flex;justify-content:space-between;font-size:calc(12px * var(--font-scale));color:var(--text-secondary)}.mnc-timerrow b{color:var(--primary);font-variant-numeric:tabular-nums}
+.mnc-barwrap{height:5px;background:#e6e9f2;border-radius:3px;overflow:hidden}.mnc-barwrap i{display:block;height:100%;background:var(--accent-gold);width:100%;transition:width 1s linear}
+.mnc-foot{display:flex;gap:8px;justify-content:flex-end}.mnc-note{font-size:calc(11px * var(--font-scale));color:var(--text-secondary);line-height:1.6}
+.mnc-phone-wrap{display:flex;flex-direction:column;align-items:center;gap:8px}
+.mnc-phone{position:relative;width:272px;height:556px;background:#111;border-radius:42px;padding:10px;box-shadow:0 10px 30px rgba(0,0,0,.4),inset 0 0 0 2px #333;display:flex;flex-direction:column}
+.mnc-notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:96px;height:22px;background:#111;border-radius:0 0 14px 14px;z-index:5}
+.mnc-status{display:flex;justify-content:space-between;padding:8px 20px 4px;font-size:11px;font-weight:600;color:#fff;background:#111;border-radius:32px 32px 0 0;position:relative;z-index:4}
+.mnc-screen{flex:1;background:#f4f6fb;overflow:hidden;position:relative;font-size:12px;color:#222;border-radius:0 0 30px 30px;display:flex;flex-direction:column}
+.mnc-screen.dark{background:linear-gradient(160deg,#243b6b,#0e1a36);color:#fff}.mnc-screen.cam{background:#101418;color:#fff}
+.mnc-home{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);width:90px;height:4px;border-radius:2px;background:#bbb;z-index:5}
+.mnc-cap{font-size:12px;color:var(--text-secondary)}
+.ph-app-h{display:flex;align-items:center;gap:8px;padding:12px 14px;background:#1a3a6e;color:#fff;font-weight:700;font-size:14px}
+.ph-logo{display:inline-flex;width:22px;height:22px;border-radius:6px;background:#d4a843;color:#fff;align-items:center;justify-content:center;font-size:12px}
+.ph-cert{margin:14px;padding:14px;border-radius:14px;background:linear-gradient(135deg,#1a3a6e,#3b6bb5);color:#fff}.ph-cert-t{font-size:11px;opacity:.8}.ph-cert-n{font-size:20px;font-weight:700;margin:6px 0;letter-spacing:1px}.ph-cert-s{font-size:10px;opacity:.85}
+.ph-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 14px}
+.ph-tile{background:#fff;border-radius:12px;padding:14px 6px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;color:#1a3a6e;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.08)}.ph-tile.off{opacity:.45;cursor:default}
+.ph-tip{text-align:center;font-size:11px;color:#667;padding:10px 14px}
+.ph-cam{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}.ph-cam-t{font-size:14px;font-weight:700}.ph-cam-s{font-size:11px;opacity:.8}
+.ph-frame{position:relative;width:170px;height:170px;border:2px solid #fff;border-radius:14px;display:flex;align-items:center;justify-content:center;background:#1c2530}.ph-qrmini{opacity:.85}
+.ph-line{position:absolute;left:6px;right:6px;height:2px;background:#4ade80;box-shadow:0 0 8px #4ade80;animation:phscan 1.2s linear infinite}
+@keyframes phscan{0%{top:6px}100%{top:162px}}
+.ph-ask{padding:12px 14px 4px;font-size:12px;font-weight:600;text-align:center}
+.ph-card{margin:8px 14px;background:#fff;border-radius:12px;padding:6px 12px}.ph-row{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid #eef0f5;font-size:11px}.ph-row:last-child{border:0}.ph-row span{color:#889}.ph-row b{text-align:right;color:#1a3a6e}
+.ph-btns{display:flex;gap:10px;padding:10px 14px}.ph-btn{flex:1;padding:10px;border:0;border-radius:10px;background:#1a3a6e;color:#fff;font-weight:700;font-size:13px;cursor:pointer}.ph-btn.gh{background:#e8ebf3;color:#444}
+.ph-opts{display:flex;gap:10px;padding:8px 14px;justify-content:center}.ph-opts b{flex:1;text-align:center;font-size:24px;padding:12px 0;border-radius:12px;background:#fff;color:#1a3a6e;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.1)}.ph-opts b:active{background:#eef2ff}
+.ph-dots{display:flex;gap:12px;justify-content:center;padding:12px}.ph-dots i{width:13px;height:13px;border-radius:50%;border:2px solid #1a3a6e}.ph-dots i.on{background:#1a3a6e}
+.ph-err{text-align:center;color:#c0392b;font-size:11px;min-height:16px;padding:0 10px}
+.ph-keys{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:6px 18px}.ph-keys b{padding:11px 0;text-align:center;background:#fff;border-radius:10px;font-size:18px;font-weight:600;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.1)}.ph-keys b.sm{font-size:10px;line-height:1.2;padding:9px 0;background:transparent;box-shadow:none;color:#1a3a6e}.ph-keys b:active{background:#e3e9f7}
+.ph-done{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:20px}.ph-done b{font-size:16px}.ph-done span{font-size:11px;color:#667}
+.ph-lock{flex:1;display:flex;flex-direction:column;align-items:center;padding:46px 14px 14px;gap:6px}.ph-lt{font-size:56px;font-weight:300}.ph-ld{font-size:13px;opacity:.85;margin-bottom:26px}
+.ph-notif{width:100%;background:rgba(255,255,255,.2);backdrop-filter:blur(8px);border-radius:16px;padding:10px 12px;color:#fff;cursor:pointer;display:flex;flex-direction:column;gap:3px;animation:phin .5s ease}.ph-notif span{font-size:11px;opacity:.9}.ph-n-h{display:flex;align-items:center;gap:6px;font-size:11px;opacity:.9}.ph-n-h em{margin-left:auto;font-style:normal}
+@keyframes phin{from{transform:translateY(-30px);opacity:0}to{transform:none;opacity:1}}
+.shake{animation:phshake .4s}@keyframes phshake{0%,100%{transform:none}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.pm-uf{display:flex;flex-direction:column;gap:6px}.pm-uf-row{display:flex;gap:6px}.pm-uf-row .form-control{flex:1;min-width:0}
 </style>
 
 <style>
@@ -1382,7 +1442,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label">亡故日期</label>
+            <label class="form-label">亡故日期 <span class="required">*</span></label>
             <input type="text" class="form-control" placeholder="113/09/15" value="113/09/15">
           </div>
         </div>
@@ -4772,7 +4832,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       <div class="card" style="margin-bottom:16px">
         <div class="section-title"> 輸入查詢條件</div>
         <div class="form-group">
-          <label class="form-label">領受人身分證字號（單次最多 10 組）</label>
+          <label class="form-label">領受人身分證字號（單次最多 10 組） <span class="required">*</span></label>
           <textarea class="form-control" id="qb-ids" rows="4" oninput="qbCount()" placeholder="請輸入身分證字號，以逗號、空白或換行分隔，例如：A123456789,B234567890,C345678901">A123456789,B234567890,C345678901,D456789012,E567890123</textarea>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;gap:12px;flex-wrap:wrap">
             <div class="form-hint" style="margin:0">單次查詢上限 10 組，重複輸入者自動合併；查詢跨年度或跨身分別資料量較大時，系統將分批處理。</div>
@@ -9899,7 +9959,7 @@ function initDatePickers(scope) {
 function mountDatePicker(input) {
   const sample = (input.value || input.getAttribute('placeholder') || '').trim();
   const m = ROC_DATE_RE.exec(sample);
-  const hasDay = !!(m && m[3]);
+  const hasDay = input.dataset.dtKind ? input.dataset.dtKind === 'date' : !!(m && m[3]);
 
   const wrap = document.createElement('div');
   wrap.className = 'date-field-wrap';
@@ -9932,6 +9992,7 @@ function openDatePicker(input, wrap, hasDay) {
   const raw = (input.value || input.getAttribute('placeholder') || '').trim();
   const m = ROC_DATE_RE.exec(raw);
   let y = m ? parseInt(m[1], 10) : ROC_TODAY.y;
+  if (y > 200 || y < 1) y = ROC_TODAY.y;
   let mo = m ? parseInt(m[2], 10) : ROC_TODAY.m;
   let d = (m && m[3]) ? parseInt(m[3], 10) : (hasDay ? ROC_TODAY.d : null);
 
@@ -9948,7 +10009,8 @@ function openDatePicker(input, wrap, hasDay) {
 
   function applyDate(close) {
     const pad = n => String(n).padStart(2, '0');
-    input.value = hasDay ? (y + '/' + pad(mo) + '/' + pad(d || 1)) : (y + '/' + pad(mo));
+    const y3 = String(y).padStart(3, '0');
+    input.value = hasDay ? (y3 + '/' + pad(mo) + '/' + pad(d || 1)) : (y3 + '/' + pad(mo));
     input.dispatchEvent(new Event('input', { bubbles: true }));
     input.dispatchEvent(new Event('change', { bubbles: true }));
     if (close) closeDatePicker();
@@ -9956,7 +10018,7 @@ function openDatePicker(input, wrap, hasDay) {
 
   function render() {
     let yearOptions = '';
-    for (let yy = ROC_TODAY.y - 15; yy <= ROC_TODAY.y + 5; yy++) {
+    for (let yy = Math.min(Math.max(1, ROC_TODAY.y - 60), y); yy <= Math.max(ROC_TODAY.y + 30, y); yy++) {
       yearOptions += '<option value="' + yy + '"' + (yy === y ? ' selected' : '') + '>民國 ' + yy + ' 年</option>';
     }
     let monthOptions = '';
@@ -9973,7 +10035,9 @@ function openDatePicker(input, wrap, hasDay) {
       for (let dd = 1; dd <= totalDays; dd++) {
         const isToday = (y === ROC_TODAY.y && mo === ROC_TODAY.m && dd === ROC_TODAY.d);
         const isSel = dd === d;
-        cells += '<div class="date-picker-day' + (isSel ? ' selected' : '') + (isToday ? ' today' : '') + '" data-day="' + dd + '">' + dd + '</div>';
+        const ymdS = String(y).padStart(3, '0') + '/' + String(mo).padStart(2, '0') + '/' + String(dd).padStart(2, '0');
+        const dis = (input.dataset.min && ymdS < input.dataset.min) || (input.dataset.max && ymdS > input.dataset.max);
+        cells += '<div class="date-picker-day' + (isSel ? ' selected' : '') + (isToday ? ' today' : '') + (dis ? ' disabled' : '') + '" data-day="' + dd + '">' + dd + '</div>';
       }
       daysHtml = '<div class="date-picker-weekdays"><div>日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div></div>' +
                  '<div class="date-picker-days">' + cells + '</div>';
@@ -10013,6 +10077,7 @@ function openDatePicker(input, wrap, hasDay) {
     if (hasDay) {
       pop.querySelectorAll('.date-picker-day:not(.empty)').forEach(el => {
         el.addEventListener('click', function() {
+          if (el.classList.contains('disabled')) return;
           d = parseInt(el.dataset.day, 10);
           applyDate(true);
         });
@@ -12550,7 +12615,7 @@ function pmUser(){
   const v=eff(f[1]),df=PM.cur[d.role][f[1]];
   rows+=`<tr><td class="pm-fn">${f[2]}</td><td style="text-align:center;white-space:nowrap">${df} ${PM.lv[df]}</td><td><select class="pm-sel lv${v}${v!==df?' pm-dif':''}" onchange="pmUSet('${f[1]}',this)">${pmOpts(v)}</select></td></tr>`;});
  return `<div style="display:grid;grid-template-columns:minmax(260px,1fr) 2fr;gap:20px"><div class="card"><div class="section-title">使用者</div>
- <select class="form-control" onchange="PM.u=this.value;PM.du=null;pmRender()">${Object.keys(PM.users).map(n=>`<option ${n===PM.u?'selected':''}>${n}（${pmRN(PM.users[n].role)}）</option>`.replace('<option','<option value="'+n+'"')).join('')}</select>
+ ${pmUFilterHtml()}
  <div class="form-hint" style="margin:6px 0 12px">${PM.users[PM.u].dept}｜${PM.users[PM.u].id}</div>
  <div class="section-title">角色選擇（切換角色將載入該角色預設）</div>${PM.roles.map(r=>`<label class="pm-role ${r[0]===d.role?'on':''}"><input type="radio" name="pmrole" ${r[0]===d.role?'checked':''} onchange="pmURole('${r[0]}')" style="margin-top:3px"><div><div style="font-weight:700">${r[1]}</div><div class="form-hint">${r[2]}</div></div></label>`).join('')}</div>
  <div class="card"><div class="card-header"><div><div class="card-title">功能權限</div><div class="card-subtitle">自訂調整 <b>${nov}</b> 項（與角色預設不同者）</div></div><div style="display:flex;gap:8px"><button class="btn btn-outline btn-sm" onclick="pmUClear()">套用角色預設</button><button class="btn btn-gold btn-sm" onclick="pmUSave()">儲存權限設定</button></div></div>${pmLegend}
@@ -14321,6 +14386,406 @@ function tourShow(dir) {
 }
 
 window.addEventListener('load', function () { simFillSelects(); permApplyAll(); dashRender(); });
+
+</script>
+<script>
+/* ===== V29：全站輸入防呆（必填、文數字、上下限、可接受值、日期、欄位相關性）＋民國日期輔助 ===== */
+const FV = { skipSel: '#login-page', submit: /儲存|送審|送出|提交|新增|建立|登錄|核符|發布|套用|申請|匯入/, excl: /暫存|取消|重新|查詢|搜尋|匯出|下載|列印|關閉|返回|清除|重設|預覽|瀏覽|選擇檔案|知悉|前往|檢視|明細|產製/ };
+const fvEsc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+function fvLabelRaw(el) {
+  const g = el.closest('.form-group,.filter-group'); let n = g && g.querySelector('.form-label,.filter-label');
+  if (!n && el.previousElementSibling && el.previousElementSibling.tagName === 'LABEL') n = el.previousElementSibling;
+  return (n ? n.textContent : (el.getAttribute('aria-label') || el.title || '')).replace(/\s+/g, ' ').trim();
+}
+const fvLabel = el => fvLabelRaw(el).replace(/\*/g, '').trim();
+const fvShort = el => (fvLabel(el).split(/[（(]/)[0].replace(/yyy\/mm(\/dd)?/ig, '').trim()) || '此欄位';
+
+/* ---- 日期欄位偵測（取代原先「僅依載入時之值」的判斷，涵蓋空白欄位與動態產生欄位） ---- */
+function fvDateKind(el) {
+  if (!el || el.tagName !== 'INPUT' || el.type !== 'text') return '';
+  if (el.dataset.dtKind) return el.dataset.dtKind;
+  const v = (el.value || '').trim(), p = (el.placeholder || '').trim(), lab = fvLabel(el), id = el.id || '';
+  let k = '';
+  if (/^\d{2,4}\/\d{1,2}\/\d{1,2}$/.test(v) || /(^|[^\d])\d{3}\/\d{2}\/\d{2}$/.test(p) || /yyy\/mm\/dd/i.test(p + lab)) k = 'date';
+  else if (/^\d{2,4}\/\d{1,2}$/.test(v) || /^\D*\d{3}\/\d{2}$/.test(p) || /yyy\/mm$/i.test(p)) k = 'ym';
+  else if (!v && /(日期|生效日|迄日|起日|公告日|發文日|出生日|死亡日|退休日)/.test(lab) && !/時間|區間|期間|年月|月份/.test(lab)) k = 'date';
+  else if (!v && /(年月|起月|迄月|月份|區間[起迄])/.test(lab)) k = 'ym';
+  else if (!v && /(^|[-_])(paydate|date)$/i.test(id)) k = 'date';
+  if (k) { el.dataset.dtKind = k; if (v === '999/12/31') el.dataset.forever = '1'; }
+  return k;
+}
+isRocDateField = function (input) {
+  return !!(input && input.tagName === 'INPUT' && input.type === 'text' && !input.disabled && !input.readOnly && !input.closest(FV.skipSel) && fvDateKind(input));
+};
+
+/* ---- 日期檢核／正規化（民國年 3 位數） ---- */
+const fvDim = (y, m) => new Date(y + 1911, m, 0).getDate();
+function fvNormDate(el, kind) {
+  let v = (el.value || '').trim(); if (!v) return;
+  let y, m, d, w = false;
+  const digits = v.replace(/\D/g, ''), parts = v.split(/[\/.\-\s]+/).filter(Boolean);
+  if (/^\d+$/.test(v)) { if (kind === 'date' && v.length === 7) { y = +v.slice(0, 3); m = +v.slice(3, 5); d = +v.slice(5); } else if (kind === 'ym' && v.length === 5) { y = +v.slice(0, 3); m = +v.slice(3); } else return; }
+  else if (parts.length === (kind === 'date' ? 3 : 2) && parts.every(x => /^\d+$/.test(x))) { y = +parts[0]; m = +parts[1]; d = kind === 'date' ? +parts[2] : null; }
+  else return;
+  if (y >= 1912 && y <= 2200) { y -= 1911; w = true; }
+  const p = (n, l) => String(n).padStart(l, '0');
+  el.value = p(y, 3) + '/' + p(m, 2) + (kind === 'date' ? '/' + p(d, 2) : '');
+  if (w) showToast('info', '已轉換為民國年', '輸入之西元年已自動轉換為民國年 ' + el.value);
+}
+function fvDateErr(el, kind) {
+  const v = (el.value || '').trim();
+  const re = kind === 'date' ? /^(\d{3})\/(\d{2})\/(\d{2})$/ : /^(\d{3})\/(\d{2})$/;
+  const m = re.exec(v);
+  if (!m) return kind === 'date' ? '日期格式應為「民國年3位/月2位/日2位」，例：113/12/31' : '年月格式應為「民國年3位/月2位」，例：113/12';
+  const y = +m[1], mo = +m[2], d = kind === 'date' ? +m[3] : 1;
+  if (v === '999/12/31' && (el.dataset.forever || /迄|止|(^|[-_])(to|t|end|down)$/.test(fvLabel(el) + (el.id || '')))) return '';
+  if (y < 1 || y > 200) return '民國年須介於 001 至 200';
+  if (mo < 1 || mo > 12) return '月份須介於 01 至 12';
+  if (d < 1 || d > fvDim(y, mo)) return '日期不存在：民國 ' + y + ' 年 ' + mo + ' 月最多 ' + fvDim(y, mo) + ' 日';
+  const ymd = v.length === 10 ? v : v + '/01', mn = el.dataset.min, mx = el.dataset.max;
+  if (mn && ymd < mn) return '不得早於 ' + mn; if (mx && ymd > mx) return '不得晚於 ' + mx;
+  const lab = fvLabel(el), T = dT();
+  if (/(出生|死亡|亡故|發文)/.test(lab) && kind === 'date' && v > T) return '「' + fvShort(el) + '」不得晚於今日（' + T + '）';
+  return '';
+}
+
+/* ---- 欄位相關性：起迄日／起迄年月 ---- */
+function fvRole(el) {
+  const id = el.id || '', lab = fvLabel(el);
+  if (/(^|[-_])(from|f|start|d1|up)$/i.test(id)) return 'S';
+  if (/(^|[-_])(to|t|end|d2|down)$/i.test(id)) return 'E';
+  const s = /(起|開始|上架)/.test(lab), e = /(迄|結束|下架|截止)/.test(lab);
+  return s && !e ? 'S' : e && !s ? 'E' : '';
+}
+function fvPartner(el, kind) {
+  const r = fvRole(el); if (!r) return null;
+  const box = el.closest('.form-row,.filter-row,.filter-bar,.modal-body,.card') || document;
+  const base = (el.id || '').replace(/(from|to|f|t|start|end|d1|d2|up|down)$/i, '');
+  const c = [...box.querySelectorAll('input')].filter(x => x !== el && x.offsetParent && fvDateKind(x) === kind && fvRole(x) && fvRole(x) !== r);
+  return c.find(x => base && (x.id || '').indexOf(base) === 0) || c[0] || null;
+}
+function fvPairErr(el, kind) {
+  const p = fvPartner(el, kind); if (!p || !(p.value || '').trim()) return '';
+  if (fvDateErr(p, kind)) return '';
+  const a = fvRole(el) === 'S' ? el : p, b = fvRole(el) === 'S' ? p : el;
+  if (a.value === '999/12/31' && fvRole(el) === 'S') return '';
+  if (b.value === '999/12/31') return '';
+  return a.value > b.value ? (el === b ? '迄日／迄月不得早於起日／起月（' + a.value + '）' : '起日／起月不得晚於迄日／迄月（' + b.value + '）') : '';
+}
+
+/* ---- 其他欄位相關性（業務規則） ---- */
+const fvV = id => { const e = document.getElementById(id); return e ? (e.value || '').trim() : ''; };
+const FV_REQIF = {
+  'direct-diff-reason': () => !!(document.getElementById('direct-diff-flag') || {}).checked,
+  'direct-diff-orig': () => !!(document.getElementById('direct-diff-flag') || {}).checked
+};
+const FV_BIZ = {
+  'direct-paydate-single': () => { const p = fvV('direct-period-single'), d = fvV('direct-paydate-single'); return /^\d{3}\/\d{2}$/.test(p) && /^\d{3}\/\d{2}\/\d{2}$/.test(d) && d.slice(0, 6) < p ? '撥付日期不得早於撥付期間（' + p + '）' : ''; },
+  'direct-paydate-period': () => { const p = fvV('direct-period-from'), d = fvV('direct-paydate-period'); return /^\d{3}\/\d{2}$/.test(p) && /^\d{3}\/\d{2}\/\d{2}$/.test(d) && d.slice(0, 6) < p ? '首期撥付日期不得早於撥付期間（起）' + p : ''; },
+  'direct-period-to': () => { const a = fvV('direct-period-from'), b = fvV('direct-period-to'); if (!/^\d{3}\/\d{2}$/.test(a) || !/^\d{3}\/\d{2}$/.test(b)) return ''; const n = (+b.slice(0, 3) - +a.slice(0, 3)) * 12 + (+b.slice(4) - +a.slice(4)) + 1; return n > 60 ? '期次撥付最多 60 期（目前 ' + n + ' 期）' : ''; },
+  'direct-diff-orig': () => { const v = fvV('direct-diff-orig').replace(/,/g, ''); return v && !/^\d+$/.test(v) ? '原撥付金額須為正整數' : ''; }
+};
+
+/* ---- 欄位類型推斷與檢核 ---- */
+function fvKind(el) {
+  if (el.tagName === 'TEXTAREA') return /身分證/.test(fvLabel(el)) && /組/.test(fvLabel(el)) ? 'idlist' : 'textarea';
+  const dk = fvDateKind(el); if (dk) return dk;
+  if (el.type === 'number') return 'number';
+  if (el.type !== 'text' && el.type !== 'email' && el.type !== 'tel') return '';
+  const lab = fvLabel(el), id = el.id || '';
+  if (/身分證/.test(lab) || /(^|[-_])(pid|idno|ssn)/i.test(id)) return 'id';
+  if (/電話|傳真/.test(lab)) return 'phone';
+  if (/信箱|email|電子郵件/i.test(lab) || el.type === 'email') return 'email';
+  if (/(公文文號|發文字號|府退.*文號)/.test(lab)) return 'docno';
+  if (/帳號/.test(lab) && !/使用者|登入|員工/.test(lab)) return 'account';
+  if (/姓名/.test(lab) && !/使用者|檔案/.test(lab)) return 'name';
+  if (/(金額|俸額|稅額|所得|餘額|本金|差額)/.test(lab) && !/比率|日期/.test(lab)) return 'amount';
+  if (/(筆數|件數|期數|天數|人數|次數|個月)/.test(lab)) return 'int';
+  if (/(%|百分比|稅率|費率)/.test(lab)) return 'pct';
+  return 'text';
+}
+function fvReq(el) { return el.required || /\*/.test(fvLabelRaw(el)) || el.dataset.required === '1' || !!(FV_REQIF[el.id] && FV_REQIF[el.id]()); }
+function fvValidate(el) {
+  if (!el || el.disabled || el.readOnly || el.closest(FV.skipSel)) return '';
+  const v = (el.value || '').trim(), req = fvReq(el), nm = fvShort(el);
+  if (el.tagName === 'SELECT') { const tx = el.selectedIndex >= 0 ? el.options[el.selectedIndex].text : ''; return req && (v === '' || /^(請選擇|請選取|--)/.test(tx.trim())) ? '請選擇「' + nm + '」' : ''; }
+  if (!v) return req ? '「' + nm + '」為必填欄位' : '';
+  if (/[<>]/.test(v)) return '不得包含 < 或 > 符號';
+  if (v.indexOf('*') > -1 && /\d\*+\d/.test(v)) return '';
+  const k = fvKind(el), lab = fvLabel(el), n = +v.replace(/,/g, '');
+  let e = '';
+  if (k === 'date' || k === 'ym') e = fvDateErr(el, k) || fvPairErr(el, k);
+  else if (k === 'id') e = /^[A-Z][0-9A-D]\d{8}$/.test(v) ? '' : '身分證統一編號格式不正確（1 碼英文字母＋9 碼數字）';
+  else if (k === 'idlist') { const a = v.split(/[\s,，、;；]+/).filter(Boolean), m = +((fvLabel(el).match(/最多\s*(\d+)/) || [])[1]) || 10, badId = a.filter(x => !/^[A-Z][0-9A-D]\d{8}$/.test(x.toUpperCase())); e = badId.length ? '身分證統一編號格式不正確：' + badId.slice(0, 3).join('、') : (new Set(a.map(x => x.toUpperCase())).size < a.length ? '身分證統一編號有重複輸入' : (a.length > m ? '最多僅可輸入 ' + m + ' 組（目前 ' + a.length + ' 組）' : '')); }
+  else if (k === 'phone') e = /^[0-9\-#()+ ]{6,20}$/.test(v) ? '' : '電話格式不正確（僅可輸入數字、-、#、括號，6～20 碼）';
+  else if (k === 'email') e = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? '' : '電子郵件格式不正確';
+  else if (k === 'docno') e = /^[\u4e00-\u9fa5A-Za-z0-9（）()]{2,12}字第?\d{5,15}號?$/.test(v) ? '' : '公文文號格式應如：府退一字第1130001234號';
+  else if (k === 'account') e = /^\d{6,16}$/.test(v.replace(/-/g, '')) ? '' : '帳號須為 6～16 碼數字';
+  else if (k === 'name') e = /^[\p{L}\p{M}·．.\s（）()]{1,40}$/u.test(v) ? '' : '姓名僅可輸入文字（不含數字或符號），最長 40 字';
+  else if (k === 'amount') {
+    const neg = /差額|調整|增減/.test(lab);
+    if (!(neg ? /^-?\d{1,10}(\.\d{1,2})?$/ : /^\d{1,10}(\.\d{1,2})?$/).test(v.replace(/,/g, ''))) e = '金額須為' + (neg ? '' : '非負') + '數字（最多 2 位小數）';
+    else if (Math.abs(n) > 9999999999) e = '金額超過上限 9,999,999,999';
+    else if (/金額/.test(lab) && !/差額|稅額|扣繳|原/.test(lab) && n <= 0) e = '「' + nm + '」須大於 0';
+  }
+  else if (k === 'int') e = /^\d{1,9}$/.test(v) ? '' : '須為非負整數';
+  else if (k === 'pct') e = /^\d{1,3}(\.\d+)?$/.test(v) && n <= 100 ? '' : '比率須介於 0 至 100';
+  else if (k === 'number') {
+    if (el.validity.badInput) e = '請輸入有效數字';
+    else if (el.min !== '' && n < +el.min) e = '不得小於 ' + el.min;
+    else if (el.max !== '' && n > +el.max) e = '不得大於 ' + el.max;
+    else if (el.min === '' && n < 0 && !/差額|調整|增減/.test(lab)) e = '不得為負數';
+    else if (el.validity.stepMismatch) e = '數值格式不符（步進 ' + (el.step || 1) + '）';
+  }
+  else if (k === 'text' && v.length > (+el.maxLength > 0 ? +el.maxLength : 200)) e = '長度超過上限';
+  if (!e && FV_BIZ[el.id]) e = FV_BIZ[el.id](el) || '';
+  return e;
+}
+function fvShow(el, msg) {
+  const host = (el.parentNode && (el.parentNode.classList.contains('date-field-wrap') || el.parentNode.classList.contains('input-group') || getComputedStyle(el.parentNode).display === 'flex')) ? el.parentNode : el;
+  let m = host.nextElementSibling; if (m && !m.classList.contains('fv-msg')) m = null;
+  el.classList.toggle('fv-invalid', !!msg); el.setAttribute('aria-invalid', msg ? 'true' : 'false');
+  if (msg) { if (!m) { m = document.createElement('div'); m.className = 'fv-msg'; host.insertAdjacentElement('afterend', m); } m.textContent = msg; } else if (m) m.remove();
+}
+function fvCheck(el) { const e = fvValidate(el); fvShow(el, e); return e; }
+
+/* 輸入限制（文數字）與屬性準備：於欄位取得焦點時套用，涵蓋動態欄位 */
+function fvPrep(el) {
+  if (el.dataset.fvPrep || el.closest(FV.skipSel)) return; el.dataset.fvPrep = '1';
+  if (el.tagName === 'TEXTAREA') { if (!el.maxLength || el.maxLength < 0) el.maxLength = 1000; return; }
+  if (el.tagName !== 'INPUT') return;
+  const k = fvKind(el);
+  const set = (len, mode) => { if (!el.maxLength || el.maxLength < 0) el.maxLength = len; if (mode) el.setAttribute('inputmode', mode); };
+  ({ date: () => set(10, 'numeric'), ym: () => set(7, 'numeric'), id: () => set(10), phone: () => set(20, 'tel'), email: () => set(80), docno: () => set(40), account: () => set(20, 'numeric'), name: () => set(40), amount: () => set(14, 'decimal'), int: () => set(9, 'numeric'), pct: () => set(6, 'decimal'), text: () => set(200) }[k] || (() => { }))();
+}
+document.addEventListener('focusin', e => { const t = e.target; if (t.matches && t.matches('input,textarea')) fvPrep(t); });
+document.addEventListener('input', e => {
+  const el = e.target; if (!el.matches || !el.matches('input,textarea') || el.closest(FV.skipSel)) return;
+  const k = fvKind(el), ins = /^insert/.test(e.inputType || '');
+  let v = el.value;
+  if (k === 'date' || k === 'ym') { v = v.replace(/[^\d\/]/g, ''); }
+  else if (k === 'id') v = v.toUpperCase().replace(/[^A-Z0-9]/g, '');
+  else if (k === 'phone') v = v.replace(/[^0-9\-#()+ ]/g, '');
+  else if (k === 'account' || k === 'int') v = v.replace(/[^\d\-]/g, '');
+  else if (k === 'amount') v = v.replace(/[^\d,.\-]/g, '');
+  if (v !== el.value) el.value = v;
+  if (el.classList.contains('fv-invalid')) fvCheck(el);
+}, true);
+document.addEventListener('focusout', e => {
+  const el = e.target; if (!el.matches || !el.matches('input,select,textarea') || el.closest(FV.skipSel) || el.type === 'checkbox' || el.type === 'radio' || el.type === 'file' || el.type === 'password') return;
+  const k = fvKind(el);
+  if (el.tagName === 'INPUT' && el.type === 'text') { el.value = el.value.trim(); if (k === 'date' || k === 'ym') fvNormDate(el, k); }
+  fvCheck(el);
+  if (k === 'date' || k === 'ym') { const p = fvPartner(el, k); if (p && p.value) fvCheck(p); }
+  Object.keys(FV_BIZ).forEach(id => { const o = document.getElementById(id); if (o && o !== el && o.value && o.classList.contains('fv-invalid')) fvCheck(o); });
+}, true);
+document.addEventListener('change', e => { const el = e.target; if (el.matches && el.matches('select,input') && !el.closest(FV.skipSel) && (el.tagName === 'SELECT' || el.dataset.dtKind)) fvCheck(el); }, true);
+document.addEventListener('keydown', e => {
+  const el = e.target;
+  if (el.matches && el.matches('input[data-dp-init]') && (e.key === 'F4' || (e.key === 'ArrowDown' && e.altKey))) { const b = el.parentNode.querySelector('.date-picker-toggle'); if (b) { e.preventDefault(); b.click(); } }
+  if (e.key === 'Escape' && typeof closeDatePicker === 'function') closeDatePicker();
+});
+
+/* 範圍驗證：儲存／送審等按鈕前，檢核其所屬區塊內全部欄位 */
+function fvControls(scope) { return [...scope.querySelectorAll('input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=hidden]):not([type=password]),select,textarea')].filter(x => x.offsetParent && !x.disabled && !x.readOnly && !x.closest(FV.skipSel)); }
+function fvScope(b) {
+  const modal = b.closest('.modal'); if (modal) return modal;
+  const tr = b.closest('tr'); if (tr && fvControls(tr).length) return tr;
+  let n = b.parentElement;
+  while (n && n !== document.body) { if (n.matches('.card,.table-card,.view') && fvControls(n).length) return n; n = n.parentElement; }
+  return null;
+}
+function fvValidateScope(scope) {
+  const bad = [];
+  fvControls(scope).forEach(el => { const k = fvKind(el); if (el.tagName === 'INPUT' && el.type === 'text') { if (k === 'date' || k === 'ym') fvNormDate(el, k); } const e = fvCheck(el); if (e) bad.push({ el, e }); });
+  return bad;
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest && e.target.closest('button,a.btn'); if (!b || b.disabled || b.classList.contains('date-picker-toggle') || b.dataset.fvSkip) return;
+  const tx = b.textContent.trim(), oc = b.getAttribute('onclick') || '';
+  if (!FV.submit.test(tx) || FV.excl.test(tx) || /open\w*Modal|openModal|showModal|navigateTo|toggle|switch/.test(oc)) return;
+  const scope = fvScope(b); if (!scope) return;
+  const bad = fvValidateScope(scope); if (!bad.length) return;
+  e.preventDefault(); e.stopImmediatePropagation();
+  bad[0].el.scrollIntoView({ block: 'center', behavior: 'smooth' }); try { bad[0].el.focus({ preventScroll: true }); } catch (x) { }
+  showToast('error', '欄位檢核未通過（共 ' + bad.length + ' 項）', bad.slice(0, 3).map(x => x.e).join('；') + (bad.length > 3 ? '…' : ''));
+}, true);
+
+/* 動態產生之日期欄位：持續掛載輔助視窗 */
+let fvTm = null;
+new MutationObserver(() => { clearTimeout(fvTm); fvTm = setTimeout(() => { try { initDatePickers(); } catch (x) { } }, 120); }).observe(document.body, { childList: true, subtree: true });
+window.addEventListener('load', () => { try { initDatePickers(); } catch (x) { } });
+
+initDatePickers = function (scope) {
+  (scope || document).querySelectorAll('input').forEach(i => { if (i.dataset.dpInit) return; if (!isRocDateField(i)) return; i.dataset.dpInit = '1'; mountDatePicker(i); });
+};
+
+</script>
+<div id="mnc-modal" class="mnc-overlay" style="display:none">
+ <div class="mnc-box">
+  <div class="mnc-web">
+   <div class="mnc-title">行動自然人憑證登入</div><div class="mnc-subt" id="mnc-sub"></div>
+   <div class="mnc-steps" id="mnc-steps"></div>
+   <div class="mnc-main" id="mnc-main"></div>
+   <div class="mnc-pill wait" id="mnc-status"></div>
+   <div class="mnc-timerrow"><span>有效時間</span><b id="mnc-timer">02:00</b></div><div class="mnc-barwrap"><i id="mnc-bar"></i></div>
+   <div class="mnc-foot"><button class="btn btn-outline btn-sm" onclick="mncCancel()">取消登入</button><button class="btn btn-gold btn-sm" id="mnc-retry" style="display:none" onclick="mncGen()">重新產生</button><button class="btn btn-outline btn-sm" onclick="mncAuto()">自動示範</button></div>
+   <div class="mnc-note">右側為手機 App 操作示意，可直接點選操作，或按「自動示範」自動完成流程。本系統介接內政部 FIDO 驗證平台。</div>
+  </div>
+  <div class="mnc-phone-wrap"><div class="mnc-phone"><div class="mnc-notch"></div><div class="mnc-status"><span id="ph-time">09:41</span><span>5G ▂▄▆█ ▭</span></div><div class="mnc-screen" id="ph-screen"></div><div class="mnc-home"></div></div><div class="mnc-cap">手機畫面（示意）</div></div>
+ </div>
+</div>
+<script>
+/* ===== V30：行動自然人憑證（條碼／推播）高擬真登入流程＋使用者權限設定過濾 ===== */
+/* ---------- 1. 行動自然人憑證 ---------- */
+let LOGIN_METHOD = 'ic';
+const _selLM30 = selectLoginMethod;
+selectLoginMethod = function (el, m) { LOGIN_METHOD = m; _selLM30(el, m); };
+const _doLogin30 = doLogin;
+doLogin = function () {
+  if (LOGIN_METHOD === 'ic') return _doLogin30();
+  const inp = document.getElementById('login-id'), id = inp.value.trim().toUpperCase();
+  if (!id) { setLoginIdError(true, '請輸入身分證字號'); inp.focus(); return; }
+  if (!ID_FORMAT_REGEX.test(id)) { setLoginIdError(true, '身分證字號格式不正確，第1碼須為大寫英文字母，後面須接9碼數字（共10碼），請重新輸入'); inp.focus(); return; }
+  setLoginIdError(false); mncOpen(LOGIN_METHOD, id);
+};
+const MNC = { mode: 'barcode', id: '', left: 120, tm: [], tick: null, step: 1, tries: 0, ptries: 0, pin: '', code: '', sess: '', alive: false };
+const mncM = id => id.slice(0, 3) + '****' + id.slice(7);
+const mncT = (f, ms) => { const h = setTimeout(() => { if (MNC.alive) f(); }, ms); MNC.tm.push(h); return h; };
+const mncEl = i => document.getElementById(i);
+function mncQR(seed) {
+  let s = 0; for (let i = 0; i < seed.length; i++) s = (s * 31 + seed.charCodeAt(i)) >>> 0;
+  const rnd = () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; };
+  const N = 29, cells = [];
+  const fin = (x, y) => (x < 8 && y < 8) || (x >= N - 8 && y < 8) || (x < 8 && y >= N - 8);
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) { if (!fin(x, y) && rnd() > 0.52) cells.push('<rect x="' + x + '" y="' + y + '" width="1.02" height="1.02"/>'); }
+  const f = (x, y) => '<rect x="' + x + '" y="' + y + '" width="7" height="7" fill="none" stroke="#111" stroke-width="1"/><rect x="' + (x + 2) + '" y="' + (y + 2) + '" width="3" height="3"/>';
+  return '<svg viewBox="-1 -1 ' + (N + 2) + ' ' + (N + 2) + '" width="196" height="196" fill="#111" shape-rendering="crispEdges"><rect x="-1" y="-1" width="' + (N + 2) + '" height="' + (N + 2) + '" fill="#fff"/>' + f(0.5, 0.5) + f(N - 7.5, 0.5) + f(0.5, N - 7.5) + cells.join('') + '</svg>';
+}
+function mncOpen(mode, id) {
+  mncClear(); Object.assign(MNC, { mode, id, alive: true, tries: 0, ptries: 0, pin: '' });
+  mncEl('mnc-modal').style.display = 'flex';
+  mncEl('mnc-sub').textContent = (mode === 'barcode' ? '行動自然人憑證（條碼掃描）' : '行動自然人憑證（推播通知）') + '・身分證字號 ' + mncM(id);
+  mncGen();
+}
+function mncClear() { MNC.tm.forEach(clearTimeout); MNC.tm = []; if (MNC.tick) clearInterval(MNC.tick); MNC.tick = null; }
+function mncGen() {
+  mncClear(); MNC.alive = true; MNC.left = 120; MNC.ptries = 0; MNC.pin = '';
+  MNC.sess = 'S' + Math.random().toString(36).slice(2, 8).toUpperCase(); MNC.code = String(10 + Math.floor(Math.random() * 90));
+  const steps = MNC.mode === 'barcode' ? ['手機掃描條碼', '手機確認登入', '輸入 PIN 碼', '登入完成'] : ['推播送達手機', '手機比對驗證碼', '輸入 PIN／生物辨識', '登入完成'];
+  mncEl('mnc-steps').innerHTML = steps.map((s, i) => '<div class="mnc-st" id="mnc-st' + (i + 1) + '"><span>' + (i + 1) + '</span>' + s + '</div>').join('');
+  const main = mncEl('mnc-main');
+  if (MNC.mode === 'barcode') main.innerHTML = '<div class="mnc-qr" id="mnc-qr">' + mncQR(MNC.sess) + '</div><div class="mnc-hint">請開啟手機「行動自然人憑證」App，點選「掃描登入」，掃描上方條碼</div><div class="mnc-sess">工作階段代碼：' + MNC.sess + '</div>';
+  else main.innerHTML = '<div class="mnc-pushico"><svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></div><div class="mnc-hint">已發送推播通知至您綁定之行動裝置<br>請於手機開啟通知，並選擇與下方相同之驗證碼</div><div class="mnc-code" id="mnc-code">' + MNC.code + '</div><div class="mnc-sess">工作階段代碼：' + MNC.sess + '</div>';
+  mncStatus('wait', MNC.mode === 'barcode' ? '等待手機掃描條碼…' : '推播發送中…'); mncStep(1);
+  mncEl('mnc-retry').style.display = 'none';
+  mncTick();
+  MNC.tick = setInterval(() => { MNC.left--; mncTick(); if (MNC.left <= 0) mncExpire(); }, 1000);
+  if (MNC.mode === 'barcode') mncPhone('home');
+  else { mncPhone('lock0'); mncT(() => { mncPhone('lock'); mncStatus('wait', '推播已送達，等待手機確認…'); }, 1600); }
+}
+function mncTick() { const l = Math.max(0, MNC.left); mncEl('mnc-timer').textContent = String(Math.floor(l / 60)).padStart(2, '0') + ':' + String(l % 60).padStart(2, '0'); mncEl('mnc-bar').style.width = (l / 120 * 100) + '%'; }
+function mncStatus(k, txt) { const e = mncEl('mnc-status'); e.className = 'mnc-pill ' + k; e.textContent = txt; }
+function mncStep(n) { for (let i = 1; i <= 4; i++) { const e = mncEl('mnc-st' + i); if (e) e.className = 'mnc-st' + (i < n ? ' done' : i === n ? ' cur' : ''); } MNC.step = n; }
+function mncExpire() {
+  mncClear(); MNC.alive = false; mncStatus('err', MNC.mode === 'barcode' ? '條碼已逾時，請重新產生' : '推播已逾時，請重新發送');
+  if (MNC.mode === 'barcode') { const q = mncEl('mnc-qr'); if (q) q.classList.add('exp'); }
+  mncEl('mnc-retry').style.display = 'inline-flex'; mncPhone('expired');
+}
+function mncFail(msg) { mncClear(); MNC.alive = false; mncStatus('err', msg); mncEl('mnc-retry').style.display = 'inline-flex'; }
+function mncCancel() { mncClear(); MNC.alive = false; mncEl('mnc-modal').style.display = 'none'; }
+function mncDone() {
+  mncStep(5); mncStatus('ok', '驗證通過，正在登入系統…'); mncClear();
+  mncEl('mnc-main').innerHTML = '<div class="mnc-ok"><svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="8 12.5 11 15.5 16 9"/></svg></div><div class="mnc-hint" style="font-weight:700">行動自然人憑證驗證成功</div><div class="mnc-sess">憑證序號 ' + MNC.sess + '・' + mncM(MNC.id) + '</div>';
+  mncEl('mnc-timer').textContent = '--:--'; MNC.alive = true;
+  mncPhone('done'); mncT(() => { MNC.alive = false; mncEl('mnc-modal').style.display = 'none'; _doLogin30(); }, 1400);
+}
+/* ---- 手機畫面 ---- */
+function mncPhone(sc) {
+  const s = mncEl('ph-screen'), now = new Date(), hh = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+  mncEl('ph-time').textContent = hh;
+  const hdr = t => '<div class="ph-app-h"><span class="ph-logo">證</span>' + t + '</div>';
+  const info = '<div class="ph-card"><div class="ph-row"><span>服務單位</span><b>公務人員退休撫卹基金管理局</b></div><div class="ph-row"><span>登入系統</span><b>基金業務管理系統</b></div><div class="ph-row"><span>使用者</span><b>' + mncM(MNC.id) + '</b></div><div class="ph-row"><span>請求時間</span><b>' + hh + ':' + String(now.getSeconds()).padStart(2, '0') + '</b></div><div class="ph-row"><span>連線來源</span><b>10.20.' + (30 + MNC.sess.charCodeAt(1) % 20) + '.88</b></div></div>';
+  const html = {
+    home: () => hdr('行動自然人憑證') + '<div class="ph-cert"><div class="ph-cert-t">自然人憑證</div><div class="ph-cert-n">' + mncM(MNC.id) + '</div><div class="ph-cert-s">有效期限 117/06/30・狀態：正常</div></div><div class="ph-grid"><div class="ph-tile" onclick="mncScan()"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></svg>掃描登入</div><div class="ph-tile off"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>電子簽章</div><div class="ph-tile off"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>使用紀錄</div><div class="ph-tile off"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8 2 2 0 1 1-2.8 2.8 1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3 2 2 0 1 1-2.8-2.8 1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8 2 2 0 1 1 2.8-2.8 1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3 2 2 0 1 1 2.8 2.8 1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>設定</div></div><div class="ph-tip">點選「掃描登入」，對準電腦畫面上的條碼</div>',
+    scan: () => '<div class="ph-cam"><div class="ph-cam-t">掃描 QR Code</div><div class="ph-frame"><div class="ph-qrmini">' + mncQR(MNC.sess).replace('width="196" height="196"', 'width="120" height="120"') + '</div><i class="ph-line"></i></div><div class="ph-cam-s">請將條碼置於框內</div></div>',
+    confirm: () => hdr('登入確認') + '<div class="ph-ask">是否同意登入下列系統？</div>' + info + (MNC.mode === 'push' ? '<div class="ph-ask" style="margin-top:8px">請選擇電腦畫面上顯示的驗證碼</div><div class="ph-opts" id="ph-opts">' + mncOpts() + '</div>' : '<div class="ph-btns"><button class="ph-btn gh" onclick="mncReject()">拒絕</button><button class="ph-btn" onclick="mncAgree()">同意登入</button></div>'),
+    pin: () => hdr('身分驗證') + '<div class="ph-ask">請輸入行動自然人憑證 PIN 碼</div><div class="ph-dots" id="ph-dots">' + '<i></i>'.repeat(6) + '</div><div class="ph-err" id="ph-err"></div><div class="ph-keys">' + [1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => '<b onclick="mncKey(' + n + ')">' + n + '</b>').join('') + '<b class="sm" onclick="mncBio()">臉部<br>辨識</b><b onclick="mncKey(0)">0</b><b class="sm" onclick="mncKey(-1)">⌫</b></div><div class="ph-tip">示範 PIN 碼：123456</div>',
+    done: () => '<div class="ph-done"><svg viewBox="0 0 24 24" width="70" height="70" fill="none" stroke="#1e8e4a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="8 12.5 11 15.5 16 9"/></svg><b>驗證成功</b><span>已完成登入授權，可關閉 App</span></div>',
+    expired: () => '<div class="ph-done"><svg viewBox="0 0 24 24" width="62" height="62" fill="none" stroke="#c0392b" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="7" x2="12" y2="13"/><circle cx="12" cy="16.5" r=".6"/></svg><b>此登入請求已逾時</b><span>請回到電腦畫面重新產生</span></div>',
+    rejected: () => '<div class="ph-done"><svg viewBox="0 0 24 24" width="62" height="62" fill="none" stroke="#c0392b" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="8" y1="8" x2="16" y2="16"/><line x1="16" y1="8" x2="8" y2="16"/></svg><b>您已拒絕此登入</b><span>電腦端登入已取消</span></div>',
+    locked: () => '<div class="ph-done"><svg viewBox="0 0 24 24" width="62" height="62" fill="none" stroke="#c0392b" stroke-width="2.2" stroke-linecap="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><b>PIN 碼已鎖定</b><span>連續輸入錯誤 3 次（示意）</span></div>',
+    lock0: () => '<div class="ph-lock"><div class="ph-lt">' + hh + '</div><div class="ph-ld">' + (now.getMonth() + 1) + ' 月 ' + now.getDate() + ' 日 星期' + '日一二三四五六'[now.getDay()] + '</div></div>',
+    lock: () => '<div class="ph-lock"><div class="ph-lt">' + hh + '</div><div class="ph-ld">' + (now.getMonth() + 1) + ' 月 ' + now.getDate() + ' 日 星期' + '日一二三四五六'[now.getDay()] + '</div><div class="ph-notif" onclick="mncOpenPush()"><div class="ph-n-h"><span class="ph-logo">證</span>行動自然人憑證<em>現在</em></div><b>登入驗證請求</b><span>基金業務管理系統正在要求登入，點選以確認身分</span></div><div class="ph-tip" style="color:#fff;opacity:.8">點選通知以開啟 App</div></div>'
+  }[sc];
+  s.className = 'mnc-screen' + (sc.indexOf('lock') === 0 ? ' dark' : sc === 'scan' ? ' cam' : '');
+  s.innerHTML = html(); MNC.scr = sc;
+}
+function mncOpts() {
+  const wrong = []; while (wrong.length < 2) { const n = String(10 + Math.floor(Math.random() * 90)); if (n !== MNC.code && wrong.indexOf(n) < 0) wrong.push(n); }
+  const a = wrong.concat([MNC.code]).sort(() => Math.random() - 0.5);
+  return a.map(n => '<b onclick="mncPick(\'' + n + '\')">' + n + '</b>').join('');
+}
+function mncScan() { if (!MNC.alive) return; mncPhone('scan'); mncT(() => { mncStep(2); mncStatus('wait', '已掃描條碼，等待手機確認登入…'); mncEl('mnc-qr').classList.add('scanned'); mncPhone('confirm'); }, 1500); }
+function mncOpenPush() { if (!MNC.alive) return; mncStep(2); mncStatus('wait', '手機已開啟 App，等待比對驗證碼…'); mncPhone('confirm'); }
+function mncAgree() { if (!MNC.alive) return; mncStep(3); mncStatus('wait', '已同意登入，等待輸入 PIN 碼…'); mncPhone('pin'); }
+function mncReject() { if (!MNC.alive) return; mncPhone('rejected'); mncFail('使用者已於手機端拒絕登入'); }
+function mncPick(n) {
+  if (!MNC.alive) return;
+  if (n === MNC.code) { mncAgree(); return; }
+  MNC.tries++; const o = mncEl('ph-opts'); if (o) o.classList.add('shake'); setTimeout(() => o && o.classList.remove('shake'), 400);
+  if (MNC.tries >= 3) { mncPhone('rejected'); mncFail('驗證碼比對錯誤達 3 次，已取消此次登入'); }
+  else { let e = document.querySelector('.ph-ask'); if (e) e.insertAdjacentHTML('afterend', '<div class="ph-err">驗證碼不符，請確認電腦畫面（剩餘 ' + (3 - MNC.tries) + ' 次）</div>'); }
+}
+function mncKey(n) {
+  if (!MNC.alive) return;
+  if (n === -1) MNC.pin = MNC.pin.slice(0, -1); else if (MNC.pin.length < 6) MNC.pin += n;
+  document.querySelectorAll('#ph-dots i').forEach((d, i) => d.className = i < MNC.pin.length ? 'on' : '');
+  if (MNC.pin.length === 6) {
+    if (MNC.pin === '123456') { mncStep(4); mncT(mncDone, 250); }
+    else { MNC.ptries++; MNC.pin = ''; const e = mncEl('ph-err'), d = mncEl('ph-dots'); d.classList.add('shake'); setTimeout(() => { d.classList.remove('shake'); document.querySelectorAll('#ph-dots i').forEach(x => x.className = ''); }, 400);
+      if (MNC.ptries >= 3) { mncPhone('locked'); mncFail('手機端 PIN 碼連續錯誤 3 次，憑證已鎖定（示意）'); } else e.textContent = 'PIN 碼錯誤，尚可嘗試 ' + (3 - MNC.ptries) + ' 次'; }
+  }
+}
+function mncBio() { if (!MNC.alive) return; const e = mncEl('ph-err'); e.style.color = '#1b6ec2'; e.textContent = '臉部辨識中…'; mncT(() => { mncStep(4); mncDone(); }, 1100); }
+function mncAuto() {
+  if (!MNC.alive) return;
+  if (MNC.mode === 'barcode') { mncT(mncScan, 600); mncT(mncAgree, 3000); }
+  else { mncT(mncOpenPush, 2400); mncT(() => mncPick(MNC.code), 3900); }
+  mncT(() => { for (let i = 0; i < 6; i++) mncT(() => mncKey(i + 1), i * 280); }, MNC.mode === 'barcode' ? 4000 : 5200);
+}
+
+/* ---------- 2. 使用者權限設定：多條件過濾 ---------- */
+(function () {
+  [['林美玲', 'A221***345', '給付科', 'STAFF'], ['林建宏', 'B122***210', '給付科', 'STAFF'], ['陳雅婷', 'C220***118', '給付科', 'HOST'], ['陳柏宇', 'D121***667', '企劃科', 'STAFF'], ['黃惠君', 'E222***431', '企劃科', 'QRY'], ['黃柏翰', 'F123***902', '資訊室', 'ADM'], ['張家豪', 'G124***558', '稽核科', 'AUD'], ['張淑芬', 'H221***073', '會計室', 'QRY'], ['李宗憲', 'J123***284', '會計室', 'STAFF'], ['李佳穎', 'K222***617', '人事室', 'QRY'], ['王淑惠', 'L222***390', '稽核科', 'AUD'], ['王俊傑', 'M123***745', '資訊室', 'QRY'], ['劉冠廷', 'N124***126', '給付科', 'STAFF'], ['吳佩蓉', 'P222***859', '企劃科', 'UNIT'], ['蔡明哲', 'Q123***472', '給付科', 'UNIT'], ['楊雅雯', 'R222***308', '人事室', 'HOST']].forEach(u => { if (!PM.users[u[0]]) PM.users[u[0]] = { id: u[1], dept: u[2], role: u[3], ov: {} }; });
+  PM.uf = { dept: '', role: '', q: '' };
+})();
+function pmUList() {
+  const f = PM.uf, q = f.q.trim().toUpperCase();
+  const r = Object.keys(PM.users).filter(n => { const u = PM.users[n]; return (!f.dept || u.dept === f.dept) && (!f.role || u.role === f.role) && (!q || n.toUpperCase().indexOf(q) > -1 || (u.id || '').toUpperCase().indexOf(q) > -1); });
+  return r.sort((a, b) => (q ? (b.indexOf(f.q.trim()) === 0) - (a.indexOf(f.q.trim()) === 0) : 0) || a.localeCompare(b, 'zh-Hant'));
+}
+function pmUOpts() {
+  const L = pmUList(), cur = L.indexOf(PM.u) > -1;
+  const ph = cur ? '' : '<option value="" disabled selected>' + (L.length ? '請由符合條件之 ' + L.length + ' 位人員中選擇' : '無符合條件之人員') + '</option>';
+  return ph + L.map(n => '<option value="' + n + '"' + (n === PM.u ? ' selected' : '') + '>' + n + '（' + PM.users[n].dept + '・' + pmRN(PM.users[n].role) + '）</option>').join('');
+}
+function pmUFilterHtml() {
+  const f = PM.uf, depts = [...new Set(Object.keys(PM.users).map(n => PM.users[n].dept))];
+  return '<div class="pm-uf"><div class="pm-uf-row"><select class="form-control" id="pm-uf-dept" onchange="pmUFilter()"><option value="">全部單位</option>' + depts.map(d => '<option' + (f.dept === d ? ' selected' : '') + '>' + d + '</option>').join('') + '</select>' +
+    '<select class="form-control" id="pm-uf-role" onchange="pmUFilter()"><option value="">全部角色</option>' + PM.roles.map(r => '<option value="' + r[0] + '"' + (f.role === r[0] ? ' selected' : '') + '>' + r[1] + '</option>').join('') + '</select></div>' +
+    '<div class="pm-uf-row"><input type="text" class="form-control" id="pm-uf-q" value="' + f.q.replace(/"/g, '&quot;') + '" placeholder="輸入姓氏、姓名或身分證關鍵字（例：王）" oninput="pmUFilter()" onkeydown="pmUEnter(event)" maxlength="20"><button class="btn btn-outline btn-sm" type="button" onclick="pmUReset()">清除</button></div>' +
+    '<div class="form-hint" id="pm-uf-n" style="margin:2px 0 6px">符合 <b>' + pmUList().length + '</b> / ' + Object.keys(PM.users).length + ' 位（按 Enter 選取第一位）</div>' +
+    '<select class="form-control" id="pm-u-sel" onchange="PM.u=this.value;PM.du=null;pmRender()">' + pmUOpts() + '</select></div>';
+}
+function pmUFilter() {
+  PM.uf = { dept: pmEl('pm-uf-dept').value, role: pmEl('pm-uf-role').value, q: pmEl('pm-uf-q').value };
+  pmEl('pm-u-sel').innerHTML = pmUOpts();
+  pmEl('pm-uf-n').innerHTML = '符合 <b>' + pmUList().length + '</b> / ' + Object.keys(PM.users).length + ' 位（按 Enter 選取第一位）';
+}
+function pmUEnter(e) { if (e.key !== 'Enter') return; const L = pmUList(); if (L.length) { PM.u = L[0]; PM.du = null; pmRender(); const q = pmEl('pm-uf-q'); if (q) q.focus(); } }
+function pmUReset() { PM.uf = { dept: '', role: '', q: '' }; pmRender(); }
 
 </script>
 </body>
