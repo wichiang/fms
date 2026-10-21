@@ -868,6 +868,13 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 .sp-doc-card h4{margin:0 0 4px;font-size:calc(14px * var(--font-scale));color:var(--primary)}
 .sp-doc-card p{margin:0 0 10px;font-size:calc(12px * var(--font-scale));color:var(--text-secondary)}
 </style>
+<style>
+.qr-grid{display:grid;grid-template-columns:minmax(340px,440px) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:1100px){.qr-grid{grid-template-columns:1fr}}
+.qr-paper{background:#fff;border:1px solid var(--border);box-shadow:0 2px 10px rgba(0,0,0,.08);padding:22px 24px;min-height:320px;overflow:auto}
+.qr-chip{display:flex;align-items:center;justify-content:space-between;padding:5px 10px;background:#eef2ff;border-radius:4px;font-size:calc(12px * var(--font-scale));font-weight:600;color:var(--primary);margin-bottom:4px}
+.qr-chip button{border:0;background:transparent;cursor:pointer;color:var(--primary);font-size:13px;padding:0 4px}
+</style>
 </head>
 <body>
 
@@ -4957,62 +4964,61 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <span class="breadcrumb-item current">批次查詢</span>
       </div>
       <div class="page-header">
-        <div class="page-title">批次支領查詢</div>
+        <div class="page-title">批次支領查詢與跨身分整合查詢</div>
       </div>
       
       <div class="card" style="margin-bottom:16px">
-        <div class="section-title"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="4" width="12" height="17" rx="2"/><rect x="9" y="2" width="6" height="4" rx="1"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="15" y2="15"/></svg> 輸入查詢條件</div>
+        <div class="section-title"> 輸入查詢條件</div>
         <div class="form-group">
-          <label class="form-label">輸入方式</label>
-          <div style="display:flex;gap:16px;margin-bottom:12px">
-            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:calc(13px * var(--font-scale))"><input type="radio" name="batch-input" checked> 手動輸入（逗號分隔，最多30組）</label>
-            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:calc(13px * var(--font-scale))"><input type="radio" name="batch-input"> Excel上傳</label>
+          <label class="form-label">領受人身分證字號（單次最多 10 組）</label>
+          <textarea class="form-control" id="qb-ids" rows="4" oninput="qbCount()" placeholder="請輸入身分證字號，以逗號、空白或換行分隔，例如：A123456789,B234567890,C345678901">A123456789,B234567890,C345678901,D456789012,E567890123</textarea>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;gap:12px;flex-wrap:wrap">
+            <div class="form-hint" style="margin:0">單次查詢上限 10 組，重複輸入者自動合併；查詢跨年度或跨身分別資料量較大時，系統將分批處理。</div>
+            <div id="qb-count" style="font-size:calc(13px * var(--font-scale));font-weight:700"></div>
           </div>
-          <textarea class="form-control" rows="3" placeholder="請輸入身分證字號，以逗號分隔，例如：A123456789,B234567890,C345678901" maxlength="330">A123456789,B234567890,C345678901,D456789012</textarea>
-          <div class="form-hint" style="margin-top:4px">單次查詢上限 30 組身分證字號；如查詢跨年度或跨身分別資料量較大，系統將採非同步分批處理以確保穩定運作。</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">匯入外部檔案（Excel／CSV，身分證字號置於第一欄或任一欄）</label>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <input type="file" id="qb-file" accept=".xlsx,.xls,.csv,.txt" onchange="qbImport(this)" style="font-size:13px">
+            <button class="btn btn-outline btn-sm" onclick="qbTemplate()">下載匯入範本</button>
+            <button class="btn btn-outline btn-sm" onclick="qbDemoImport()">載入範例檔（模擬匯入）</button>
+          </div>
+          <div class="form-hint" id="qb-import-msg" style="margin-top:4px">匯入後內容會合併至上方輸入框，可再行編修；匯入超過 10 組時將提示並禁止查詢。</div>
         </div>
         <div class="form-row cols-3">
           <div class="form-group">
-            <label class="form-label">查詢起始年月</label>
-            <input type="text" class="form-control" value="113/01">
+            <label class="form-label">查詢起始年月 <span class="required">*</span></label>
+            <input type="text" class="form-control" id="qb-from" value="113/01" placeholder="YYY/MM">
           </div>
           <div class="form-group">
-            <label class="form-label">查詢終止年月</label>
-            <input type="text" class="form-control" value="113/12">
+            <label class="form-label">查詢終止年月 <span class="required">*</span></label>
+            <input type="text" class="form-control" id="qb-to" value="114/12" placeholder="YYY/MM">
+            <div class="form-hint">起訖可跨年度（例：113/01～114/12）</div>
           </div>
           <div class="form-group">
-            <label class="form-label">跨身分別查詢</label>
-            <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
-              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:calc(13px * var(--font-scale))"><input type="checkbox"> 啟用跨身分別查詢</label>
+            <label class="form-label">身分別（跨身分別整合查詢）</label>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:6px" id="qb-idents">
+              <label style="font-size:13px;cursor:pointer"><input type="checkbox" value="政務人員" checked> 政務</label>
+              <label style="font-size:13px;cursor:pointer"><input type="checkbox" value="公務人員" checked> 公務</label>
+              <label style="font-size:13px;cursor:pointer"><input type="checkbox" value="教育人員" checked> 教育</label>
+              <label style="font-size:13px;cursor:pointer"><input type="checkbox" value="軍職人員" checked> 軍職</label>
             </div>
+            <div class="form-hint">全選即整合政、公、教、軍所有身分別資料於單一結果</div>
           </div>
         </div>
         <div style="display:flex;gap:8px">
-          <button class="btn btn-primary" onclick="showToast('success','查詢完成','已查詢 4 位人員，共 48 筆紀錄')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> 執行批次查詢</button>
-          <button class="btn btn-outline" onclick="this.closest('.card').querySelector('textarea').value='';showToast('info','已清除','查詢條件已清空')">清除</button>
+          <button class="btn btn-primary" id="qb-run" onclick="qbRun()"> 執行批次查詢</button>
+          <button class="btn btn-outline" onclick="qbClear()">清除</button>
         </div>
+        <div id="qb-progress" style="display:none;margin-top:12px"></div>
       </div>
-      
-      <div class="table-card">
-        <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
-          <div class="card-title">批次查詢結果</div>
-          <div style="display:flex;gap:8px">
-            <button class="btn btn-success btn-sm" onclick="runDownload('批次查詢結果','xlsx')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="20" x2="4" y2="12"/><line x1="10" y1="20" x2="10" y2="6"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="20" y1="20" x2="4" y2="20"/></svg> 匯出Excel</button>
-          </div>
-        </div>
-        <div class="table-wrapper">
-        <table class="data-table">
-          <thead>
-            <tr><th>姓名</th><th>身分證字號</th><th>退撫類別</th><th>查詢期間</th><th>撥付總額</th><th>溢領金額</th><th>筆數</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>王建民</td><td class="masked">A123***789</td><td>公務月退</td><td>113/01~113/12</td><td>NT$ 479,500</td><td style="color:var(--danger)">NT$ 137,000</td><td>7</td></tr>
-            <tr><td>陳志偉</td><td class="masked">B234***890</td><td>公務月退</td><td>113/01~113/12</td><td>NT$ 822,000</td><td>-</td><td>12</td></tr>
-            <tr><td>林淑惠</td><td class="masked">C345***901</td><td>教職月退</td><td>113/01~113/12</td><td>NT$ 1,704,000</td><td>-</td><td>12</td></tr>
-            <tr><td>張文山</td><td class="masked">D456***012</td><td>軍職月退</td><td>113/01~113/12</td><td>NT$ 660,000</td><td style="color:var(--warning)">NT$ 284,000</td><td>12</td></tr>
-          </tbody>
-        </table>
-        </div>
+
+      <div id="qb-result" style="display:none"></div>
+      <div id="qb-empty" class="empty-state">
+        <div class="empty-state-icon"></div>
+        <div class="empty-state-text">尚未執行批次查詢</div>
+        <div class="empty-state-hint">請輸入或匯入身分證字號（最多 10 組）後執行查詢</div>
       </div>
     </div>
 
@@ -5026,63 +5032,129 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <span class="breadcrumb-item current">彈性報表</span>
       </div>
       <div class="page-header">
-        <div class="page-title">彈性報表</div>
-        <div class="page-subtitle">自訂欄位，產製個人化查詢報表</div>
+        <div class="page-title">退撫給與支領紀錄及明細產製</div>
+        <div class="page-subtitle">依查詢結果產製「退撫給與支領紀錄」及關聯明細，供列印、下載，並可作為查核資料或領受人證明文件；產製前提供線上即時預覽</div>
       </div>
-      
-      <div style="display:grid;grid-template-columns:1fr 300px;gap:20px">
+
+      <div class="qr-grid">
         <div>
+          <!-- 權限 -->
           <div class="card" style="margin-bottom:16px">
-            <div class="section-title"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="4" width="12" height="17" rx="2"/><rect x="9" y="2" width="6" height="4" rx="1"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="15" y2="15"/></svg> 選擇報表欄位</div>
-            <div class="col-selector">
-              <label class="col-selector-item selected"><input type="checkbox" checked> 姓名</label>
-              <label class="col-selector-item selected"><input type="checkbox" checked> 身分證字號</label>
-              <label class="col-selector-item selected"><input type="checkbox" checked> 退撫類別</label>
-              <label class="col-selector-item selected"><input type="checkbox" checked> 撥付期間</label>
-              <label class="col-selector-item selected"><input type="checkbox" checked> 撥付金額</label>
-              <label class="col-selector-item"><input type="checkbox"> 服務機關</label>
-              <label class="col-selector-item"><input type="checkbox"> 銀行帳號</label>
-              <label class="col-selector-item"><input type="checkbox"> 撥付日期</label>
-              <label class="col-selector-item"><input type="checkbox"> 溢領狀態</label>
-              <label class="col-selector-item"><input type="checkbox"> 課稅金額</label>
-              <label class="col-selector-item"><input type="checkbox"> 承辦人</label>
-              <label class="col-selector-item"><input type="checkbox"> 備註</label>
-            </div>
+            <div class="section-title"> 使用者權限</div>
+            <select class="form-control" id="qr-principal" onchange="qrPrincipalChange()">
+              <option value="clerk">承辦人（王大明）</option>
+              <option value="lead">業務組主辦人</option>
+              <option value="self">領受人本人（前台自行查詢・預留示範）</option>
+            </select>
+            <div class="form-hint" id="qr-policy-hint" style="margin-top:6px"></div>
           </div>
-          
+
+          <!-- 資料來源 -->
           <div class="card" style="margin-bottom:16px">
-            <div class="section-title"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> 報表設定</div>
+            <div class="section-title"> 查詢條件（資料自撥付系統取得）</div>
+            <div class="form-group">
+              <label class="form-label">領受人身分證字號（最多 <span id="qr-max">10</span> 組）</label>
+              <textarea class="form-control" id="qr-ids" rows="2" oninput="qrIdsChange()">B234567890</textarea>
+              <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap">
+                <button class="btn btn-outline btn-sm" id="qr-fill-ind" onclick="qrFillFromQuery('ind')">帶入個人查詢結果</button>
+                <button class="btn btn-outline btn-sm" id="qr-fill-batch" onclick="qrFillFromQuery('batch')">帶入批次查詢結果</button>
+                <select class="filter-control" id="qr-self" style="display:none" onchange="qrIdsChange()"><option value="A123456789">本人：A123456789</option><option value="B234567890">本人：B234567890</option><option value="C345678901">本人：C345678901</option></select>
+              </div>
+            </div>
             <div class="form-row cols-2">
-              <div class="form-group">
-                <label class="form-label">身分證字號遮罩</label>
-                <div style="display:flex;gap:12px;margin-top:8px">
-                  <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:calc(13px * var(--font-scale))"><input type="radio" name="mask" checked> 遮罩顯示 (A123***789)</label>
-                  <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:calc(13px * var(--font-scale))"><input type="radio" name="mask"> 完整顯示</label>
-                </div>
-              </div>
-              <div class="form-group">
-                <label class="form-label">報表備註</label>
-                <input type="text" class="form-control" placeholder="輸入報表備註說明">
+              <div class="form-group"><label class="form-label">查詢起始年月</label><input type="text" class="form-control" id="qr-from" value="113/01" oninput="qrSchedule()"></div>
+              <div class="form-group"><label class="form-label">查詢終止年月</label><input type="text" class="form-control" id="qr-to" value="113/12" oninput="qrSchedule()"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">身分別</label>
+              <div style="display:flex;gap:12px;flex-wrap:wrap" id="qr-idents">
+                <label style="font-size:13px"><input type="checkbox" value="政務人員" checked onchange="qrSchedule()"> 政務</label>
+                <label style="font-size:13px"><input type="checkbox" value="公務人員" checked onchange="qrSchedule()"> 公務</label>
+                <label style="font-size:13px"><input type="checkbox" value="教育人員" checked onchange="qrSchedule()"> 教育</label>
+                <label style="font-size:13px"><input type="checkbox" value="軍職人員" checked onchange="qrSchedule()"> 軍職</label>
               </div>
             </div>
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label">報表用途</label>
+              <select class="form-control" id="qr-purpose" onchange="qrSchedule()">
+                <option value="audit">查核資料（退撫給與支領紀錄）</option>
+                <option value="cert">領受人證明文件（退撫給與支領證明書）</option>
+              </select>
+              <div class="form-hint" id="qr-purpose-hint"></div>
+            </div>
           </div>
-          
-          <div style="display:flex;gap:8px">
-            <button class="btn btn-outline-primary" onclick="showToast('info','預覽中','正在產製報表預覽...')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg> 預覽報表</button>
-            <button class="btn btn-success" onclick="runDownload('彈性查詢報表','xlsx')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="20" x2="4" y2="12"/><line x1="10" y1="20" x2="10" y2="6"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="20" y1="20" x2="4" y2="20"/></svg> 下載Excel</button>
-            <button class="btn btn-danger" onclick="runDownload('彈性查詢報表','pdf')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><line x1="8" y1="13" x2="14" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg> 下載PDF</button>
+
+          <!-- 欄位 -->
+          <div class="card" style="margin-bottom:16px">
+            <div class="section-title"> 選擇報表欄位</div>
+            <div class="form-hint" style="margin-bottom:8px">姓名、身分證字號、退撫給與種類、撥付期間、撥付金額為基本欄位（必選）；其餘可依需求勾選。</div>
+            <div class="col-selector" id="qr-col-pick"></div>
+            <label style="display:flex;align-items:center;gap:6px;font-size:13px;margin-top:10px"><input type="checkbox" id="qr-total" checked onchange="qrSchedule()"> 顯示金額合計（各領受人小計及總計）</label>
+            <div style="font-weight:700;font-size:13px;margin:12px 0 6px">輸出欄位順序</div>
+            <div id="qr-col-order"></div>
+          </div>
+
+          <!-- 遮罩 -->
+          <div class="card" style="margin-bottom:16px">
+            <div class="section-title"> 個人資料遮罩（隱碼）</div>
+            <div class="form-hint" style="margin-bottom:8px">勾選＝遮罩。是否可解除遮罩依使用者權限而定；解除遮罩將留存稽核紀錄。</div>
+            <div id="qr-masks" style="display:grid;grid-template-columns:1fr 1fr;gap:6px"></div>
+          </div>
+
+          <!-- 備註 -->
+          <div class="card" style="margin-bottom:16px">
+            <div class="section-title"> 備註欄位</div>
+            <div class="form-group">
+              <label class="form-label">報表備註（隨報表輸出）</label>
+              <textarea class="form-control" id="qr-note" rows="3" maxlength="500" oninput="qrNoteCount();qrSchedule()" placeholder="請輸入補充說明，例如：本資料供○○機關查核使用"></textarea>
+              <div class="form-hint" id="qr-note-count" style="text-align:right">0 / 500</div>
+            </div>
+            <div id="qr-person-notes"></div>
+          </div>
+
+          <!-- 造字檔 -->
+          <div class="card" style="margin-bottom:16px">
+            <div class="section-title"> 造字檔（特殊字元／罕見字）</div>
+            <div style="font-size:13px;margin-bottom:6px">目前造字檔：<b id="qr-font-name">未上傳（使用系統預設字型）</b> <span class="badge badge-secondary" id="qr-font-state">預設</span></div>
+            <div class="cns-font" style="padding:8px 10px;background:#f5f7fa;border-radius:4px;font-size:16px;margin-bottom:8px">周𠮷明　鄧䊷　𡈽　㐱　𣏕　𤋮</div>
+            <label class="btn btn-outline btn-sm" style="cursor:pointer">上傳／更新造字檔<input type="file" accept=".ttf,.otf,.woff,.woff2" style="display:none" onchange="qrLoadFont(this)"></label>
+            <div class="form-hint" style="margin-top:6px">上傳機關提供之造字檔後，預覽、列印及 PDF 輸出均套用；Excel 檔需於開啟電腦安裝同一造字檔。</div>
+          </div>
+
+          <!-- 擴充架構 -->
+          <div class="card">
+            <div class="section-title"> 前台自行查詢擴充架構（預留）</div>
+            <div style="font-size:13px;line-height:1.8;color:var(--text-secondary)">
+              本子系統採「查詢服務 → 欄位政策 → 報表引擎」分層：<br>
+              ① <b>查詢服務層</b>：以「使用者主體（principal）＋查詢條件」為輸入，統一檢核範圍與筆數上限；<br>
+              ② <b>欄位政策層</b>：依主體決定可見欄位、遮罩與可否解除；<br>
+              ③ <b>報表引擎層</b>：僅處理版面，與使用者介面無關。<br>
+              未來開放領受人前台自查，只需新增「領受人本人」主體（範圍限本人、登入需身分驗證），不需更動報表引擎；上方權限選項已可模擬此模式。
+            </div>
+            <details style="margin-top:8px"><summary style="cursor:pointer;font-size:13px;font-weight:600">目前查詢服務請求內容（示意）</summary><pre id="qr-api" style="font-size:12px;background:#f5f7fa;padding:8px;border-radius:4px;overflow:auto;margin-top:6px"></pre></details>
           </div>
         </div>
-        
-        <div class="card">
-          <div class="card-title" style="margin-bottom:12px">已選欄位預覽</div>
-          <div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary);margin-bottom:8px">已選 5 個欄位：</div>
-          <div style="display:flex;flex-direction:column;gap:4px">
-            <div style="padding:6px 10px;background:#eef2ff;border-radius:4px;font-size:calc(12px * var(--font-scale));font-weight:600;color:var(--primary);display:flex;align-items:center;justify-content:space-between">姓名 <span style="cursor:pointer;color:var(--text-secondary)">×</span></div>
-            <div style="padding:6px 10px;background:#eef2ff;border-radius:4px;font-size:calc(12px * var(--font-scale));font-weight:600;color:var(--primary);display:flex;align-items:center;justify-content:space-between">身分證字號 <span style="cursor:pointer;color:var(--text-secondary)">×</span></div>
-            <div style="padding:6px 10px;background:#eef2ff;border-radius:4px;font-size:calc(12px * var(--font-scale));font-weight:600;color:var(--primary);display:flex;align-items:center;justify-content:space-between">退撫類別 <span style="cursor:pointer;color:var(--text-secondary)">×</span></div>
-            <div style="padding:6px 10px;background:#eef2ff;border-radius:4px;font-size:calc(12px * var(--font-scale));font-weight:600;color:var(--primary);display:flex;align-items:center;justify-content:space-between">撥付期間 <span style="cursor:pointer;color:var(--text-secondary)">×</span></div>
-            <div style="padding:6px 10px;background:#eef2ff;border-radius:4px;font-size:calc(12px * var(--font-scale));font-weight:600;color:var(--primary);display:flex;align-items:center;justify-content:space-between">撥付金額 <span style="cursor:pointer;color:var(--text-secondary)">×</span></div>
+
+        <div>
+          <div class="card" style="margin-bottom:16px">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+              <div><div class="card-title" style="margin:0">即時預覽</div><div id="qr-status" class="form-hint" style="margin:2px 0 0"></div></div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button class="btn btn-primary btn-sm" onclick="qrGenerate()">產製報表</button>
+                <button class="btn btn-danger btn-sm" onclick="qrDownload('pdf')"> 下載PDF</button>
+                <button class="btn btn-success btn-sm" onclick="qrDownload('xlsx')"> 下載Excel</button>
+                <button class="btn btn-outline btn-sm" onclick="qrPrintLast()">列印</button>
+              </div>
+            </div>
+            <div id="qr-preview" class="qr-paper cns-font"></div>
+          </div>
+          <div class="card" style="margin-bottom:16px">
+            <div class="card-title" style="margin-bottom:8px">報表產製紀錄</div>
+            <div class="table-wrapper"><table class="data-table"><thead><tr><th>報表編號</th><th>產製時間</th><th>用途</th><th>領受人數／筆數</th><th>產製人員</th><th>操作</th></tr></thead><tbody id="qr-snaps"></tbody></table></div>
+          </div>
+          <div class="card">
+            <div class="card-title" style="margin-bottom:8px">解除遮罩稽核紀錄</div>
+            <div class="table-wrapper"><table class="data-table"><thead><tr><th>時間</th><th>使用者</th><th>報表編號</th><th>解除遮罩欄位</th><th>用途</th></tr></thead><tbody id="qr-audit"></tbody></table></div>
           </div>
         </div>
       </div>
@@ -13570,7 +13642,9 @@ const qiNT = n => 'NT$ ' + Number(n).toLocaleString();
 function qiMethodText(pay) { return pay.kind === '支票' ? '支票' : '帳戶：' + pay.bank + ' ' + pay.acct; }
 /* 原始撥付系統資料（以案號為鍵）：由來源定義產生各期發放紀錄 */
 const PAYSYS = {};
+function qiBuildAll() {
 Object.keys(QI_PERSONS).forEach(id => QI_PERSONS[id].sources.forEach(src => {
+  if (PAYSYS[src.caseNo]) return;
   const rows = [];
   for (let n = Math.max(qiYmNum(src.from), qiYmNum(src.eff.slice(0, 6) === '099/01' ? '099/01' : src.eff.slice(0, 6))); n <= qiYmNum(src.to); n++) {
     const ym = qiYm(n);
@@ -13584,6 +13658,8 @@ Object.keys(QI_PERSONS).forEach(id => QI_PERSONS[id].sources.forEach(src => {
   }
   PAYSYS[src.caseNo] = rows;
 }));
+}
+qiBuildAll();
 const QI = {cur:null};
 function qiPick(id) { document.getElementById('query-id').value = id; doQuery(); }
 function qiMaskId(id) { return id.slice(0, 4) + '***' + id.slice(7); }
@@ -13692,6 +13768,428 @@ function clearQuery() {
   document.getElementById('query-empty').style.display = 'block';
   QI.cur = null;
 }
+
+
+/* ===== V24：批次查詢（最多10組／Excel匯入）與跨身分別、跨年度整合查詢 ===== */
+QI_BADGE['政務人員'] = 'badge-secondary';
+QI_COLOR['政務人員'] = '#9b51e0';
+Object.assign(QI_PERSONS, {
+  'D456789012': {name:'張文山', birth:'040/06/18', addr:'高雄市左營區博愛三路66號', sources:[
+    {caseNo:'PAY-M-100-00588', ident:'軍職人員', type:'月退休金', rel:'本人', pensioner:null, eff:'100/07/01', org:'國防部海軍司令部', base:55000, adjusts:[{from:'114/01', amt:56200, note:'年度調整'}], from:'112/01', to:QI_NOW_YM, pay:{kind:'帳戶', bank:'臺灣銀行', acct:'***3302'}},
+    {caseNo:'PAY-P-112-00014', ident:'政務人員', type:'月退休金', rel:'本人', pensioner:null, eff:'112/09/01', org:'行政院', base:78000, adjusts:[], from:'112/01', to:QI_NOW_YM, pay:{kind:'帳戶', bank:'第一銀行', acct:'***9017'}}
+  ]},
+  'E567890123': {name:'林淑惠', birth:'049/02/14', addr:'臺南市東區東門路三段50號', sources:[
+    {caseNo:'PAY-E-106-00731', ident:'教育人員', type:'月退休金', rel:'本人', pensioner:null, eff:'106/08/01', org:'臺南市立大同國民中學', base:48000, adjusts:[], from:'112/01', to:QI_NOW_YM, pay:{kind:'帳戶', bank:'臺灣銀行', acct:'***7745'}},
+    {caseNo:'PAY-G-113-00266', ident:'公務人員', type:'月撫慰金', rel:'配偶（遺屬）', pensioner:{name:'林大偉', id:'E123456781', birth:'046/04/22'}, eff:'113/03/01', org:'臺南市政府', base:29800, adjusts:[], from:'113/03', to:QI_NOW_YM, pay:{kind:'帳戶', bank:'臺灣銀行', acct:'***7745'}}
+  ]},
+  'F678901234': {name:'周國強', birth:'043/10/09', addr:'桃園市中壢區中正路200號', sources:[
+    {caseNo:'PAY-G-102-00345', ident:'公務人員', type:'月退休金', rel:'本人', pensioner:null, eff:'102/05/01', org:'交通部', base:52000, adjusts:[], from:'112/01', to:'114/08', pay:{kind:'帳戶', bank:'合作金庫', acct:'***5521'}, over:{from:'114/06', to:'114/08', note:'領受人已亡故，本期溢領'}}
+  ]}
+});
+qiBuildAll();
+{ const s = document.getElementById('qi-ident'); if (s && ![...s.options].some(o => o.value === '政務人員')) s.insertBefore(new Option('政務人員', '政務人員'), s.options[2]); }
+
+const QB = {data:null, busy:false};
+const QB_MAX = 10;
+const qbTag = id => '<span class="badge" style="background:' + QI_COLOR[id] + '22;color:' + QI_COLOR[id] + ';border:1px solid ' + QI_COLOR[id] + '55">' + id + '</span>';
+function qbTokens() {
+  const raw = document.getElementById('qb-ids').value.split(/[\s,;，、；]+/).map(t => t.trim().toUpperCase()).filter(Boolean);
+  const uniq = [...new Set(raw)];
+  return {raw:raw, uniq:uniq, dup:raw.length - uniq.length};
+}
+function qbCount() {
+  const t = qbTokens(), el = document.getElementById('qb-count'), over = t.uniq.length > QB_MAX;
+  el.innerHTML = '<span style="color:' + (over ? 'var(--danger)' : 'var(--primary)') + '">已輸入 ' + t.uniq.length + ' / ' + QB_MAX + ' 組</span>' + (t.dup ? '<span style="font-weight:400;color:var(--text-secondary)">（已略過重複 ' + t.dup + ' 組）</span>' : '') + (over ? ' <span style="color:var(--danger)">超過上限 ' + (t.uniq.length - QB_MAX) + ' 組，請刪減後再查詢</span>' : '');
+  document.getElementById('qb-run').disabled = over || QB.busy;
+}
+function qbMerge(ids, label) {
+  const cur = qbTokens().uniq, set = [...new Set(cur.concat(ids))];
+  document.getElementById('qb-ids').value = ids.length ? [...new Set(ids)].join(',') : '';
+  qbCount();
+  const n = [...new Set(ids)].length;
+  document.getElementById('qb-import-msg').textContent = label + '：讀取 ' + n + ' 組身分證字號' + (n > QB_MAX ? '，已超過上限 ' + QB_MAX + ' 組，請刪減後再查詢' : '。');
+  showToast(n > QB_MAX ? 'warning' : 'success', '檔案匯入完成', label + ' 共 ' + n + ' 組' + (n > QB_MAX ? '，超過 10 組上限' : ''));
+}
+function qbExtract(text) {
+  return text.split(/[\r\n,;，、；\t]+/).map(t => t.trim().toUpperCase().replace(/^"|"$/g, '')).filter(t => /^[A-Z][0-9]{9}$/.test(t));
+}
+function qbImport(inp) {
+  const f = inp.files && inp.files[0];
+  if (!f) return;
+  const ext = f.name.split('.').pop().toLowerCase();
+  const rd = new FileReader();
+  if (ext === 'csv' || ext === 'txt') {
+    rd.onload = () => { qbMerge(qbExtract(String(rd.result)), f.name); inp.value = ''; };
+    rd.readAsText(f);
+  } else if (ext === 'xlsx' || ext === 'xls') {
+    const parse = () => {
+      rd.onload = () => {
+        try {
+          const wb = XLSX.read(new Uint8Array(rd.result), {type:'array'}), ws = wb.Sheets[wb.SheetNames[0]];
+          const csv = XLSX.utils.sheet_to_csv(ws);
+          qbMerge(qbExtract(csv), f.name);
+        } catch (e) { showToast('error', '匯入失敗', '無法解析 Excel 檔案，請確認格式或另存為 CSV'); }
+        inp.value = '';
+      };
+      rd.readAsArrayBuffer(f);
+    };
+    if (window.XLSX) parse();
+    else {
+      const sc = document.createElement('script');
+      sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+      sc.onload = parse;
+      sc.onerror = () => { showToast('error', '無法讀取 Excel', '讀取元件載入失敗，請將檔案另存為 CSV 後匯入'); inp.value = ''; };
+      document.head.appendChild(sc);
+    }
+  } else showToast('error', '檔案格式不支援', '僅支援 .xlsx、.xls、.csv、.txt');
+}
+function qbDemoImport() { qbMerge(['A123456789', 'B234567890', 'D456789012', 'E567890123', 'F678901234', 'Z999999999', 'A12345678'], '範例檔.xlsx'); }
+function qbTemplate() {
+  const blob = new Blob(['\uFEFF身分證字號\nA123456789\nB234567890\nC345678901\n'], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = '批次查詢匯入範本.csv'; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+function qbClear() {
+  document.getElementById('qb-ids').value = '';
+  document.getElementById('qb-from').value = '113/01'; document.getElementById('qb-to').value = '114/12';
+  document.querySelectorAll('#qb-idents input').forEach(c => { c.checked = true; });
+  document.getElementById('qb-import-msg').textContent = '匯入後內容會合併至上方輸入框，可再行編修；匯入超過 10 組時將提示並禁止查詢。';
+  document.getElementById('qb-result').style.display = 'none'; document.getElementById('qb-empty').style.display = 'block';
+  document.getElementById('qb-progress').style.display = 'none';
+  QB.data = null; qbCount();
+}
+function qbRun() {
+  const t = qbTokens(), from = document.getElementById('qb-from').value.trim(), to = document.getElementById('qb-to').value.trim();
+  const idents = [...document.querySelectorAll('#qb-idents input:checked')].map(c => c.value);
+  if (!t.uniq.length) { showToast('error', '查詢失敗', '請輸入或匯入至少一組身分證字號'); return; }
+  if (t.uniq.length > QB_MAX) { showToast('error', '超過查詢上限', '單次最多查詢 ' + QB_MAX + ' 組，目前 ' + t.uniq.length + ' 組'); return; }
+  if (qiYmNum(from) == null || qiYmNum(to) == null) { showToast('error', '查詢失敗', '查詢起訖年月格式須為 YYY/MM'); return; }
+  if (qiYmNum(from) > qiYmNum(to)) { showToast('error', '查詢失敗', '查詢起始年月不得晚於終止年月'); return; }
+  if (!idents.length) { showToast('error', '查詢失敗', '請至少選擇一種身分別'); return; }
+  QB.busy = true; qbCount();
+  const pg = document.getElementById('qb-progress'); pg.style.display = 'block';
+  let i = 0;
+  const step = () => {
+    i++;
+    pg.innerHTML = '<div style="font-size:13px;margin-bottom:4px">分批處理中… ' + i + ' / ' + t.uniq.length + '（' + qiMaskId(t.uniq[i - 1].length === 10 ? t.uniq[i - 1] : t.uniq[i - 1].padEnd(10, '*')) + '）</div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:' + Math.round(i / t.uniq.length * 100) + '%"></div></div>';
+    if (i < t.uniq.length) setTimeout(step, 180);
+    else setTimeout(() => { QB.busy = false; pg.style.display = 'none'; qbCompute(t.uniq, from, to, idents); qbCount(); }, 200);
+  };
+  step();
+}
+function qbCompute(ids, from, to, idents) {
+  const idRe = (typeof ID_FORMAT_REGEX !== 'undefined') ? ID_FORMAT_REGEX : /^[A-Z]\d{9}$/;
+  const recs = [], persons = ids.map(id => {
+    if (!idRe.test(id)) return {id:id, name:'-', status:'格式錯誤', idents:[], n:0};
+    const p = QI_PERSONS[id];
+    if (!p) return {id:id, name:'-', status:'查無資料', idents:[], n:0};
+    const srcs = p.sources.filter(s => idents.indexOf(s.ident) >= 0);
+    if (!srcs.length) return {id:id, name:p.name, status:'無符合身分別', idents:[], n:0};
+    let n = 0;
+    srcs.forEach(s => PAYSYS[s.caseNo].forEach(r => {
+      if (qiYmNum(r.ym) < qiYmNum(from) || qiYmNum(r.ym) > qiYmNum(to)) return;
+      n++;
+      recs.push({pid:id, name:p.name, ident:s.ident, type:s.type, caseNo:s.caseNo, year:r.ym.slice(0, 3), ym:r.ym, payDate:r.payDate, start:r.start, end:r.end, amt:r.amt, method:r.method, status:r.status, note:r.note});
+    }));
+    return {id:id, name:p.name, status: n ? '已查得' : '期間無支領', idents:[...new Set(srcs.map(s => s.ident))], n:n};
+  });
+  QB.data = {from:from, to:to, idents:idents, persons:persons, recs:recs, at:execNowStrQ()};
+  document.getElementById('qb-empty').style.display = 'none';
+  document.getElementById('qb-result').style.display = 'block';
+  qbRenderAll();
+  showToast('success', '批次查詢完成', '查詢 ' + persons.length + ' 組，查得 ' + persons.filter(p => p.status === '已查得').length + ' 人，共 ' + recs.length + ' 筆支領紀錄');
+}
+function qbRenderAll() {
+  const d = QB.data, recs = d.recs;
+  const ok = d.persons.filter(p => p.status === '已查得').length, bad = d.persons.length - ok;
+  const sum = recs.reduce((a, r) => a + r.amt, 0), over = recs.filter(r => r.status === '溢領').reduce((a, r) => a + r.amt, 0);
+  const tile = (v, l, c) => '<div style="text-align:center;padding:12px;background:#f5f7fa;border-radius:6px"><div style="font-size:calc(20px * var(--font-scale));font-weight:800;color:' + c + '">' + v + '</div><div style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary)">' + l + '</div></div>';
+  const years = [...new Set(recs.map(r => r.year))].sort();
+  let h = '<div class="card" style="margin-bottom:16px"><div class="card-header"><div><div class="card-title">批次查詢結果摘要</div><div class="card-subtitle">查詢期間 ' + d.from + ' ～ ' + d.to + '（跨 ' + (qiYmNum(d.to) ? (+d.to.slice(0, 3) - +d.from.slice(0, 3) + 1) : 1) + ' 個年度）；身分別：' + d.idents.join('、') + '；查詢時間 ' + d.at + '</div></div><button class="btn btn-success btn-sm" onclick="runDownload(\'批次查詢結果\',\'xlsx\')"> 匯出Excel</button></div>' +
+    '<div class="form-row cols-4" style="margin-bottom:14px">' + tile(d.persons.length, '輸入組數', 'var(--primary)') + tile(ok + ' / ' + bad, '查得 ／ 查無或有誤', bad ? 'var(--warning)' : 'var(--success)') + tile(recs.length.toLocaleString(), '支領紀錄筆數', 'var(--primary)') + tile(qiNT(sum), '期間合計' + (over ? '（含溢領 ' + qiNT(over) + '）' : ''), over ? 'var(--danger)' : 'var(--success)') + '</div>' +
+    '<div class="table-wrapper"><table class="data-table"><thead><tr><th>領受人</th><th>身分證字號</th><th>查詢狀態</th><th>涉及身分別</th><th>筆數</th><th>期間合計</th><th>溢領</th><th>操作</th></tr></thead><tbody>' +
+    d.persons.map(p => { const rs = recs.filter(r => r.pid === p.id), s = rs.reduce((a, r) => a + r.amt, 0), o = rs.filter(r => r.status === '溢領').reduce((a, r) => a + r.amt, 0); const stb = p.status === '已查得' ? 'badge-success' : p.status === '期間無支領' || p.status === '無符合身分別' ? 'badge-warning' : 'badge-danger'; return '<tr><td><strong>' + htmlEsc(p.name) + '</strong></td><td class="masked">' + (p.id.length === 10 ? qiMaskId(p.id) : htmlEsc(p.id)) + '</td><td><span class="badge ' + stb + '">' + p.status + '</span></td><td>' + (p.idents.map(qbTag).join(' ') || '-') + '</td><td>' + p.n + '</td><td>' + (p.n ? qiNT(s) : '-') + '</td><td style="color:var(--danger)">' + (o ? qiNT(o) : '-') + '</td><td>' + (p.n ? '<button class="btn btn-sm btn-outline" onclick="qbFocus(\'' + p.id + '\')">檢視明細</button>' : '-') + '</td></tr>'; }).join('') + '</tbody></table></div></div>';
+  /* 整合檢視 */
+  h += '<div class="card"><div class="card-title" style="margin-bottom:4px">跨身分別、跨年度整合檢視</div><div class="card-subtitle" style="margin-bottom:10px">所有明細均標示「身分別」「年度」及撥付案號；同一領受人同一年度可能同時支領多種身分別給與，請依標示分別判讀，勿直接視為同一給與</div>' +
+    '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:10px;font-size:12px"><span style="color:var(--text-secondary)">圖例：</span>' + Object.keys(QI_COLOR).map(k => '<span style="display:inline-flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:' + QI_COLOR[k] + ';display:inline-block;border-radius:2px"></span>' + k + '</span>').join('　') + '</div>' +
+    '<div class="form-row cols-4" style="margin-bottom:12px"><div class="form-group" style="margin:0"><label class="form-label">檢視對象</label><select class="form-control" id="qb-v-person" onchange="qbView()"><option value="">全部領受人</option>' + d.persons.filter(p => p.n).map(p => '<option value="' + p.id + '">' + htmlEsc(p.name) + '（' + qiMaskId(p.id) + '）</option>').join('') + '</select></div>' +
+    '<div class="form-group" style="margin:0"><label class="form-label">身分別</label><select class="form-control" id="qb-v-ident" onchange="qbView()"><option value="">全部身分別</option>' + d.idents.map(i => '<option>' + i + '</option>').join('') + '</select></div>' +
+    '<div class="form-group" style="margin:0"><label class="form-label">年度</label><select class="form-control" id="qb-v-year" onchange="qbView()"><option value="">全部年度</option>' + years.map(y => '<option>' + y + '</option>').join('') + '</select></div>' +
+    '<div class="form-group" style="margin:0"><label class="form-label">顯示方式</label><select class="form-control" id="qb-v-group" onchange="qbView()"><option value="none">整合單表（標示身分別與年度）</option><option value="ident">依身分別分組</option><option value="year">依年度分組</option></select></div></div>' +
+    '<div id="qb-view"></div></div>';
+  document.getElementById('qb-result').innerHTML = h;
+  qbView();
+}
+function qbFocus(id) { document.getElementById('qb-v-person').value = id; qbView(); document.getElementById('qb-view').scrollIntoView({behavior:'smooth', block:'start'}); }
+function qbView() {
+  const d = QB.data, pid = document.getElementById('qb-v-person').value, idt = document.getElementById('qb-v-ident').value, yr = document.getElementById('qb-v-year').value, grp = document.getElementById('qb-v-group').value;
+  const rs = d.recs.filter(r => (!pid || r.pid === pid) && (!idt || r.ident === idt) && (!yr || r.year === yr)).sort((a, b) => a.pid === b.pid ? (a.ym === b.ym ? a.ident.localeCompare(b.ident) : a.ym.localeCompare(b.ym)) : d.persons.findIndex(p => p.id === a.pid) - d.persons.findIndex(p => p.id === b.pid));
+  const years = [...new Set(rs.map(r => r.year))].sort(), ids = [...new Set(rs.map(r => r.ident))];
+  /* 交叉統計：年度 × 身分別 */
+  let h = '<div style="font-weight:700;margin-bottom:6px;font-size:calc(13px * var(--font-scale))">年度 × 身分別 交叉統計（金額）</div><div class="table-wrapper" style="margin-bottom:14px"><table class="data-table"><thead><tr><th>年度</th>' + ids.map(i => '<th>' + qbTag(i) + '</th>').join('') + '<th>年度合計</th></tr></thead><tbody>' +
+    (years.map(y => { const row = ids.map(i => rs.filter(r => r.year === y && r.ident === i).reduce((a, r) => a + r.amt, 0)); return '<tr><td><strong>' + y + ' 年</strong></td>' + row.map(v => '<td>' + (v ? qiNT(v) : '-') + '</td>').join('') + '<td><strong>' + qiNT(row.reduce((a, v) => a + v, 0)) + '</strong></td></tr>'; }).join('') || '<tr><td colspan="' + (ids.length + 2) + '" style="text-align:center;color:var(--text-secondary)">無資料</td></tr>') +
+    (years.length ? '<tr style="background:#f5f7fa"><td><strong>身分別合計</strong></td>' + ids.map(i => '<td><strong>' + qiNT(rs.filter(r => r.ident === i).reduce((a, r) => a + r.amt, 0)) + '</strong></td>').join('') + '<td><strong>' + qiNT(rs.reduce((a, r) => a + r.amt, 0)) + '</strong></td></tr>' : '') + '</tbody></table></div>';
+  /* 明細 */
+  const head = '<thead><tr><th>領受人</th><th>身分別</th><th>年度</th><th>給與種類</th><th>撥付案號</th><th>支領日期</th><th>支領期間</th><th>支領金額</th><th>給付方式</th><th>狀態</th><th>備註</th></tr></thead>';
+  const row = r => '<tr style="box-shadow:inset 4px 0 0 ' + QI_COLOR[r.ident] + '"><td>' + htmlEsc(r.name) + '<div style="font-size:11px;color:var(--text-secondary)">' + qiMaskId(r.pid) + '</div></td><td>' + qbTag(r.ident) + '</td><td><span class="badge badge-secondary">' + r.year + ' 年</span></td><td>' + r.type + '</td><td style="font-size:12px">' + r.caseNo + '</td><td>' + r.payDate + '</td><td style="font-size:12px">' + r.start + '～' + r.end + '</td><td>' + qiNT(r.amt) + '</td><td style="font-size:12px">' + htmlEsc(r.method) + '</td><td>' + (r.status === '溢領' ? '<span class="badge badge-danger">溢領</span>' : '<span class="badge badge-success">已撥付</span>') + '</td><td style="font-size:12px">' + htmlEsc(r.note) + '</td></tr>';
+  let body = '';
+  if (grp === 'none') body = rs.map(row).join('');
+  else {
+    const keys = grp === 'ident' ? ids : years;
+    keys.forEach(k => { const g = rs.filter(r => (grp === 'ident' ? r.ident : r.year) === k); body += '<tr style="background:#eef2f7"><td colspan="11"><strong>' + (grp === 'ident' ? qbTag(k) : k + ' 年度') + '</strong>　' + g.length + ' 筆，小計 <strong>' + qiNT(g.reduce((a, r) => a + r.amt, 0)) + '</strong></td></tr>' + g.map(row).join(''); });
+  }
+  h += '<div style="font-weight:700;margin-bottom:6px;font-size:calc(13px * var(--font-scale))">支領明細（' + rs.length + ' 筆）</div><div class="table-wrapper" style="max-height:520px;overflow:auto"><table class="data-table">' + head + '<tbody>' + (body || '<tr><td colspan="11" style="text-align:center;color:var(--text-secondary)">無符合條件之資料</td></tr>') + '</tbody></table></div>';
+  document.getElementById('qb-view').innerHTML = h;
+}
+qbCount();
+
+
+/* ===== V25：退撫給與支領紀錄及明細產製（欄位選擇／遮罩／即時預覽／PDF與Excel／備註／造字檔／前台擴充架構） ===== */
+Object.assign(QI_PERSONS, {
+  'G789012345': {name:'周𠮷明', birth:'038/05/20', addr:'臺北市大安區復興南路一段300號', sources:[
+    {caseNo:'PAY-E-109-00471', ident:'教育人員', type:'月退休金', rel:'本人', pensioner:null, eff:'109/08/01', org:'臺北市立大安高級工業職業學校', base:46500, adjusts:[], from:'112/01', to:QI_NOW_YM, pay:{kind:'帳戶', bank:'臺灣銀行', acct:'***6612'}}
+  ]}
+});
+qiBuildAll();
+
+/* --- 欄位與政策定義 --- */
+const QR_FIELDS = [
+  {k:'name', l:'姓名', b:1, m:'name'}, {k:'pid', l:'身分證字號', b:1, m:'pid'}, {k:'type', l:'退撫給與種類', b:1}, {k:'period', l:'撥付期間', b:1}, {k:'amt', l:'撥付金額', b:1, num:1},
+  {k:'ident', l:'身分別'}, {k:'org', l:'服務機關（學校）'}, {k:'eff', l:'給與生效日期'}, {k:'paydate', l:'撥付日期'}, {k:'kind', l:'給付方式'},
+  {k:'bank', l:'銀行別'}, {k:'acct', l:'撥款帳號', m:'acct'}, {k:'status', l:'撥付狀態'}, {k:'birth', l:'出生年月日', m:'birth'}, {k:'addr', l:'地址', m:'addr'},
+  {k:'pen', l:'退撫人姓名', m:'name'}, {k:'caseNo', l:'撥付案號'}
+];
+const QR_MASKS = [{k:'name', l:'姓名'}, {k:'pid', l:'身分證字號'}, {k:'birth', l:'出生年月日'}, {k:'addr', l:'地址'}, {k:'acct', l:'撥款帳號'}];
+const QR_POLICY = {
+  clerk: {label:'承辦人', user:'王大明', maxIds:10, unmask:[], cert:false, note:true, selfOnly:false, audit:false, hint:'承辦人：最多查詢 10 組；個人資料一律遮罩；不可產製領受人證明文件（須由主辦人核發）。'},
+  lead: {label:'主辦人', user:'王小明（主辦人）', maxIds:10, unmask:['name', 'pid', 'birth', 'addr', 'acct'], cert:true, note:true, selfOnly:false, audit:true, hint:'主辦人：可解除個資遮罩（留存稽核紀錄），可產製領受人證明文件。'},
+  self: {label:'領受人本人', user:'領受人本人（前台）', maxIds:1, unmask:['name', 'pid', 'birth', 'addr'], cert:true, note:false, selfOnly:true, audit:true, hint:'前台自行查詢（預留示範）：僅能查詢本人資料；撥款帳號一律遮罩；不可輸入備註。'}
+};
+const QR = {cols:['name', 'pid', 'type', 'period', 'amt'], notes:{}, snaps:[], audit:[], seq:0, last:null, fontUri:null, fontName:null, timer:null};
+const qrPol = () => QR_POLICY[document.getElementById('qr-principal').value];
+const qrFieldOf = k => QR_FIELDS.find(f => f.k === k);
+
+function qrAcctFull(src) { const last = src.pay.acct ? src.pay.acct.replace(/\*/g, '') : ''; let h = 0; for (const c of src.caseNo) h = (h * 31 + c.charCodeAt(0)) % 9999999999; return String(h).padStart(10, '0') + last; }
+function qrMaskVal(m, v, extra) {
+  if (m === 'name') return maskName(v);
+  if (m === 'pid') return qiMaskId(v);
+  if (m === 'birth') return v.slice(0, 3) + '/**/**';
+  if (m === 'addr') return Array.from(v).slice(0, 6).join('') + '＊＊＊';
+  if (m === 'acct') return v === '-' ? '-' : '***' + v.slice(-4);
+  return v;
+}
+function qrMasksState() { const o = {}; QR_MASKS.forEach(m => { const e = document.getElementById('qr-m-' + m.k); o[m.k] = e ? e.checked : true; }); return o; }
+
+/* --- 介面初始化 --- */
+function qrInitUI() {
+  document.getElementById('qr-masks').innerHTML = QR_MASKS.map(m => '<label style="font-size:13px;display:flex;align-items:center;gap:6px"><input type="checkbox" id="qr-m-' + m.k + '" checked onchange="qrMaskChange(\'' + m.k + '\')"> ' + m.l + '</label>').join('');
+  qrPrincipalChange(true); qrColsUI(); qrNotesUI(); qrSchedule();
+}
+function qrPrincipalChange(init) {
+  const pol = qrPol(), sel = document.getElementById('qr-principal').value;
+  document.getElementById('qr-policy-hint').textContent = pol.hint;
+  document.getElementById('qr-max').textContent = pol.maxIds;
+  QR_MASKS.forEach(m => { const e = document.getElementById('qr-m-' + m.k); if (pol.unmask.indexOf(m.k) < 0) { e.checked = true; e.disabled = true; } else e.disabled = false; });
+  const ids = document.getElementById('qr-ids'), self = document.getElementById('qr-self');
+  ids.disabled = pol.selfOnly; self.style.display = pol.selfOnly ? 'inline-block' : 'none';
+  document.getElementById('qr-fill-ind').disabled = document.getElementById('qr-fill-batch').disabled = pol.selfOnly;
+  if (pol.selfOnly) ids.value = self.value;
+  const note = document.getElementById('qr-note'); note.disabled = !pol.note; if (!pol.note) note.value = '';
+  const purpose = document.getElementById('qr-purpose'); purpose.querySelector('option[value=cert]').disabled = !pol.cert;
+  if (!pol.cert && purpose.value === 'cert') purpose.value = 'audit';
+  document.getElementById('qr-purpose-hint').textContent = pol.cert ? '證明文件用途將加註證明文字、文號與核章欄位。' : '領受人證明文件須由主辦人（或領受人本人於前台）產製。';
+  qrNotesUI(); qrSchedule();
+}
+function qrMaskChange(k) { qrSchedule(); }
+function qrIdsChange() { const pol = qrPol(); if (pol.selfOnly) document.getElementById('qr-ids').value = document.getElementById('qr-self').value; qrNotesUI(); qrSchedule(); }
+function qrFillFromQuery(src) {
+  let ids = [];
+  if (src === 'ind') { if (QI.cur) ids = [QI.cur.id]; } else if (QB.data) ids = QB.data.persons.filter(p => p.status === '已查得').map(p => p.id);
+  if (!ids.length) { showToast('warning', '尚無查詢結果', src === 'ind' ? '請先於「個人查詢」執行查詢' : '請先於「批次查詢」執行查詢'); return; }
+  document.getElementById('qr-ids').value = ids.join(',');
+  if (src === 'ind' && QI.cur) { document.getElementById('qr-from').value = QI.cur.from; document.getElementById('qr-to').value = QI.cur.to; }
+  if (src === 'batch') { document.getElementById('qr-from').value = QB.data.from; document.getElementById('qr-to').value = QB.data.to; }
+  qrNotesUI(); qrSchedule();
+  showToast('success', '已帶入查詢結果', ids.length + ' 位領受人及查詢期間已帶入');
+}
+function qrColsUI() {
+  document.getElementById('qr-col-pick').innerHTML = QR_FIELDS.map(f => { const on = QR.cols.indexOf(f.k) >= 0; return '<label class="col-selector-item' + (on ? ' selected' : '') + '"><input type="checkbox" ' + (on ? 'checked ' : '') + (f.b ? 'disabled ' : '') + 'onchange="qrToggleCol(\'' + f.k + '\')"> ' + f.l + (f.b ? ' <span style="font-size:10px;color:var(--text-secondary)">基本</span>' : '') + '</label>'; }).join('');
+  document.getElementById('qr-col-order').innerHTML = QR.cols.map((k, i) => '<div class="qr-chip"><span>' + (i + 1) + '. ' + qrFieldOf(k).l + '</span><span><button onclick="qrMove(\'' + k + '\',-1)" ' + (i === 0 ? 'disabled' : '') + '>↑</button><button onclick="qrMove(\'' + k + '\',1)" ' + (i === QR.cols.length - 1 ? 'disabled' : '') + '>↓</button></span></div>').join('');
+}
+function qrToggleCol(k) { const i = QR.cols.indexOf(k); if (i >= 0) QR.cols.splice(i, 1); else QR.cols.push(k); qrColsUI(); qrSchedule(); }
+function qrMove(k, d) { const i = QR.cols.indexOf(k), j = i + d; if (j < 0 || j >= QR.cols.length) return; [QR.cols[i], QR.cols[j]] = [QR.cols[j], QR.cols[i]]; qrColsUI(); qrSchedule(); }
+function qrNoteCount() { document.getElementById('qr-note-count').textContent = document.getElementById('qr-note').value.length + ' / 500'; }
+function qrIds() { const raw = document.getElementById('qr-ids').value.split(/[\s,;，、；]+/).map(t => t.trim().toUpperCase()).filter(Boolean); return [...new Set(raw)]; }
+function qrNotesUI() {
+  const box = document.getElementById('qr-person-notes'), pol = qrPol(), ids = qrIds().filter(id => QI_PERSONS[id]);
+  if (!pol.note || ids.length < 2) { box.innerHTML = ids.length === 1 && pol.note ? '' : ''; return; }
+  box.innerHTML = '<div style="font-weight:700;font-size:13px;margin-bottom:6px">各領受人個案備註（選填）</div>' + ids.map(id => '<div style="margin-bottom:6px"><div style="font-size:12px;color:var(--text-secondary)">' + htmlEsc(QI_PERSONS[id].name) + '（' + qiMaskId(id) + '）</div><input type="text" class="form-control" maxlength="200" value="' + htmlEsc(QR.notes[id] || '') + '" oninput="QR.notes[\'' + id + '\']=this.value;qrSchedule()"></div>').join('');
+}
+/* --- 造字檔 --- */
+function qrLoadFont(inp) {
+  const f = inp.files && inp.files[0]; if (!f) return;
+  const rd = new FileReader();
+  rd.onload = () => {
+    const uri = rd.result;
+    try {
+      const ff = new FontFace('AgencyCNS', 'url(' + uri + ')');
+      ff.load().then(x => { document.fonts.add(x); QR.fontUri = uri; QR.fontName = f.name; document.getElementById('qr-font-name').textContent = f.name; const st = document.getElementById('qr-font-state'); st.className = 'badge badge-success'; st.textContent = '已啟用'; showToast('success', '造字檔已啟用', f.name + ' 已套用於預覽、列印與 PDF 輸出'); qrSchedule(); }).catch(() => showToast('error', '造字檔載入失敗', '檔案格式不正確（支援 TTF／OTF／WOFF）'));
+    } catch (e) { showToast('error', '造字檔載入失敗', '瀏覽器不支援'); }
+  };
+  rd.readAsDataURL(f);
+}
+
+/* --- 查詢服務層：以主體＋條件取得資料（前台擴充時沿用） --- */
+function qrCfg() {
+  return {principal:document.getElementById('qr-principal').value, ids:qrIds(), from:document.getElementById('qr-from').value.trim(), to:document.getElementById('qr-to').value.trim(),
+    idents:[...document.querySelectorAll('#qr-idents input:checked')].map(c => c.value), purpose:document.getElementById('qr-purpose').value, cols:QR.cols.slice(), total:document.getElementById('qr-total').checked,
+    masks:qrMasksState(), note:document.getElementById('qr-note').value, notes:Object.assign({}, QR.notes)};
+}
+const QueryService = {
+  search(cfg) {
+    const pol = QR_POLICY[cfg.principal], out = {errors:[], persons:[]};
+    let ids = cfg.ids;
+    if (pol.selfOnly) ids = [document.getElementById('qr-self').value];
+    if (!ids.length) out.errors.push('請輸入領受人身分證字號');
+    if (ids.length > pol.maxIds) out.errors.push('超過查詢上限（最多 ' + pol.maxIds + ' 組）');
+    if (qiYmNum(cfg.from) == null || qiYmNum(cfg.to) == null) out.errors.push('查詢起訖年月格式須為 YYY/MM');
+    else if (qiYmNum(cfg.from) > qiYmNum(cfg.to)) out.errors.push('起始年月不得晚於終止年月');
+    if (!cfg.idents.length) out.errors.push('請至少選擇一種身分別');
+    if (out.errors.length) return out;
+    ids.forEach(id => {
+      const p = QI_PERSONS[id];
+      if (!p) { out.persons.push({id:id, p:null, recs:[], msg:'查無資料'}); return; }
+      const recs = [];
+      p.sources.filter(s => cfg.idents.indexOf(s.ident) >= 0).forEach(s => PAYSYS[s.caseNo].forEach(r => { if (qiYmNum(r.ym) >= qiYmNum(cfg.from) && qiYmNum(r.ym) <= qiYmNum(cfg.to)) recs.push({s:s, r:r}); }));
+      recs.sort((a, b) => a.s.caseNo === b.s.caseNo ? a.r.ym.localeCompare(b.r.ym) : a.s.caseNo.localeCompare(b.s.caseNo));
+      out.persons.push({id:id, p:p, recs:recs, msg: recs.length ? '' : '查詢期間無支領紀錄'});
+    });
+    return out;
+  }
+};
+/* --- 欄位政策層：取值與遮罩 --- */
+function qrCell(k, id, p, s, r, cfg) {
+  const mk = cfg.masks, f = qrFieldOf(k), pol = QR_POLICY[cfg.principal];
+  const mv = (m, v) => (mk[m] || pol.unmask.indexOf(m) < 0) ? qrMaskVal(m, v) : v;
+  switch (k) {
+    case 'name': return mv('name', p.name);
+    case 'pid': return mv('pid', id);
+    case 'type': return s.type;
+    case 'period': return r.start + '～' + r.end;
+    case 'amt': return r.amt;
+    case 'ident': return s.ident;
+    case 'org': return s.org;
+    case 'eff': return s.eff;
+    case 'paydate': return r.payDate;
+    case 'kind': return r.kind === '支票' ? '支票' : '帳戶';
+    case 'bank': return r.kind === '支票' ? '-' : s.pay.bank;
+    case 'acct': return r.kind === '支票' ? '-' : mv('acct', qrAcctFull(s));
+    case 'status': return r.status;
+    case 'birth': return mv('birth', p.birth);
+    case 'addr': return mv('addr', p.addr);
+    case 'pen': return s.pensioner ? mv('name', s.pensioner.name) : '本人';
+    case 'caseNo': return s.caseNo;
+  }
+  return '';
+}
+/* --- 報表引擎層 --- */
+function qrBuild(cfg, no) {
+  const res = QueryService.search(cfg);
+  if (res.errors.length) return {errors:res.errors};
+  const pol = QR_POLICY[cfg.principal], cert = cfg.purpose === 'cert';
+  const cols = cfg.cols, nCol = cols.length, aoa = [];
+  const title = cert ? '退撫給與支領證明書' : '退撫給與支領紀錄';
+  const ff = '\'AgencyCNS\',\'Noto Sans CJK TC\',\'Microsoft JhengHei\',\'TW-Sung-Ext-B\',\'HanaMinB\',sans-serif';
+  let h = '<div style="font-family:' + ff + ';color:#111;font-size:12px"><div style="text-align:center;font-size:12px;color:#555">公務人員退休撫卹基金管理局</div><div style="text-align:center;font-size:20px;font-weight:700;margin:4px 0 8px">' + title + '</div>' +
+    '<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;font-size:11px;color:#444;margin-bottom:8px"><span>報表編號：' + (no ? no : '（預覽・尚未產製）') + '</span><span>查詢期間：' + cfg.from + ' ～ ' + cfg.to + '</span><span>產製日期：' + TODAY_ROC + '</span><span>產製人員：' + htmlEsc(pol.user) + '</span></div>';
+  aoa.push(['公務人員退休撫卹基金管理局']); aoa.push([title]); aoa.push(['報表編號', no || '（預覽）', '查詢期間', cfg.from + ' ～ ' + cfg.to, '產製日期', TODAY_ROC, '產製人員', pol.user]); aoa.push([]);
+  if (cert) { const t = '茲證明下列領受人於 ' + cfg.from + ' 至 ' + cfg.to + ' 期間，自本局撥付系統支領退撫給與之紀錄如下，特此證明。'; h += '<div style="font-size:13px;line-height:1.9;margin:6px 0 10px">' + t + '</div>'; aoa.push([t]); aoa.push([]); }
+  const th = 'border:1px solid #888;padding:4px 6px;text-align:left;background:#eee;white-space:nowrap', td = 'border:1px solid #888;padding:4px 6px';
+  h += '<table style="border-collapse:collapse;width:100%"><thead><tr>' + cols.map(k => '<th style="' + th + '">' + qrFieldOf(k).l + '</th>').join('') + '</tr></thead><tbody>';
+  aoa.push(cols.map(k => qrFieldOf(k).l));
+  let grand = 0, gn = 0;
+  res.persons.forEach(pr => {
+    if (!pr.p || !pr.recs.length) { h += '<tr><td colspan="' + nCol + '" style="' + td + ';color:#a33">' + qiMaskId(pr.id.length === 10 ? pr.id : pr.id.padEnd(10, '*')) + '：' + pr.msg + '</td></tr>'; aoa.push([qiMaskId(pr.id.length === 10 ? pr.id : pr.id.padEnd(10, '*')) + '：' + pr.msg]); return; }
+    let sub = 0;
+    pr.recs.forEach(x => {
+      const cells = cols.map(k => qrCell(k, pr.id, pr.p, x.s, x.r, cfg)); sub += x.r.amt;
+      h += '<tr>' + cells.map((v, i) => '<td style="' + td + (qrFieldOf(cols[i]).num ? ';text-align:right' : '') + (['name', 'pid', 'period', 'amt', 'paydate', 'eff'].indexOf(cols[i]) >= 0 ? ';white-space:nowrap' : '') + (x.r.status === '溢領' ? ';background:#fff1f0' : '') + '">' + (qrFieldOf(cols[i]).num ? fm(v) : htmlEsc(v)) + '</td>').join('') + '</tr>'; aoa.push(cells);
+    });
+    grand += sub; gn += pr.recs.length;
+    if (cfg.total) { const ai = cols.indexOf('amt'); const lab = htmlEsc(maskName ? (cfg.masks.name || pol.unmask.indexOf('name') < 0 ? maskName(pr.p.name) : pr.p.name) : pr.p.name); h += '<tr style="background:#f5f7fa;font-weight:700"><td colspan="' + (ai >= 0 ? ai : nCol) + '" style="' + td + ';text-align:right">' + lab + ' 金額合計（' + pr.recs.length + ' 筆）</td>' + (ai >= 0 ? '<td style="' + td + ';text-align:right">' + fm(sub) + '</td>' + (nCol - ai - 1 > 0 ? '<td colspan="' + (nCol - ai - 1) + '" style="' + td + '"></td>' : '') : '') + '</tr>'; const row = cols.map(() => ''); row[ai >= 0 ? Math.max(0, ai - 1) : 0] = lab + ' 金額合計（' + pr.recs.length + ' 筆）'; if (ai >= 0) row[ai] = sub; aoa.push(row); }
+    const pn = (cfg.notes[pr.id] || '').trim(); if (pn) { h += '<tr><td colspan="' + nCol + '" style="' + td + ';font-size:11px">備註（' + htmlEsc(pr.p.name ? (cfg.masks.name || pol.unmask.indexOf('name') < 0 ? maskName(pr.p.name) : pr.p.name) : '') + '）：' + htmlEsc(pn) + '</td></tr>'; aoa.push(['備註：' + pn]); }
+  });
+  if (cfg.total && res.persons.filter(x => x.recs.length).length > 0) { const ai = cols.indexOf('amt'); h += '<tr style="background:#e8eefc;font-weight:700"><td colspan="' + (ai >= 0 ? ai : nCol) + '" style="' + td + ';text-align:right">總計（' + gn + ' 筆）</td>' + (ai >= 0 ? '<td style="' + td + ';text-align:right">' + fm(grand) + '</td>' + (nCol - ai - 1 > 0 ? '<td colspan="' + (nCol - ai - 1) + '" style="' + td + '"></td>' : '') : '') + '</tr>'; const row = cols.map(() => ''); row[ai >= 0 ? Math.max(0, ai - 1) : 0] = '總計（' + gn + ' 筆）'; if (ai >= 0) row[ai] = grand; aoa.push(row); }
+  h += '</tbody></table>';
+  aoa.push([]);
+  const note = cfg.note.trim();
+  h += '<div style="margin-top:10px;font-size:12px;line-height:1.7"><b>備註：</b>' + (note ? htmlEsc(note).replace(/\n/g, '<br>') : '（無）') + '</div>';
+  aoa.push(['備註', note || '（無）']);
+  const unm = QR_MASKS.filter(m => !cfg.masks[m.k]).map(m => m.l);
+  h += '<div style="margin-top:8px;font-size:11px;color:#555">個人資料顯示：' + (unm.length ? '已解除遮罩欄位：' + unm.join('、') : '依規定遮罩（隱碼）') + '。資料來源：本局撥付系統。</div>';
+  aoa.push(['個人資料顯示', unm.length ? '已解除遮罩：' + unm.join('、') : '依規定遮罩（隱碼）', '資料來源', '本局撥付系統']);
+  if (cert) { h += '<div style="display:flex;justify-content:space-between;margin-top:28px;font-size:12px"><span>承辦人：' + htmlEsc(pol.user) + '</span><span>覆核（主辦人）：＿＿＿＿＿＿</span><span>（本局關防）</span></div>'; aoa.push([]); aoa.push(['承辦人', pol.user, '覆核（主辦人）', '', '（本局關防）']); }
+  h += '</div>';
+  return {html:h, aoa:aoa, persons:res.persons.length, rows:gn, title:title, unmasked:unm};
+}
+/* --- 預覽／產製／輸出 --- */
+function qrSchedule() { clearTimeout(QR.timer); QR.timer = setTimeout(qrPreview, 120); }
+function qrPreview() {
+  const cfg = qrCfg(), box = document.getElementById('qr-preview');
+  if (!box) return;
+  document.getElementById('qr-api').textContent = JSON.stringify({principal:cfg.principal, pid:QueryService && cfg.principal === 'self' ? [document.getElementById('qr-self').value] : cfg.ids, from:cfg.from, to:cfg.to, identities:cfg.idents, fields:cfg.cols, mask:cfg.masks}, null, 2);
+  const b = qrBuild(cfg, null);
+  if (b.errors) { box.innerHTML = '<div style="color:var(--danger);font-size:13px">' + b.errors.map(htmlEsc).join('<br>') + '</div>'; document.getElementById('qr-status').textContent = '無法預覽：請修正條件'; return; }
+  box.innerHTML = b.html;
+  const stale = QR.last && QR.last.sig !== JSON.stringify(cfg);
+  document.getElementById('qr-status').innerHTML = '預覽 ' + b.persons + ' 位領受人、' + b.rows + ' 筆　' + (QR.last ? (stale ? '<span style="color:var(--warning)">條件已變更，下載檔案仍為「' + QR.last.no + '」，請重新產製</span>' : '<span style="color:var(--success)">與已產製報表「' + QR.last.no + '」一致</span>') : '尚未產製，下載前請先按「產製報表」');
+}
+function qrGenerate() {
+  const cfg = qrCfg(), pol = qrPol();
+  if (cfg.purpose === 'cert' && !pol.cert) { showToast('error', '無權限', '領受人證明文件須由主辦人產製'); return; }
+  const unmaskedReq = QR_MASKS.filter(m => !cfg.masks[m.k]);
+  QR.seq++; const no = 'QR-115-' + String(QR.seq).padStart(4, '0');
+  const b = qrBuild(cfg, no);
+  if (b.errors) { QR.seq--; showToast('error', '無法產製', b.errors.join('；')); return; }
+  if (!b.rows) { QR.seq--; showToast('warning', '無資料可產製', '查詢範圍內無支領紀錄'); return; }
+  const t = execNowStrQ();
+  const snap = {no:no, t:t, purpose:cfg.purpose, persons:b.persons, rows:b.rows, user:pol.user, html:b.html, aoa:b.aoa, title:b.title, sig:JSON.stringify(cfg)};
+  QR.snaps.unshift(snap); QR.last = snap;
+  if (unmaskedReq.length && pol.audit) QR.audit.unshift({t:t, user:pol.user, no:no, f:unmaskedReq.map(m => m.l).join('、'), purpose:cfg.purpose === 'cert' ? '領受人證明文件' : '查核資料'});
+  qrRenderSnaps(); qrPreview();
+  showToast('success', '報表已產製', no + '：' + b.persons + ' 位領受人、' + b.rows + ' 筆，可下載 PDF／Excel 或列印');
+}
+function qrRenderSnaps() {
+  document.getElementById('qr-snaps').innerHTML = QR.snaps.map((s, i) => '<tr><td><strong>' + s.no + '</strong></td><td>' + s.t + '</td><td>' + (s.purpose === 'cert' ? '領受人證明文件' : '查核資料') + '</td><td>' + s.persons + ' 人／' + s.rows + ' 筆</td><td>' + htmlEsc(s.user) + '</td><td style="white-space:nowrap"><button class="btn btn-sm btn-outline" onclick="qrDownload(\'pdf\',' + i + ')">PDF</button> <button class="btn btn-sm btn-outline" onclick="qrDownload(\'xlsx\',' + i + ')">Excel</button></td></tr>').join('') || '<tr><td colspan="6" style="text-align:center;color:var(--text-secondary)">尚無產製紀錄</td></tr>';
+  document.getElementById('qr-audit').innerHTML = QR.audit.map(a => '<tr><td>' + a.t + '</td><td>' + htmlEsc(a.user) + '</td><td>' + a.no + '</td><td>' + a.f + '</td><td>' + a.purpose + '</td></tr>').join('') || '<tr><td colspan="5" style="text-align:center;color:var(--text-secondary)">無解除遮罩紀錄</td></tr>';
+}
+function qrSnap(i) { const s = i == null ? QR.last : QR.snaps[i]; if (!s) showToast('warning', '尚未產製', '請先按「產製報表」產生正式報表'); return s; }
+function qrDownload(ext, i) {
+  const s = qrSnap(i); if (!s) return;
+  runDownload(s.no + '_' + s.title, ext, {onDone: () => ext === 'pdf' ? qrPrint(s) : qrXlsx(s)});
+}
+function qrPrintLast() { const s = qrSnap(); if (s) qrPrint(s); }
+function qrPrint(s) {
+  const f = document.createElement('iframe'); f.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0'; document.body.appendChild(f);
+  const d = f.contentWindow.document; d.open();
+  d.write('<!doctype html><html><head><meta charset="utf-8"><title>' + htmlEsc(s.no + ' ' + s.title) + '</title><style>' + (QR.fontUri ? '@font-face{font-family:"AgencyCNS";src:url(' + QR.fontUri + ')}' : '') + '@page{size:A4 landscape;margin:12mm}body{margin:0;font-family:"AgencyCNS","Noto Sans CJK TC","Microsoft JhengHei","TW-Sung-Ext-B","HanaMinB",sans-serif}</style></head><body>' + s.html + '</body></html>');
+  d.close();
+  setTimeout(() => { try { f.contentWindow.focus(); f.contentWindow.print(); } catch (e) { showToast('error', '列印失敗', '瀏覽器未允許列印'); } setTimeout(() => f.remove(), 2000); }, 400);
+}
+function qrXlsx(s) {
+  const run = () => {
+    try {
+      const ws = XLSX.utils.aoa_to_sheet(s.aoa), wb = XLSX.utils.book_new();
+      ws['!cols'] = s.aoa.reduce((m, r) => r.map((c, i) => Math.max(m[i] || 8, Math.min(40, String(c == null ? '' : c).length * 2 + 2))), []).map(w => ({wch:w}));
+      XLSX.utils.book_append_sheet(wb, ws, '支領紀錄'); XLSX.writeFile(wb, s.no + '_' + s.title + '.xlsx');
+    } catch (e) { dlBlob(s.no + '_' + s.title + '.csv', toCsv(s.aoa), 'text/csv'); showToast('warning', '已改以 CSV 下載', 'Excel 元件無法使用，已提供可由 Excel 開啟之 CSV'); }
+  };
+  if (window.XLSX) run();
+  else { const sc = document.createElement('script'); sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'; sc.onload = run; sc.onerror = () => { dlBlob(s.no + '_' + s.title + '.csv', toCsv(s.aoa), 'text/csv'); showToast('warning', '已改以 CSV 下載', '無法載入 Excel 元件（離線），已提供可由 Excel 開啟之 CSV'); }; document.head.appendChild(sc); }
+}
+const _navV25 = navigateTo;
+navigateTo = function (id) { _navV25(id); if (id === 'query-flexible') { qrNotesUI(); qrPreview(); qrRenderSnaps(); } };
+qrInitUI(); qrRenderSnaps();
 
 </script>
 </body>
