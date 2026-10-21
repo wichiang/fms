@@ -958,9 +958,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       <div class="login-announcement-title">
         <span><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10v4a1 1 0 0 0 1 1h2l4 5V4L6 9H4a1 1 0 0 0-1 1z"/><path d="M15 8a4 4 0 0 1 0 8"/><path d="M18 5a8 8 0 0 1 0 14"/></svg></span> 系統公告
       </div>
-      <div class="login-announcement-item">【重要】113年12月定撥作業預計於12月15日執行，請相關承辦人員注意。</div>
-      <div class="login-announcement-item">【維護】系統將於113年12月20日(六) 02:00-06:00 進行例行維護。</div>
-      <div class="login-announcement-item">【更新】溢領管理子系統已更新至 v2.3.1，新增批次匯入格式驗證功能。</div>
+      <div id="login-ann"></div>
     </div>
   </div>
 </div>
@@ -1021,7 +1019,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div class="header-user-avatar">王</div>
         <div class="header-user-info">
           <div class="header-user-name">王大明</div>
-          <div class="header-user-role">給付科 · 承辦人</div>
+          <div class="header-user-role">給付科 · 承辦人員</div>
         </div>
         <svg width="12" height="12" viewBox="0 0 12 8" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" stroke-linecap="round"><path d="M1 1l5 5 5-5"/></svg>
       </div>
@@ -1219,239 +1217,20 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
     
     <!-- ===== DASHBOARD ===== -->
     <div class="view active" id="view-dashboard">
-      <div class="announcement-banner">
-        <span class="announcement-icon"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10v4a1 1 0 0 0 1 1h2l4 5V4L6 9H4a1 1 0 0 0-1 1z"/><path d="M15 8a4 4 0 0 1 0 8"/><path d="M18 5a8 8 0 0 1 0 14"/></svg></span>
-        <div class="announcement-text">
-          <strong>【重要公告】</strong> 113年12月定撥作業預計於12月15日(日) 09:00 執行，請相關承辦人員確認前置作業已完成。
-        </div>
-      </div>
-      
+      <div id="dash-banner"></div>
       <div class="page-header">
-        <div>
-          <div class="page-title">系統儀表板</div>
-          <div class="page-subtitle">歡迎回來，王大明 ｜ 單位：給付科 ｜ 角色：承辦人 ｜ 最後登入：113/12/10 09:23</div>
-        </div>
-        <div class="page-actions">
-          <span style="font-size:calc(13px * var(--font-scale));color:var(--text-secondary)">113年12月10日 (一)</span>
-        </div>
+        <div><div class="page-title">系統儀表板</div><div class="page-subtitle" id="dash-sub"></div></div>
+        <div class="page-actions"><span id="dash-date" style="font-size:calc(13px * var(--font-scale));color:var(--text-secondary)"></span></div>
       </div>
-      
-      <div class="stats-grid">
-        <div class="stat-card gold">
-          <div class="stat-label">待處理溢領案件</div>
-          <div class="stat-value gold">23</div>
-          <div class="stat-sub">本月新增 8 件</div>
-          <div class="stat-trend up"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg> 較上月增加 3 件</div>
-        </div>
-        <div class="stat-card danger">
-          <div class="stat-label">逾期未收回</div>
-          <div class="stat-value danger">5</div>
-          <div class="stat-sub">金額：NT$ 1,245,000</div>
-          <div class="stat-trend down"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a1 1 0 0 0 .86 1.5h18.64a1 1 0 0 0 .86-1.5L13.71 3.86a1 1 0 0 0-1.72 0z"/><line x1="12" y1="9" x2="12" y2="13"/><circle cx="12" cy="16.5" r="0.9" fill="currentColor" stroke="none"/></svg> 需優先處理</div>
-        </div>
-        <div class="stat-card success">
-          <div class="stat-label">本月止付成功</div>
-          <div class="stat-value success">12</div>
-          <div class="stat-sub">成功率 92.3%</div>
-          <div class="stat-trend up"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg> 較上月提升 2.1%</div>
-        </div>
-        <div class="stat-card info">
-          <div class="stat-label">課稅計算完成</div>
-          <div class="stat-value">1,847</div>
-          <div class="stat-sub">113年度累計</div>
-          <div class="stat-trend up"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg> 本月完成 156 件</div>
-        </div>
-        <div class="stat-card teal">
-          <div class="stat-label">定撥執行狀態</div>
-          <div class="stat-value" style="color:var(--accent-teal)">待執行</div>
-          <div class="stat-sub">113年12月定撥</div>
-          <div class="stat-trend">預計 12/15 執行</div>
-        </div>
-        <div class="stat-card warning">
-          <div class="stat-label">系統異常告警</div>
-          <div class="stat-value" style="color:var(--warning)">2</div>
-          <div class="stat-sub">需人工處理</div>
-          <div class="stat-trend down"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a1 1 0 0 0 .86 1.5h18.64a1 1 0 0 0 .86-1.5L13.71 3.86a1 1 0 0 0-1.72 0z"/><line x1="12" y1="9" x2="12" y2="13"/><circle cx="12" cy="16.5" r="0.9" fill="currentColor" stroke="none"/></svg> 請盡速處理</div>
-        </div>
-      </div>
-      
-      <div class="dashboard-grid">
-        <div class="dashboard-card" onclick="navigateTo('overflow-single')">
-          <div class="dashboard-card-header">
-            <div class="dashboard-card-icon navy"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="4" width="12" height="17" rx="2"/><rect x="9" y="2" width="6" height="4" rx="1"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="15" y2="15"/></svg></div>
-            <div>
-              <div class="dashboard-card-title">溢領管理</div>
-              <div class="dashboard-card-sub">Overpayment Management</div>
-            </div>
-          </div>
-          <div class="dashboard-metrics">
-            <div class="dashboard-metric">
-              <div class="dashboard-metric-val">23</div>
-              <div class="dashboard-metric-label">待處理</div>
-            </div>
-            <div class="dashboard-metric">
-              <div class="dashboard-metric-val">156</div>
-              <div class="dashboard-metric-label">本年累計</div>
-            </div>
-            <div class="dashboard-metric">
-              <div class="dashboard-metric-val" style="color:var(--success)">128</div>
-              <div class="dashboard-metric-label">已收回</div>
-            </div>
-          </div>
-          <div class="quick-actions">
-            <button class="btn btn-sm btn-primary" onclick="event.stopPropagation();navigateTo('overflow-single')">單筆建置</button>
-            <button class="btn btn-sm btn-outline" onclick="event.stopPropagation();navigateTo('overflow-batch')">批次計算</button>
-            <button class="btn btn-sm btn-outline" onclick="event.stopPropagation();navigateTo('overflow-docs')">產製函表</button>
-          </div>
-        </div>
-        
-        <div class="dashboard-card" onclick="navigateTo('stop-payment')">
-          <div class="dashboard-card-header">
-            <div class="dashboard-card-icon" style="background:linear-gradient(135deg,var(--danger),#922b21)"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg></div>
-            <div>
-              <div class="dashboard-card-title">止付作業</div>
-              <div class="dashboard-card-sub">Stop Payment</div>
-            </div>
-          </div>
-          <div class="dashboard-metrics">
-            <div class="dashboard-metric">
-              <div class="dashboard-metric-val">12</div>
-              <div class="dashboard-metric-label">本月止付</div>
-            </div>
-            <div class="dashboard-metric">
-              <div class="dashboard-metric-val" style="color:var(--success)">11</div>
-              <div class="dashboard-metric-label">成功</div>
-            </div>
-            <div class="dashboard-metric">
-              <div class="dashboard-metric-val" style="color:var(--danger)">1</div>
-              <div class="dashboard-metric-label">失敗</div>
-            </div>
-          </div>
-          <div class="quick-actions">
-            <button class="btn btn-sm btn-danger" onclick="event.stopPropagation();navigateTo('stop-register')">登錄止付案件</button>
-            <button class="btn btn-sm btn-outline" onclick="event.stopPropagation();navigateTo('stop-tracking')">追蹤查詢</button>
-          </div>
-        </div>
-        
-        <div class="dashboard-card" onclick="navigateTo('tax-calc')">
-          <div class="dashboard-card-header">
-            <div class="dashboard-card-icon gold"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><line x1="12" y1="7" x2="12" y2="17"/><path d="M15 9.5c0-1.4-1.3-2.5-3-2.5s-3 1.1-3 2.5 1.3 2 3 2.5 3 1.1 3 2.5-1.3 2.5-3 2.5-3-1.1-3-2.5"/></svg></div>
-            <div>
-              <div class="dashboard-card-title">課稅管理</div>
-              <div class="dashboard-card-sub">Tax Management</div>
-            </div>
-          </div>
-          <div class="dashboard-metrics">
-            <div class="dashboard-metric">
-              <div class="dashboard-metric-val">1,847</div>
-              <div class="dashboard-metric-label">已計算</div>
-            </div>
-            <div class="dashboard-metric">
-              <div class="dashboard-metric-val" style="color:var(--warning)">34</div>
-              <div class="dashboard-metric-label">待重審</div>
-            </div>
-            <div class="dashboard-metric">
-              <div class="dashboard-metric-val" style="color:var(--danger)">7</div>
-              <div class="dashboard-metric-label">異常</div>
-            </div>
-          </div>
-          <div class="quick-actions">
-            <button class="btn btn-sm btn-gold" onclick="event.stopPropagation();navigateTo('tax-calc')">課稅計算</button>
-            <button class="btn btn-sm btn-outline" onclick="event.stopPropagation();navigateTo('tax-report')">報表彙整</button>
-          </div>
-        </div>
-        
-        <div class="dashboard-card" onclick="navigateTo('monthly-dashboard')">
-          <div class="dashboard-card-header">
-            <div class="dashboard-card-icon teal"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></div>
-            <div>
-              <div class="dashboard-card-title">定撥作業</div>
-              <div class="dashboard-card-sub">Monthly Payment</div>
-            </div>
-          </div>
-          <div class="dashboard-metrics">
-            <div class="dashboard-metric">
-              <div class="dashboard-metric-val" style="color:var(--warning)">待執行</div>
-              <div class="dashboard-metric-label">113年12月</div>
-            </div>
-            <div class="dashboard-metric">
-              <div class="dashboard-metric-val">41</div>
-              <div class="dashboard-metric-label">報表項目</div>
-            </div>
-            <div class="dashboard-metric">
-              <div class="dashboard-metric-val" style="color:var(--success)">113/11</div>
-              <div class="dashboard-metric-label">上次完成</div>
-            </div>
-          </div>
-          <div class="quick-actions">
-            <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation();navigateTo('monthly-prep')">前置準備</button>
-            <button class="btn btn-sm btn-outline" onclick="event.stopPropagation();navigateTo('monthly-exec')">執行定撥</button>
-          </div>
-        </div>
-        
-        <div class="dashboard-card" onclick="navigateTo('query-individual')">
-          <div class="dashboard-card-header">
-            <div class="dashboard-card-icon info"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
-            <div>
-              <div class="dashboard-card-title">給與支領紀錄查詢</div>
-              <div class="dashboard-card-sub">Query System</div>
-            </div>
-          </div>
-          <div class="dashboard-metrics">
-            <div class="dashboard-metric">
-              <div class="dashboard-metric-val">個人</div>
-              <div class="dashboard-metric-label">支領查詢</div>
-            </div>
-            <div class="dashboard-metric">
-              <div class="dashboard-metric-val">批次</div>
-              <div class="dashboard-metric-label">多人查詢</div>
-            </div>
-            <div class="dashboard-metric">
-              <div class="dashboard-metric-val">彈性</div>
-              <div class="dashboard-metric-label">自訂報表</div>
-            </div>
-          </div>
-          <div class="quick-actions">
-            <button class="btn btn-sm btn-info" onclick="event.stopPropagation();navigateTo('query-individual')">個人查詢</button>
-            <button class="btn btn-sm btn-outline" onclick="event.stopPropagation();navigateTo('query-batch')">批次查詢</button>
-          </div>
-        </div>
-        
-        <div class="dashboard-card">
-          <div class="dashboard-card-header">
-            <div class="dashboard-card-icon warning"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10v4a1 1 0 0 0 1 1h2l4 5V4L6 9H4a1 1 0 0 0-1 1z"/><path d="M15 8a4 4 0 0 1 0 8"/><path d="M18 5a8 8 0 0 1 0 14"/></svg></div>
-            <div>
-              <div class="dashboard-card-title">系統公告</div>
-              <div class="dashboard-card-sub">System Announcements</div>
-            </div>
-          </div>
-          <ul class="announcement-list">
-            <li>
-              <span class="announcement-tag urgent">緊急</span>
-              <span>12月定撥前置作業請於12/13前完成</span>
-              <span class="announcement-date">113/12/10</span>
-            </li>
-            <li>
-              <span class="announcement-tag info">通知</span>
-              <span>溢領管理系統 v2.3.1 更新說明</span>
-              <span class="announcement-date">113/12/08</span>
-            </li>
-            <li>
-              <span class="announcement-tag normal">一般</span>
-              <span>113年度扣繳憑單產製時程公告</span>
-              <span class="announcement-date">113/12/05</span>
-            </li>
-            <li>
-              <span class="announcement-tag info">通知</span>
-              <span>系統例行維護通知 (12/20 02:00-06:00)</span>
-              <span class="announcement-date">113/12/03</span>
-            </li>
-          </ul>
-        </div>
+      <div class="stats-grid" id="dash-stats"></div>
+      <div class="dashboard-grid" id="dash-cards"></div>
+      <div class="dashboard-grid" style="margin-top:16px">
+        <div class="dashboard-card"><div class="dashboard-card-header"><div class="dashboard-card-icon warning"></div><div><div class="dashboard-card-title">待辦與提醒</div><div class="dashboard-card-sub">依目前登入角色之功能權限，彙整各模組待處理事項</div></div></div><div id="dash-todo"></div></div>
+        <div class="dashboard-card"><div class="dashboard-card-header"><div class="dashboard-card-icon warning"></div><div><div class="dashboard-card-title">系統公告</div><div class="dashboard-card-sub" id="dash-ann-sub">System Announcements</div></div></div><ul class="announcement-list" id="dash-ann"></ul></div>
       </div>
     </div>
 
-    <!-- ===== OVERFLOW SINGLE ===== -->
+<!-- ===== OVERFLOW SINGLE ===== -->
     <div class="view" id="view-overflow-single">
       <div class="breadcrumb">
         <span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span>
@@ -3408,20 +3187,10 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div class="page-subtitle">113年12月定撥作業管理</div>
       </div>
       
-      <div class="phase-indicator">
-        <div class="phase-step done"><div class="phase-step-num">1</div>定撥前準備</div>
-        <div class="phase-step active"><div class="phase-step-num">2</div>核心定撥執行</div>
-        <div class="phase-step"><div class="phase-step-num">3</div>報表產製</div>
-        <div class="phase-step"><div class="phase-step-num">4</div>異常處理</div>
-      </div>
-      
-      <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
-        <div class="stat-card success"><div class="stat-label">前置作業</div><div class="stat-value success">完成</div><div class="stat-sub">113/12/12 完成</div></div>
-        <div class="stat-card warning"><div class="stat-label">核心執行</div><div class="stat-value" style="color:var(--warning)">待執行</div><div class="stat-sub">預計 113/12/15</div></div>
-        <div class="stat-card secondary"><div class="stat-label">報表產製</div><div class="stat-value" style="color:var(--text-secondary)">待執行</div><div class="stat-sub">41 項報表</div></div>
-        <div class="stat-card secondary"><div class="stat-label">異常處理</div><div class="stat-value" style="color:var(--text-secondary)">待執行</div><div class="stat-sub">-</div></div>
-      </div>
-      
+      <div class="phase-indicator" id="md-phase"></div>
+
+      <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)" id="md-stats"></div>
+
       <div class="card">
         <div class="card-title" style="margin-bottom:16px">執行歷史紀錄</div>
         <div class="table-wrapper">
@@ -3430,10 +3199,10 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
             <tr><th>執行期間</th><th>前置完成</th><th>核心執行</th><th>報表產製</th><th>異常數</th><th>執行人員</th><th>完成時間</th></tr>
           </thead>
           <tbody>
-            <tr><td>113年11月</td><td><span class="badge badge-success">完成</span></td><td><span class="badge badge-success">完成</span></td><td><span class="badge badge-success">41/41</span></td><td>2</td><td>王大明</td><td>113/11/15 11:42</td></tr>
-            <tr><td>113年10月</td><td><span class="badge badge-success">完成</span></td><td><span class="badge badge-success">完成</span></td><td><span class="badge badge-success">41/41</span></td><td>0</td><td>李小華</td><td>113/10/15 10:28</td></tr>
-            <tr><td>113年09月</td><td><span class="badge badge-success">完成</span></td><td><span class="badge badge-success">完成</span></td><td><span class="badge badge-warning">40/41</span></td><td>3</td><td>王大明</td><td>113/09/15 13:15</td></tr>
-            <tr><td>113年08月</td><td><span class="badge badge-success">完成</span></td><td><span class="badge badge-success">完成</span></td><td><span class="badge badge-success">41/41</span></td><td>1</td><td>陳志明</td><td>113/08/15 09:55</td></tr>
+            <tr><td>113年11月</td><td><span class="badge badge-success">完成</span></td><td><span class="badge badge-success">完成</span></td><td><span class="badge badge-success">57/57</span></td><td>2</td><td>王大明</td><td>113/11/15 11:42</td></tr>
+            <tr><td>113年10月</td><td><span class="badge badge-success">完成</span></td><td><span class="badge badge-success">完成</span></td><td><span class="badge badge-success">57/57</span></td><td>0</td><td>李小華</td><td>113/10/15 10:28</td></tr>
+            <tr><td>113年09月</td><td><span class="badge badge-success">完成</span></td><td><span class="badge badge-success">完成</span></td><td><span class="badge badge-warning">56/57</span></td><td>3</td><td>王大明</td><td>113/09/15 13:15</td></tr>
+            <tr><td>113年08月</td><td><span class="badge badge-success">完成</span></td><td><span class="badge badge-success">完成</span></td><td><span class="badge badge-success">57/57</span></td><td>1</td><td>陳志明</td><td>113/08/15 09:55</td></tr>
           </tbody>
         </table>
         </div>
@@ -5349,7 +5118,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       <div class="filter-bar">
         <div class="filter-row">
           <div class="filter-group"><div class="filter-label">搜尋</div><input type="text" class="filter-control" placeholder="姓名或身分證字號"></div>
-          <div class="filter-group"><div class="filter-label">角色</div><select class="filter-control"><option>全部</option><option>最高管理者</option><option>單位管理者</option><option>一般使用者</option></select></div>
+          <div class="filter-group"><div class="filter-label">角色</div><select class="filter-control"><option>全部</option><option>最高管理者</option><option>單位管理者</option><option>業務組主辦人</option><option>承辦人員</option><option>查詢人員</option><option>稽核人員</option></select></div>
           <div class="filter-group"><div class="filter-label">單位</div><select class="filter-control"><option>全部</option><option>給付科</option><option>稽核科</option><option>人事室</option><option>資訊室</option></select></div>
           <div class="filter-group"><div class="filter-label">狀態</div><select class="filter-control"><option>全部</option><option>啟用</option><option>停用</option></select></div>
           <button class="btn btn-primary btn-sm" style="align-self:flex-end"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> 查詢</button>
@@ -5365,23 +5134,23 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           <tbody>
             <tr>
               <td><strong>王大明</strong></td><td class="masked">A123***789</td><td>給付科</td>
-              <td><span class="badge badge-info">一般使用者</span></td>
+              <td><span class="badge badge-info">承辦人員</span></td>
               <td>113/12/10 09:23</td>
               <td><span class="badge badge-success">啟用</span></td>
               <td>
                 <button class="btn btn-sm btn-outline" onclick="openUserEditModal()">編輯</button>
-                <button class="btn btn-sm btn-outline" onclick="navigateTo('admin-permissions')">權限</button>
+                <button class="btn btn-sm btn-outline" onclick="pmGoUser('王大明')">權限</button>
                 <button class="btn btn-sm btn-danger" onclick="toggleUserStatus(this,'王大明')">停用</button>
               </td>
             </tr>
             <tr>
               <td>李小華</td><td class="masked">B234***890</td><td>給付科</td>
-              <td><span class="badge badge-info">一般使用者</span></td>
+              <td><span class="badge badge-info">承辦人員</span></td>
               <td>113/12/09 16:45</td>
               <td><span class="badge badge-success">啟用</span></td>
               <td>
                 <button class="btn btn-sm btn-outline" onclick="openUserEditModal()">編輯</button>
-                <button class="btn btn-sm btn-outline" onclick="navigateTo('admin-permissions')">權限</button>
+                <button class="btn btn-sm btn-outline" onclick="pmGoUser('李小華')">權限</button>
                 <button class="btn btn-sm btn-danger" onclick="toggleUserStatus(this,'李小華')">停用</button>
               </td>
             </tr>
@@ -5392,7 +5161,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
               <td><span class="badge badge-success">啟用</span></td>
               <td>
                 <button class="btn btn-sm btn-outline" onclick="openUserEditModal()">編輯</button>
-                <button class="btn btn-sm btn-outline" onclick="navigateTo('admin-permissions')">權限</button>
+                <button class="btn btn-sm btn-outline" onclick="pmGoUser('陳志明')">權限</button>
                 <button class="btn btn-sm btn-danger" onclick="toggleUserStatus(this,'陳志明')">停用</button>
               </td>
             </tr>
@@ -5405,11 +5174,44 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
                 <button class="btn btn-sm btn-outline" onclick="openUserEditModal()">編輯</button>
               </td>
             </tr>
-          </tbody>
+          <tr>
+<td>周靜怡</td><td class="masked">D221***907</td><td>給付科</td>
+<td><span class="badge badge-warning">業務組主辦人</span></td>
+<td>113/12/10 08:05</td>
+<td><span class="badge badge-success">啟用</span></td>
+<td>
+<button class="btn btn-sm btn-outline" onclick="openUserEditModal()">編輯</button>
+<button class="btn btn-sm btn-outline" onclick="pmGoUser('周靜怡')">權限</button>
+<button class="btn btn-sm btn-danger" onclick="toggleUserStatus(this,'周靜怡')">停用</button>
+</td>
+</tr>
+<tr>
+<td>吳宗翰</td><td class="masked">E122***018</td><td>給付科</td>
+<td><span class="badge badge-secondary">查詢人員</span></td>
+<td>113/12/09 14:20</td>
+<td><span class="badge badge-success">啟用</span></td>
+<td>
+<button class="btn btn-sm btn-outline" onclick="openUserEditModal()">編輯</button>
+<button class="btn btn-sm btn-outline" onclick="pmGoUser('吳宗翰')">權限</button>
+<button class="btn btn-sm btn-danger" onclick="toggleUserStatus(this,'吳宗翰')">停用</button>
+</td>
+</tr>
+<tr>
+<td>鄭佩珊</td><td class="masked">F223***456</td><td>稽核科</td>
+<td><span class="badge badge-primary">稽核人員</span></td>
+<td>113/12/10 09:02</td>
+<td><span class="badge badge-success">啟用</span></td>
+<td>
+<button class="btn btn-sm btn-outline" onclick="openUserEditModal()">編輯</button>
+<button class="btn btn-sm btn-outline" onclick="pmGoUser('鄭佩珊')">權限</button>
+<button class="btn btn-sm btn-danger" onclick="toggleUserStatus(this,'鄭佩珊')">停用</button>
+</td>
+</tr>
+</tbody>
         </table>
         </div>
         <div class="pagination">
-          <div class="pagination-info">顯示 1-4 / 共 12 筆</div>
+          <div class="pagination-info">顯示 1-7 / 共 15 筆</div>
           <div class="pagination-controls">
             <button class="page-btn" disabled>上一頁</button>
             <button class="page-btn active">1</button>
@@ -5423,117 +5225,28 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 
     <!-- ===== ADMIN PERMISSIONS ===== -->
     <div class="view" id="view-admin-permissions">
-      <div class="breadcrumb">
-        <span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span>
-        <span class="breadcrumb-sep">›</span>
-        <span class="breadcrumb-item">系統管理</span>
-        <span class="breadcrumb-sep">›</span>
-        <span class="breadcrumb-item current">權限設定</span>
-      </div>
+      <style>
+        .pm-tbl{width:100%;border-collapse:collapse;font-size:calc(12.5px * var(--font-scale))}
+        .pm-tbl th,.pm-tbl td{border:1px solid var(--border);padding:5px 8px;vertical-align:middle}
+        .pm-tbl thead th{position:sticky;top:0;background:#f5f7fa;z-index:2;text-align:center;color:var(--primary)}
+        .pm-tbl td.pm-fn{min-width:170px}.pm-id{font-size:10.5px;color:var(--text-secondary);font-family:monospace}
+        .pm-g td{background:#eef2f7;font-weight:700;color:var(--primary)}
+        .pm-sel{width:100%;min-width:78px;padding:3px 4px;border:1px solid var(--border);border-radius:4px;font-size:inherit;font-family:inherit}
+        .pm-sel.lv0{background:#fff;color:#9aa3af}.pm-sel.lv1{background:#eef6ff}.pm-sel.lv2{background:#fff7e0}.pm-sel.lv3{background:#e3f5e9;font-weight:700}
+        .pm-sel.pm-dif{outline:2px solid #f59e0b}
+        .pm-wrap{max-height:62vh;overflow:auto;border:1px solid var(--border);border-radius:6px}
+        .pm-role{display:flex;align-items:flex-start;gap:10px;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;cursor:pointer;margin-bottom:6px}
+        .pm-role.on{border-color:var(--primary);background:#eef2ff}
+      </style>
+      <div class="breadcrumb"><span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-item">系統管理</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-item current">權限設定</span></div>
       <div class="page-header">
-        <div class="page-title">使用者權限設定</div>
-        <div class="page-subtitle">設定使用者角色與功能權限</div>
+        <div class="page-title">權限設定</div>
+        <div class="page-subtitle">依角色維護各功能項目之預設權限（無／檢視／操作／核准管理），並可針對個別使用者調整；儲存前自動檢核權責分離</div>
       </div>
-      
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
-        <div class="card">
-          <div class="section-title"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg> 基本資料</div>
-          <div class="form-row cols-2">
-            <div class="form-group">
-              <label class="form-label">姓名</label>
-              <input type="text" class="form-control" value="王大明">
-            </div>
-            <div class="form-group">
-              <label class="form-label">身分證字號</label>
-              <input type="text" class="form-control" value="A123456789">
-            </div>
-          </div>
-          <div class="form-row cols-2">
-            <div class="form-group">
-              <label class="form-label">所屬單位</label>
-              <select class="form-control"><option selected>給付科</option><option>稽核科</option><option>人事室</option><option>資訊室</option></select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">帳號狀態</label>
-              <select class="form-control"><option selected>啟用</option><option>停用</option></select>
-            </div>
-          </div>
-          
-          <div class="section-title" style="margin-top:16px"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="5"/><circle cx="15" cy="15" r="5"/></svg> 角色選擇</div>
-          <div style="display:flex;flex-direction:column;gap:8px">
-            <label style="display:flex;align-items:flex-start;gap:10px;padding:10px;border:1.5px solid var(--border);border-radius:6px;cursor:pointer;transition:var(--transition)" onmouseover="this.style.borderColor='var(--secondary)'" onmouseout="this.style.borderColor='var(--border)'">
-              <input type="radio" name="role" style="margin-top:2px">
-              <div><div style="font-weight:700;font-size:calc(13px * var(--font-scale))">最高管理者</div><div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">可存取所有功能，包含系統設定與稽核日誌</div></div>
-            </label>
-            <label style="display:flex;align-items:flex-start;gap:10px;padding:10px;border:1.5px solid var(--border);border-radius:6px;cursor:pointer;transition:var(--transition)" onmouseover="this.style.borderColor='var(--secondary)'" onmouseout="this.style.borderColor='var(--border)'">
-              <input type="radio" name="role" style="margin-top:2px">
-              <div><div style="font-weight:700;font-size:calc(13px * var(--font-scale))">單位管理者</div><div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">可管理本單位使用者，具備核符功能</div></div>
-            </label>
-            <label style="display:flex;align-items:flex-start;gap:10px;padding:10px;border:1.5px solid var(--primary);border-radius:6px;cursor:pointer;background:#eef2ff">
-              <input type="radio" name="role" checked style="margin-top:2px">
-              <div><div style="font-weight:700;font-size:calc(13px * var(--font-scale));color:var(--primary)">一般使用者</div><div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">依功能權限設定存取業務功能</div></div>
-            </label>
-          </div>
-        </div>
-        
-        <div class="card">
-          <div class="section-title"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="15" r="4"/><line x1="10.5" y1="11.5" x2="20" y2="2"/><line x1="16" y1="6" x2="19" y2="9"/></svg> 功能權限設定</div>
-          <div class="perm-module">
-            <div class="perm-module-header" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'grid':'none'">
-              <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="4" width="12" height="17" rx="2"/><rect x="9" y="2" width="6" height="4" rx="1"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="15" y2="15"/></svg> 溢領管理
-            </div>
-            <div class="perm-items">
-              <label class="perm-item"><input type="checkbox" checked> 單筆溢領控管</label>
-              <label class="perm-item"><input type="checkbox" checked> 批次溢領計算</label>
-              <label class="perm-item"><input type="checkbox" checked> 追繳與圈存函表</label>
-              <label class="perm-item"><input type="checkbox" checked> 溢領收回與轉檔</label>
-              <label class="perm-item"><input type="checkbox" checked> 統計查詢與檢核</label>
-            </div>
-          </div>
-          <div class="perm-module">
-            <div class="perm-module-header"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg> 止付作業</div>
-            <div class="perm-items">
-              <label class="perm-item"><input type="checkbox" checked> 止付作業入口</label>
-              <label class="perm-item"><input type="checkbox" checked> 案件登錄與檢核</label>
-              <label class="perm-item"><input type="checkbox" checked> 文件產製（電話紀錄表／止付明細／公文）</label>
-              <label class="perm-item"><input type="checkbox" checked> 發文資訊索引維護（主辦人員）</label>
-              <label class="perm-item"><input type="checkbox" checked> 案件追蹤統計</label>
-              <label class="perm-item"><input type="checkbox" checked> 時限設定與異常勾稽（時限／排程設定限主辦人員）</label>
-            </div>
-          </div>
-          <div class="perm-module">
-            <div class="perm-module-header"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><line x1="12" y1="7" x2="12" y2="17"/><path d="M15 9.5c0-1.4-1.3-2.5-3-2.5s-3 1.1-3 2.5 1.3 2 3 2.5 3 1.1 3 2.5-1.3 2.5-3 2.5-3-1.1-3-2.5"/></svg> 課稅管理</div>
-            <div class="perm-items">
-              <label class="perm-item"><input type="checkbox" checked> 課稅計算</label>
-              <label class="perm-item"><input type="checkbox" checked> 報表彙整統計</label>
-              <label class="perm-item"><input type="checkbox"> 定期給與預扣稅額檢核</label>
-            </div>
-          </div>
-          <div class="perm-module">
-            <div class="perm-module-header"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> 定撥作業</div>
-            <div class="perm-items">
-              <label class="perm-item"><input type="checkbox" checked> 定撥前準備</label>
-              <label class="perm-item"><input type="checkbox" checked> 核心定撥執行</label>
-              <label class="perm-item"><input type="checkbox" checked> 報表產製</label>
-              <label class="perm-item"><input type="checkbox" checked> 異常處理</label>
-            </div>
-          </div>
-          <div class="perm-module">
-            <div class="perm-module-header"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> 系統管理</div>
-            <div class="perm-items">
-              <label class="perm-item"><input type="checkbox"> 使用者管理</label>
-              <label class="perm-item"><input type="checkbox"> 權限設定</label>
-              <label class="perm-item"><input type="checkbox"> 模擬登入</label>
-              <label class="perm-item"><input type="checkbox"> 稽核日誌</label>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px">
-        <button class="btn btn-outline" onclick="navigateTo('admin-users')">取消</button>
-        <button class="btn btn-gold" onclick="showToast('success','儲存成功','使用者權限設定已更新，下次登入生效')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> 儲存權限設定</button>
-      </div>
+      <div class="card" style="margin-bottom:16px;padding:10px 14px"><div class="tabs" style="margin-bottom:0">
+        <div class="tab-item active" id="pm-tab-role" onclick="pmTab('role')">角色預設權限矩陣</div>
+        <div class="tab-item" id="pm-tab-user" onclick="pmTab('user')">使用者權限設定</div></div></div>
+      <div id="pm-box"></div>
     </div>
 
     <!-- ===== ADMIN SIMULATE ===== -->
@@ -5930,7 +5643,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       </div>
       <div class="page-header">
         <div class="page-title">公告管理</div>
-        <div class="page-subtitle">設定公告上下架資訊，系統公告可指定於首頁顯示之筆數</div>
+        <div class="page-subtitle">設定公告內容與上下架；「系統公告」於上架期間內，依首頁顯示筆數同步顯示於系統儀表板，逾下架日或手動下架即自動撤下</div>
         <div class="page-actions">
           <button class="btn btn-gold" onclick="openAnnouncementModal()">+ 新增公告</button>
         </div>
@@ -5950,16 +5663,16 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 
       <div class="filter-bar">
         <div class="filter-row">
-          <div class="filter-group"><div class="filter-label">搜尋</div><input type="text" class="filter-control" placeholder="公告標題"></div>
+          <div class="filter-group"><div class="filter-label">搜尋</div><input type="text" class="filter-control" id="ann-q" placeholder="公告標題" oninput="annRender()"></div>
           <div class="filter-group"><div class="filter-label">公告類型</div>
-            <select class="filter-control">
+            <select class="filter-control" id="ann-ft" onchange="annRender()">
               <option>全部</option>
               <option>系統公告</option>
               <option>一般公告</option>
             </select>
           </div>
           <div class="filter-group"><div class="filter-label">狀態</div>
-            <select class="filter-control">
+            <select class="filter-control" id="ann-fs" onchange="annRender()">
               <option>全部</option>
               <option>已上架</option>
               <option>已下架</option>
@@ -5974,62 +5687,13 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div class="table-wrapper">
         <table class="data-table">
           <thead>
-            <tr><th>標題</th><th>類型</th><th>上架日期</th><th>下架日期</th><th>狀態</th><th>建立人</th><th>操作</th></tr>
+            <tr><th>標題</th><th>類型／重要度</th><th>上架日期</th><th>下架日期</th><th>狀態</th><th>建立人</th><th>操作</th></tr>
           </thead>
-          <tbody>
-            <tr>
-              <td><strong>113年12月定撥作業時程通知</strong></td>
-              <td><span class="badge badge-gold">系統公告</span></td>
-              <td>113/12/01</td>
-              <td>113/12/16</td>
-              <td><span class="badge badge-success">已上架</span></td>
-              <td>系統管理員</td>
-              <td>
-                <button class="btn btn-sm btn-outline" onclick="openAnnouncementModal(this)">編輯</button>
-                <button class="btn btn-sm btn-warning" onclick="toggleAnnouncementStatus(this,'down')">下架</button>
-              </td>
-            </tr>
-            <tr>
-              <td><strong>退職所得課稅公式修訂適用說明</strong></td>
-              <td><span class="badge badge-gold">系統公告</span></td>
-              <td>113/11/20</td>
-              <td>113/12/31</td>
-              <td><span class="badge badge-success">已上架</span></td>
-              <td>陳志明</td>
-              <td>
-                <button class="btn btn-sm btn-outline" onclick="openAnnouncementModal(this)">編輯</button>
-                <button class="btn btn-sm btn-warning" onclick="toggleAnnouncementStatus(this,'down')">下架</button>
-              </td>
-            </tr>
-            <tr>
-              <td><strong>系統歲修維護公告（12/22 22:00-24:00）</strong></td>
-              <td><span class="badge badge-primary">一般公告</span></td>
-              <td>113/12/18</td>
-              <td>113/12/23</td>
-              <td><span class="badge badge-info">排程中</span></td>
-              <td>系統管理員</td>
-              <td>
-                <button class="btn btn-sm btn-outline" onclick="openAnnouncementModal(this)">編輯</button>
-                <button class="btn btn-sm btn-outline" disabled>下架</button>
-              </td>
-            </tr>
-            <tr>
-              <td>113年11月報表產製異常修復完成通知</td>
-              <td><span class="badge badge-primary">一般公告</span></td>
-              <td>113/11/05</td>
-              <td>113/11/15</td>
-              <td><span class="badge badge-secondary">已下架</span></td>
-              <td>李小華</td>
-              <td>
-                <button class="btn btn-sm btn-outline" onclick="openAnnouncementModal(this)">編輯</button>
-                <button class="btn btn-sm btn-success" onclick="toggleAnnouncementStatus(this,'up')">上架</button>
-              </td>
-            </tr>
-          </tbody>
+          <tbody id="ann-body"></tbody>
         </table>
         </div>
         <div class="pagination">
-          <div class="pagination-info">顯示 1-4 / 共 4 筆</div>
+          <div class="pagination-info" id="ann-info"></div>
           <div class="pagination-controls">
             <button class="page-btn" disabled>上一頁</button>
             <button class="page-btn active">1</button>
@@ -6836,44 +6500,24 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       <button class="modal-close" onclick="closeModal('announcement-modal')">×</button>
     </div>
     <div class="modal-body">
-      <div class="form-row cols-2">
-        <div class="form-group">
-          <label class="form-label">公告類型 <span class="required">*</span></label>
-          <select class="form-control" id="announcement-type">
-            <option>系統公告</option>
-            <option>一般公告</option>
-          </select>
-          <div class="form-hint">系統公告將依「首頁顯示筆數」設定顯示於系統儀表板</div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">狀態</label>
-          <select class="form-control">
-            <option>已上架</option>
-            <option>已下架</option>
-            <option>排程中</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">公告標題 <span class="required">*</span></label>
-        <input type="text" class="form-control" id="announcement-title" placeholder="請輸入公告標題">
-      </div>
-      <div class="form-group">
-        <label class="form-label">公告內容 <span class="required">*</span></label>
-        <textarea class="form-control" rows="5" placeholder="請輸入公告內容"></textarea>
-      </div>
-      <div class="form-row cols-2">
-        <div class="form-group">
-          <label class="form-label">上架日期 <span class="required">*</span></label>
-          <input type="text" class="form-control" placeholder="113/12/10">
-        </div>
-        <div class="form-group">
-          <label class="form-label">下架日期 <span class="required">*</span></label>
-          <input type="text" class="form-control" placeholder="113/12/31">
-        </div>
-      </div>
-    </div>
-    <div class="modal-footer">
+<input type="hidden" id="ann-id">
+<div class="form-row cols-2">
+<div class="form-group"><label class="form-label">公告類型 <span class="required">*</span></label>
+<select class="form-control" id="announcement-type"><option>系統公告</option><option>一般公告</option></select>
+<div class="form-hint">系統公告將依「首頁顯示筆數」設定顯示於系統儀表板</div></div>
+<div class="form-group"><label class="form-label">重要度</label>
+<select class="form-control" id="ann-sev"><option>緊急</option><option selected>通知</option><option>一般</option></select>
+<div class="form-hint">「緊急」之系統公告將同時顯示於首頁頂端橫幅</div></div>
+</div>
+<div class="form-group"><label class="form-label">公告標題 <span class="required">*</span></label><input type="text" class="form-control" id="announcement-title" placeholder="請輸入公告標題"></div>
+<div class="form-group"><label class="form-label">公告內容 <span class="required">*</span></label><textarea class="form-control" rows="5" id="ann-content" placeholder="請輸入公告內容"></textarea></div>
+<div class="form-row cols-2">
+<div class="form-group"><label class="form-label">上架日期 <span class="required">*</span></label><input type="text" class="form-control" id="ann-up" placeholder="113/12/10"></div>
+<div class="form-group"><label class="form-label">下架日期 <span class="required">*</span></label><input type="text" class="form-control" id="ann-down" placeholder="113/12/31"></div>
+</div>
+<div class="form-hint">狀態由上下架日期自動判定（上架日未到＝排程中、逾下架日＝已下架），亦可於清單手動上架／下架。</div>
+</div>
+<div class="modal-footer">
       <button class="btn btn-outline" onclick="closeModal('announcement-modal')">取消</button>
       <button class="btn btn-gold" onclick="saveAnnouncement()"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> 儲存</button>
     </div>
@@ -7072,8 +6716,8 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div style="width:64px;height:64px;flex-shrink:0;background:linear-gradient(135deg,var(--accent-gold),#b8922a);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:calc(24px * var(--font-scale));font-weight:700;color:#fff">王</div>
         <div>
           <div style="font-size:calc(16px * var(--font-scale));font-weight:700;color:var(--text-primary)">王大明</div>
-          <div style="font-size:calc(13px * var(--font-scale));color:var(--text-secondary);margin-top:2px">給付科 · 承辦人</div>
-          <div style="margin-top:6px"><span class="badge badge-info">一般使用者</span></div>
+          <div style="font-size:calc(13px * var(--font-scale));color:var(--text-secondary);margin-top:2px">給付科 · 承辦人員</div>
+          <div style="margin-top:6px"><span class="badge badge-info">承辦人員</span></div>
         </div>
       </div>
       <div class="info-card" style="margin-bottom:16px">
@@ -7649,59 +7293,6 @@ function confirmDelete() {
 // ===== USER EDIT =====
 function openUserEditModal() {
   openModal('user-edit-modal');
-}
-
-// ===== ANNOUNCEMENT MANAGEMENT =====
-function openAnnouncementModal(btn) {
-  const isEdit = !!btn;
-  document.getElementById('announcement-modal-title').innerHTML = isEdit
-    ? '<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></svg> 編輯公告'
-    : '<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10v4a1 1 0 0 0 1 1h2l4 5V4L6 9H4a1 1 0 0 0-1 1z"/><path d="M15 8a4 4 0 0 1 0 8"/><path d="M18 5a8 8 0 0 1 0 14"/></svg> 新增公告';
-  if (isEdit) {
-    const row = btn.closest('tr');
-    const title = row.children[0].textContent.trim();
-    document.getElementById('announcement-title').value = title;
-  } else {
-    document.getElementById('announcement-title').value = '';
-  }
-  openModal('announcement-modal');
-}
-
-function saveAnnouncement() {
-  const title = document.getElementById('announcement-title').value.trim();
-  if (!title) {
-    showToast('error', '請確認輸入', '公告標題為必填欄位');
-    return;
-  }
-  closeModal('announcement-modal');
-  showToast('success', '儲存成功', '公告資料已儲存，請於清單確認上下架狀態');
-}
-
-function toggleAnnouncementStatus(btn, action) {
-  const row = btn.closest('tr');
-  const statusCell = row.children[4];
-  if (action === 'down') {
-    statusCell.innerHTML = '<span class="badge badge-secondary">已下架</span>';
-    btn.className = 'btn btn-sm btn-success';
-    btn.textContent = '上架';
-    btn.setAttribute('onclick', "toggleAnnouncementStatus(this,'up')");
-    showToast('success', '公告已下架', '該公告已自首頁及公告清單下架');
-  } else {
-    statusCell.innerHTML = '<span class="badge badge-success">已上架</span>';
-    btn.className = 'btn btn-sm btn-warning';
-    btn.textContent = '下架';
-    btn.setAttribute('onclick', "toggleAnnouncementStatus(this,'down')");
-    showToast('success', '公告已上架', '該公告已重新上架顯示');
-  }
-}
-
-function saveAnnouncementDisplayCount() {
-  const val = document.getElementById('announcement-display-count').value;
-  if (!val || val < 1) {
-    showToast('error', '請確認輸入', '顯示筆數需為 1 以上的數字');
-    return;
-  }
-  showToast('success', '設定已儲存', `系統公告首頁顯示筆數已更新為 ${val} 筆`);
 }
 
 // ===== INTERFACE MANAGEMENT =====
@@ -12659,14 +12250,14 @@ navigateTo = function (id) { _navMB(id); if (id === 'monthly-bank') { const sm =
 
 <script>
 /* ===== V19：軍公教人員調薪作業（示意資料） ===== */
-const SAL={scale:[],adj:[],ret:[],rec:[],flt:'全部',nid:3,today:'115/10/20',
+const SAL={scale:[],adj:[],ret:[],rec:[],flt:'全部',nid:3,today:'113/12/10',
  rd:{id:1,calc:null,written:false},
- act:{ann:'115/03/20',pay:'115/05/01',chk:false,del:false,wr:false,onl:false,stand:null,delCnt:0,log:[]}};
+ act:{ann:'113/03/20',pay:'113/05/01',chk:false,del:false,wr:false,onl:false,stand:null,delCnt:0,log:[]}};
 (function(){
  const cats=['軍職本俸','公務本俸','教育本俸'],pts=[250,400,550,700];
- cats.forEach(c=>pts.forEach(p=>{SAL.scale.push({c,p,a:Math.round(p*143),f:'113/01/01',t:'114/12/31'});SAL.scale.push({c,p,a:Math.round(p*148),f:'115/01/01',t:'999/12/31'});}));
- SAL.adj=[{id:1,tgt:'軍、公、教退休(職)、退伍、撫卹(育)人員',rate:3.0,eff:'115/01/01',ann:'115/03/20',pay:'115/05/01'},
-          {id:2,tgt:'軍、公、教退休(職)、退伍、撫卹(育)人員',rate:2.0,eff:'114/01/01',ann:'113/12/20',pay:'114/01/01'}];
+ cats.forEach(c=>pts.forEach(p=>{SAL.scale.push({c,p,a:Math.round(p*143),f:'111/01/01',t:'112/12/31'});SAL.scale.push({c,p,a:Math.round(p*148),f:'113/01/01',t:'999/12/31'});}));
+ SAL.adj=[{id:1,tgt:'軍、公、教退休(職)、退伍、撫卹(育)人員',rate:3.0,eff:'113/01/01',ann:'113/03/20',pay:'113/05/01'},
+          {id:2,tgt:'軍、公、教退休(職)、退伍、撫卹(育)人員',rate:2.0,eff:'112/01/01',ann:'111/12/20',pay:'112/01/01'}];
  SAL.ret=[['王建國','A123***789','軍職月退',52000],['林美玲','F223***456','公務月退',48500],['陳志豪','H121***332','教育月退',61200],['張淑芬','E222***018','公務遺屬',24800],['李文彬','B120***654','軍職月退',45600],['黃雅惠','D221***907','教育月退',57300]];
 })();
 const sfm=n=>Number(n).toLocaleString('en-US');
@@ -12690,11 +12281,11 @@ function salScale(){
  <div class="form-row cols-4"><div class="form-group"><label class="form-label">俸點類別</label><select class="form-control" id="ss-c">${cats.map(c=>`<option>${c}</option>`).join('')}</select></div>
  <div class="form-group"><label class="form-label">俸點</label><input class="form-control" id="ss-p" type="number" min="1" placeholder="如 400"></div>
  <div class="form-group"><label class="form-label">俸額（元）</label><input class="form-control" id="ss-a" type="number" min="1" placeholder="如 59200"></div>
- <div class="form-group"><label class="form-label">生效日／迄日（民國 yyy/mm/dd）</label><div style="display:flex;gap:6px"><input class="form-control" id="ss-f" placeholder="115/01/01"><input class="form-control" id="ss-t" value="999/12/31"></div></div></div>
+ <div class="form-group"><label class="form-label">生效日／迄日（民國 yyy/mm/dd）</label><div style="display:flex;gap:6px"><input class="form-control" id="ss-f" placeholder="113/01/01"><input class="form-control" id="ss-t" value="999/12/31"></div></div></div>
  <div class="page-actions"><button class="btn btn-gold btn-sm" onclick="salScaleAdd()">新增</button></div>
  <div class="form-hint">同一類別＋俸點之生效期間不得重疊；新生效日晚於現行無迄日版次時，系統自動將舊版迄日改為新生效日前一日。</div></div>
  <div class="card" style="margin-bottom:16px"><div class="card-title" style="margin-bottom:8px">整批產生新版次（依調幅）</div>
- <div class="form-row cols-4"><div class="form-group"><label class="form-label">新生效日</label><input class="form-control" id="sb-f" placeholder="116/01/01"></div>
+ <div class="form-row cols-4"><div class="form-group"><label class="form-label">新生效日</label><input class="form-control" id="sb-f" placeholder="114/01/01"></div>
  <div class="form-group"><label class="form-label">調薪幅度（%）</label><input class="form-control" id="sb-r" type="number" step="0.01" placeholder="如 3"></div>
  <div class="form-group" style="grid-column:span 2"><label class="form-label">說明</label><div class="form-hint" style="padding-top:8px">以各類別現行版次俸額 × (1＋幅度) 四捨五入產生新版；實際俸額以法令公告對照表為準，產生後可由業務組逐筆調整。</div></div></div>
  <div class="page-actions"><button class="btn btn-outline-primary btn-sm" onclick="salScaleBatch()">整批產生</button></div></div>
@@ -12705,7 +12296,7 @@ function salScale(){
 function salScaleAdd(){
  const c=sEl('ss-c').value,p=+sEl('ss-p').value,a=+sEl('ss-a').value,f=sEl('ss-f').value.trim(),t=sEl('ss-t').value.trim();
  if(!(p>0)||!(a>0))return sErr('欄位不完整','俸點、俸額須為大於 0 之數值');
- if(!sOk(f)||!sOk(t))return sErr('日期格式錯誤','請輸入民國年 yyy/mm/dd，如 115/01/01');
+ if(!sOk(f)||!sOk(t))return sErr('日期格式錯誤','請輸入民國年 yyy/mm/dd，如 113/01/01');
  if(f>t)return sErr('日期錯誤','生效日不得晚於迄日');
  const same=SAL.scale.filter(r=>r.c===c&&r.p===p);
  for(const r of same){ if(r.f<=t&&f<=r.t){ if(r.t==='999/12/31'&&f>r.f){continue;} return sErr('期間重疊',`${c} 俸點 ${p} 已有 ${r.f}～${r.t==='999/12/31'?'無迄日':r.t} 版次，期間重疊`);} }
@@ -12729,9 +12320,9 @@ function salRet(){
  return `<div class="card" style="margin-bottom:16px"><div class="card-title" style="margin-bottom:8px">新增調薪資料</div>
  <div class="form-row cols-4"><div class="form-group"><label class="form-label">適用對象</label><select class="form-control" id="sr-t"><option>軍、公、教退休(職)、退伍、撫卹(育)人員</option><option>軍職退伍人員</option><option>公務人員退休(職)人員</option><option>教育人員退休人員</option></select></div>
  <div class="form-group"><label class="form-label">調薪幅度（%）</label><input class="form-control" id="sr-r" type="number" step="0.01" placeholder="如 3"></div>
- <div class="form-group"><label class="form-label">法令生效日</label><input class="form-control" id="sr-e" placeholder="116/01/01"></div>
- <div class="form-group"><label class="form-label">公告日</label><input class="form-control" id="sr-a" placeholder="115/12/20"></div></div>
- <div class="form-row cols-4"><div class="form-group"><label class="form-label">實際發放起月（首次按新標準發放）</label><input class="form-control" id="sr-p" placeholder="116/02/01"></div></div>
+ <div class="form-group"><label class="form-label">法令生效日</label><input class="form-control" id="sr-e" placeholder="114/01/01"></div>
+ <div class="form-group"><label class="form-label">公告日</label><input class="form-control" id="sr-a" placeholder="113/12/20"></div></div>
+ <div class="form-row cols-4"><div class="form-group"><label class="form-label">實際發放起月（首次按新標準發放）</label><input class="form-control" id="sr-p" placeholder="114/02/01"></div></div>
  <div class="page-actions"><button class="btn btn-gold btn-sm" onclick="salAdjAdd()">新增</button></div></div>
  <div class="card"><div class="card-title" style="margin-bottom:8px">退職人員調薪資料表</div><div class="table-wrapper"><table class="data-table"><thead><tr><th>適用對象</th><th>調薪幅度</th><th>生效日</th><th>公告日</th><th>實際發放起月</th><th>差額月數</th><th>處理</th></tr></thead><tbody>${[...SAL.adj].sort((a,b)=>b.eff.localeCompare(a.eff)).map(a=>{const m=sM(a.eff,a.pay);return `<tr><td>${a.tgt}</td><td>${a.rate.toFixed(2)}%</td><td>${a.eff}</td><td>${a.ann}</td><td>${a.pay}</td><td>${m>0?`<span class="badge badge-warning">${m} 個月</span>`:'<span class="badge badge-success">無差額</span>'}</td><td>${m>0?`<button class="btn btn-sm btn-gold" onclick="SAL.rd={id:${a.id},calc:null,written:false};navigateTo('salary-retdiff')">差額處理</button>`:'-'}</td></tr>`;}).join('')}</tbody></table></div>
  <div class="form-hint" style="margin-top:8px">法令生效日早於實際發放起月者，期間差額須於「退職調薪差額處理」補發並寫入支領紀錄檔。</div></div>`;
@@ -12770,7 +12361,7 @@ function salRdWrite(){
  const R=SAL.rd,C=R.calc;if(!C||C.m<=0||R.written)return;
  const b='ADJ'+SAL.today.replace(/\//g,'')+String(SAL.rec.length?(+SAL.rec[SAL.rec.length-1].b.slice(-2)+1):1).padStart(2,'0'),t=sNow();
  C.rows.forEach(r=>SAL.rec.push({t,b,n:r.n,i:'調薪差額（'+r.k+'）',p:C.s+'～'+C.e,a:r.t}));
- R.written=true;sAudit('調薪',`退職調薪差額寫入支領紀錄檔，批號 ${b}，${C.rows.length} 筆`);
+ R.written=true;C.a.done=true;sAudit('調薪',`退職調薪差額寫入支領紀錄檔，批號 ${b}，${C.rows.length} 筆`);
  showToast('success','已寫入支領紀錄檔',`批號 ${b}，共 ${C.rows.length} 筆差額款項`);salRender('salary-retdiff');
 }
 function salRdReport(){
@@ -12835,6 +12426,252 @@ function salRender(id){
 const _navSal=navigateTo;
 navigateTo=function(id){_navSal(id);if(id.indexOf('salary-')===0){const sm=sEl('submenu-salary');if(sm){sm.classList.add('open');sEl('menu-salary').classList.add('expanded');}
  salRender(id);document.querySelectorAll('.sidebar-sub-item').forEach(e=>{if((e.getAttribute('onclick')||'').indexOf("'"+id+"'")>-1)e.classList.add('active');});}};
+</script>
+
+<script>
+/* ===== V26：權限設定（角色預設權限矩陣＋使用者權限） ===== */
+const PM={tab:'role',mod:'全部',u:'王大明',du:null,
+ roles:[['ADM','最高管理者','資訊室系統維運；業務功能預設僅檢視（權責分離），系統管理功能完整權限'],['UNIT','單位管理者','科長／覆核主管：核符、覆核核准、管理本單位使用者'],['HOST','業務組主辦人','軍／公／教科主辦：確認異動名單、設定本科名單與時限'],['STAFF','承辦人員','一般承辦：資料建置、計算、產製，依自身管轄範圍'],['QRY','查詢人員','唯讀查詢，不得新增、修改或註銷'],['AUD','稽核人員','稽核日誌及各項紀錄唯讀查核，可匯出稽核資料']],
+ lv:['無','檢視','操作','核准／管理'],
+ /* 順序：最高管理者、單位管理者、業務組主辦人、承辦人員、查詢人員、稽核人員 */
+ fns:[
+ ['共通','dashboard','首頁（儀表板）','111111'],['共通','site-help','網站說明','111111'],
+ ['課稅管理','tax-calc','課稅計算','132211'],['課稅管理','tax-uncalc','未計算稅額案件通知','132211'],['課稅管理','tax-case','課稅案件管理（註銷須覆核）','132211'],['課稅管理','tax-recalc','重審差異管理','132211'],['課稅管理','tax-report','報表彙整統計','132211'],['課稅管理','tax-voucher','扣繳憑單產製','132201'],['課稅管理','tax-audit','定期給與預扣稅額檢核','132001'],
+ ['直撥登錄','direct-register','手動直撥建置','112201'],['直撥登錄','supervisor-approval','科長核符作業','031001'],['直撥登錄','direct-letter','書函產製','132201'],['直撥登錄','direct-query','查詢與統計','111111'],
+ ['定撥作業','monthly-dashboard','定撥儀表板','111111'],['定撥作業','monthly-prep','定撥前準備','132201'],['定撥作業','admin-monthly-audit-perm','定撥作業查核權限設定（主辦人名單）','312001'],['定撥作業','monthly-exec','核心定撥執行','132201'],['定撥作業','monthly-change','定撥資料異動（主辦確認）','113201'],['定撥作業','monthly-bank','銀行媒體檔及回饋處理','113201'],['定撥作業','monthly-report','報表產製','132211'],['定撥作業','monthly-anomaly','異常處理','132201'],
+ ['調薪作業','salary-scale','現職俸額對照檔維護','132001'],['調薪作業','salary-ret','退職調薪資料表','132001'],['調薪作業','salary-retdiff','退職調薪差額處理','132201'],['調薪作業','salary-active','現職調薪差額處理（刪除／寫入憑證版資料庫）','232001'],
+ ['外部資料交換','extdata-military','軍職資料','212101'],['外部資料交換','extdata-labor','勞保局資料','212101'],['外部資料交換','extdata-veterans','退輔會資料','212101'],['外部資料交換','extdata-mohw','衛生福利部資料','212101'],
+ ['溢領管理','overflow-single','單筆溢領控管','132201'],['溢領管理','overflow-batch','批次溢領計算','132201'],['溢領管理','overflow-docs','追繳與圈存函表','132201'],['溢領管理','overflow-recovery','溢領收回與轉檔','132201'],['溢領管理','overflow-stats','統計查詢與檢核','111111'],
+ ['止付作業','stop-payment','止付作業入口','132201'],['止付作業','stop-register','案件登錄與檢核','132201'],['止付作業','stop-docs','文件產製','132201'],['止付作業','stop-index','發文資訊索引維護（限主辦）','132101'],['止付作業','stop-tracking','案件追蹤統計','111111'],['止付作業','stop-recon','時限設定與異常勾稽（設定限主辦）','132101'],
+ ['查詢作業','query-individual','個人支領查詢','111111'],['查詢作業','query-batch','批次查詢','111111'],['查詢作業','query-flexible','彈性報表','111101'],
+ ['函釋管理','ruling-search','函釋查詢','111111'],['函釋管理','ruling-maintain','資料維護','132001'],
+ ['系統管理','admin-users','使用者管理（單位管理者限本單位）','320001'],['系統管理','admin-permissions','權限設定','310001'],['系統管理','admin-simulate','模擬登入','300000'],['系統管理','admin-audit','稽核日誌','110002'],['系統管理','admin-announcements','公告管理','300000'],['系統管理','admin-workday','工作日管理','310000'],['系統管理','admin-interface','介接管理','300001'],['系統管理','admin-tax-params','課稅參數設定','132001'],['系統管理','admin-site-help','網站說明管理','320000'],['系統管理','admin-menu-config','功能表管理','300001']],
+ sys:{},cur:{},users:{}};
+(function(){
+ PM.roles.forEach((r,i)=>{PM.sys[r[0]]={};PM.cur[r[0]]={};PM.fns.forEach(f=>{PM.sys[r[0]][f[1]]=+f[3][i];PM.cur[r[0]][f[1]]=+f[3][i];});});
+ [['王大明','A123***789','給付科','STAFF'],['李小華','B234***890','給付科','STAFF'],['陳志明','C345***901','給付科','UNIT'],['系統管理員','Z999***999','資訊室','ADM'],['周靜怡','D221***907','給付科','HOST'],['吳宗翰','E122***018','給付科','QRY'],['鄭佩珊','F223***456','稽核科','AUD']].forEach(u=>PM.users[u[0]]={id:u[1],dept:u[2],role:u[3],ov:{}});
+})();
+const pmRN=k=>PM.roles.find(r=>r[0]===k)[1];
+const pmEl=i=>document.getElementById(i);
+const pmFnName=id=>PM.fns.find(f=>f[1]===id)[2];
+/* 權責分離規則：p 為 功能→等級 */
+const PM_SOD=[
+ [p=>p['direct-register']>=2&&p['supervisor-approval']>=3,'直撥建置（操作）與科長核符（核准）不得由同一人兼任'],
+ [p=>p['admin-users']>=2&&p['admin-audit']>=2,'帳號管理與稽核日誌查核不得由同一人兼任'],
+ [p=>p['admin-simulate']>=3&&p['admin-audit']>=2,'模擬登入與稽核查核不得由同一人兼任'],
+ [p=>p['admin-permissions']>=3&&p['admin-audit']>=2,'權限設定與稽核日誌查核不得由同一人兼任'],
+ [p=>p['salary-active']>=2&&p['supervisor-approval']>=3&&p['monthly-bank']>=2,'調薪寫入資料庫、核符與銀行媒體檔產製不得集中於同一人']];
+function pmSod(p,role){
+ const out=PM_SOD.filter(r=>r[0](p)).map(r=>r[1]);
+ if(role==='QRY'||role==='AUD'){const bad=PM.fns.filter(f=>p[f[1]]>=2&&!(role==='AUD'&&f[1]==='admin-audit'));if(bad.length)out.push((role==='QRY'?'查詢人員':'稽核人員')+'應為唯讀角色，但下列功能具操作以上權限：'+bad.slice(0,4).map(f=>f[2]).join('、')+(bad.length>4?' 等 '+bad.length+' 項':''));}
+ return out;
+}
+function pmTab(t){PM.tab=t;pmEl('pm-tab-role').classList.toggle('active',t==='role');pmEl('pm-tab-user').classList.toggle('active',t==='user');pmRender();}
+function pmGoUser(n){PM.tab='user';PM.u=n;PM.du=null;navigateTo('admin-permissions');}
+const pmOpts=v=>PM.lv.map((t,i)=>`<option value="${i}" ${i===v?'selected':''}>${i} ${t}</option>`).join('');
+const pmLegend='<div class="form-hint" style="margin-bottom:8px">等級：<b>0 無</b>（功能表不顯示）／<b>1 檢視</b>（查詢、瀏覽）／<b>2 操作</b>（新增、修改、產製、匯出）／<b>3 核准／管理</b>（核符、覆核、刪除、參數與帳號管理）。橘框表示與系統建議預設不同。</div>';
+
+/* ---- 角色矩陣 ---- */
+function pmMatrix(){
+ const mods=['全部',...new Set(PM.fns.map(f=>f[0]))];let g='',rows='';
+ PM.fns.filter(f=>PM.mod==='全部'||f[0]===PM.mod).forEach(f=>{
+  if(f[0]!==g){g=f[0];rows+=`<tr class="pm-g"><td colspan="7">${g}</td></tr>`;}
+  rows+=`<tr><td class="pm-fn">${f[2]}<div class="pm-id">${f[1]}</div></td>`+PM.roles.map(r=>{const v=PM.cur[r[0]][f[1]];return `<td><select class="pm-sel lv${v}${v!==PM.sys[r[0]][f[1]]?' pm-dif':''}" onchange="pmSet('${r[0]}','${f[1]}',this)">${pmOpts(v)}</select></td>`;}).join('')+'</tr>';});
+ const cnt=PM.roles.map(r=>{const v=Object.values(PM.cur[r[0]]);return `<td style="text-align:center">${v.filter(x=>x>=1).length} ／ ${v.filter(x=>x>=2).length} ／ ${v.filter(x=>x>=3).length}</td>`;}).join('');
+ const nd=PM.roles.reduce((n,r)=>n+PM.fns.filter(f=>PM.cur[r[0]][f[1]]!==PM.sys[r[0]][f[1]]).length,0);
+ return `<div class="card"><div class="card-header"><div><div class="card-title">角色預設權限矩陣</div><div class="card-subtitle">共 ${PM.fns.length} 項功能 × ${PM.roles.length} 種角色；與系統建議不同：<b>${nd}</b> 格</div></div>
+ <div style="display:flex;gap:8px;flex-wrap:wrap"><select class="form-control" style="width:auto" onchange="PM.mod=this.value;pmRender()">${mods.map(m=>`<option ${PM.mod===m?'selected':''}>${m}</option>`).join('')}</select>
+ <button class="btn btn-outline btn-sm" onclick="pmCheckAll()">檢核權責分離</button><button class="btn btn-outline btn-sm" onclick="pmResetRole()">還原系統建議</button><button class="btn btn-success btn-sm" onclick="runDownload('功能權限矩陣','xlsx')">匯出</button><button class="btn btn-gold btn-sm" onclick="pmSaveRole()">儲存預設</button></div></div>
+ ${pmLegend}<div class="pm-wrap"><table class="pm-tbl"><thead><tr><th>功能項目</th>${PM.roles.map(r=>`<th title="${r[2]}">${r[1]}</th>`).join('')}</tr></thead><tbody>${rows}<tr class="pm-g"><td>統計：檢視以上 ／ 操作以上 ／ 核准管理</td><td colspan="6"></td></tr><tr><td>項數</td>${cnt}</tr></tbody></table></div>
+ <div class="card" style="margin-top:12px;padding:10px 14px"><div class="card-subtitle" style="margin-bottom:4px">角色說明</div>${PM.roles.map(r=>`<div style="font-size:calc(12.5px * var(--font-scale));margin:2px 0"><b>${r[1]}</b>：${r[2]}</div>`).join('')}</div></div>`;
+}
+function pmSet(r,id,el){const v=+el.value;PM.cur[r][id]=v;el.className='pm-sel lv'+v+(v!==PM.sys[r][id]?' pm-dif':'');}
+function pmResetRole(){if(!confirm('將所有角色預設權限還原為系統建議值？'))return;PM.roles.forEach(r=>Object.assign(PM.cur[r[0]],PM.sys[r[0]]));showToast('warning','已還原','請按「儲存預設」使其生效');pmRender();}
+function pmCheckAll(){
+ const res=PM.roles.map(r=>[r[1],pmSod(PM.cur[r[0]],r[0])]),bad=res.filter(x=>x[1].length);
+ openDetailModal('權責分離檢核結果',bad.length?`<div class="info-card danger" style="margin-bottom:10px">共 ${bad.length} 種角色不符權責分離原則，請調整後再儲存。</div><table class="data-table"><thead><tr><th>角色</th><th>違反項目</th></tr></thead><tbody>${bad.map(x=>`<tr><td>${x[0]}</td><td>${x[1].join('<br>')}</td></tr>`).join('')}</tbody></table>`:`<div class="info-card success">${PM.roles.length} 種角色預設權限均通過權責分離檢核（共 ${PM_SOD.length+2} 項規則）。</div>`,'權責分離檢核','xlsx');
+}
+function pmSaveRole(){
+ const bad=PM.roles.map(r=>[r[1],pmSod(PM.cur[r[0]],r[0])]).filter(x=>x[1].length);
+ if(bad.length){showToast('error','無法儲存','「'+bad[0][0]+'」'+bad[0][1][0]);return;}
+ try{appendAuditLog('權限設定','儲存角色預設權限矩陣');}catch(e){}
+ showToast('success','已儲存','角色預設權限已更新；未自訂之使用者下次登入生效');pmRender();
+}
+
+/* ---- 使用者權限 ---- */
+function pmUser(){
+ if(!PM.du||PM.du.name!==PM.u){const x=PM.users[PM.u];PM.du={name:PM.u,role:x.role,ov:Object.assign({},x.ov)};}
+ const d=PM.du,eff=id=>d.ov[id]!==undefined?d.ov[id]:PM.cur[d.role][id],nov=Object.keys(d.ov).length;let g='',rows='';
+ PM.fns.forEach(f=>{if(f[0]!==g){g=f[0];rows+=`<tr class="pm-g"><td colspan="3">${g}</td></tr>`;}
+  const v=eff(f[1]),df=PM.cur[d.role][f[1]];
+  rows+=`<tr><td class="pm-fn">${f[2]}</td><td style="text-align:center;white-space:nowrap">${df} ${PM.lv[df]}</td><td><select class="pm-sel lv${v}${v!==df?' pm-dif':''}" onchange="pmUSet('${f[1]}',this)">${pmOpts(v)}</select></td></tr>`;});
+ return `<div style="display:grid;grid-template-columns:minmax(260px,1fr) 2fr;gap:20px"><div class="card"><div class="section-title">使用者</div>
+ <select class="form-control" onchange="PM.u=this.value;PM.du=null;pmRender()">${Object.keys(PM.users).map(n=>`<option ${n===PM.u?'selected':''}>${n}（${pmRN(PM.users[n].role)}）</option>`.replace('<option','<option value="'+n+'"')).join('')}</select>
+ <div class="form-hint" style="margin:6px 0 12px">${PM.users[PM.u].dept}｜${PM.users[PM.u].id}</div>
+ <div class="section-title">角色選擇（切換角色將載入該角色預設）</div>${PM.roles.map(r=>`<label class="pm-role ${r[0]===d.role?'on':''}"><input type="radio" name="pmrole" ${r[0]===d.role?'checked':''} onchange="pmURole('${r[0]}')" style="margin-top:3px"><div><div style="font-weight:700">${r[1]}</div><div class="form-hint">${r[2]}</div></div></label>`).join('')}</div>
+ <div class="card"><div class="card-header"><div><div class="card-title">功能權限</div><div class="card-subtitle">自訂調整 <b>${nov}</b> 項（與角色預設不同者）</div></div><div style="display:flex;gap:8px"><button class="btn btn-outline btn-sm" onclick="pmUClear()">套用角色預設</button><button class="btn btn-gold btn-sm" onclick="pmUSave()">儲存權限設定</button></div></div>${pmLegend}
+ <div class="pm-wrap"><table class="pm-tbl"><thead><tr><th>功能項目</th><th>角色預設</th><th>本人權限</th></tr></thead><tbody>${rows}</tbody></table></div></div></div>`;
+}
+function pmURole(r){PM.du.role=r;PM.du.ov={};pmRender();}
+function pmUSet(id,el){const d=PM.du,v=+el.value;if(v===PM.cur[d.role][id])delete d.ov[id];else d.ov[id]=v;el.className='pm-sel lv'+v+(v!==PM.cur[d.role][id]?' pm-dif':'');}
+function pmUClear(){PM.du.ov={};pmRender();}
+function pmUSave(){
+ const d=PM.du,p={};PM.fns.forEach(f=>p[f[1]]=d.ov[f[1]]!==undefined?d.ov[f[1]]:PM.cur[d.role][f[1]]);
+ const bad=pmSod(p,d.role);if(bad.length)return showToast('error','違反權責分離',bad[0]);
+ if(d.role!=='ADM'&&(p['admin-simulate']>=1||p['admin-menu-config']>=2||p['admin-interface']>=2))return showToast('error','超出角色範圍','模擬登入、功能表管理、介接管理僅限最高管理者');
+ Object.assign(PM.users[d.name],{role:d.role,ov:Object.assign({},d.ov)});
+ try{appendAuditLog('權限設定',d.name+' 角色='+pmRN(d.role)+'，自訂 '+Object.keys(d.ov).length+' 項');}catch(e){}
+ showToast('success','儲存成功','使用者權限設定已更新，下次登入生效');pmRender();
+}
+function pmRender(){const b=pmEl('pm-box');if(!b)return;pmEl('pm-tab-role').classList.toggle('active',PM.tab==='role');pmEl('pm-tab-user').classList.toggle('active',PM.tab==='user');b.innerHTML=PM.tab==='role'?pmMatrix():pmUser();}
+const _navPM=navigateTo;
+navigateTo=function(id){_navPM(id);if(id==='admin-permissions'){pmRender();const sm=document.getElementById('submenu-admin');if(sm)sm.classList.add('open');}};
+</script>
+
+<script>
+/* ===== V27：系統儀表板與公告管理連動 ===== */
+const ANN={cnt:3,seq:7,list:[
+ {id:'A1',type:'系統公告',sev:'緊急',title:'113年12月定撥作業時程通知',content:'113年12月定撥前置作業請於12/13前完成；核心定撥預計12/15 09:00執行，請相關承辦人員確認前置作業已完成。',up:'113/12/01',down:'113/12/16',by:'系統管理員',manual:null},
+ {id:'A2',type:'系統公告',sev:'通知',title:'退職所得課稅公式修訂適用說明',content:'配合退職所得課稅規定修訂，課稅計算自本年度起適用新公式，詳見課稅參數設定。',up:'113/11/20',down:'113/12/31',by:'陳志明',manual:null},
+ {id:'A3',type:'系統公告',sev:'通知',title:'溢領管理系統 v2.3.1 更新說明',content:'本次更新包含溢領收回轉檔欄位調整及統計報表匯出修正。',up:'113/12/08',down:'113/12/31',by:'系統管理員',manual:null},
+ {id:'A4',type:'系統公告',sev:'一般',title:'113年度扣繳憑單產製時程公告',content:'113年度扣繳憑單預計於114年1月產製，請承辦人員於12月底前完成課稅案件確認。',up:'113/12/05',down:'114/01/31',by:'系統管理員',manual:null},
+ {id:'A5',type:'一般公告',sev:'通知',title:'系統歲修維護公告（12/22 22:00-24:00）',content:'系統將於12/22 22:00至24:00進行歲修維護，期間暫停服務，請提前儲存作業。',up:'113/12/18',down:'113/12/23',by:'系統管理員',manual:null},
+ {id:'A6',type:'一般公告',sev:'一般',title:'113年11月報表產製異常修復完成通知',content:'11月報表產製異常已修復完成，可重新產製。',up:'113/11/05',down:'113/11/15',by:'李小華',manual:null}]};
+const dT=()=>ROC_TODAY.y+'/'+String(ROC_TODAY.m).padStart(2,'0')+'/'+String(ROC_TODAY.d).padStart(2,'0');
+const dD=s=>{const p=s.slice(0,9).split('/').map(Number);return new Date(p[0]+1911,p[1]-1,p[2]);};
+const dDays=(a,b)=>Math.round((dD(b)-dD(a))/864e5);
+const dOk=s=>/^\d{3}\/\d{2}\/\d{2}$/.test(s)&&!isNaN(dD(s))&&dD(s).getDate()===+s.slice(7);
+const dEl=i=>document.getElementById(i);
+const dFm=n=>Number(n).toLocaleString('en-US');
+const annSt=a=>{const t=dT();return a.manual==='down'?'down':a.up>t?'sched':a.down<t?'down':'up';};
+const annLbl={up:['success','已上架'],down:['secondary','已下架'],sched:['info','排程中']};
+const annTag=v=>v==='緊急'?'urgent':v==='通知'?'info':'normal';
+const annLive=()=>ANN.list.filter(a=>a.type==='系統公告'&&annSt(a)==='up').sort((x,y)=>y.up.localeCompare(x.up)||y.id.localeCompare(x.id));
+
+/* ---- 公告管理 ---- */
+function annRender(){
+ const q=(dEl('ann-q')||{}).value||'',ft=dEl('ann-ft').value,fs=dEl('ann-fs').value;
+ const rows=ANN.list.filter(a=>(!q||a.title.includes(q.trim()))&&(ft==='全部'||a.type===ft)&&(fs==='全部'||annLbl[annSt(a)][1]===fs)).sort((x,y)=>y.up.localeCompare(x.up));
+ dEl('ann-body').innerHTML=rows.map(a=>{const st=annSt(a);return `<tr><td><strong>${a.title}</strong></td><td><span class="badge badge-${a.type==='系統公告'?'gold':'primary'}">${a.type}</span> <span class="announcement-tag ${annTag(a.sev)}">${a.sev}</span></td><td>${a.up}</td><td>${a.down}</td><td><span class="badge badge-${annLbl[st][0]}">${annLbl[st][1]}</span></td><td>${a.by}</td><td><button class="btn btn-sm btn-outline" onclick="openAnnouncementModal('${a.id}')">編輯</button> ${st==='up'?`<button class="btn btn-sm btn-warning" onclick="toggleAnnouncementStatus('${a.id}','down')">下架</button>`:`<button class="btn btn-sm btn-success" onclick="toggleAnnouncementStatus('${a.id}','up')">${st==='sched'?'提前上架':'上架'}</button>`}</td></tr>`;}).join('')||'<tr><td colspan="7" style="text-align:center;color:var(--text-secondary)">無符合條件之公告</td></tr>';
+ dEl('ann-info').textContent='顯示 '+(rows.length?1:0)+'-'+rows.length+' / 共 '+rows.length+' 筆（系統公告目前首頁上架 '+annLive().length+' 筆，顯示前 '+ANN.cnt+' 筆）';
+ dEl('announcement-display-count').value=ANN.cnt;
+}
+function openAnnouncementModal(id){
+ const a=id?ANN.list.find(x=>x.id===id):null;
+ dEl('announcement-modal-title').textContent=a?'編輯公告':'新增公告';
+ dEl('ann-id').value=a?a.id:'';dEl('announcement-type').value=a?a.type:'系統公告';dEl('ann-sev').value=a?a.sev:'通知';
+ dEl('announcement-title').value=a?a.title:'';dEl('ann-content').value=a?a.content:'';dEl('ann-up').value=a?a.up:dT();dEl('ann-down').value=a?a.down:'';
+ openModal('announcement-modal');
+}
+function saveAnnouncement(){
+ const id=dEl('ann-id').value,t=dEl('announcement-title').value.trim(),c=dEl('ann-content').value.trim(),u=dEl('ann-up').value.trim(),d=dEl('ann-down').value.trim();
+ if(!t||!c)return showToast('error','請確認輸入','公告標題與內容為必填欄位');
+ if(!dOk(u)||!dOk(d))return showToast('error','日期格式錯誤','請輸入民國年 yyy/mm/dd，如 113/12/10');
+ if(u>d)return showToast('error','日期錯誤','上架日期不得晚於下架日期');
+ const o={type:dEl('announcement-type').value,sev:dEl('ann-sev').value,title:t,content:c,up:u,down:d};
+ if(id){const a=ANN.list.find(x=>x.id===id);Object.assign(a,o);}
+ else ANN.list.push(Object.assign({id:'A'+(ANN.seq++),by:'系統管理員',manual:null},o));
+ try{appendAuditLog('公告管理',(id?'修改':'新增')+'公告：'+t);}catch(e){}
+ closeModal('announcement-modal');showToast('success','儲存成功','公告已儲存，狀態：'+annLbl[annSt(ANN.list.find(x=>x.title===t))][1]+'；首頁公告已同步');annRender();dashRender();
+}
+function toggleAnnouncementStatus(id,act){
+ const a=ANN.list.find(x=>x.id===id),t=dT();
+ if(act==='down'){a.manual='down';showToast('success','公告已下架','該公告已自首頁及公告清單下架');}
+ else{
+  if(a.down<t)return showToast('error','無法上架','下架日期 '+a.down+' 已過，請先編輯延長下架日期');
+  a.manual=null;if(a.up>t)a.up=t;showToast('success','公告已上架','該公告已上架'+(a.type==='系統公告'?'，並同步顯示於首頁':''));
+ }
+ try{appendAuditLog('公告管理',(act==='down'?'下架':'上架')+'公告：'+a.title);}catch(e){}
+ annRender();dashRender();
+}
+function saveAnnouncementDisplayCount(){
+ const v=+dEl('announcement-display-count').value;
+ if(!Number.isInteger(v)||v<1||v>10)return showToast('error','請確認輸入','顯示筆數需為 1～10 的整數');
+ ANN.cnt=v;showToast('success','設定已儲存','系統公告首頁顯示筆數已更新為 '+v+' 筆');annRender();dashRender();
+}
+function dashAnn(id){const a=ANN.list.find(x=>x.id===id);openDetailModal(a.title,`<div class="info-card"><div class="info-row"><div class="info-key">類型／重要度</div><div class="info-val">${a.type}／${a.sev}</div></div><div class="info-row"><div class="info-key">上下架期間</div><div class="info-val">${a.up} ～ ${a.down}</div></div><div class="info-row"><div class="info-key">發布人</div><div class="info-val">${a.by}</div></div></div><div style="margin-top:12px;line-height:1.8">${a.content}</div>`);}
+
+/* ---- 統計來源（各模組實際資料） ---- */
+const dLvl=fn=>{const u=PM.users['王大明'];const o=u.ov[fn];return o!==undefined?o:PM.cur[u.role][fn];};
+function dOvf(){ /* 溢領管理：讀取「統計查詢與檢核」之統計卡 */
+ const o={};document.querySelectorAll('#view-overflow-stats .stats-grid .stat-card').forEach(c=>{const k=c.querySelector('.stat-label').textContent.trim();o[k]={n:+c.querySelector('.stat-value').textContent.replace(/,/g,''),sub:c.querySelector('.stat-sub').textContent.trim()};});
+ const amt=k=>+((o[k]&&o[k].sub.match(/[\d,]+/)||['0'])[0].replace(/,/g,''));
+ return {total:o['溢領案件總數'].n,done:o['已收回'].n,part:o['部分/分期'].n,open:o['未收回'].n,openAmt:amt('未收回'),partAmt:amt('部分/分期')};
+}
+function dMonthly(){
+ const M=execProgramMeta,P=execProgressByStage,w=st=>[1,2,3].reduce((a,n)=>a+M[n].total*Math.min(100,P[st][n]),0)/[1,2,3].reduce((a,n)=>a+M[n].total,0);
+ const stage=w('calc2')>0?'calc2':'calc1',pct=Math.round(w(stage)),m=(dEl('view-monthly-anomaly').textContent.match(/共\s*(\d+)\s*筆/)||[0,0])[1];
+ const rep=typeof reportDone==='number'?reportDone:0,prep=w('calc1')>0||w('calc2')>0;
+ return {stage:stage==='calc2'?'二算':'一算',pct,core:pct>=100?'完成':pct>0?'執行中':'待執行',prep,rep,repTotal:REPORT_TOTAL,anom:+m,ym:MH_CUR};
+}
+function dashMonthlyRender(){
+ try{
+  const x=dMonthly(),cc=x.core==='完成'?'success':x.core==='執行中'?'warning':'warning',card=(c,l,v,sub,col)=>`<div class="stat-card ${c}"><div class="stat-label">${l}</div><div class="stat-value" style="color:${col}">${v}</div><div class="stat-sub">${sub}</div></div>`;
+  dEl('md-stats').innerHTML=card(x.prep?'success':'warning','前置作業',x.prep?'完成':'進行中','依定撥前準備／清查狀態','var(--'+(x.prep?'success':'warning')+')')+card(cc,'核心執行（'+x.stage+'）',x.core+(x.core==='執行中'?' '+x.pct+'%':''),'預計 113/12/15；依四大類程式進度加權','var(--'+(x.core==='完成'?'success':'warning')+')')+card('secondary','報表產製',x.rep+' / '+x.repTotal,x.rep>=x.repTotal?'已全數產製':'共 '+x.repTotal+' 項報表','var(--text-secondary)')+card(x.anom?'danger':'secondary','異常處理',x.anom?x.anom+' 筆':'無',x.anom?'尚待處理':'-',x.anom?'var(--danger)':'var(--text-secondary)');
+  dEl('md-phase').innerHTML=[['定撥前準備',x.prep?'done':'active'],['核心定撥執行',x.core==='完成'?'done':(x.prep?'active':'')],['報表產製',x.rep>=x.repTotal?'done':(x.core==='完成'?'active':'')],['異常處理',x.anom?'active':'']].map((p,i)=>`<div class="phase-step ${p[1]}"><div class="phase-step-num">${i+1}</div>${p[0]}</div>`).join('');
+ }catch(e){console.warn(e);}
+}
+
+/* ---- 儀表板 ---- */
+function dashRender(){
+ const T=dT(),wk='日一二三四五六'[dD(T).getDay()],u=PM.users['王大明'];
+ const g=(f,d)=>{try{return f();}catch(e){console.warn(e);return d;}};
+ dEl('dash-sub').textContent='歡迎回來，王大明 ｜ 單位：'+u.dept+' ｜ 角色：'+pmRN(u.role)+' ｜ 最後登入：113/12/10 09:23';
+ dEl('dash-date').textContent=T.replace(/(\d+)\/(\d+)\/(\d+)/,'$1年$2月$3日')+' ('+wk+')';
+ /* 公告 */
+ const live=annLive(),show=live.slice(0,ANN.cnt),urg=live.find(a=>a.sev==='緊急');
+ dEl('dash-banner').innerHTML=urg?`<div class="announcement-banner" style="cursor:pointer" onclick="dashAnn('${urg.id}')"><span class="announcement-icon"></span><div class="announcement-text"><strong>【重要公告】</strong> ${urg.title}：${urg.content.split('。')[0]}。</div></div>`:'';
+ dEl('dash-ann').innerHTML=show.map(a=>`<li style="cursor:pointer" onclick="dashAnn('${a.id}')"><span class="announcement-tag ${annTag(a.sev)}">${a.sev}</span><span>${a.title}</span><span class="announcement-date">${a.up}</span></li>`).join('')||'<li><span style="color:var(--text-secondary)">目前無上架中之系統公告</span></li>';
+ dEl('dash-ann-sub').textContent='依「公告管理」上下架內容同步，顯示 '+show.length+' / '+live.length+' 筆';
+ const la=dEl('login-ann');if(la)la.innerHTML=show.map(a=>`<div class="login-announcement-item">【${a.sev==='緊急'?'重要':a.sev}】${a.title}</div>`).join('')||'<div class="login-announcement-item">目前無系統公告</div>';
+ /* 各模組統計 */
+ const dir=g(()=>{const r=dirAllRows(),p=r.filter(x=>x.status==='pending'),od=p.filter(x=>dDays(x.submitTime,T)>3);return {pend:p.length,over:od.length,amt:p.reduce((a,x)=>a+x.amount,0),appr:r.filter(x=>x.status==='approved').length,canc:r.filter(x=>x.status==='cancelled').length,today:r.filter(x=>x.status==='approved'&&(x.approveTime||'').startsWith(T)).length,total:r.length};},null);
+ const ovf=g(dOvf,null);
+ const sp=g(()=>({run:spCount(['registered','docs','sent','overdue','unclear']),todo:spCount(['registered','docs']),wait:spCount(['sent']),over:spCount(['overdue']),unc:spCount(['unclear']),fail:spCount(['fail']),succ:SP.baseSuccess+spCount(['success']),alert:spUnacked().length,exc:SP.exc.filter(e=>e.st==='待處理').length}),null);
+ const tx=g(()=>{const td=TXN.list.filter(c=>c.st!=='done');return {todo:td.length,over:td.filter(c=>daysSince(c.pay)>7).length,cases:TXC.list.length,pend:TXC.list.filter(c=>c.status==='註銷待覆核').length,hold:TXC.list.filter(c=>c.status==='暫緩').length};},null);
+ const mo=g(dMonthly,null);
+ const sal=g(()=>{const pend=SAL.adj.filter(a=>sM(a.eff,a.pay)>0&&!a.done),A=SAL.act,n=[A.chk,A.del,A.wr,A.onl,!!A.stand].filter(Boolean).length;return {pend:pend.length,n,ver:SAL.scale.filter(r=>r.t==='999/12/31').length,rec:SAL.rec.length};},null);
+ const ext=g(()=>{const bl=EX_AG.filter(a=>EX_ST[a.k]&&EX_ST[a.k].status==='blocked').length;return {bl,ok:EX_AG.length-bl,n:EX_AG.length};},null);
+ const rul=g(()=>(dEl('view-ruling-search').textContent.match(/共\s*(\d+)\s*筆/)||[0,'-'])[1],'-');
+ const chg=g(()=>CHG.status,'edit');
+ const alerts=(sp?sp.alert+sp.exc:0)+(mo?mo.anom:0)+(ext?ext.bl:0);
+ /* 統計卡 */
+ const sc=(cls,fn,label,val,sub,trend,go,vc)=>dLvl(fn)>0?`<div class="stat-card ${cls}" style="cursor:pointer" onclick="navigateTo('${go}')"><div class="stat-label">${label}</div><div class="stat-value ${vc||''}">${val}</div><div class="stat-sub">${sub}</div><div class="stat-trend">${trend}</div></div>`:'';
+ dEl('dash-stats').innerHTML=[
+  dir&&sc('gold','supervisor-approval','待核符直撥案件',dir.pend,'逾期未核符 '+dir.over+' 件｜待核符金額 NT$ '+dFm(dir.amt),'今日已核符 '+dir.today+' 件','supervisor-approval','gold'),
+  ovf&&sc('danger','overflow-stats','溢領未收回',ovf.open,'金額 NT$ '+dFm(ovf.openAmt)+'｜部分／分期 '+ovf.part+' 件','待處理合計 '+(ovf.open+ovf.part)+' 件','overflow-stats','danger'),
+  sp&&sc('success','stop-payment','止付案件處理中',sp.run,'逾時未回饋 '+sp.over+'｜結果未明 '+sp.unc+'｜失敗 '+sp.fail,'累計止付成功 '+sp.succ+' 件','stop-payment','success'),
+  tx&&sc('info','tax-uncalc','未完成課稅計算',tx.todo,'逾 7 日 '+tx.over+' 件','課稅案件 '+tx.cases+' 件｜註銷待覆核 '+tx.pend+' 件','tax-uncalc',''),
+  mo&&sc('teal','monthly-dashboard',mo.ym.replace('/','年')+'月定撥（'+mo.stage+'）',mo.core+(mo.core==='執行中'?' '+mo.pct+'%':''),'報表 '+mo.rep+' / '+mo.repTotal+' 項','前置作業：'+(mo.prep?'已完成':'進行中'),'monthly-dashboard',''),
+  sc('warning','monthly-anomaly','系統異常告警',alerts,'止付 '+(sp?sp.alert+sp.exc:0)+'｜定撥 '+(mo?mo.anom:0)+'｜外部資料 '+(ext?ext.bl:0),alerts?'請盡速處理':'目前無待處理告警','monthly-anomaly','warning')
+ ].join('');
+ /* 模組卡 */
+ const mt=(v,l,c)=>`<div class="dashboard-metric"><div class="dashboard-metric-val" ${c?`style="color:var(--${c})"`:''}>${v}</div><div class="dashboard-metric-label">${l}</div></div>`;
+ const mc=(fn,go,ic,title,sub,mets,acts)=>dLvl(fn)>0?`<div class="dashboard-card" onclick="navigateTo('${go}')"><div class="dashboard-card-header"><div class="dashboard-card-icon ${ic}"></div><div><div class="dashboard-card-title">${title}</div><div class="dashboard-card-sub">${sub}</div></div></div><div class="dashboard-metrics">${mets.join('')}</div><div class="quick-actions">${acts.filter(a=>dLvl(a[0])>=(a[3]||1)).map((a,i)=>`<button class="btn btn-sm ${i?'btn-outline':'btn-primary'}" onclick="event.stopPropagation();navigateTo('${a[0]}')">${a[1]}</button>`).join('')}</div></div>`:'';
+ dEl('dash-cards').innerHTML=[
+  dir&&mc('direct-register','direct-register','navy','直撥登錄','Direct Payment',[mt(dir.pend,'待核符','warning'),mt(dir.appr,'已核符','success'),mt(dir.canc,'已取消','danger')],[['direct-register','手動建置'],['supervisor-approval','科長核符'],['direct-letter','書函產製']]),
+  ovf&&mc('overflow-single','overflow-single','navy','溢領管理','Overpayment Management',[mt(ovf.open+ovf.part,'待處理','warning'),mt(ovf.total,'本年累計'),mt(ovf.done,'已收回','success')],[['overflow-single','單筆建置'],['overflow-batch','批次計算'],['overflow-docs','產製函表']]),
+  sp&&mc('stop-payment','stop-payment','" style="background:linear-gradient(135deg,var(--danger),#922b21)','止付作業','Stop Payment',[mt(sp.run,'處理中','warning'),mt(sp.succ,'累計成功','success'),mt(sp.fail,'失敗','danger')],[['stop-register','登錄止付案件'],['stop-tracking','追蹤查詢']]),
+  tx&&mc('tax-calc','tax-calc','gold','課稅管理','Tax Management',[mt(tx.cases,'已建案件'),mt(tx.todo,'未完成計算','warning'),mt(tx.pend,'註銷待覆核','danger')],[['tax-calc','課稅計算'],['tax-report','報表彙整']]),
+  mo&&mc('monthly-dashboard','monthly-dashboard','teal','定撥作業','Monthly Payment',[mt(mo.core+(mo.pct&&mo.pct<100?' '+mo.pct+'%':''),mo.ym.replace('/','年')+'月（'+mo.stage+'）','warning'),mt(mo.rep+'/'+mo.repTotal,'報表項目'),mt(mo.anom,'異常',mo.anom?'danger':'success')],[['monthly-prep','前置準備'],['monthly-exec','執行定撥']]),
+  sal&&mc('salary-retdiff','salary-active','gold','調薪作業','Salary Adjustment',[mt(sal.pend,'退職差額待處理','warning'),mt(sal.n+'/5','現職調薪流程'),mt(sal.ver,'現行俸額筆數')],[['salary-retdiff','退職差額'],['salary-active','現職調薪']]),
+  mc('query-individual','query-individual','info','查詢與函釋','Query & Rulings',[mt(g(()=>QR.snaps.length,0),'查詢留存紀錄'),mt(rul,'函釋筆數'),mt(ext?ext.ok+'/'+ext.n:'-','外部資料正常',ext&&ext.bl?'danger':'success')],[['query-individual','個人查詢'],['query-batch','批次查詢'],['ruling-search','函釋查詢']])
+ ].join('');
+ /* 待辦 */
+ const td=[];const add=(fn,go,sev,txt,n)=>{if(n>0&&dLvl(fn)>0)td.push([go,sev,txt,n]);};
+ if(dir){add('supervisor-approval','supervisor-approval',dir.over?'danger':'warning','直撥案件待科長核符'+(dir.over?'（含逾期 '+dir.over+' 件）':''),dir.pend);}
+ if(sp){add('stop-payment','stop-payment','danger','止付異常訊息尚未知悉',sp.alert);add('stop-payment','stop-payment','warning','止付案件待產製文書／發文',sp.todo);add('stop-payment','stop-payment','warning','止付案件逾時未回饋或結果未明',sp.over+sp.unc);add('stop-recon','stop-recon','warning','止付勾稽異常待處理',sp.exc);}
+ if(tx){add('tax-uncalc','tax-uncalc',tx.over?'danger':'warning','撥付案尚未完成稅額計算'+(tx.over?'（逾 7 日 '+tx.over+' 件）':''),tx.todo);add('tax-case','tax-case','warning','課稅案件註銷待覆核',tx.pend);}
+ if(ovf)add('overflow-stats','overflow-stats','danger','溢領案件未收回（NT$ '+dFm(ovf.openAmt)+'）',ovf.open);
+ if(mo)add('monthly-anomaly','monthly-anomaly','danger','定撥異常案件待處理',mo.anom);
+ add('monthly-change','monthly-change','warning','定撥異動名單簽核中',chg==='pending'?1:0);
+ if(sal){add('salary-retdiff','salary-retdiff','warning','退職調薪案期間差額尚未寫入支領紀錄',sal.pend);add('salary-active','salary-active','warning','現職調薪流程進行中（'+sal.n+'/5）',sal.n>0&&sal.n<4?1:0);}
+ if(ext)add('extdata-military','extdata-military','danger','外部資料轉檔遭阻斷',ext.bl);
+ dEl('dash-todo').innerHTML=td.length?td.map(t=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 4px;border-bottom:1px solid var(--border);cursor:pointer;font-size:calc(13px * var(--font-scale))" onclick="navigateTo('${t[0]}')"><span><span class="badge badge-${t[1]}">${t[1]==='danger'?'急':'待'}</span> ${t[2]}</span><b>${t[3]} ›</b></div>`).join(''):'<div class="form-hint" style="padding:8px">目前無待處理事項</div>';
+}
+const _navDash=navigateTo;
+navigateTo=function(id){_navDash(id);if(id==='dashboard')dashRender();if(id==='monthly-dashboard')dashMonthlyRender();if(id==='admin-announcements')annRender();};
+window.addEventListener('load',function(){dashRender();dashMonthlyRender();annRender();});
 </script>
 
 <script
