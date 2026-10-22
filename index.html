@@ -2662,33 +2662,28 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
             <div class="upload-dropzone" onclick="triggerFileInput('taxcase-batch-file-input')" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="handleFileDrop(event,'taxcase-batch-file-input')">
               <div class="upload-dropzone-icon"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:32px;height:32px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
               <div class="upload-dropzone-title">點擊或拖曳檔案至此上傳</div>
-              <div class="upload-dropzone-hint">支援 .xlsx 格式，請依範本欄位格式填寫</div>
-              <div class="upload-file-chip" id="taxcase-batch-file-chip">課稅案件批次建檔_1213.xlsx（38筆）</div>
+              <div class="upload-dropzone-hint">支援 .xlsx／.csv 格式，請依範本欄位格式填寫</div>
+              <div class="upload-file-chip" id="taxcase-batch-file-chip" style="display:none"></div>
               <div style="margin-top:12px">
                 <button class="btn btn-outline-primary btn-sm" onclick="event.stopPropagation();triggerFileInput('taxcase-batch-file-input')">選擇檔案</button>
               </div>
             </div>
-            <input type="file" id="taxcase-batch-file-input" accept=".xlsx" style="display:none" onchange="displayChosenFile(this,'taxcase-batch-file-chip')">
-            <div style="display:flex;gap:8px;margin-top:12px">
-              <button class="btn btn-outline btn-sm" onclick="runDownload('課稅案件批次建檔範本','xlsx')">下載範本檔</button>
-              <button class="btn btn-primary btn-sm" onclick="showToast('success','檢核完成','已檢核 38 筆資料，35 筆通過、3 筆待確認')">執行欄位檢核</button>
+            <input type="file" id="taxcase-batch-file-input" accept=".xlsx,.csv" style="display:none" onchange="tbFile(this)">
+            <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+              <button class="btn btn-outline btn-sm" onclick="tbDlTemplate()">下載範本檔（.xlsx）</button>
+              <button class="btn btn-outline btn-sm" onclick="tbDlErrSample()">下載錯誤範例檔（.xlsx）</button>
+              <button class="btn btn-primary btn-sm" onclick="tbRecheck()">執行欄位檢核</button>
+              <button class="btn btn-outline-primary btn-sm" onclick="tbLoadSamples()">載入內建錯誤範例檢核</button>
             </div>
+            <div class="form-hint" style="margin-top:8px">範本含「批次建檔範本／填寫說明／代碼表」3 個工作表，欄位已設下拉選單；單檔上限 500 筆，支援 .xlsx 與 .csv。錯誤範例檔內含 39 列刻意設計之錯誤資料（含 1 列正確對照），可上傳測試各項檢核。</div>
+          </div>
+          <div class="card" style="margin-bottom:16px">
+            <div class="card-title" style="margin-bottom:12px">檢核結果</div>
+            <div id="tb-result"><div class="form-hint">請上傳批次建檔檔案（.xlsx／.csv），或按「載入內建錯誤範例檢核」查看檢核畫面。</div></div>
           </div>
           <div class="card">
-            <div class="card-title" style="margin-bottom:12px">檢核結果</div>
-            <div class="table-wrapper">
-              <table class="data-table">
-                <thead><tr><th>列次</th><th>姓名</th><th>身分證字號</th><th>檢核結果</th><th>說明</th></tr></thead>
-                <tbody>
-                  <tr><td>1</td><td>周美玲</td><td class="masked">B234***567</td><td><span class="badge badge-success">通過</span></td><td>-</td></tr>
-                  <tr><td>2</td><td>徐國安</td><td class="masked">C345***678</td><td><span class="badge badge-warning">待確認</span></td><td>領受期間與撥付紀錄不完全重疊</td></tr>
-                  <tr><td>3</td><td>簡淑貞</td><td class="masked">D456***789</td><td><span class="badge badge-success">通過</span></td><td>-</td></tr>
-                </tbody>
-              </table>
-            </div>
-            <div style="padding:10px 16px;border-top:1px solid var(--border)">
-              <button class="btn btn-gold btn-sm" onclick="showToast('success','批次建檔完成','已成功建立 35 筆課稅案件，3 筆待人工確認')">確認並批次建檔</button>
-            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><div><div class="card-title">常見檢核錯誤範例對照表</div><div class="card-subtitle">依錯誤範例檔實際執行檢核之結果（E＝錯誤，不予建檔；W＝警示，須確認後方可建檔）</div></div><button class="btn btn-outline btn-sm" onclick="tbRefToggle()">展開／收合</button></div>
+            <div id="tb-ref-body" style="display:none;margin-top:12px"><div class="table-wrapper" style="max-height:520px;overflow:auto"><table class="data-table"><thead><tr><th>錯誤情境</th><th>系統檢核訊息</th></tr></thead><tbody></tbody></table></div></div>
           </div>
         </div>
       
@@ -14786,6 +14781,331 @@ function pmUFilter() {
 }
 function pmUEnter(e) { if (e.key !== 'Enter') return; const L = pmUList(); if (L.length) { PM.u = L[0]; PM.du = null; pmRender(); const q = pmEl('pm-uf-q'); if (q) q.focus(); } }
 function pmUReset() { PM.uf = { dept: '', role: '', q: '' }; pmRender(); }
+
+</script>
+<script>
+/* ===== V31：課稅案件管理／人工建檔／批次建檔（實際 .xlsx 範本、檔案解析、欄位檢核與錯誤範例） ===== */
+const TB_TODAY = '115/10/20', TB_MAX = 500;
+const TB_KINDS = ['一般課稅案件', '扣繳案件', '免扣繳（申報憑單）案件'];
+const TB_COLS = [
+  { k: 'name', h: '姓名', req: 1, w: 14, d: '領受人姓名，至少 2 字，不含數字或符號' },
+  { k: 'pid', h: '身分證字號／證號', req: 1, w: 18, d: '居住者：1 碼英文＋1／2＋8 碼數字（大寫）；非居住者：居留證統一證號，或護照西元出生年月日＋英文姓名前 2 碼' },
+  { k: 'res', h: '領受人身分', w: 12, d: '可接受值：居住者、非居住者；空白視為居住者' },
+  { k: 'type', h: '退撫給與種類', req: 1, w: 30, d: '須與「代碼表」之給與種類相符（可填名稱，或名稱（所得格式））' },
+  { k: 'kind', h: '案件性質', w: 20, d: '可接受值：一般課稅案件、扣繳案件、免扣繳（申報憑單）案件；空白視為一般課稅案件' },
+  { k: 'doc', h: '關聯撥付案文號', w: 22, d: '格式「○○字第 n 號」，例：府退二字第1150000203號；無則留白' },
+  { k: 'date', h: '領取日期（yyy/mm/dd）', req: 1, w: 20, d: '民國年 3 位數，格式 yyy/mm/dd，須為有效日期且不得晚於今日；儲存格請設為「文字」格式' },
+  { k: 'pf', h: '所屬期間（起）（yyy/mm）', w: 22, d: '格式 yyy/mm；起迄須同時填寫或同時留白' },
+  { k: 'pt', h: '所屬期間（迄）（yyy/mm）', w: 22, d: '格式 yyy/mm；不得早於起' },
+  { k: 'gross', h: '給付總額（元）', req: 1, w: 16, d: '純數字之正整數，不得含千分位逗號、單位或小數；上限 9,999,999,999；月退為全年金額' },
+  { k: 'years', h: '服務年資（年）', w: 14, d: '0～60 之數字，最多 1 位小數；一次性給與（一次退休金、資遣給與等）必填' },
+  { k: 'duty', h: '是否因公撫卹', w: 14, d: '可接受值：是、否；空白視為否；因公撫卹金免稅，扣繳稅額須為 0' },
+  { k: 'inc', h: '應稅所得額（元）', w: 16, d: '非負整數，不得大於給付總額；可留白' },
+  { k: 'tax', h: '扣繳稅額（元）', req: 1, w: 16, d: '非負整數，不得大於給付總額；系統另依課稅規則試算比對' },
+  { k: 'addr', h: '所得人地址', w: 34, d: '最長 100 字；空白時申報憑單前須補齊' },
+  { k: 'why', h: '建檔原因說明', req: 1, w: 34, d: '至少 5 字、最長 100 字，例：撥付系統未介接，依函補建檔' }
+];
+const tbNorm = s => String(s || '').replace(/[*＊\s]/g, '').replace(/（?yyy\/mm(\/dd)?）?/gi, '');
+const tbTypes = () => MFT.map(k => ({ k, name: txType(k).name, fmt: txType(k).fmt, kind: txType(k).kind }));
+function tbTypeKey(s) { s = (s || '').trim(); const f = tbTypes().find(t => s === t.k || s === t.name || s === t.name + '（' + t.fmt + '）' || s === t.name + '(' + t.fmt + ')'); return f ? f.k : null; }
+
+/* ---------- 最小 XLSX 寫入／讀取（免外部函式庫） ---------- */
+const TB_CRC = (() => { const t = []; for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+const tbCrc = b => { let c = 0xFFFFFFFF; for (let i = 0; i < b.length; i++) c = TB_CRC[(c ^ b[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };
+function tbZip(files) {
+  const enc = new TextEncoder(), parts = [], cen = []; let off = 0;
+  const u16 = n => [n & 255, (n >> 8) & 255], u32 = n => [n & 255, (n >> 8) & 255, (n >> 16) & 255, (n >>> 24) & 255];
+  files.forEach(f => {
+    const nm = enc.encode(f.name), data = enc.encode(f.data), crc = tbCrc(data);
+    const lh = new Uint8Array([0x50, 0x4b, 3, 4, 20, 0, 0, 8, 0, 0, 0, 0, 33, 0, ...u32(crc), ...u32(data.length), ...u32(data.length), ...u16(nm.length), 0, 0]);
+    parts.push(lh, nm, data);
+    cen.push(new Uint8Array([0x50, 0x4b, 1, 2, 20, 0, 20, 0, 0, 8, 0, 0, 0, 0, 33, 0, ...u32(crc), ...u32(data.length), ...u32(data.length), ...u16(nm.length), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...u32(off)]), nm);
+    off += lh.length + nm.length + data.length;
+  });
+  const cs = cen.reduce((a, b) => a + b.length, 0);
+  const end = new Uint8Array([0x50, 0x4b, 5, 6, 0, 0, 0, 0, ...u16(files.length), ...u16(files.length), ...u32(cs), ...u32(off), 0, 0]);
+  return new Blob([...parts, ...cen, end], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+}
+const tbX = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])).replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, '');
+const tbCol = i => { let s = ''; i++; while (i > 0) { const m = (i - 1) % 26; s = String.fromCharCode(65 + m) + s; i = Math.floor((i - 1) / 26); } return s; };
+/* sheet: {name, cols:[width], head:[{t,s}], rows:[[value|{n:number}|{t:text,s:style}]], dv:[{ref,list}], freeze} */
+function tbSheetXml(sh) {
+  const cell = (v, r, c, st) => {
+    const ref = tbCol(c) + r; if (v === null || v === undefined || v === '') return st ? '<c r="' + ref + '" s="' + st + '"/>' : '';
+    if (typeof v === 'object' && v.n !== undefined) return '<c r="' + ref + '" s="' + (v.s || 0) + '"><v>' + v.n + '</v></c>';
+    const o = typeof v === 'object' ? v : { t: v }; return '<c r="' + ref + '" t="inlineStr" s="' + (o.s !== undefined ? o.s : st) + '"><is><t xml:space="preserve">' + tbX(o.t) + '</t></is></c>';
+  };
+  let x = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetViews><sheetView workbookViewId="0"' + (sh.tab ? ' tabSelected="1"' : '') + '>' + (sh.freeze ? '<pane ySplit="' + sh.freeze + '" topLeftCell="A' + (sh.freeze + 1) + '" activePane="bottomLeft" state="frozen"/>' : '') + '</sheetView></sheetViews><sheetFormatPr defaultRowHeight="18"/><cols>' + sh.cols.map((w, i) => '<col min="' + (i + 1) + '" max="' + (i + 1) + '" width="' + w + '" customWidth="1"/>').join('') + '</cols><sheetData>';
+  const all = [sh.head].concat(sh.rows);
+  all.forEach((row, ri) => { x += '<row r="' + (ri + 1) + '"' + (ri === 0 ? ' ht="34" customHeight="1"' : '') + '>' + row.map((v, ci) => cell(v, ri + 1, ci, ri === 0 ? 1 : (sh.colStyle ? sh.colStyle[ci] || 0 : 0))).join('') + '</row>'; });
+  x += '</sheetData>';
+  if (sh.dv && sh.dv.length) x += '<dataValidations count="' + sh.dv.length + '">' + sh.dv.map(d => '<dataValidation type="list" allowBlank="1" showErrorMessage="1" errorTitle="輸入值不在可接受範圍" error="請由下拉選單選取" sqref="' + d.ref + '"><formula1>' + tbX(d.list) + '</formula1></dataValidation>').join('') + '</dataValidations>';
+  return x + '</worksheet>';
+}
+function tbXlsx(sheets) {
+  const styles = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="4"><font><sz val="11"/><name val="Microsoft JhengHei"/></font><font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Microsoft JhengHei"/></font><font><i/><sz val="11"/><color rgb="FF7A869A"/><name val="Microsoft JhengHei"/></font><font><b/><sz val="11"/><name val="Microsoft JhengHei"/></font></fonts><fills count="5"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF1A3A6E"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFB45309"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFFFF3CD"/></patternFill></fill></fills><borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color rgb="FFBBC3D4"/></left><right style="thin"><color rgb="FFBBC3D4"/></right><top style="thin"><color rgb="FFBBC3D4"/></top><bottom style="thin"><color rgb="FFBBC3D4"/></bottom><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="7"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="49" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf><xf numFmtId="49" fontId="1" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf><xf numFmtId="49" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1"/><xf numFmtId="49" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1"><alignment vertical="top" wrapText="1"/></xf><xf numFmtId="49" fontId="2" fillId="4" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1"/><xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0" applyFont="1"/></cellXfs></styleSheet>';
+  const ws = sheets.map((s, i) => ({ name: 'xl/worksheets/sheet' + (i + 1) + '.xml', data: tbSheetXml(s) }));
+  return tbZip([
+    { name: '[Content_Types].xml', data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>' + sheets.map((s, i) => '<Override PartName="/xl/worksheets/sheet' + (i + 1) + '.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>').join('') + '</Types>' },
+    { name: '_rels/.rels', data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>' },
+    { name: 'xl/workbook.xml', data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>' + sheets.map((s, i) => '<sheet name="' + tbX(s.name) + '" sheetId="' + (i + 1) + '" r:id="rId' + (i + 1) + '"/>').join('') + '</sheets></workbook>' },
+    { name: 'xl/_rels/workbook.xml.rels', data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' + sheets.map((s, i) => '<Relationship Id="rId' + (i + 1) + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet' + (i + 1) + '.xml"/>').join('') + '<Relationship Id="rId' + (sheets.length + 1) + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>' },
+    { name: 'xl/styles.xml', data: styles }
+  ].concat(ws));
+}
+async function tbUnzip(buf) {
+  const v = new DataView(buf), u8 = new Uint8Array(buf), dec = new TextDecoder(), out = {};
+  let e = u8.length - 22; while (e >= 0 && v.getUint32(e, true) !== 0x06054b50) e--; if (e < 0) throw new Error('不是有效的 .xlsx 檔案（找不到 ZIP 結構）');
+  let p = v.getUint32(e + 16, true); const n = v.getUint16(e + 10, true);
+  for (let i = 0; i < n; i++) {
+    const m = v.getUint16(p + 10, true), cs = v.getUint32(p + 20, true), nl = v.getUint16(p + 28, true), xl = v.getUint16(p + 30, true), cl = v.getUint16(p + 32, true), lo = v.getUint32(p + 42, true);
+    const name = dec.decode(u8.subarray(p + 46, p + 46 + nl)); p += 46 + nl + xl + cl;
+    const ls = lo + 30 + v.getUint16(lo + 26, true) + v.getUint16(lo + 28, true), raw = u8.subarray(ls, ls + cs);
+    if (!/\.(xml|rels)$/.test(name)) continue;
+    if (m === 0) out[name] = dec.decode(raw);
+    else if (m === 8) { const ds = new DecompressionStream('deflate-raw'), w = ds.writable.getWriter(); w.write(raw); w.close(); out[name] = dec.decode(await new Response(ds.readable).arrayBuffer()); }
+  }
+  return out;
+}
+async function tbReadXlsx(file) {
+  const z = await tbUnzip(await file.arrayBuffer()), P = s => new DOMParser().parseFromString(s, 'application/xml');
+  if (!z['xl/workbook.xml']) throw new Error('不是有效的 Excel 活頁簿（缺少 workbook）');
+  const wb = P(z['xl/workbook.xml']), rels = P(z['xl/_rels/workbook.xml.rels'] || '<r/>');
+  const shs = [...wb.getElementsByTagName('sheet')].map(s => ({ name: s.getAttribute('name'), rid: s.getAttribute('r:id') || s.getAttributeNS('http://schemas.openxmlformats.org/officeDocument/2006/relationships', 'id') }));
+  const pick = shs.find(s => /批次建檔/.test(s.name)) || shs[0]; if (!pick) throw new Error('活頁簿內沒有工作表');
+  const rel = [...rels.getElementsByTagName('Relationship')].find(r => r.getAttribute('Id') === pick.rid);
+  let path = rel ? rel.getAttribute('Target').replace(/^\//, '') : 'worksheets/sheet1.xml'; if (!/^xl\//.test(path)) path = 'xl/' + path;
+  const ss = z['xl/sharedStrings.xml'] ? [...P(z['xl/sharedStrings.xml']).getElementsByTagName('si')].map(si => [...si.getElementsByTagName('t')].map(t => t.textContent).join('')) : [];
+  const sd = P(z[path] || ''), rows = [];
+  [...sd.getElementsByTagName('row')].forEach(r => {
+    const arr = []; [...r.getElementsByTagName('c')].forEach(c => {
+      const ref = c.getAttribute('r') || '', col = ref.replace(/\d+/g, '').split('').reduce((a, ch) => a * 26 + ch.charCodeAt(0) - 64, 0) - 1, t = c.getAttribute('t'), ve = c.getElementsByTagName('v')[0];
+      let val = ''; if (t === 'inlineStr') val = [...c.getElementsByTagName('t')].map(x => x.textContent).join(''); else if (t === 's') val = ss[+(ve ? ve.textContent : 0)] || ''; else val = ve ? ve.textContent : '';
+      arr[col] = { v: val, num: !t || t === 'n' };
+    }); rows.push({ no: +r.getAttribute('r'), cells: arr });
+  });
+  return { sheet: pick.name, rows };
+}
+function tbParseCsv(txt) {
+  const rows = []; let cur = [], f = '', q = false;
+  for (let i = 0; i < txt.length; i++) { const c = txt[i]; if (q) { if (c === '"' && txt[i + 1] === '"') { f += '"'; i++; } else if (c === '"') q = false; else f += c; } else if (c === '"') q = true; else if (c === ',') { cur.push(f); f = ''; } else if (c === '\n' || c === '\r') { if (c === '\r' && txt[i + 1] === '\n') i++; cur.push(f); rows.push(cur); cur = []; f = ''; } else f += c; }
+  if (f || cur.length) { cur.push(f); rows.push(cur); } return { sheet: 'CSV', rows: rows.map((r, i) => ({ no: i + 1, cells: r.map(v => ({ v, num: false })) })) };
+}
+function tbDownload(blob, name) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); }
+
+/* ---------- 欄位檢核 ---------- */
+const tbNum = s => /^-?\d+(\.\d+)?$/.test(String(s).trim()) ? +s : NaN;
+function tbCheckRow(r, ctx) {
+  const L = [], E = (code, f, msg) => L.push({ lv: 'error', code, f, msg }), W = (code, f, msg) => L.push({ lv: 'warn', code, f, msg });
+  const lab = k => TB_COLS.find(c => c.k === k).h.replace(/（.*$/, '');
+  TB_COLS.forEach(c => { if (c.req && !String(r[c.k] || '').trim()) E('E01', lab(c.k), '為必填欄位，不得空白'); });
+  const sp = k => r[k] && r[k] !== String(r[k]).trim(); Object.keys(r).forEach(k => { if (k[0] === '_') return; const v = String(r[k] || ''); if (/[<>]/.test(v)) E('E18', lab(k), '含不允許之符號 < 或 >'); });
+  const hasFull = k => /[\uFF10-\uFF19\uFF21-\uFF3A\uFF41-\uFF5A\u3000]/.test(r[k] || '');
+  ['pid', 'date', 'pf', 'pt', 'gross', 'years', 'inc', 'tax', 'doc'].forEach(k => { if (hasFull(k)) E('E19', lab(k), '含全形數字／英文／空白，請改為半形（目前：' + r[k] + '）'); });
+  ['pid', 'date', 'pf', 'pt'].forEach(k => { if (sp(k)) W('W03', lab(k), '前後含多餘空白，建檔時將自動去除'); });
+  const name = (r.name || '').trim();
+  if (name) { if ([...name].length < 2) E('E02', '姓名', '至少 2 個字（目前：' + name + '）'); else if ([...name].length > 40) E('E02', '姓名', '長度超過 40 字'); else if (/\d/.test(name)) E('E02', '姓名', '姓名不得含數字（目前：' + name + '）'); else if (!/^[\p{L}\p{M}·．.\s]+$/u.test(name) && !/[<>]/.test(name)) E('E02', '姓名', '姓名含不允許之符號（目前：' + name + '）'); }
+  const resRaw = (r.res || '').trim(); let res = true;
+  if (resRaw) { if (!['居住者', '非居住者'].includes(resRaw)) E('E04', '領受人身分', '不在可接受值（居住者／非居住者），目前：' + resRaw); else res = resRaw === '居住者'; }
+  const pid = (r.pid || '').trim().toUpperCase();
+  if (pid) {
+    if (res) { if (pid !== (r.pid || '').trim() && /[a-z]/.test(r.pid)) W('W03', '身分證字號', '英文字母應為大寫，建檔時將自動轉為大寫'); if (!idForm(pid)) E('E03', '身分證字號', '格式應為 1 碼大寫英文＋第 2 碼 1／2＋8 碼數字（目前：' + pid + '，' + pid.length + ' 碼）'); else if (!idOk(pid)) W('W01', '身分證字號', '檢查碼邏輯不符，申報憑單須註記錯誤註記 A／B'); }
+    else if (!npidOk(pid)) E('E03', '證號', '非居住者應填居留證統一證號，或「護照西元出生年月日＋英文姓名前 2 碼」（目前：' + pid + '）');
+  }
+  const tk = tbTypeKey(r.type); let T = null;
+  if ((r.type || '').trim()) { if (!tk) E('E05', '退撫給與種類', '不在代碼表內（目前：' + r.type.trim() + '），請參照「代碼表」工作表'); else T = txType(tk); }
+  const kind = (r.kind || '').trim(); if (kind && !TB_KINDS.includes(kind)) E('E06', '案件性質', '不在可接受值（' + TB_KINDS.join('／') + '），目前：' + kind);
+  const date = (r.date || '').trim();
+  if (date) {
+    if (/^\d{5}$/.test(date) && r._num.date) E('E07', '領取日期', 'Excel 日期序號（' + date + '），請將儲存格設為「文字」並以 yyy/mm/dd 填寫');
+    else if (/^\d{4}[\/-]\d{1,2}[\/-]\d{1,2}$/.test(date)) E('E07', '領取日期', '疑似西元年（' + date + '），須為民國年 3 位數 yyy/mm/dd，例：115/06/10');
+    else if (/^\d{1,2}\/\d{1,2}\/\d{1,2}$/.test(date)) E('E07', '領取日期', '民國年須為 3 位數（目前：' + date + '），例：099/01/05');
+    else if (!/^\d{3}\/\d{2}\/\d{2}$/.test(date)) E('E07', '領取日期', '格式須為 yyy/mm/dd（目前：' + date + '）');
+    else if (!rocOk(date)) E('E07', '領取日期', '非有效日期（' + date + '，該月無此日或月份超出範圍）');
+    else if (date > TB_TODAY) E('E08', '領取日期', '不得晚於今日（' + TB_TODAY + '），目前：' + date);
+  }
+  const pf = (r.pf || '').trim(), pt = (r.pt || '').trim(), ymOk = s => /^\d{3}\/(0[1-9]|1[0-2])$/.test(s);
+  if (pf || pt) {
+    if ((pf && !pt) || (!pf && pt)) E('E09', '所屬期間', '起迄須同時填寫或同時留白（目前僅填' + (pf ? '起' : '迄') + '）');
+    else if (!ymOk(pf) || !ymOk(pt)) E('E09', '所屬期間', '格式須為 yyy/mm 且月份 01～12（目前：' + pf + '～' + pt + '）');
+    else if (pf > pt) E('E09', '所屬期間', '起不得晚於迄（' + pf + ' > ' + pt + '）');
+    else if (date && rocOk(date) && pf.slice(0, 3) !== date.slice(0, 3) && pt.slice(0, 3) !== date.slice(0, 3)) W('W04', '所屬期間', '所屬期間與領取年度不一致，請確認');
+  }
+  const gr = (r.gross || '').trim(); let g = NaN;
+  if (gr) {
+    if (/,/.test(gr) || /[^\d.\-]/.test(gr.replace(/[\uFF10-\uFF19]/g, '0'))) E('E10', '給付總額', '須為純數字，不得含千分位逗號或單位文字（目前：' + gr + '）');
+    else { g = tbNum(gr); if (isNaN(g)) E('E10', '給付總額', '非有效數字（目前：' + gr + '）'); else if (g <= 0) E('E10', '給付總額', '須大於 0（目前：' + gr + '）'); else if (g !== Math.floor(g)) E('E10', '給付總額', '須為整數（元），不得含小數（目前：' + gr + '）'); else if (g > 9999999999) E('E10', '給付總額', '超過上限 9,999,999,999（目前：' + gr + '）'); else if (g > 10000000) W('W02', '給付總額', '超過 1,000 萬元，申報審核需再確認'); }
+  }
+  const yr = (r.years || '').trim(); let y = NaN; const needY = T && ['once93', 'once92'].includes(T.kind);
+  if (yr) { y = tbNum(yr); if (isNaN(y)) E('E11', '服務年資', '須為數字（目前：' + yr + '）'); else if (y < 0) E('E11', '服務年資', '不得為負值（目前：' + yr + '）'); else if (Math.round(y * 10) / 10 !== y) E('E11', '服務年資', '最多 1 位小數（目前：' + yr + '）'); else if (y > 60) W('W05', '服務年資', '超過 60 年，請確認（目前：' + yr + '）'); else if (needY && y === 0) E('E11', '服務年資', '一次性給與服務年資須大於 0'); }
+  else if (needY) E('E11', '服務年資', '一次性給與（' + T.name + '）須填寫服務年資，用以計算免稅額');
+  const dutyRaw = (r.duty || '').trim(); if (dutyRaw && !['是', '否'].includes(dutyRaw)) E('E12', '是否因公撫卹', '不在可接受值（是／否），目前：' + dutyRaw);
+  const duty = dutyRaw === '是';
+  const ic = (r.inc || '').trim(), tx = (r.tax || '').trim(); let inc = NaN, tax = NaN;
+  if (ic) { if (/,/.test(ic)) E('E13', '應稅所得額', '須為純數字，不得含千分位逗號（目前：' + ic + '）'); else { inc = tbNum(ic); if (isNaN(inc)) E('E13', '應稅所得額', '非有效數字（目前：' + ic + '）'); else if (inc < 0) E('E13', '應稅所得額', '不得為負值（目前：' + ic + '）'); else if (g && inc > g) E('E13', '應稅所得額', '不得大於給付總額（' + inc.toLocaleString() + ' > ' + g.toLocaleString() + '）'); } }
+  if (tx) {
+    if (/,/.test(tx)) E('E14', '扣繳稅額', '須為純數字，不得含千分位逗號（目前：' + tx + '）');
+    else { tax = tbNum(tx); if (isNaN(tax)) E('E14', '扣繳稅額', '非有效數字（目前：' + tx + '）'); else if (tax < 0) E('E14', '扣繳稅額', '不得為負值（目前：' + tx + '）'); else if (tax !== Math.floor(tax)) E('E14', '扣繳稅額', '須為整數（元）'); else if (g && tax > g) E('E14', '扣繳稅額', '不得大於給付總額（' + tax.toLocaleString() + ' > ' + g.toLocaleString() + '）'); else if (duty && tax > 0) E('E14', '扣繳稅額', '因公撫卹金免納所得稅，稅額應為 0（目前：' + tax.toLocaleString() + '）'); }
+  }
+  if (T && date && rocOk(date) && g > 0 && !isNaN(tax) && tax >= 0 && !duty) {
+    try { const I = { resident: res, d: date, years: y || 0, duty: '否', death: '否', paid: 0 }; needY ? I.once = g : I.per = g; const c = txCalc(T, I); if (Math.abs(tax - c.tax) > 1 && !L.some(i => i.code === 'E14')) W('W06', '合理性檢查', '依 ' + txP(date).lbl + ' 版次試算應扣繳稅額為 ' + nt(c.tax) + '，與輸入（' + nt(tax) + '）不同'); if (!res && T.fmt === 93 && tax === 0) W('W07', '合理性檢查', '非居住者適用 18% 扣繳率，稅額為 0 請確認'); } catch (x) { }
+  }
+  if (kind === '扣繳案件' && T && T.fmt === 93 && tax === 0 && !duty) W('W08', '案件性質', '標示為扣繳案件但扣繳稅額為 0，請確認是否改為免扣繳案件');
+  const doc = (r.doc || '').trim(); if (doc) { if (!/^[\u4e00-\u9fa5A-Za-z0-9（）()]{2,12}字第\d{5,15}號$/.test(doc)) E('E15', '關聯撥付案文號', '格式應為「○○字第 n 號」，例：府退二字第1150000203號（目前：' + doc + '）'); else { const hit = TX.cases.find(c => c.doc === doc); if (hit && pid && hit.pid !== pid) W('W09', '關聯撥付案文號', '與撥付案（' + mskId(hit.pid) + '）之身分證字號不一致'); } }
+  if (pid && T && date) {
+    if (TXC.list.some(c => c.pid === pid && c.type === tk && c.payDate === date && c.status !== '已註銷')) E('E16', '重複檢查', '系統已有相同身分證字號、給與種類及領取日期之案件');
+    const key = pid + '|' + tk + '|' + date; if (ctx.seen[key]) E('E16', '重複檢查', '與檔案第 ' + ctx.seen[key] + ' 列重複（同身分證字號、給與種類、領取日期）'); else ctx.seen[key] = r._no;
+  }
+  const why = (r.why || '').trim(); if (why) { if ([...why].length < 5) E('E17', '建檔原因說明', '至少 5 個字（目前 ' + [...why].length + ' 字）'); else if ([...why].length > 100) E('E17', '建檔原因說明', '長度超過 100 字（目前 ' + [...why].length + ' 字）'); }
+  if ((r.addr || '').trim().length > 100) E('E20', '所得人地址', '長度超過 100 字');
+  return L;
+}
+function tbRun(parsed, srcName) {
+  const ctx = { seen: {} }, issues = [], keys = TB_COLS.map(c => tbNorm(c.h)), out = { src: srcName, file: [], rows: [] };
+  if (!parsed.rows.length) { out.file.push({ lv: 'error', msg: '檔案內容為空' }); return out; }
+  const hdr = parsed.rows[0].cells.map(c => tbNorm(c ? c.v : '')), map = {};
+  keys.forEach((k, i) => { const ix = hdr.indexOf(k); if (ix < 0) out.file.push({ lv: 'error', msg: '缺少欄位：「' + TB_COLS[i].h.replace(/\*/g, '') + '」，請使用最新範本' }); else map[TB_COLS[i].k] = ix; });
+  hdr.forEach(h => { if (h && !keys.includes(h)) out.file.push({ lv: 'warn', msg: '多餘欄位「' + h + '」，將被忽略' }); });
+  if (out.file.some(f => f.lv === 'error')) return out;
+  const data = parsed.rows.slice(1).filter(r => r.cells.some(c => c && String(c.v).trim() !== '') && !/^【範例】/.test((r.cells[map.name] || {}).v || ''));
+  if (!data.length) { out.file.push({ lv: 'error', msg: '範本內無任何資料列（範例列不計）' }); return out; }
+  if (data.length > TB_MAX) { out.file.push({ lv: 'error', msg: '資料筆數 ' + data.length + ' 超過單檔上限 ' + TB_MAX + ' 筆，請分檔上傳' }); return out; }
+  data.forEach(row => {
+    const r = { _no: row.no, _num: {} }; TB_COLS.forEach(c => { const cell = row.cells[map[c.k]]; r[c.k] = cell ? String(cell.v) : ''; r._num[c.k] = !!(cell && cell.num); });
+    out.rows.push({ no: row.no, r, issues: tbCheckRow(r, ctx) });
+  });
+  return out;
+}
+/* ---------- 範本與錯誤範例檔 ---------- */
+function tbSampleValid(o) {
+  const base = Object.assign({ name: '林志豪', pid: mkId('H', 1, '2345678'), res: '居住者', type: txType('once-ret').name, kind: '一般課稅案件', doc: '', date: '115/06/10', pf: '115/06', pt: '115/06', gross: '3000000', years: '15', duty: '否', inc: '', tax: '', addr: '台北市中正區忠孝東路一段1號', why: '撥付系統未介接，依函補建檔' }, o || {});
+  if (base.tax === '' && !(o && 'tax' in o)) { if (!(+base.gross > 0)) base.tax = '0'; else try { const T = txType(tbTypeKey(base.type)), I = { resident: base.res !== '非居住者', d: base.date, years: +base.years || 0, duty: '否', death: '否', paid: 0 }; ['once93', 'once92'].includes(T.kind) ? I.once = +base.gross : I.per = +base.gross; base.tax = String(Math.round(txCalc(T, I).tax) || 0); } catch (e) { base.tax = '0'; } }
+  return base;
+}
+function tbRowArr(o) { return TB_COLS.map(c => ({ t: o[c.k] === undefined ? '' : String(o[c.k]), s: 3 })); }
+function tbTemplateSheets() {
+  const head = TB_COLS.map(c => ({ t: c.h + (c.req ? '*' : ''), s: c.req ? 2 : 1 }));
+  const ex = [tbSampleValid({ name: '【範例】王小明', pid: mkId('J', 1, '2468013'), doc: '府退二字第1150000203號', why: '【範例列，上傳時自動略過】' }), tbSampleValid({ name: '【範例】陳美惠', pid: mkId('K', 2, '1357924'), type: txType('period-ret').name, gross: '1380000', years: '', pf: '115/01', pt: '115/12', date: '115/01/31', why: '【範例列，上傳時自動略過】' })];
+  const s1 = { name: '批次建檔範本', tab: 1, freeze: 1, cols: TB_COLS.map(c => c.w), head, rows: ex.map(e => TB_COLS.map(c => ({ t: e[c.k], s: 5 }))), dv: [{ ref: 'C2:C502', list: '"居住者,非居住者"' }, { ref: 'D2:D502', list: '代碼表!$A$2:$A$' + (MFT.length + 1) }, { ref: 'E2:E502', list: '"' + TB_KINDS.join(',') + '"' }, { ref: 'L2:L502', list: '"是,否"' }] };
+  const colS = TB_COLS.map(() => 3); s1.colStyle = colS;
+  const s2 = { name: '填寫說明', cols: [6, 26, 8, 70], head: [{ t: '序', s: 1 }, { t: '欄位', s: 1 }, { t: '必填', s: 1 }, { t: '格式與檢核規則', s: 1 }], rows: TB_COLS.map((c, i) => [{ t: String(i + 1), s: 3 }, { t: c.h, s: 3 }, { t: c.req ? '是' : '否', s: 3 }, { t: c.d, s: 4 }]).concat([[{ t: '', s: 0 }], [{ t: '備註', s: 6 }, { t: '1. 第 1 列為欄位名稱請勿更動；範例列（姓名以【範例】開頭）上傳時會自動略過。2. 日期欄位請先將儲存格設為「文字」再輸入，避免被轉為 Excel 日期序號。3. 單檔上限 ' + TB_MAX + ' 筆。4. 本檔案僅供檢核與建檔，不含任何真實個資。', s: 4 }]]) };
+  const s3 = { name: '代碼表', cols: [34, 12, 40], head: [{ t: '退撫給與種類', s: 1 }, { t: '所得格式', s: 1 }, { t: '說明', s: 1 }], rows: tbTypes().map(t => [{ t: t.name, s: 3 }, { t: String(t.fmt), s: 3 }, { t: ['once93', 'once92'].includes(t.kind) ? '一次性給與：服務年資必填' : '分期／定期給與', s: 3 }]) };
+  return [s1, s2, s3];
+}
+function tbErrorSamples() {
+  const V = tbSampleValid, ids = {}; let n = 0; const nid = () => mkId('ABCDEFGHJKLMNPQRSTUVXYWZ'[n % 24], (n++ % 2) + 1, String(1000000 + n * 7919).slice(0, 7));
+  const S = [];
+  const add = (note, o) => S.push({ note, o: Object.assign({ pid: nid() }, o) });
+  add('正確資料（對照組）', { name: '黃建志' });
+  add('E01 必填欄位空白', { name: '', pid: '', why: '' });
+  add('E02 姓名僅 1 個字', { name: '王' });
+  add('E02 姓名含數字', { name: '王小明2' });
+  add('E03 身分證字號格式錯誤（碼數不足）', { name: '李雅婷', pid: 'B12345' });
+  add('W01 身分證檢查碼邏輯不符（警示）', { name: '趙敏豪', pid: 'A123456788' });
+  add('E03 非居住者證號格式錯誤', { name: 'Emma Clark', res: '非居住者', pid: 'XYZ-123' });
+  add('E04 領受人身分不在可接受值', { name: '鄭淑芬', res: '外籍' });
+  add('E05 給與種類不在代碼表', { name: '蔡宗翰', type: '退休金' });
+  add('E06 案件性質不在可接受值', { name: '許嘉玲', kind: '特殊案件' });
+  add('E07 領取日期年份僅 2 位', { name: '吳俊賢', date: '99/06/10' });
+  add('E07 領取日期非有效日期（2/30）', { name: '周怡君', date: '115/02/30', pf: '115/02', pt: '115/02' });
+  add('E07 領取日期為西元年', { name: '蘇冠宇', date: '2026/06/10' });
+  add('E08 領取日期晚於今日', { name: '曾詩涵', date: '116/01/05', pf: '116/01', pt: '116/01' });
+  add('E07 領取日期被 Excel 轉為日期序號', { name: '施明哲', date: { n: 46183 } });
+  add('E09 所屬期間起迄顛倒', { name: '江佩珊', pf: '115/09', pt: '115/03' });
+  add('E09 所屬期間僅填起', { name: '游承恩', pf: '115/06', pt: '' });
+  add('E09 所屬期間格式錯誤（月份未補零）', { name: '梁雅琪', pf: '115/6', pt: '115/6' });
+  add('E10 給付總額含千分位與單位', { name: '呂建宏', gross: '3,000,000元' });
+  add('E10 給付總額為 0', { name: '蕭子晴', gross: '0' });
+  add('E10 給付總額含小數', { name: '戴國峰', gross: '1000000.5' });
+  add('E10 給付總額超過上限', { name: '馮雅惠', gross: '99999999999' });
+  add('E11 一次性給與缺服務年資', { name: '方俊傑', years: '' });
+  add('E11 服務年資負值', { name: '連淑華', years: '-3' });
+  add('W05 服務年資超過 60 年（警示）', { name: '任志強', years: '75' });
+  add('E12 是否因公撫卹不在可接受值', { name: '洪美君', duty: '不確定' });
+  add('E13 應稅所得額大於給付總額', { name: '邱柏翰', inc: '5000000' });
+  add('E14 扣繳稅額為負值', { name: '盧怡萱', tax: '-100' });
+  add('E14 扣繳稅額大於給付總額', { name: '柯志偉', tax: '3500000' });
+  add('E14 因公撫卹金卻有扣繳稅額', { name: '余雅雯', duty: '是', tax: '12000' });
+  add('W06 扣繳稅額與試算結果不同（警示）', { name: '龔泰安', tax: '5000' });
+  add('W07 非居住者扣繳稅額為 0（警示）', { name: 'Kevin Brown', res: '非居住者', pid: '19850321KB', tax: '0' });
+  add('E15 關聯撥付案文號格式錯誤', { name: '傅明珠', doc: 'ABC-123' });
+  add('E16 與系統既有案件重複', { name: '周美玲', pid: mkId('B', 2, '3412345'), type: txType('once-ret').name, date: '115/01/15', pf: '115/01', pt: '115/01', years: '18', gross: '4500000' });
+  add('E16 與檔案內前一列重複', { name: '黃建志', pid: null, dupOfFirst: true });
+  add('E19 含全形數字', { name: '田雅婷', gross: '３０００００', years: '１５' });
+  add('E18 含不允許之符號', { name: '莊<b>志明', why: '補建檔<script>' });
+  add('E17 建檔原因過短', { name: '谷志遠', why: '補建' });
+  add('E20 所得人地址過長', { name: '徐淑貞', addr: '台北市'.repeat(40) });
+  const rows = S.map(s => { const o = s.o; if (o.dupOfFirst) { Object.assign(o, S[0].o, { name: '黃建志' }); delete o.dupOfFirst; } const v = tbSampleValid(o), raw = {}; Object.keys(v).forEach(k => raw[k] = v[k]); Object.keys(o).forEach(k => { raw[k] = o[k]; }); return { note: s.note, v: raw }; });
+  return rows;
+}
+function tbErrorSheets() {
+  const rows = tbErrorSamples(), head = TB_COLS.map(c => ({ t: c.h + (c.req ? '*' : ''), s: c.req ? 2 : 1 })).concat([{ t: '本列測試情境（上傳時略過此欄）', s: 1 }]);
+  const s = { name: '批次建檔範本', tab: 1, freeze: 1, cols: TB_COLS.map(c => c.w).concat([40]), head, rows: rows.map(x => TB_COLS.map(c => { const v = x.v[c.k]; return v && typeof v === 'object' ? { n: v.n, s: 0 } : { t: v === undefined || v === null ? '' : String(v), s: 3 }; }).concat([{ t: x.note, s: 5 }])) };
+  s.colStyle = TB_COLS.map(() => 3);
+  return [s];
+}
+function tbDlTemplate() { runDownload('課稅案件批次建檔範本', 'xlsx', { onDone: () => tbDownload(tbXlsx(tbTemplateSheets()), '課稅案件批次建檔範本.xlsx') }); }
+function tbDlErrSample() { runDownload('課稅案件批次建檔_錯誤範例', 'xlsx', { onDone: () => tbDownload(tbXlsx(tbErrorSheets()), '課稅案件批次建檔_錯誤範例檔.xlsx') }); }
+
+/* ---------- 畫面 ---------- */
+const TB = { res: null, filter: 'all', file: null };
+async function tbFile(inp) {
+  const f = inp.files && inp.files[0]; if (!f) return; TB.file = f;
+  const chip = document.getElementById('taxcase-batch-file-chip'); chip.style.display = 'inline-flex'; chip.textContent = f.name + '（' + formatFileSize(f.size) + '）檢核中…';
+  try {
+    const parsed = /\.csv$/i.test(f.name) ? tbParseCsv(await f.text()) : await tbReadXlsx(f);
+    TB.res = tbRun(parsed, f.name); TB.filter = 'all'; tbRender(); chip.textContent = f.name + '（' + formatFileSize(f.size) + '）' + (TB.res.rows.length ? '：' + TB.res.rows.length + ' 筆' : '');
+    showToast(TB.res.file.some(x => x.lv === 'error') ? 'error' : 'info', '檔案已讀取', TB.res.file.some(x => x.lv === 'error') ? TB.res.file.find(x => x.lv === 'error').msg : '共 ' + TB.res.rows.length + ' 筆，已完成欄位檢核');
+  } catch (e) { TB.res = { src: f.name, file: [{ lv: 'error', msg: '無法讀取檔案：' + e.message + '（請使用 .xlsx 或 .csv，且勿設密碼保護）' }], rows: [] }; tbRender(); chip.textContent = f.name + '（讀取失敗）'; }
+}
+function tbRecheck() { if (!TB.file) { showToast('warning', '尚未選擇檔案', '請先上傳批次建檔檔案，或按「載入內建錯誤範例」'); return; } tbFile({ files: [TB.file] }); }
+function tbLoadSamples() {
+  const rows = tbErrorSamples(), parsed = { rows: [{ no: 1, cells: TB_COLS.map(c => ({ v: c.h })) }].concat(rows.map((x, i) => ({ no: i + 2, cells: TB_COLS.map(c => { const v = x.v[c.k]; return v && typeof v === 'object' ? { v: String(v.n), num: true } : { v: v === undefined || v === null ? '' : String(v) }; }) }))) };
+  TB.res = tbRun(parsed, '內建錯誤範例（' + rows.length + ' 列）'); TB.res.notes = rows.map(x => x.note); TB.file = null; TB.filter = 'all'; tbRender();
+  const chip = document.getElementById('taxcase-batch-file-chip'); chip.style.display = 'inline-flex'; chip.textContent = '內建錯誤範例：' + rows.length + ' 筆';
+}
+const tbSt = x => x.issues.some(i => i.lv === 'error') ? 'error' : x.issues.some(i => i.lv === 'warn') ? 'warn' : 'ok';
+function tbSetFilter(f) { TB.filter = f; tbRender(); }
+function tbRender() {
+  const box = document.getElementById('tb-result'); if (!box) return; const R = TB.res;
+  if (!R) { box.innerHTML = '<div class="form-hint">請上傳批次建檔檔案（.xlsx／.csv），或按「載入內建錯誤範例」查看檢核畫面。</div>'; return; }
+  const fe = R.file.map(f => '<div class="tx-formula" style="border-left-color:var(--' + (f.lv === 'error' ? 'danger' : 'warning') + ');margin-bottom:8px">' + (f.lv === 'error' ? '✕ ' : '⚠ ') + f.msg + '</div>').join('');
+  const cnt = { ok: 0, warn: 0, error: 0 }; R.rows.forEach(x => cnt[tbSt(x)]++);
+  const tabs = [['all', '全部', R.rows.length], ['error', '錯誤', cnt.error], ['warn', '警示', cnt.warn], ['ok', '通過', cnt.ok]].map(t => '<span class="al-chip' + (TB.filter === t[0] ? ' active' : '') + '" onclick="tbSetFilter(\'' + t[0] + '\')">' + t[1] + '（' + t[2] + '）</span>').join('');
+  const bc = { ok: 'success', warn: 'warning', error: 'danger' }, bl = { ok: '通過', warn: '警示', error: '錯誤' };
+  const list = R.rows.filter(x => TB.filter === 'all' || tbSt(x) === TB.filter);
+  const body = list.map((x, i) => { const s = tbSt(x), r = x.r; const note = R.notes ? '<div style="font-size:11px;color:var(--text-secondary)">情境：' + R.notes[R.rows.indexOf(x)] + '</div>' : '';
+    return '<tr><td>' + x.no + '</td><td>' + (r.name ? r.name.replace(/</g, '&lt;') : '<i style="color:#999">（空白）</i>') + '</td><td class="masked">' + (r.pid ? (r.pid.length === 10 ? mskId(r.pid) : r.pid).replace(/</g, '&lt;') : '-') + '</td><td>' + (r.type || '-') + '</td><td>' + (r.date || '-') + '</td><td style="text-align:right">' + (r.gross || '-') + '</td><td><span class="badge badge-' + bc[s] + '">' + bl[s] + '</span></td><td style="min-width:280px">' + (x.issues.length ? x.issues.map(i => '<div style="font-size:12px;margin:2px 0"><span class="badge badge-' + (i.lv === 'error' ? 'danger' : 'warning') + '" style="font-size:10px">' + i.code + '</span> <b>' + i.f + '</b>：' + i.msg.replace(/</g, '&lt;') + '</div>').join('') : '-') + note + '</td></tr>'; }).join('');
+  const canGo = R.rows.length && !R.file.some(f => f.lv === 'error');
+  box.innerHTML = fe + (R.rows.length ? '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px"><div class="stat-card"><div class="stat-label">檔案筆數</div><div class="stat-value">' + R.rows.length + '</div></div><div class="stat-card"><div class="stat-label">通過</div><div class="stat-value" style="color:var(--success)">' + cnt.ok + '</div></div><div class="stat-card warning"><div class="stat-label">警示（需確認）</div><div class="stat-value warning">' + cnt.warn + '</div></div><div class="stat-card danger"><div class="stat-label">錯誤（不予建檔）</div><div class="stat-value" style="color:var(--danger)">' + cnt.error + '</div></div></div><div class="al-chips">' + tabs + '</div><div class="table-wrapper" style="max-height:520px;overflow:auto"><table class="data-table"><thead><tr><th>列次</th><th>姓名</th><th>身分證字號</th><th>給與種類</th><th>領取日期</th><th>給付總額</th><th>結果</th><th>檢核說明（錯誤代碼／欄位）</th></tr></thead><tbody>' + body + '</tbody></table></div>' +
+    '<div style="padding:12px 0 0;display:flex;gap:10px;flex-wrap:wrap;align-items:center"><button class="btn btn-gold btn-sm" ' + (canGo && (cnt.ok + cnt.warn) ? '' : 'disabled') + ' onclick="tbCommit()">確認並批次建檔（通過 ' + cnt.ok + ' 筆' + (cnt.warn ? '＋警示 ' + cnt.warn + ' 筆' : '') + '）</button><button class="btn btn-outline btn-sm" onclick="tbDlReport()">下載檢核結果</button><label style="font-size:13px;' + (cnt.warn ? '' : 'display:none') + '"><input type="checkbox" id="tb-ack"> 已確認警示列，仍要一併建檔</label>' + (cnt.error ? '<span class="form-hint">錯誤列不會建檔，請修正後重新上傳</span>' : '') + '</div>' : '');
+}
+function tbCommit() {
+  const R = TB.res; if (!R) return; const cnt = { ok: 0, warn: 0, error: 0 }; R.rows.forEach(x => cnt[tbSt(x)]++);
+  if (cnt.warn && !(document.getElementById('tb-ack') || {}).checked) { showToast('warning', '請確認警示事項', '有 ' + cnt.warn + ' 筆警示列，請勾選「已確認警示列」後再建檔'); return; }
+  let n = 0;
+  R.rows.filter(x => tbSt(x) !== 'error').forEach(x => {
+    const v = x.r, tk = tbTypeKey(v.type), res = (v.res || '').trim() !== '非居住者', pid = v.pid.trim().toUpperCase(), g = +v.gross;
+    const c = txcNew({ name: v.name.trim(), pid, type: tk, resident: res, I: {}, payDate: v.date.trim(), addr: (v.addr || '').trim(), doc: (v.doc || '').trim(), src: '人工建檔', by: TXU[TXC.role], why: '批次建檔：' + v.why.trim(), period: v.pf && v.pt ? v.pf.trim() + '～' + v.pt.trim() : null });
+    Object.assign(c, { gross: g, inc: Math.round(+v.inc || 0), tax: Math.round(+v.tax || 0), exempt: v.duty === '是', kind: v.kind || '一般課稅案件' }); c.net = c.gross - c.tax; c.hist[0].why = '批次建檔：' + v.why.trim();
+    TXC.list.unshift(c); txcLog(c, '案件建立', '-', '給付總額 ' + nt(c.gross) + '／扣繳稅額 ' + nt(c.tax), '批次建檔（' + R.src + '）', '批次建檔'); n++;
+  });
+  clRender(); showToast('success', '批次建檔完成', '已建立 ' + n + ' 筆課稅案件；' + cnt.error + ' 筆錯誤列未建檔'); TB.res = null; TB.file = null; tbRender();
+  const chip = document.getElementById('taxcase-batch-file-chip'); chip.style.display = 'none'; const fi = document.getElementById('taxcase-batch-file-input'); if (fi) fi.value = '';
+}
+function tbDlReport() {
+  const R = TB.res; if (!R) return; const rows = [];
+  R.file.forEach(f => rows.push([{ t: '檔案', s: 3 }, { t: '', s: 3 }, { t: f.lv === 'error' ? '錯誤' : '警示', s: 3 }, { t: '-', s: 3 }, { t: '檔案', s: 3 }, { t: f.msg, s: 4 }]));
+  R.rows.forEach(x => { const r = x.r; if (!x.issues.length) rows.push([{ t: String(x.no), s: 3 }, { t: r.name, s: 3 }, { t: '通過', s: 3 }, { t: '', s: 3 }, { t: '', s: 3 }, { t: '', s: 3 }]); x.issues.forEach(i => rows.push([{ t: String(x.no), s: 3 }, { t: r.name, s: 3 }, { t: i.lv === 'error' ? '錯誤' : '警示', s: 3 }, { t: i.code, s: 3 }, { t: i.f, s: 3 }, { t: i.msg, s: 4 }])); });
+  const sh = { name: '檢核結果', tab: 1, freeze: 1, cols: [8, 14, 8, 10, 22, 80], head: ['列次', '姓名', '結果', '錯誤代碼', '欄位', '說明'].map(t => ({ t, s: 1 })), rows }; sh.colStyle = [3, 3, 3, 3, 3, 4];
+  tbDownload(tbXlsx([sh]), '批次建檔檢核結果.xlsx'); showToast('success', '已下載檢核結果', '共 ' + rows.length + ' 列，可依說明修正後重新上傳');
+}
+function tbRefTable() {
+  const rows = tbErrorSamples().slice(1), ctx = { seen: {} }, out = [];
+  const all = [tbErrorSamples()[0]].concat(rows); const res = all.map((x, i) => { const r = { _no: i + 2, _num: {} }; TB_COLS.forEach(c => { const v = x.v[c.k]; r[c.k] = v && typeof v === 'object' ? String(v.n) : (v === undefined || v === null ? '' : String(v)); r._num[c.k] = !!(v && typeof v === 'object'); }); return { note: x.note, issues: tbCheckRow(r, ctx) }; });
+  return res.slice(1).map(x => '<tr><td style="white-space:nowrap">' + x.note + '</td><td>' + x.issues.map(i => '<div style="font-size:12px;margin:2px 0"><span class="badge badge-' + (i.lv === 'error' ? 'danger' : 'warning') + '" style="font-size:10px">' + i.code + '</span> ' + i.f + '：' + i.msg.replace(/</g, '&lt;') + '</div>').join('') + '</td></tr>').join('');
+}
+function tbRefToggle() { const b = document.getElementById('tb-ref-body'); if (b.style.display === 'none') { if (!b.dataset.ok) { b.querySelector('tbody').innerHTML = tbRefTable(); b.dataset.ok = '1'; } b.style.display = 'block'; } else b.style.display = 'none'; }
 
 </script>
 </body>
