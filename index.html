@@ -961,6 +961,20 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 .qr-chip{display:flex;align-items:center;justify-content:space-between;padding:5px 10px;background:#eef2ff;border-radius:4px;font-size:calc(12px * var(--font-scale));font-weight:600;color:var(--primary);margin-bottom:4px}
 .qr-chip button{border:0;background:transparent;cursor:pointer;color:var(--primary);font-size:13px;padding:0 4px}
 </style>
+<style>
+.ta-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 16px}
+.ta-f label{display:block;font-size:calc(12px * var(--font-scale));color:var(--text-secondary);margin-bottom:3px}
+.ta-wide{grid-column:1 / -1}
+.ta-ro,.ta-dv{background:rgba(127,127,127,.10)}
+.ta-dv{font-weight:600}
+.ta-f .form-control.ta-err{border-color:var(--danger);background:rgba(220,53,69,.08)}
+.ta-f .form-control.ta-ok{border-color:var(--success,#2e7d32);background:rgba(46,125,50,.09)}
+.ta-tag{display:inline-block;margin-left:4px;padding:0 6px;border-radius:8px;font-size:11px;background:var(--danger);color:#fff}
+.ta-msg{font-size:12px;margin-top:3px}
+.ta-msg-err{color:var(--danger)}
+.ta-msg-ok{color:var(--success,#2e7d32)}
+@media (max-width:700px){.ta-grid{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
 
@@ -2533,7 +2547,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div class="card-header">
           <div class="card-title">異常清單</div>
           <div style="display:flex;align-items:center;gap:10px">
-            <span class="badge badge-danger">7 筆異常</span>
+            <span class="badge badge-danger" id="tax-anomaly-count">7 筆異常</span>
             <button class="btn btn-warning btn-sm" onclick="runTaxAudit()"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> 執行異常檢核</button>
           </div>
         </div>
@@ -2542,16 +2556,12 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           <thead>
             <tr><th>文號</th><th>姓名</th><th>身分證字號</th><th>異常類型</th><th>說明</th><th>狀態</th><th>操作</th></tr>
           </thead>
-          <tbody>
-            <tr><td style="font-size:calc(11px * var(--font-scale))">府退二字第1130009870號</td><td>趙志遠</td><td class="masked">E567***890</td><td><span class="badge badge-danger">地址缺漏</span></td><td>通訊地址未填寫，無法寄發憑單</td><td><span class="badge badge-warning">待處理</span></td><td><button class="btn btn-sm btn-gold" onclick="showManualFix('趙志遠','ERR-ADDR-001','通訊地址未填寫，無法寄發憑單，請補齊通訊地址')">修正</button></td></tr>
-            <tr><td style="font-size:calc(11px * var(--font-scale))">府退二字第1130009869號</td><td>吳淑珍</td><td class="masked">F678***901</td><td><span class="badge badge-warning">金額差異</span></td><td>計算金額與撥付系統差異 NT$500</td><td><span class="badge badge-warning">待確認</span></td><td><button class="btn btn-sm btn-gold" onclick="showManualFix('吳淑珍','ERR-AMT-003','計算金額與撥付系統差異 NT$500，請確認正確金額')">確認</button></td></tr>
-            <tr><td style="font-size:calc(11px * var(--font-scale))">府退二字第1130009868號</td><td>鄭建宏</td><td class="masked">G789***012</td><td><span class="badge badge-danger">重複申報</span></td><td>同一身分證字號已有申報紀錄</td><td><span class="badge badge-danger">需處理</span></td><td><button class="btn btn-sm btn-danger" onclick="if(confirm('確定要刪除鄭建宏的重複申報紀錄嗎？')){this.closest('tr').remove();showToast('success','刪除完成','已刪除鄭建宏的重複申報紀錄')}">刪除重複</button></td></tr>
-          </tbody>
+          <tbody id="tax-anomaly-tbody"></tbody>
         </table>
         </div>
         <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px">
           <button class="btn btn-outline btn-sm" onclick="runDownload('課稅異常清單','xlsx')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 下載異常清單</button>
-          <button class="btn btn-primary btn-sm" onclick="showToast('success','完成','已處理 4 筆異常，剩餘 3 筆待人工確認')">批次處理可自動修正項目</button>
+          <button class="btn btn-primary btn-sm" onclick="taxAnoBatch()">批次處理可自動修正項目</button>
         </div>
       </div>
     </div>
@@ -15166,6 +15176,157 @@ pmRender = function () {
 };
 ['pmUSave', 'pmUClear'].forEach(n => { const f = window[n]; window[n] = function () { if (pmIsSuper()) { showToast('warning', '內建最高權限帳號', '「系統管理員」權限不可調整'); return; } return f.apply(this, arguments); }; });
 const _pmURoleV33 = pmURole; pmURole = function (r) { if (pmIsSuper()) { showToast('warning', '內建最高權限帳號', '「系統管理員」角色不可切換'); pmRender(); return; } _pmURoleV33(r); };
+
+
+/* ===== V34：定期給與預扣稅額檢核－異常清單（7 筆）與「修正」全欄位表單／修正案例展示 ===== */
+const taEsc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const taNum = v => +String(v == null ? '' : v).replace(/[,\s]/g, '') || 0;
+const taAct = ['維持現狀', '作廢重複筆（沖正）', '沖正全部預扣紀錄', '沖正差額（依正確稅額）'];
+const TAXANO = [
+  {k: 'a1', doc: '府退二字第1130009870號', name: '趙志遠', pid: 'E156789019', ty: '地址缺漏', tb: 'danger', desc: '通訊地址未填寫，無法寄發憑單', code: 'ERR-ADDR-001', stTxt: '待處理', stB: 'warning', auto: false,
+   f: {birth: '民國 42 年 03 月 12 日', resident: '居住者', stay: '365', addr: '', phone: '0912-345-678', bank: '0040037', payDate: '115/10/19', m: 98000, pm: 98000, recCnt: 0, recTotal: 0},
+   bad: ['addr'], fix: {addr: '臺北市大安區和平東路二段106號'}, reason: '依領受人來電確認，補正通訊地址以利扣繳憑單寄發',
+   demo: [['通訊地址', '（空白）', '臺北市大安區和平東路二段106號', '扣繳憑單須有可寄送之通訊地址（必填）'], ['憑單寄發狀態', '無法寄發', '可寄發', '地址補正後重新產製憑單']]},
+  {k: 'a2', doc: '府退二字第1130009869號', name: '吳淑珍', pid: 'F267890124', ty: '金額差異', tb: 'warning', desc: '月領金額差異 NT$500：本系統 NT$112,000／撥付系統 NT$112,500', code: 'ERR-AMT-003', stTxt: '待確認', stB: 'warning', auto: true,
+   f: {birth: '民國 44 年 07 月 25 日', resident: '居住者', stay: '365', addr: '臺北市士林區中山北路五段88號', phone: '0933-221-456', bank: '0060016', payDate: '115/10/19', m: 112000, pm: 112500, recCnt: 0, recTotal: 0},
+   bad: ['m'], fix: {m: 112500}, reason: '經核對撥付系統入帳資料，月領金額應為 NT$112,500，以撥付系統為準更正',
+   demo: [['月領金額（本系統）', 'NT$ 112,000', 'NT$ 112,500', '以撥付系統入帳金額為準'], ['全年課稅所得額', 'NT$ 450,000', 'NT$ 456,000', '112,500×12－894,000'], ['每月預扣稅額（每次）', 'NT$ 2,250', 'NT$ 2,280', '456,000×6%÷12']]},
+  {k: 'a3', doc: '府退二字第1130009868號', name: '鄭建宏', pid: 'G178901235', ty: '重複申報', tb: 'danger', desc: '同一身分證字號已有申報紀錄：預扣支領紀錄重複建置 2 筆', code: 'ERR-DUP-001', stTxt: '需處理', stB: 'danger', auto: false,
+   f: {birth: '民國 41 年 11 月 03 日', resident: '居住者', stay: '365', addr: '新北市板橋區文化路一段100號', phone: '0922-118-765', bank: '0040037', payDate: '115/10/19', m: 130000, pm: 130000, recCnt: 2, recPer: -3330, recTotal: -79920, recSrc: '府退二字第1130009868號（115/10/05 建置）、府退二字第1130009731號（115/09/05 建置）'},
+   bad: ['act'], fix: {act: '作廢重複筆（沖正）'}, reason: '同一月退給與重複建置預扣支領紀錄，作廢 115/10/05 重複筆並沖正',
+   demo: [['預扣紀錄處理方式', '維持現狀（2 筆重複）', '作廢重複筆（沖正）', '同一身分證字號、同一給與僅得有 1 筆預扣紀錄'], ['撥付系統預扣紀錄合計', '-NT$ 79,920', '-NT$ 39,960', '666,000×6%＝39,960（12 期）'], ['沖正支領紀錄', '—', '+NT$ 3,330 × 12 = +NT$ 39,960', '正數表示退還']]},
+  {k: 'a4', doc: '府退二字第1130009867號', name: '林雅惠', pid: 'D221234560', ty: '身分證檢查碼錯誤', tb: 'danger', desc: '身分證字號檢查碼錯誤（D221234560），無法介接撥付系統建置預扣紀錄', code: 'ERR-ID-002', stTxt: '待處理', stB: 'warning', auto: false,
+   f: {birth: '民國 45 年 05 月 18 日', resident: '居住者', stay: '365', addr: '臺中市西區三民路一段50號', phone: '0955-667-890', bank: '0170014', payDate: '115/10/19', m: 125000, pm: 125000, recCnt: 0, recTotal: 0},
+   bad: ['pid'], fix: {pid: 'D221234566'}, reason: '對照戶政資料，身分證字號末碼誤植（0→6），更正後通過檢查碼驗證',
+   demo: [['身分證字號', 'D221234560', 'D221234566', '格式「1 英文＋1／2＋8 數字」且檢查碼合計須被 10 整除'], ['檢核結果', '檢查碼不符', '通過', '更正後可重新介接撥付系統']]},
+  {k: 'a5', doc: '府退二字第1130009866號', name: '黃淑芬', pid: 'H223456788', ty: '身分別誤植', tb: 'warning', desc: '登載為非居住者（18%），惟境內居留 365 天應為居住者（6%）；撥付系統已按 18% 預扣', code: 'ERR-RES-004', stTxt: '待確認', stB: 'warning', auto: true,
+   f: {birth: '民國 43 年 09 月 09 日', resident: '非居住者', stay: '365', addr: '高雄市前鎮區中山二路30號', phone: '0966-334-221', bank: '0090011', payDate: '115/10/19', m: 120000, pm: 120000, recCnt: 1, recPer: -8190, recTotal: -98280},
+   bad: ['resident', 'act'], fix: {resident: '居住者', act: '沖正差額（依正確稅額）'}, reason: '本年度境內居留逾 183 天，更正為居住者並沖正多預扣差額',
+   demo: [['領受人身分', '非居住者', '居住者', '境內居留 365 天 ≥ 183 天，屬居住者'], ['扣繳率', '18%', '6%', '依領受人身分適用'], ['每月預扣稅額（每次）', 'NT$ 8,190', 'NT$ 2,730', '546,000×6%÷12'], ['沖正差額支領紀錄', '—', '+NT$ 5,460 × 12 = +NT$ 65,520', '98,280 − 32,760']]},
+  {k: 'a6', doc: '府退二字第1130009865號', name: '周信宏', pid: 'K134567890', ty: '日期格式錯誤', tb: 'warning', desc: '撥付入帳日期格式錯誤（1151019），無法判定適用版次', code: 'ERR-DATE-005', stTxt: '待處理', stB: 'warning', auto: true,
+   f: {birth: '民國 46 年 01 月 30 日', resident: '居住者', stay: '365', addr: '桃園市中壢區中正路200號', phone: '0911-908-776', bank: '0040037', payDate: '1151019', m: 110000, pm: 110000, recCnt: 0, recTotal: 0},
+   bad: ['payDate'], fix: {payDate: '115/10/19'}, reason: '撥付入帳日期格式正規化為 yyy/mm/dd',
+   demo: [['撥付入帳日期', '1151019', '115/10/19', '格式須為 yyy/mm/dd（以入帳年度認定免稅額）'], ['適用版次', '無法判定', '115/01/01 起（定額減除 894,000）', '依入帳日期判定'], ['每月預扣稅額（每次）', '無法計算', 'NT$ 2,130', '426,000×6%÷12']]},
+  {k: 'a7', doc: '府退二字第1130009864號', name: '蔡美珠', pid: 'M245678905', ty: '未達門檻誤預扣', tb: 'warning', desc: '每月預扣稅額 NT$630 ≤ NT$2,000，應免預扣，惟撥付系統已建置預扣支領紀錄', code: 'ERR-WH-006', stTxt: '需處理', stB: 'danger', auto: true,
+   f: {birth: '民國 47 年 12 月 21 日', resident: '居住者', stay: '365', addr: '臺南市東區大學路20號', phone: '0988-120-345', bank: '0060016', payDate: '115/10/19', m: 85000, pm: 85000, recCnt: 1, recPer: -630, recTotal: -7560},
+   bad: ['act'], fix: {act: '沖正全部預扣紀錄'}, reason: '居住者每次預扣稅額未逾 2,000 元，免辦理預扣，沖正已建置之預扣支領紀錄',
+   demo: [['是否達預扣門檻', '未達（630 ≤ 2,000）', '未達（630 ≤ 2,000）', '居住者每次扣繳稅額 ≤ 2,000 元免扣繳'], ['預扣紀錄處理方式', '維持現狀（已建置 -630×12）', '沖正全部預扣紀錄', '免預扣者不應有預扣支領紀錄'], ['沖正支領紀錄', '—', '+NT$ 630 × 12 = +NT$ 7,560', '正數表示退還']]}
+];
+const TAXFIELDS = [
+  ['一、領受人基本資料', [['doc', '撥付文號', 'ro'], ['name', '姓名', 'ro'], ['pid', '身分證字號', 'in'], ['birth', '出生日期', 'ro'], ['resident', '領受人身分', 'sel', ['居住者', '非居住者']], ['stay', '本年度境內居留天數', 'ro'], ['addr', '通訊地址', 'in'], ['phone', '聯絡電話', 'ro']]],
+  ['二、給與資料（撥付系統介接）', [['type', '退撫給與種類', 'ro'], ['fmt', '所得格式', 'ro'], ['payDate', '撥付入帳日期（yyy/mm/dd）', 'in'], ['bank', '銀行代號', 'ro'], ['m', '月領金額（本系統）', 'in'], ['pm', '撥付系統月領金額', 'ro'], ['times', '全年領取期數', 'ro'], ['annual', '全年領取金額', 'dv']]],
+  ['三、課稅計算結果（依上列欄位即時重算）', [['ver', '適用版次', 'dv'], ['ex', '定額免稅額（分期減除額）', 'dv'], ['inc', '全年課稅所得額', 'dv'], ['rate', '扣繳率', 'dv'], ['tax', '全年應預扣稅額', 'dv'], ['mo', '每月預扣稅額（每次）', 'dv'], ['hit', '是否達預扣門檻（每次 > NT$2,000）', 'dv']]],
+  ['四、撥付系統預扣稅額支領紀錄', [['recCnt', '已建置紀錄筆數', 'ro'], ['recPer', '已建置每期金額', 'ro'], ['recTotal', '已建置合計金額', 'ro'], ['expect', '應有預扣支領紀錄', 'dv'], ['diff', '應調整支領紀錄金額（負數＝待建置預扣；正數＝退還）', 'dv'], ['act', '預扣紀錄處理方式', 'sel', taAct]]]
+];
+function taxAnoCalc(v) {
+  const ok = rocOk(v.payDate), P = ok ? txP(v.payDate) : null, per = taNum(v.m) * 12, res = v.resident === '居住者', rate = res ? 0.06 : 0.18;
+  const inc = P ? Math.max(0, per - P.per) : null, tax = inc == null ? null : Math.round(inc * rate), mo = tax == null ? null : Math.round(tax / 12);
+  const hit = tax == null ? null : (res ? tax / 12 > TXP.minTax : true), exp = hit === null ? null : (hit ? -mo * 12 : 0);
+  return {ok, P, per, inc, tax, mo, hit, rate, exp, diff: exp == null ? null : exp - taNum(v.recTotal)};
+}
+function taxAnoValid(a, key, val) {
+  val = String(val == null ? '' : val).trim();
+  if (key === 'addr') return val.length >= 8;
+  if (key === 'pid') return idOk(val.toUpperCase());
+  if (key === 'payDate') return rocOk(val);
+  if (key === 'm') return taNum(val) === taNum(a.fix.m);
+  return val === String(a.fix[key]);
+}
+const taOpen = () => TAXANO.filter(a => !a.st).length;
+function taxAnoRender() {
+  const tb = document.getElementById('tax-anomaly-tbody'); if (!tb) return;
+  tb.innerHTML = TAXANO.map((a, i) => `<tr><td style="font-size:calc(11px * var(--font-scale))">${a.doc}</td><td>${a.name}</td><td class="masked">${mskId(a.pid)}</td><td><span class="badge badge-${a.tb}">${a.ty}</span></td><td>${a.desc}</td><td>${a.st ? `<span class="badge badge-success">已修正</span><div style="font-size:11px;color:var(--text-secondary)">${a.st}</div>` : `<span class="badge badge-${a.stB}">${a.stTxt}</span>`}</td><td>${a.st ? '<button class="btn btn-sm btn-outline" disabled>已修正</button>' : `<button class="btn btn-sm btn-gold" onclick="taxAnoFix(${i})">修正</button>`}</td></tr>`).join('');
+  const n = taOpen(), b = document.getElementById('tax-anomaly-count');
+  if (b) { b.className = 'badge ' + (n ? 'badge-danger' : 'badge-success'); b.textContent = n ? n + ' 筆異常' : '無異常'; }
+}
+function taxAnoFix(i) {
+  const a = TAXANO[i], v = a.f, fldMap = {}; TAXFIELDS.forEach(s => s[1].forEach(x => fldMap[x[0]] = x));
+  const row = (x) => {
+    const key = x[0], kind = x[2], isBad = a.bad.includes(key), id = 'ta-f-' + key;
+    let inner;
+    if (kind === 'in' || kind === 'sel') {
+      const cur = key === 'pid' ? a.pid : v[key], cls = 'form-control' + (isBad ? ' ta-err' : '');
+      if (kind === 'sel') inner = `<select class="${cls}" id="${id}" onchange="taxAnoRefresh(${i})" ${key === 'act' && !taNum(v.recCnt) ? 'disabled' : ''}>${x[3].map(o => `<option${o === (key === 'act' ? '維持現狀' : cur) ? ' selected' : ''}>${o}</option>`).join('')}</select>`;
+      else inner = `<input type="text" class="${cls}" id="${id}" value="${taEsc(key === 'm' ? fm(cur) : cur)}" placeholder="${key === 'addr' ? '（空白）請輸入完整通訊地址' : ''}" oninput="taxAnoRefresh(${i})">`;
+    } else {
+      let val = '';
+      if (key === 'doc') val = a.doc; else if (key === 'name') val = a.name; else if (key === 'type') val = '月退休(職)金(俸)'; else if (key === 'fmt') val = '93（薪資以外之退職所得）'; else if (key === 'times') val = '12 期';
+      else if (key === 'pm') val = nt(v.pm); else if (key === 'recCnt') val = v.recCnt ? (v.recCnt > 1 ? v.recCnt + ' 筆（重複）' : '1 筆') : '無';
+      else if (key === 'recPer') val = v.recCnt ? nt(v.recPer) : '—'; else if (key === 'recTotal') val = v.recCnt ? nt(v.recTotal) : '—'; else val = v[key];
+      inner = `<input type="text" class="form-control ${kind === 'dv' ? 'ta-dv' : 'ta-ro'}" id="${id}" value="${taEsc(val)}" readonly>`;
+    }
+    const msg = isBad ? `<div class="ta-msg" id="ta-m-${key}"></div>` : '';
+    return `<div class="ta-f${key === 'addr' || key === 'recSrc' ? ' ta-wide' : ''}"><label>${x[1]}${isBad ? ' <span class="ta-tag">須修正</span>' : ''}</label>${inner}${msg}</div>`;
+  };
+  const sections = TAXFIELDS.map(s => `<div class="detail-block"><div class="detail-block-title">${s[0]}</div><div class="ta-grid">${s[1].map(row).join('')}${s[0].startsWith('四') && v.recSrc ? `<div class="ta-f ta-wide"><label>重複紀錄來源</label><input type="text" class="form-control ta-ro" value="${taEsc(v.recSrc)}" readonly></div>` : ''}</div></div>`).join('');
+  const demo = `<div class="detail-block"><div class="detail-block-title">修正案例展示（範例）</div><table class="data-table"><thead><tr><th>欄位</th><th>修正前（異常）</th><th>修正後（正確）</th><th>修正依據</th></tr></thead><tbody>${a.demo.map(d => `<tr><td>${d[0]}</td><td style="color:var(--danger)">${d[1]}</td><td style="color:var(--success,#2e7d32);font-weight:600">${d[2]}</td><td style="font-size:12px">${d[3]}</td></tr>`).join('')}</tbody></table><div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-sm btn-primary" onclick="taxAnoApply(${i})">套用範例修正</button><button class="btn btn-sm btn-outline" onclick="taxAnoFix(${i})">還原為異常值</button></div></div>`;
+  const html = `<div class="info-card danger" style="margin-bottom:12px"><div class="info-row"><div class="info-key">異常案件</div><div class="info-val">${a.doc}　${a.name}</div></div><div class="info-row"><div class="info-key">異常類型</div><div class="info-val"><span class="badge badge-${a.tb}">${a.ty}</span>　${a.code}</div></div><div class="info-row"><div class="info-key">錯誤說明</div><div class="info-val">${a.desc}</div></div></div>${demo}${sections}<div class="detail-block"><div class="detail-block-title">五、修正說明</div><textarea class="form-control" id="ta-reason" rows="2" placeholder="請輸入修正原因與依據（必填）"></textarea><div class="form-hint" style="margin-top:6px">身分證字號等個資依系統管理員權限完整顯示，本次檢視與修正將留存稽核紀錄；儲存後寫入「課稅案件異動紀錄」。</div></div>`;
+  openDetailModal('異常修正：' + a.name + '（' + a.ty + '）', html);
+  const b = document.getElementById('detail-modal-dl-btn'); b.dataset.orig = b.dataset.orig || b.innerHTML;
+  b.style.display = 'inline-flex'; b.textContent = '儲存修正'; b.setAttribute('onclick', 'taxAnoSave(' + i + ')');
+  taxAnoRefresh(i);
+}
+function taxAnoVals(a) {
+  const g = k => { const e = document.getElementById('ta-f-' + k); return e ? e.value : null; };
+  const v = Object.assign({}, a.f); ['resident', 'addr', 'payDate', 'm'].forEach(k => { const x = g(k); if (x != null) v[k] = x; });
+  v.act = g('act') || '維持現狀'; v.pid = g('pid') != null ? g('pid') : a.pid; return v;
+}
+function taxAnoRefresh(i) {
+  const a = TAXANO[i], v = taxAnoVals(a), c = taxAnoCalc(v), set = (k, t) => { const e = document.getElementById('ta-f-' + k); if (e) e.value = t; };
+  const mE = document.getElementById('ta-f-m'); if (mE && /^[\d,\s]+$/.test(mE.value) === false && mE.value !== '') { /* keep raw */ }
+  set('annual', c.per ? nt(c.per) : '—'); set('ver', c.ok ? c.P.lbl : '無法判定（日期格式錯誤）'); set('ex', c.ok ? nt(c.P.per) : '—');
+  set('inc', c.ok ? nt(c.inc) : '—'); set('rate', Math.round(c.rate * 100) + '%'); set('tax', c.ok ? nt(c.tax) : '—'); set('mo', c.ok ? nt(c.mo) : '無法計算');
+  set('hit', c.hit == null ? '—' : c.hit ? '已達門檻（須預扣）' : '未達門檻（免預扣）');
+  set('expect', c.exp == null ? '—' : c.exp ? nt(c.mo * -1) + ' × 12 期 = ' + nt(c.exp) : '免預扣（不應有紀錄）');
+  set('diff', c.diff == null ? '—' : (c.diff > 0 ? '+' : c.diff < 0 ? '-' : '') + 'NT$ ' + fm(Math.abs(c.diff)));
+  a.bad.forEach(k => {
+    const e = document.getElementById('ta-f-' + k), m = document.getElementById('ta-m-' + k); if (!e) return;
+    const ok = taxAnoValid(a, k, k === 'pid' ? v.pid : v[k]); e.classList.toggle('ta-err', !ok); e.classList.toggle('ta-ok', ok);
+    if (m) { m.className = 'ta-msg ' + (ok ? 'ta-msg-ok' : 'ta-msg-err'); m.textContent = ok ? '✓ 已修正' : '✗ 建議修正為：' + (k === 'm' ? nt(a.fix.m) : a.fix[k]); }
+  });
+}
+function taxAnoApply(i) {
+  const a = TAXANO[i]; a.bad.forEach(k => { const e = document.getElementById('ta-f-' + k); if (e) e.value = k === 'm' ? fm(a.fix[k]) : a.fix[k]; });
+  const r = document.getElementById('ta-reason'); if (r) r.value = a.reason; taxAnoRefresh(i);
+  showToast('success', '已套用範例修正', '請確認各欄位與重算結果後，按「儲存修正」');
+}
+function taxAnoCommit(a, vals, reason) {
+  const u = (typeof TXU !== 'undefined' && TXU['承辦人']) || '王大明（給付科）', t = rocNow(), lbl = {addr: '通訊地址', m: '月領金額', pid: '身分證字號', payDate: '撥付入帳日期', resident: '領受人身分', act: '預扣紀錄處理方式'};
+  const nv = Object.assign({}, a.f, {m: taNum(vals.m), resident: vals.resident, addr: vals.addr, payDate: vals.payDate, act: vals.act}), c = taxAnoCalc(nv);
+  a.bad.forEach(k => {
+    const bef = k === 'pid' ? a.pid : (k === 'act' ? '維持現狀' : a.f[k]), aft = k === 'pid' ? vals.pid.toUpperCase() : vals[k];
+    TX.log.unshift({t, u, c: a.doc + ' ' + a.name, k: lbl[k], a: k === 'm' ? nt(bef) : (bef === '' ? '（空白）' : bef), b: k === 'm' ? nt(taNum(aft)) : aft, why: reason, src: '異常修正'});
+  });
+  if (vals.pid) a.pid = vals.pid.toUpperCase(); Object.assign(a.f, {m: taNum(vals.m), resident: vals.resident, addr: vals.addr, payDate: vals.payDate});
+  if (vals.act !== '維持現狀' && taNum(a.f.recTotal) !== 0 && c.diff) {
+    TX.records.push({t, doc: a.doc, who: a.name, per: Math.round(c.diff / 12), times: 12, total: c.diff, src: '異常修正'});
+    TX.log.unshift({t, u, c: a.doc + ' ' + a.name, k: '預扣支領紀錄', a: nt(taNum(a.f.recTotal)), b: nt(c.exp), why: vals.act + '：' + reason, src: '異常修正'});
+    a.f.recTotal = c.exp; a.f.recPer = c.exp ? Math.round(c.exp / 12) : 0; a.f.recCnt = c.exp ? 1 : 0;
+  }
+  a.st = t + '　' + u.split('（')[0];
+}
+function taxAnoSave(i) {
+  const a = TAXANO[i], v = taxAnoVals(a), reason = (document.getElementById('ta-reason').value || '').trim();
+  const left = a.bad.filter(k => !taxAnoValid(a, k, k === 'pid' ? v.pid : v[k]));
+  if (left.length) { showToast('warning', '尚有欄位未修正', '仍有 ' + left.length + ' 個標示「須修正」的欄位未更正，可按「套用範例修正」'); return; }
+  if (!reason) { showToast('warning', '請填寫修正說明', '修正原因與依據為必填'); return; }
+  taxAnoCommit(a, v, reason); closeModal('detail-modal'); txAuditRender();
+  showToast('success', '修正完成', a.name + ' 之「' + a.ty + '」已修正並寫入異動紀錄；剩餘 ' + taOpen() + ' 筆異常');
+}
+function taxAnoBatch() {
+  const todo = TAXANO.filter(a => !a.st && a.auto);
+  if (!todo.length) { showToast('info', '無可自動修正項目', '剩餘 ' + taOpen() + ' 筆須人工確認'); return; }
+  todo.forEach(a => taxAnoCommit(a, Object.assign({}, a.f, a.fix, {pid: a.pid}), a.reason)); txAuditRender();
+  showToast('success', '完成', '已處理 ' + todo.length + ' 筆異常，剩餘 ' + taOpen() + ' 筆待人工確認');
+}
+runTaxAudit = function () {
+  showToast('info', '執行中', '正在執行異常檢核...');
+  setTimeout(() => { taxAnoRender(); const n = taOpen(); showToast(n ? 'warning' : 'success', '檢核完成', n ? '發現 ' + n + ' 筆異常，請查看異常清單' : '本次檢核無異常'); }, 1200);
+};
+const _txAuditRenderV34 = txAuditRender; txAuditRender = function () { _txAuditRenderV34(); taxAnoRender(); };
+const _openDetailModalV34 = openDetailModal;
+openDetailModal = function () { const b = document.getElementById('detail-modal-dl-btn'); if (b && b.dataset.orig) { b.innerHTML = b.dataset.orig; delete b.dataset.orig; } return _openDetailModalV34.apply(this, arguments); };
+taxAnoRender();
 
 </script>
 </body>
