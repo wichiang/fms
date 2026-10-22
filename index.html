@@ -10741,11 +10741,11 @@ function txRender() {
 function txR1() {
   const vers = [...new Set(TX.cases.map(c => txP(c.payDate).lbl))];
   const rows = TX.cases.map((c, i) => {
-    if (TX.flt !== '全部' && txP(c.payDate).lbl !== TX.flt) return '';
+    if (TX.only) { if (c.doc !== TX.only) return ''; } else if (TX.flt !== '全部' && txP(c.payDate).lbl !== TX.flt) return '';
     const v = txValidate(c), ok = v.every(x => x[3]), st = !c.checked ? '<span class="badge badge-secondary">待介接</span>' : ok ? '<span class="badge badge-success">檢核通過</span>' : '<span class="badge badge-danger">檢核未通過</span>';
     return `<tr class="${TX.sel === i ? 'tx-chg' : ''}"><td style="font-size:12px">${c.doc}</td><td>${c.name}</td><td>${mskId(c.pid)}</td><td>${txType(c.type).name}</td><td>${c.payDate}</td><td><span class="badge badge-gold">${txP(c.payDate).lbl}</span></td><td style="font-size:12px;color:var(--text-secondary)">${c.note || ''}</td><td>${TX.regs[c.doc] ? '<span class="badge badge-gold">已建檔</span>' : st}</td><td><button class="btn btn-sm btn-gold" style="white-space:nowrap" onclick="txFetch(${i})">介接並檢核</button></td></tr>`;
   }).join('');
-  let h = `<div class="card" style="margin-bottom:16px"><div class="card-header"><div><div class="card-title">待辦理課稅計算案件（撥付系統）</div><div class="card-subtitle">以介接方式取得案件辦理退職所得課稅計算所需資料，接收後先執行必要之欄位完整性及格式檢核</div></div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><label class="form-label" style="margin:0">適用版次</label><select class="form-control" style="width:auto" onchange="TX.flt=this.value;TX.sel=-1;txRender()">${['全部', ...vers].map(v => `<option ${TX.flt === v ? 'selected' : ''}>${v}</option>`).join('')}</select><span class="badge badge-warning">${TX.cases.filter(c => TX.flt === '全部' || txP(c.payDate).lbl === TX.flt).length} 筆</span></div></div>
+  let h = `<div class="card" style="margin-bottom:16px"><div class="card-header"><div><div class="card-title">待辦理課稅計算案件（撥付系統）</div><div class="card-subtitle">以介接方式取得案件辦理退職所得課稅計算所需資料，接收後先執行必要之欄位完整性及格式檢核</div>${TX.only ? txOnlyBanner() : ''}</div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><label class="form-label" style="margin:0">適用版次</label><select class="form-control" style="width:auto" ${TX.only ? 'disabled' : ''} onchange="TX.flt=this.value;TX.sel=-1;txRender()">${['全部', ...vers].map(v => `<option ${TX.flt === v ? 'selected' : ''}>${v}</option>`).join('')}</select><span class="badge badge-warning">${TX.only ? 1 : TX.cases.filter(c => TX.flt === '全部' || txP(c.payDate).lbl === TX.flt).length} 筆</span></div></div>
     <div class="table-wrapper"><table class="data-table"><thead><tr><th>撥付文號</th><th>姓名</th><th>身分證字號</th><th>退撫給與種類</th><th>領取日期</th><th>適用版次</th><th>範例情境</th><th>狀態</th><th>操作</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
   const c = TX.cur();
   if (c && c.checked) {
@@ -11356,7 +11356,7 @@ function txnRender() {
   document.getElementById('txn-banner').innerHTML = todo.length ? `<b>提醒：</b>撥付系統中具 110/01/01 後年資之撥付案共 <b>${todo.length}</b> 筆尚未完成稅額計算（未登錄 ${todo.filter(c => c.st === 'unreg').length} 筆、已登錄未計算 ${todo.filter(c => c.st === 'reg').length} 筆），其中逾 7 日 <b style="color:var(--danger)">${over.length}</b> 筆，請儘速辦理核算及確認作業。` : '撥付系統具 110/01/01 後年資之撥付案均已完成登錄及計算。';
   const card = (t, v, c) => `<div class="info-card" style="text-align:center"><div style="font-size:12px;color:var(--text-secondary)">${t}</div><div style="font-size:26px;font-weight:700;color:${c}">${v}</div></div>`;
   document.getElementById('txn-cards').innerHTML = card('應檢核撥付案（110/01/01後年資）', all.length, 'var(--primary)') + card('已完成登錄及計算', all.filter(c => c.st === 'done').length, 'var(--success)') + card('已登錄未計算', all.filter(c => c.st === 'reg').length, 'var(--warning,#d98f00)') + card('未登錄', all.filter(c => c.st === 'unreg').length, 'var(--danger)') + card('逾 7 日未完成', over.length, 'var(--danger)') + card('不納入（無110年後年資）', TXN.excluded.toLocaleString('en-US'), 'var(--text-secondary)');
-  document.getElementById('txn-body').innerHTML = txnRows().map(c => { const dd = daysSince(c.pay); return `<tr class="cns-font"><td style="font-size:12px">${c.doc}</td><td>${htmlEsc(mk ? maskName(c.name) : c.name)}</td><td>${mk ? mskId(c.pid) : c.pid}</td><td>${c.kind}</td><td>${c.svc}</td><td>${c.pay}</td><td>${TXN_ST[c.st]}</td><td>${c.st === 'done' ? '-' : (dd > 7 ? `<b style="color:var(--danger)">${dd} 日（逾期）</b>` : dd + ' 日')}</td><td>${c.who}</td><td>${c.st === 'done' ? '-' : `<button class="btn btn-sm btn-outline-primary" onclick="navigateTo('tax-calc')">前往計算</button> <button class="btn btn-sm btn-outline" onclick="txnNotify('${c.doc}')">通知</button>`}</td></tr>`; }).join('') || '<tr><td colspan="10" style="text-align:center;color:var(--text-secondary)">查無符合條件之案件</td></tr>';
+  document.getElementById('txn-body').innerHTML = txnRows().map(c => { const dd = daysSince(c.pay); return `<tr class="cns-font"><td style="font-size:12px">${c.doc}</td><td>${htmlEsc(mk ? maskName(c.name) : c.name)}</td><td>${mk ? mskId(c.pid) : c.pid}</td><td>${c.kind}</td><td>${c.svc}</td><td>${c.pay}</td><td>${TXN_ST[c.st]}</td><td>${c.st === 'done' ? '-' : (dd > 7 ? `<b style="color:var(--danger)">${dd} 日（逾期）</b>` : dd + ' 日')}</td><td>${c.who}</td><td>${c.st === 'done' ? '-' : `<button class="btn btn-sm btn-outline-primary" onclick="txnGoCalc('${c.doc}')">前往計算</button> <button class="btn btn-sm btn-outline" onclick="txnNotify('${c.doc}')">通知</button>`}</td></tr>`; }).join('') || '<tr><td colspan="10" style="text-align:center;color:var(--text-secondary)">查無符合條件之案件</td></tr>';
   document.getElementById('txn-log').innerHTML = TXN.log.map(l => `<tr><td style="white-space:nowrap">${l.t}</td><td>${l.who}</td><td>${l.c}</td><td>${l.how}</td></tr>`).join('');
 }
 function txnSync() { showToast('info', '介接中', '正在向撥付系統查詢具 110/01/01 後年資之撥付案...'); setTimeout(() => { TXN.sync = TODAY_ROC + ' ' + new Date().toTimeString().slice(0, 5); txnRender(); showToast('success', '介接完成', '共檢核 ' + TXN.list.length + ' 筆，未完成 ' + TXN.list.filter(c => c.st !== 'done').length + ' 筆'); }, 700); }
@@ -15106,6 +15106,41 @@ function tbRefTable() {
   return res.slice(1).map(x => '<tr><td style="white-space:nowrap">' + x.note + '</td><td>' + x.issues.map(i => '<div style="font-size:12px;margin:2px 0"><span class="badge badge-' + (i.lv === 'error' ? 'danger' : 'warning') + '" style="font-size:10px">' + i.code + '</span> ' + i.f + '：' + i.msg.replace(/</g, '&lt;') + '</div>').join('') + '</td></tr>').join('');
 }
 function tbRefToggle() { const b = document.getElementById('tb-ref-body'); if (b.style.display === 'none') { if (!b.dataset.ok) { b.querySelector('tbody').innerHTML = tbRefTable(); b.dataset.ok = '1'; } b.style.display = 'block'; } else b.style.display = 'none'; }
+
+</script>
+<script>
+
+/* ===== V32：未計算稅額案件通知 → 前往計算（待辦理課稅計算案件清單僅呈現該案） ===== */
+(function () { TXN.list.forEach(c => { if (!idOk(c.pid)) c.pid = mkId(c.pid[0], /[12]/.test(c.pid[1]) ? c.pid[1] : '1', c.pid.slice(2, 9)); }); })();
+const TXN_TYPE = { '一次退休(職、伍)金': 'once-ret', '月退休(職)金(俸)': 'period-ret', '遺屬一次金': 'surv-once', '遺屬年金': 'surv-ann', '資遣給與': 'sev' };
+function txnToTx(c) {
+  const m = /(\d+)年(\d+)月/.exec(c.svc || ''), years = m ? Math.round((+m[1] + (+m[2]) / 12) * 100) / 100 : 0;
+  const type = TXN_TYPE[c.kind] || (TXT.find(t => t.name === c.kind) || {}).id || 'once-ret', k = txType(type).kind;
+  let I;
+  if (type === 'period-ret') I = { per: Math.round((38000 + years * 1200) / 100) * 100 * 12 };
+  else if (type === 'surv-ann') I = { per: 720000, paid: 0, death: '否' };
+  else if (type === 'surv-once') I = { once: 6000000, n: 5 };
+  else I = { once: Math.round(years * 150000 / 1000) * 1000, years };
+  const x = { doc: c.doc, name: c.name, pid: c.pid, type, resident: true, I, payDate: c.pay, bank: '0040037', recips: [{ n: c.name, r: 1 }], note: '來源：未計算稅額案件通知（承辦人：' + c.who + '）', fromTxn: true };
+  x.I.resident = true; x.I.d = x.payDate; return x;
+}
+function txnGoCalc(doc) {
+  const c = TXN.list.find(x => x.doc === doc); if (!c) return;
+  let i = TX.cases.findIndex(x => x.doc === doc); if (i < 0) { TX.cases.push(txnToTx(c)); i = TX.cases.length - 1; }
+  TX.only = doc; TX.sel = -1; TX.step = 1; TX.res = null; TX._keep = true;
+  navigateTo('tax-calc'); TX._keep = false; txRender();
+  showToast('info', '已帶入待辦案件', '退職所得課稅計算之待辦清單僅呈現「' + c.name + '」一案（' + c.doc + '），請按「介接並檢核」開始處理');
+  const b = document.getElementById('tx-body'); if (b) b.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function txOnlyBanner() {
+  const c = TXN.list.find(x => x.doc === TX.only) || {};
+  return '<div class="tx-formula" style="margin-top:10px;border-left-color:var(--warning)">目前僅顯示來自「未計算稅額案件通知」之案件：<b>' + TX.only + '</b>　' + (c.name || '') + '　<button class="btn btn-sm btn-outline" style="margin-left:8px" onclick="txShowAll()">顯示全部待辦案件</button><button class="btn btn-sm btn-outline" style="margin-left:6px" onclick="TX.only=null;navigateTo(\'tax-uncalc\')">返回未計算稅額案件通知</button></div>';
+}
+function txShowAll() { TX.only = null; TX.sel = -1; txRender(); }
+const _navV32 = navigateTo;
+navigateTo = function (id) { if (id === 'tax-calc' && !TX._keep) TX.only = null; _navV32(id); };
+const _txConfirmV32 = txConfirm;
+txConfirm = function () { const c = TX.cur(), doc = c && c.doc; _txConfirmV32(); const n = doc && TXN.list.find(x => x.doc === doc); if (n && TX.regs[doc]) { n.st = 'done'; txnRender(); } };
 
 </script>
 </body>
