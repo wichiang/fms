@@ -12535,7 +12535,7 @@ navigateTo=function(id){_navSal(id);if(id.indexOf('salary-')===0){const sm=sEl('
 <script>
 /* ===== V26：權限設定（角色預設權限矩陣＋使用者權限） ===== */
 const PM={tab:'role',mod:'全部',u:'王大明',du:null,
- roles:[['ADM','最高管理者','資訊室系統維運；業務功能預設僅檢視（權責分離），系統管理功能完整權限'],['UNIT','單位管理者','科長／覆核主管：核符、覆核核准、管理本單位使用者'],['HOST','業務組主辦人','軍／公／教科主辦：確認異動名單、設定本科名單與時限'],['STAFF','承辦人員','一般承辦：資料建置、計算、產製，依自身管轄範圍'],['QRY','查詢人員','唯讀查詢，不得新增、修改或註銷'],['AUD','稽核人員','稽核日誌及各項紀錄唯讀查核，可匯出稽核資料']],
+ roles:[['ADM','最高管理者','資訊室系統維運；角色預設為業務功能僅檢視（權責分離），系統管理功能完整權限。唯內建「系統管理員」帳號為雛型展示用，具全功能最高權限'],['UNIT','單位管理者','科長／覆核主管：核符、覆核核准、管理本單位使用者'],['HOST','業務組主辦人','軍／公／教科主辦：確認異動名單、設定本科名單與時限'],['STAFF','承辦人員','一般承辦：資料建置、計算、產製，依自身管轄範圍'],['QRY','查詢人員','唯讀查詢，不得新增、修改或註銷'],['AUD','稽核人員','稽核日誌及各項紀錄唯讀查核，可匯出稽核資料']],
  lv:['無','檢視','操作','核准／管理'],
  /* 順序：最高管理者、單位管理者、業務組主辦人、承辦人員、查詢人員、稽核人員 */
  fns:[
@@ -15141,6 +15141,31 @@ const _navV32 = navigateTo;
 navigateTo = function (id) { if (id === 'tax-calc' && !TX._keep) TX.only = null; _navV32(id); };
 const _txConfirmV32 = txConfirm;
 txConfirm = function () { const c = TX.cur(), doc = c && c.doc; _txConfirmV32(); const n = doc && TXN.list.find(x => x.doc === doc); if (n && TX.regs[doc]) { n.st = 'done'; txnRender(); } };
+
+</script>
+<script>
+
+/* ===== V33：「系統管理員」帳號具全功能最高權限（雛型展示用） ===== */
+(function () {
+  const u = PM.users['系統管理員']; u.super = true; u.ov = {};
+  PM.fns.forEach(f => { u.ov[f[1]] = 3; });
+})();
+const pmIsSuper = () => !!(PM.users[PM.u] && PM.users[PM.u].super);
+const _pmRenderV33 = pmRender;
+pmRender = function () {
+  _pmRenderV33();
+  if (PM.tab !== 'user' || !pmIsSuper()) return;
+  const cards = document.querySelectorAll('#pm-box .card'), c = cards[cards.length - 1]; if (!c) return;
+  const note = document.createElement('div'); note.className = 'tx-formula'; note.style.cssText = 'margin-bottom:12px;border-left-color:var(--accent-gold)';
+  note.innerHTML = '<b>雛型展示用最高權限帳號</b>：「系統管理員」對全部 ' + PM.fns.length + ' 項功能皆具「核准／管理」最高權限，不受角色預設與權責分離規則限制，且不可於此調整；其他使用者仍依角色及個別設定控管。';
+  const hd = c.querySelector('.card-header'); if (hd) hd.insertAdjacentElement('afterend', note);
+  c.querySelectorAll('.pm-sel').forEach(s => { s.disabled = true; s.value = '3'; s.className = 'pm-sel lv3'; });
+  c.querySelectorAll('.card-header button').forEach(b => { b.disabled = true; });
+  document.querySelectorAll('#pm-box input[name=pmrole]').forEach(r => { r.disabled = true; });
+  const sub = c.querySelector('.card-subtitle'); if (sub) sub.innerHTML = '全部功能最高權限（內建帳號，不可調整）';
+};
+['pmUSave', 'pmUClear'].forEach(n => { const f = window[n]; window[n] = function () { if (pmIsSuper()) { showToast('warning', '內建最高權限帳號', '「系統管理員」權限不可調整'); return; } return f.apply(this, arguments); }; });
+const _pmURoleV33 = pmURole; pmURole = function (r) { if (pmIsSuper()) { showToast('warning', '內建最高權限帳號', '「系統管理員」角色不可切換'); pmRender(); return; } _pmURoleV33(r); };
 
 </script>
 </body>
