@@ -2304,7 +2304,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       </div>
       <div class="page-header">
         <div class="page-title">課稅報表彙整統計</div>
-        <div class="page-subtitle">依規範產製 4 類法定報表，支援造字檔顯示及個人資料遮罩；輸出格式支援 PDF 與 Excel，並可下載及列印</div>
+        <div class="page-subtitle">依規範產製 5 類法定報表，支援造字檔顯示及個人資料遮罩；輸出格式支援 PDF 與 Excel，並可下載及列印</div>
       </div>
 
       <div class="card" style="margin-bottom:16px" id="rpt-font-card">
@@ -15327,6 +15327,156 @@ const _txAuditRenderV34 = txAuditRender; txAuditRender = function () { _txAuditR
 const _openDetailModalV34 = openDetailModal;
 openDetailModal = function () { const b = document.getElementById('detail-modal-dl-btn'); if (b && b.dataset.orig) { b.innerHTML = b.dataset.orig; delete b.dataset.orig; } return _openDetailModalV34.apply(this, arguments); };
 taxAnoRender();
+
+
+/* ===== V35：課稅管理－報表彙整統計（5 份報表依查詢條件產製，並匯出實際 .xlsx）===== */
+const RPD = {base: null, seeded: false};
+const RP_BANKS = ['臺灣銀行', '合作金庫', '第一銀行', '郵局'], RP_IDENT = ['公務人員', '教育人員', '軍職人員'], RP_OPS = ['王大明', '李小華', '陳志明'];
+const RP_SUR = '陳林黃張李王吳劉蔡楊許鄭謝郭洪邱曾廖賴徐', RP_GIV = ['志明', '淑芬', '美玲', '建宏', '雅婷', '俊傑', '怡君', '宗翰', '淑惠', '家豪', '佩珊', '文彬', '秀英', '國棟', '麗卿', '信宏', '美珠', '雅惠', '文雄', '鳳英'];
+const rpHash = s => { let h = 7; for (const ch of String(s)) h = (h * 31 + ch.codePointAt(0)) % 1000003; return h; };
+const rpRocStr = d => { const p = x => String(x).padStart(2, '0'); return (d.getFullYear() - 1911) + '/' + p(d.getMonth() + 1) + '/' + p(d.getDate()); };
+function rpReason(fmt, duty, inc, tax) { if (tax > 0) return ''; if (fmt === 92) return '應申報免扣繳憑單（所得格式92）'; if (duty) return '因公撫卹，免納所得稅'; if (!inc) return '未逾免稅額度，無應稅所得'; return '居住者每次扣繳稅額 ≤ NT$2,000'; }
+function rpMake(o) {
+  const t = txType(o.type), res = txCalc(t, Object.assign({resident: o.resident, d: o.payDate}, o.I));
+  const duty = o.I.duty === '是', tax = Math.round(res.tax);
+  return {doc: o.doc, name: o.name, pid: o.pid, resident: o.resident, ident: o.ident, bank: o.bank, type: o.type, tname: t.name, fmt: t.fmt, payDate: o.payDate, gross: Math.round(res.gross), inc: Math.round(res.inc), tax, rate: o.resident ? 6 : 18, wh: tax > 0, why: rpReason(t.fmt, duty, res.inc, tax), op: o.op, I: o.I};
+}
+function rpBuildBase() {
+  let s = 20261022; const r = () => (s = (s * 1664525 + 1013904223) % 4294967296) / 4294967296, pick = a => a[Math.floor(r() * a.length)];
+  const GEN = [['period-ret', 44, () => ({per: Math.round(700 + r() * 1300) * 1000}), '府退二字'], ['once-ret', 28, () => ({once: Math.round(1500 + r() * 4500) * 1000, years: 10 + Math.floor(r() * 26)}), '府退一字'], ['sev', 12, () => ({once: Math.round(800 + r() * 2200) * 1000, years: 3 + Math.floor(r() * 22)}), '府退一字'],
+    ['once-np', 16, () => ({once: Math.round(1000 + r() * 4000) * 1000, years: 8 + Math.floor(r() * 25), duty: r() < .25 ? '是' : '否'}), '府撫二字'], ['surv-ann', 16, () => ({per: Math.round(400 + r() * 800) * 1000, paid: Math.round(r() * 5) * 100000, death: r() < .5 ? '是' : '否'}), '府撫一字'], ['surv-once', 12, () => ({once: Math.round(3000 + r() * 5000) * 1000, n: 4 + Math.floor(r() * 5)}), '府撫一字']];
+  const L = 'ABCDEFHJKLMNPQRSTUVXYZ', t0 = new Date(2024, 0, 1), span = Math.round((new Date(2026, 9, 20) - t0) / 86400000), out = []; let seq = 0;
+  GEN.forEach(g => { for (let i = 0; i < g[1]; i++) {
+    seq++; const dt = new Date(t0.getTime() + Math.floor(r() * span) * 86400000), pd = rpRocStr(dt), res = r() > 0.09, d7 = String(Math.floor(r() * 1e7)).padStart(7, '0');
+    const pid = res ? mkId(pick(L.split('')), pick([1, 2]), d7) : mkId('A', 1, d7).slice(0, 10);
+    const x = r(); out.push(rpMake({doc: g[3] + '第' + pd.slice(0, 3) + String(1000 + seq * 13).padStart(7, '0') + '號', name: RP_SUR[Math.floor(r() * RP_SUR.length)] + pick(RP_GIV), pid, resident: res, ident: x < .55 ? RP_IDENT[0] : x < .85 ? RP_IDENT[1] : RP_IDENT[2], bank: pick(RP_BANKS), type: g[0], payDate: pd, I: g[2](), op: pick(RP_OPS)}));
+  } });
+  return out;
+}
+function rpLive() {
+  return (typeof TXC !== 'undefined' ? TXC.list : []).filter(c => c.status !== '已註銷').map(c => ({doc: c.no, name: c.name, pid: c.pid, resident: c.resident !== false, ident: RP_IDENT[rpHash(c.pid) % 3], bank: RP_BANKS[rpHash(c.pid + 'b') % 4], type: c.type, tname: txType(c.type).name, fmt: c.fmt, payDate: c.payDate, gross: c.gross, inc: c.inc, tax: c.tax, rate: c.resident !== false ? 6 : 18, wh: c.tax > 0, why: rpReason(c.fmt, c.exempt, c.inc, c.tax), op: (c.by || '').split('（')[0] || '王大明'}));
+}
+function rpData() {
+  if (!RPD.base) RPD.base = rpBuildBase();
+  if (!RPD.seeded) {
+    RPD.seeded = true; const base = RPD.base.filter(c => c.fmt === 93 && c.wh && c.payDate >= '115/01/01'), us = ['陳志明（給付科）', '王大明（給付科）', '李小華（查詢人員）'], ts = ['115/03/12 10:20', '115/05/08 14:05', '115/07/21 09:40', '115/08/30 16:12'];
+    [1, 3, 5, 7].forEach((k, j) => { const c = base[k % base.length]; if (!c) return; const I2 = JSON.parse(JSON.stringify(c.I)); if (I2.per != null) I2.per = Math.round(I2.per * 1.04); else I2.once = Math.round(I2.once * 1.06);
+      const nb = Math.round(txCalc(txType(c.type), Object.assign({resident: c.resident, d: c.payDate}, I2)).tax); TX.diffs.unshift({c: c.doc + ' ' + c.name, ty: c.tname, a: c.tax, b: nb, adj: c.tax - nb, t: ts[j], u: us[j % 3]}); });
+  }
+  return RPD.base.concat(rpLive());
+}
+/* ---- 最小化 XLSX 產生器（不依賴外部程式庫）---- */
+const XL_CRC = (() => { const t = []; for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+const xlCrc = b => { let c = 0xFFFFFFFF; for (let i = 0; i < b.length; i++) c = XL_CRC[(c ^ b[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };
+function xlZip(files) {
+  const enc = new TextEncoder(), parts = [], cen = []; let off = 0;
+  const u16 = n => [n & 255, (n >> 8) & 255], u32 = n => [n & 255, (n >> 8) & 255, (n >> 16) & 255, (n >>> 24) & 255], date = ((2026 - 1980) << 9) | (10 << 5) | 22;
+  files.forEach(f => { const nm = enc.encode(f.name), d = typeof f.data === 'string' ? enc.encode(f.data) : f.data, crc = xlCrc(d);
+    const lh = new Uint8Array([0x50, 0x4b, 3, 4, ...u16(20), ...u16(0x0800), ...u16(0), ...u16(0), ...u16(date), ...u32(crc), ...u32(d.length), ...u32(d.length), ...u16(nm.length), ...u16(0)]);
+    parts.push(lh, nm, d); cen.push(new Uint8Array([0x50, 0x4b, 1, 2, ...u16(20), ...u16(20), ...u16(0x0800), ...u16(0), ...u16(0), ...u16(date), ...u32(crc), ...u32(d.length), ...u32(d.length), ...u16(nm.length), ...u16(0), ...u16(0), ...u16(0), ...u16(0), ...u32(0), ...u32(off)]), nm); off += lh.length + nm.length + d.length; });
+  const cdSize = cen.reduce((a, b) => a + b.length, 0), end = new Uint8Array([0x50, 0x4b, 5, 6, 0, 0, 0, 0, ...u16(files.length), ...u16(files.length), ...u32(cdSize), ...u32(off), 0, 0]);
+  const all = parts.concat(cen, [end]), tot = all.reduce((a, b) => a + b.length, 0), out = new Uint8Array(tot); let p = 0; all.forEach(b => { out.set(b, p); p += b.length; }); return out;
+}
+const xlEsc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c])).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '');
+const xlCol = n => { let s = ''; n++; while (n > 0) { const m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - 1) / 26); } return s; };
+/* meta: {sheet, title, lines:[...]}; head: [...]; body: [{k,r}|[...]] */
+function xlsxBuild(meta, head, body) {
+  const nc = head.length, rows = []; let rn = 0;
+  const cell = (c, r, v, s) => typeof v === 'number' ? `<c r="${xlCol(c)}${r}" s="${s}"><v>${v}</v></c>` : `<c r="${xlCol(c)}${r}" s="${s}" t="inlineStr"><is><t xml:space="preserve">${xlEsc(v == null ? '' : v)}</t></is></c>`;
+  const line = (arr, sfn, ht) => { rn++; rows.push(`<row r="${rn}"${ht ? ` ht="${ht}" customHeight="1"` : ''}>${arr.map((v, c) => cell(c, rn, v, sfn(v, c))).join('')}</row>`); };
+  const merges = []; line([meta.title], () => 4, 24); merges.push(`A${rn}:${xlCol(nc - 1)}${rn}`);
+  meta.lines.forEach(t => { line([t], () => 0); merges.push(`A${rn}:${xlCol(nc - 1)}${rn}`); }); rn++; rows.push(`<row r="${rn}"/>`);
+  line(head, () => 1, 22); const hr = rn;
+  body.forEach(b => { const r = Array.isArray(b) ? b : b.r, k = Array.isArray(b) ? '' : b.k, base = k === 'total' ? 7 : k === 'sub' ? 5 : 2; line(r, v => typeof v === 'number' ? (k ? base + 1 : 2) : (k ? base : 3)); });
+  const widths = head.map((h, c) => { let w = Math.max(String(h).length * 2.1, 10); body.forEach(b => { const v = (Array.isArray(b) ? b : b.r)[c]; const l = typeof v === 'number' ? fm(v).length + 2 : String(v == null ? '' : v).replace(/[^\x00-\xff]/g, 'xx').length + 2; if (l > w) w = l; }); return Math.min(w, 46); });
+  const sheet = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetViews><sheetView workbookViewId="0"><pane ySplit="${hr}" topLeftCell="A${hr + 1}" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><sheetFormatPr defaultRowHeight="16"/><cols>${widths.map((w, i) => `<col min="${i + 1}" max="${i + 1}" width="${w.toFixed(1)}" customWidth="1"/>`).join('')}</cols><sheetData>${rows.join('')}</sheetData><mergeCells count="${merges.length}">${merges.map(m => `<mergeCell ref="${m}"/>`).join('')}</mergeCells><pageMargins left="0.5" right="0.5" top="0.6" bottom="0.6" header="0.3" footer="0.3"/><pageSetup orientation="landscape"/></worksheet>`;
+  const styles = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="3"><font><sz val="11"/><name val="Microsoft JhengHei"/></font><font><b/><sz val="11"/><name val="Microsoft JhengHei"/></font><font><b/><sz val="14"/><name val="Microsoft JhengHei"/></font></fonts><fills count="5"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFD9E2F3"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFF2F2F2"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFFFF2CC"/></patternFill></fill></fills><borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color rgb="FF999999"/></left><right style="thin"><color rgb="FF999999"/></right><top style="thin"><color rgb="FF999999"/></top><bottom style="thin"><color rgb="FF999999"/></bottom><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="9"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf><xf numFmtId="3" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1"/><xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1"/><xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"/><xf numFmtId="0" fontId="1" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"/><xf numFmtId="3" fontId="1" fillId="3" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1"/><xf numFmtId="0" fontId="1" fillId="4" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"/><xf numFmtId="3" fontId="1" fillId="4" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>`;
+  const hd = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+  return xlZip([{name: '[Content_Types].xml', data: hd + '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>'},
+    {name: '_rels/.rels', data: hd + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>'},
+    {name: 'xl/workbook.xml', data: hd + `<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="${xlEsc(meta.sheet)}" sheetId="1" r:id="rId1"/></sheets></workbook>`},
+    {name: 'xl/_rels/workbook.xml.rels', data: hd + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'},
+    {name: 'xl/styles.xml', data: styles}, {name: 'xl/worksheets/sheet1.xml', data: sheet}]);
+}
+/* ---- 報表定義與查詢 ---- */
+const RPQ = {}, RPS = {done: false};
+const rpTypes = () => TXT.map(t => t.name);
+const RPDEF = {
+  a: {id: 'taxreport-a', title: '退職所得扣繳稅額明細表', desc: '退職所得扣繳稅額明細表：可依銀行別、指定期間、退撫給與種類及身分別，產製退職所得扣繳稅額明細表（資料來源：課稅案件管理已建檔案件）', flt: [['d1', '期間起', 'date'], ['d2', '期間迄', 'date'], ['bank', '銀行別', 'sel', ['全部'].concat(RP_BANKS)], ['type', '退撫給與種類', 'sel', ['全部'].concat(rpTypes())], ['ident', '身分別', 'sel', ['全部'].concat(RP_IDENT)], ['res', '居住別', 'sel', ['全部', '居住者', '非居住者']], ['mode', '扣繳情形', 'sel', ['應扣繳', '免扣繳', '全部']]]},
+  b: {id: 'taxreport-b', title: '退職所得扣繳稅額統計表', desc: '退職所得扣繳稅額統計表：可按身分別及指定期間，產製已達扣繳件數、應課稅金額及扣繳稅額', flt: [['d1', '期間起', 'date'], ['d2', '期間迄', 'date'], ['ident', '身分別', 'sel', ['全部'].concat(RP_IDENT)], ['res', '居住別', 'sel', ['全部', '居住者', '非居住者']]]},
+  c: {id: 'taxreport-c', title: '退撫給與明細表', desc: '退撫給與明細表：可按退撫給與種類，按指定期間產製所有領受人給付總金額及應稅所得額等明細', flt: [['d1', '期間起', 'date'], ['d2', '期間迄', 'date'], ['type', '退撫給與種類', 'sel', ['全部'].concat(rpTypes())]]},
+  d: {id: 'taxreport-d', title: '退職所得扣繳件數統計表', desc: '退職所得扣繳件數統計表：可按退撫給與種類、身分別、（免）扣繳彙整，按指定期間統計扣繳件數', flt: [['d1', '期間起', 'date'], ['d2', '期間迄', 'date'], ['type', '退撫給與種類', 'sel', ['全部'].concat(rpTypes())], ['ident', '身分別', 'sel', ['全部'].concat(RP_IDENT)], ['res', '居住別', 'sel', ['全部', '居住者', '非居住者']], ['mode', '彙整方式', 'sel', ['全部', '應扣繳', '免扣繳']]]},
+  e: {id: 'taxreport-e', title: '稅額差異明細表', desc: '稅額差異明細表：撥付案重審後，列示重新計算前後之應扣繳稅額差異及差額支領紀錄（期間以更新時間認定）', flt: [['d1', '期間起', 'date'], ['d2', '期間迄', 'date'], ['type', '退撫給與種類', 'sel', ['全部'].concat(rpTypes())]]}
+};
+const rpV = (t, k) => { const e = document.getElementById('rf-' + t + '-' + k); return e ? e.value.trim() : ''; };
+const rpNm = n => RPT.mask ? maskName(n) : n, rpPid = p => RPT.mask ? mskId(p) : p;
+function rpFilt(t, f, recs) {
+  return recs.filter(c => c.payDate >= f.d1 && c.payDate <= f.d2 && (!f.bank || f.bank === '全部' || c.bank === f.bank) && (!f.type || f.type === '全部' || c.tname === f.type) && (!f.ident || f.ident === '全部' || c.ident === f.ident) && (!f.res || f.res === '全部' || (f.res === '居住者') === c.resident));
+}
+function rpSum(a, k) { return a.reduce((s, x) => s + x[k], 0); }
+function rpBuild(t, silent) {
+  const f = {}; RPDEF[t].flt.forEach(x => f[x[0]] = rpV(t, x[0]));
+  if (!rocOk(f.d1) || !rocOk(f.d2)) { if (!silent) showToast('warning', '期間格式錯誤', '請輸入有效日期，格式為 yyy/mm/dd（例：115/01/01）'); return null; }
+  if (f.d1 > f.d2) { if (!silent) showToast('warning', '期間錯誤', '期間起不得大於期間迄'); return null; }
+  const all = rpData(), cond = ['期間：' + f.d1 + '～' + f.d2].concat(RPDEF[t].flt.slice(2).map(x => x[1] + '：' + f[x[0]])).join('　') + '　個資顯示：' + (RPT.mask ? '遮罩（隱碼）' : '完整顯示');
+  let head, body = [], n = 0, note = '';
+  if (t === 'a') {
+    const rs = rpFilt(t, f, all).filter(c => f.mode === '全部' || (f.mode === '應扣繳') === c.wh).sort((x, y) => x.payDate.localeCompare(y.payDate) || x.doc.localeCompare(y.doc)); n = rs.length;
+    head = ['序號', '撥付文號', '姓名', '身分證字號', '身分別', '居住別', '銀行別', '退撫給與種類', '給付日期', '給付金額(元)', '應稅所得額(元)', '扣繳率', '扣繳稅額(元)', '扣繳情形', '承辦人'];
+    body = rs.map((c, i) => [i + 1, c.doc, rpNm(c.name), rpPid(c.pid), c.ident, c.resident ? '居住者' : '非居住者', c.bank, c.tname, c.payDate, c.gross, c.inc, c.wh ? c.rate + '%' : '—', c.tax, c.wh ? '應扣繳' : '免扣繳（' + c.why + '）', c.op]);
+    if (n) body.push({k: 'total', r: ['', '合計（' + n + ' 筆）', '', '', '', '', '', '', '', rpSum(rs, 'gross'), rpSum(rs, 'inc'), '', rpSum(rs, 'tax'), '', '']});
+    note = '共 ' + n + ' 筆；給付金額 NT$ ' + fm(rpSum(rs, 'gross')) + '、扣繳稅額 NT$ ' + fm(rpSum(rs, 'tax'));
+  } else if (t === 'b') {
+    const rs = rpFilt(t, f, all).filter(c => c.wh); n = rs.length; head = ['身分別', '已達扣繳件數', '應課稅金額合計(元)', '扣繳稅額合計(元)'];
+    RP_IDENT.filter(i => f.ident === '全部' || i === f.ident).forEach(i => { const g = rs.filter(c => c.ident === i); body.push([i, g.length, rpSum(g, 'inc'), rpSum(g, 'tax')]); });
+    body.push({k: 'total', r: ['合計', n, rpSum(rs, 'inc'), rpSum(rs, 'tax')]}); note = '已達扣繳 ' + n + ' 件；應課稅金額 NT$ ' + fm(rpSum(rs, 'inc')) + '、扣繳稅額 NT$ ' + fm(rpSum(rs, 'tax'));
+  } else if (t === 'c') {
+    const rs = rpFilt(t, f, all); head = ['退撫給與種類', '身分證字號', '姓名', '身分別', '給付件數', '給付總金額(元)', '應稅所得額(元)']; let people = 0;
+    TXT.map(x => x.name).filter(x => rs.some(c => c.tname === x)).forEach(tn => { const g = rs.filter(c => c.tname === tn), m = {}; g.forEach(c => { (m[c.pid] = m[c.pid] || []).push(c); });
+      const ks = Object.keys(m).sort(); ks.forEach(p => { const a = m[p]; body.push([tn, rpPid(p), rpNm(a[0].name), a[0].ident, a.length, rpSum(a, 'gross'), rpSum(a, 'inc')]); });
+      body.push({k: 'sub', r: [tn + ' 小計', '領受人 ' + ks.length + ' 人', '', '', g.length, rpSum(g, 'gross'), rpSum(g, 'inc')]}); people += ks.length; });
+    n = rs.length; if (n) body.push({k: 'total', r: ['總計', '領受人 ' + new Set(rs.map(c => c.pid + c.tname)).size + ' 人次', '', '', n, rpSum(rs, 'gross'), rpSum(rs, 'inc')]});
+    note = '共 ' + n + ' 件、' + new Set(rs.map(c => c.pid + c.tname)).size + ' 人次；給付總金額 NT$ ' + fm(rpSum(rs, 'gross')) + '、應稅所得額 NT$ ' + fm(rpSum(rs, 'inc'));
+  } else if (t === 'd') {
+    const rs = rpFilt(t, f, all); n = rs.length; const m = f.mode; head = ['退撫給與種類', '身分別'].concat(m === '全部' ? ['應扣繳件數', '免扣繳件數', '合計件數'] : [m + '件數']);
+    const cnt = (g, w) => g.filter(c => c.wh === w).length, tot = [0, 0];
+    TXT.map(x => x.name).forEach(tn => RP_IDENT.forEach(id => { const g = rs.filter(c => c.tname === tn && c.ident === id); if (!g.length) return; const w = cnt(g, true), nw = cnt(g, false);
+      if (m === '應扣繳' && !w || m === '免扣繳' && !nw) return; tot[0] += w; tot[1] += nw; body.push([tn, id].concat(m === '全部' ? [w, nw, w + nw] : [m === '應扣繳' ? w : nw])); }));
+    if (body.length) body.push({k: 'total', r: ['合計', ''].concat(m === '全部' ? [tot[0], tot[1], tot[0] + tot[1]] : [m === '應扣繳' ? tot[0] : tot[1]])});
+    n = m === '全部' ? tot[0] + tot[1] : (m === '應扣繳' ? tot[0] : tot[1]); note = m === '全部' ? '應扣繳 ' + tot[0] + ' 件、免扣繳 ' + tot[1] + ' 件，共 ' + (tot[0] + tot[1]) + ' 件' : m + ' ' + n + ' 件';
+  } else {
+    rpData(); const rs = TX.diffs.filter(d => { const dt = d.t.slice(0, 9); return dt >= f.d1 && dt <= f.d2 && (f.type === '全部' || d.ty === f.type); }).sort((x, y) => y.t.localeCompare(x.t)); n = rs.length;
+    head = ['撥付文號', '姓名', '退撫給與種類', '重審前稅額(元)', '重審後稅額(元)', '稅額差異(元)', '差額支領紀錄(元)', '更新時間', '更新人員'];
+    body = rs.map(d => { const p = d.c.split(' '); return [p[0], rpNm(p.slice(1).join(' ')), d.ty, d.a, d.b, d.b - d.a, d.adj, d.t, d.u]; });
+    if (n) body.push({k: 'total', r: ['合計（' + n + ' 筆）', '', '', rpSum(rs, 'a'), rpSum(rs, 'b'), rs.reduce((s, d) => s + d.b - d.a, 0), rpSum(rs, 'adj'), '', '']}); note = '共 ' + n + ' 筆重審差異';
+  }
+  RPQ[t] = {head, body, cond, n, note, title: RPDEF[t].title}; return RPQ[t];
+}
+function rpShow(t, silent) {
+  const q = rpBuild(t, silent); if (!q) return; const o = document.getElementById('rq-' + t + '-out'); if (!o) return;
+  const cell = c => typeof c === 'number' ? `<td style="text-align:right">${fm(c)}</td>` : `<td>${htmlEsc(c)}</td>`;
+  o.innerHTML = `<div class="form-hint" style="margin:0 0 8px">查詢條件：${htmlEsc(q.cond)}<br><b>${q.note}</b></div><div class="table-card"><div class="table-wrapper"><table class="data-table"><thead><tr>${q.head.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${q.body.map(b => { const r = b.r || b, st = b.k === 'total' ? ' style="font-weight:700;background:rgba(255,193,7,.18)"' : b.k === 'sub' ? ' style="font-weight:600;background:rgba(127,127,127,.10)"' : ''; return `<tr class="cns-font"${st}>${r.map(cell).join('')}</tr>`; }).join('') || `<tr><td colspan="${q.head.length}" style="text-align:center;color:var(--text-secondary)">查無符合條件之資料</td></tr>`}</tbody></table></div></div>`;
+  if (!silent) showToast(q.n ? 'success' : 'warning', '查詢完成', '符合條件：' + q.note);
+}
+function rpDownload(name, bytes) { try { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([bytes], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})); a.download = name; document.body.appendChild(a); a.click(); a.remove(); } catch (e) { } }
+function rpXlsx(t) {
+  const q = rpBuild(t, false); if (!q) return; if (!q.n) { showToast('warning', '無資料可匯出', '目前查詢條件無符合資料，請調整條件後再匯出'); return; }
+  const bytes = xlsxBuild({sheet: q.title, title: q.title, lines: ['公務人員退休撫卹基金管理局　產製日期：' + TODAY_ROC + '　產製人員：王大明', '查詢條件　' + q.cond, '查詢結果　' + q.note]}, q.head, q.body);
+  rpShow(t, true); runDownload(q.title, 'xlsx', {onDone: () => rpDownload(q.title + '_' + TODAY_ROC.replace(/\//g, '') + '.xlsx', bytes)});
+}
+function rptTableOf(tabId) { const t = Object.keys(RPDEF).find(k => RPDEF[k].id === tabId), q = t && RPQ[t]; if (!q) return [[]]; return [q.head].concat(q.body.map(b => (b.r || b).map(c => typeof c === 'number' ? fm(c) : c))); }
+function rpInit() {
+  if (RPS.done) return; RPS.done = true;
+  const tabs = document.querySelectorAll('#view-tax-report .tab-content'); tabs.forEach(e => e.remove());
+  const host = document.querySelector('#view-tax-report'); 
+  Object.keys(RPDEF).forEach((t, i) => { const d = RPDEF[t], div = document.createElement('div'); div.className = 'tab-content' + (i === 0 ? ' active' : ''); div.id = d.id;
+    div.innerHTML = `<div class="card" style="margin-bottom:16px"><div class="card-subtitle" style="margin-bottom:12px">${d.desc}</div><div class="filter-row" style="display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap">${d.flt.map(x => `<div class="filter-group"><div class="filter-label">${x[1]}</div>${x[2] === 'date' ? `<input type="text" class="filter-control" id="rf-${t}-${x[0]}" value="${x[0] === 'd1' ? '115/01/01' : '115/12/31'}" placeholder="yyy/mm/dd" style="width:120px">` : `<select class="filter-control" id="rf-${t}-${x[0]}">${x[3].map(o => `<option>${o}</option>`).join('')}</select>`}</div>`).join('')}<button class="btn btn-primary btn-sm" style="align-self:flex-end" onclick="rpShow('${t}')">查詢</button><button class="btn btn-success btn-sm" style="align-self:flex-end" onclick="rpXlsx('${t}')">匯出Excel</button><button class="btn btn-danger btn-sm" style="align-self:flex-end" onclick="runDownload('${d.title}','pdf')">匯出PDF</button><button class="btn btn-outline btn-sm rpt-print" style="align-self:flex-end" onclick="rptPrint('${d.id}','${d.title}')">列印</button>${t === 'a' ? `<button class="btn btn-secondary btn-sm" style="align-self:flex-end" onclick="runDownload('各類所得扣繳暨免扣繳憑單_電子申報','txt')">產製電子申報格式檔</button>` : ''}</div></div><div id="rq-${t}-out"></div>`;
+    host.appendChild(div); });
+}
+function rpAll(silent) { rpInit(); Object.keys(RPDEF).forEach(t => rpShow(t, silent !== false)); }
+trRenderA = function () { rpAll(true); };
+txDiffRender = function () { if (RPS.done) rpShow('e', true); };
+rptSetMask = function (v) { RPT.mask = v === '1'; window.RPT_MASK = RPT.mask; const e = document.getElementById('rpt-mask-global'); if (e) e.value = v; if (RPS.done) Object.keys(RPDEF).forEach(t => { if (RPQ[t]) rpShow(t, true); }); };
 
 </script>
 </body>
