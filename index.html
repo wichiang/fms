@@ -5518,6 +5518,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         $('au-pg').innerHTML=h+'<button class="page-btn" '+(p>=pages?'disabled':'')+' onclick="auQuery('+(p+1)+')">下一頁</button>';};
       window.auReset=function(){['au-user','au-obj','au-ip'].forEach(i=>$(i).value='');$('au-d1').value='113/12/01';$('au-d2').value='113/12/10';$('au-h1').value='00';$('au-h2').value='23';['au-type','au-mod','au-res','au-role'].forEach(i=>$(i).selectedIndex=0);auQuery(1);};
       function addLog(r){LOG.unshift(r);}
+      window.__auAdd=addLog; window.__auR=R;
       window.auExport=function(){
         if(!chk($('au-d1').value.trim(),$('au-d2').value.trim())){showToast('warning','日期區間不正確','請先修正查詢條件');return;}
         const rows=filt(); if(!rows.length){showToast('warning','無資料可匯出','目前條件查無紀錄');return;}
@@ -11347,11 +11348,11 @@ const TXQ = [
 ];
 const QC = {rows: [], sel: null};
 const qcMk = () => document.getElementById('qc-mask').value === '1';
-function qcSearch() {
+function qcSearch(silent) {
   const id = document.getElementById('qc-id').value.trim().toUpperCase(), nm = document.getElementById('qc-name').value.trim(), yr = document.getElementById('qc-yr').value;
   QC.rows = TXQ.filter(r => (!id || r.pid.indexOf(id) > -1) && (!nm || r.name.indexOf(nm) > -1) && (!yr || String(r.yr) === yr));
   QC.sel = QC.rows.length ? QC.rows[0].no : null; qcRender();
-  showToast(QC.rows.length ? 'success' : 'warning', '查詢完成', '符合條件之課稅案件共 ' + QC.rows.length + ' 筆');
+  if (!silent) showToast(QC.rows.length ? 'success' : 'warning', '查詢完成', '符合條件之課稅案件共 ' + QC.rows.length + ' 筆');
 }
 function qcClear() { ['qc-id', 'qc-name'].forEach(i => document.getElementById(i).value = ''); document.getElementById('qc-yr').value = ''; qcSearch(); }
 function qcRender() {
@@ -11420,7 +11421,7 @@ navigateTo = function (id) {
   if (id === 'tax-report') { trRenderA(); rptEnhance(); }
   document.querySelectorAll('.sidebar-sub-item').forEach(el => { if ((el.getAttribute('onclick') || '').indexOf("navigateTo('" + id + "')") > -1) el.classList.add('active'); });
 };
-txnRender(); trRenderA(); rptEnhance(); qcSearch(); txDiffRender();
+txnRender(); trRenderA(); rptEnhance(); qcSearch(true); txDiffRender();
 
 /* ===== V15：定撥作業子系統需求對照補強（查核權限設定／外部資料轉入檢核與阻斷） ===== */
 const MH_CUR = '113/12';
@@ -12324,12 +12325,23 @@ navigateTo = function (id) { _navMB(id); if (id === 'monthly-bank') { const sm =
 
 <script>
 /* ===== V19：軍公教人員調薪作業（示意資料） ===== */
-const SAL={scale:[],adj:[],ret:[],rec:[],flt:'全部',nid:3,today:'113/12/10',
+const SAL={scale:[],adj:[],ret:[],rec:[],flt:'全部',nid:3,today:'115/10/28',
  rd:{id:1,calc:null,written:false},
- act:{ann:'113/03/20',pay:'113/05/01',chk:false,del:false,wr:false,onl:false,stand:null,delCnt:0,log:[]}};
+ act:{ann:'114/04/22',pay:'114/05/01',chk:false,del:false,wr:false,onl:false,stand:null,delCnt:0,log:[]}};
 (function(){
- const cats=['軍職本俸','公務本俸','教育本俸'],pts=[250,400,550,700];
- cats.forEach(c=>pts.forEach(p=>{SAL.scale.push({c,p,a:Math.round(p*143),f:'111/01/01',t:'112/12/31'});SAL.scale.push({c,p,a:Math.round(p*148),f:'113/01/01',t:'999/12/31'});}));
+ /* 俸額對照檔範例：依行政院「全國軍公教員工待遇支給要點」附表二（公務人員俸額表）之實際版次與折算率建立。
+    軍職（軍人待遇條例第4條）、教育人員（薪額）均比照同一折算表。
+    俸額＝按俸點分段累計（160↓／161～220／221～790／791～800），不足10元之畸零數以10元計。 */
+ SAL.ver=[
+  {f:'111/01/01',t:'112/12/31',rate:'4%',seg:[77.9,50.4,71.4,305.8],doc:'111/01/28 院授人給字第11100000011號'},
+  {f:'113/01/01',t:'113/12/31',rate:'4%',seg:[81.1,52.5,74.3,318.1],doc:'113/01/04 院授人給字第11300000011號'},
+  {f:'114/01/01',t:'999/12/31',rate:'3%',seg:[83.6,54.1,76.6,327.7],doc:'114/04/22 院授人給字第11400000011號'}];
+ const calc=(pt,s)=>{let prev=0,tot=0;[[160,s[0]],[220,s[1]],[790,s[2]],[800,s[3]]].forEach(([cap,rt])=>{tot+=Math.max(0,Math.min(pt,cap)-prev)*Math.round(rt*10);prev=cap;});return Math.ceil(tot/100)*10;};
+ const pts={
+  '軍職本俸':[[230],[350],[505],[610],[730],[800]],
+  '公務本俸':[[160,'委任第1職等本俸1級'],[280,'委任第3職等本俸1級'],[370,'委任第5職等本俸5級'],[385,'薦任第6職等本俸1級'],[710,'簡任第13職等本俸1級'],[800,'簡任第14職等']],
+  '教育本薪':[[230],[245],[330],[450],[475],[800]]};
+ Object.keys(pts).forEach(c=>pts[c].forEach(([p,n])=>SAL.ver.forEach(v=>SAL.scale.push({c,p,a:calc(p,v.seg),f:v.f,t:v.t,r:v.rate,n:n||''}))));
  SAL.adj=[{id:1,tgt:'軍、公、教退休(職)、退伍、撫卹(育)人員',rate:3.0,eff:'113/01/01',ann:'113/03/20',pay:'113/05/01'},
           {id:2,tgt:'軍、公、教退休(職)、退伍、撫卹(育)人員',rate:2.0,eff:'112/01/01',ann:'111/12/20',pay:'112/01/01'}];
  SAL.ret=[['王建國','A123***789','軍職月退',52000],['林美玲','F223***456','公務月退',48500],['陳志豪','H121***332','教育月退',61200],['張淑芬','E222***018','公務遺屬',24800],['李文彬','B120***654','軍職月退',45600],['黃雅惠','D221***907','教育月退',57300]];
@@ -12351,7 +12363,11 @@ const sLatestF=()=>SAL.scale.reduce((m,r)=>r.f>m?r.f:m,'000/00/00');
 /* ---- A-1 現職俸額對照檔 ---- */
 function salScale(){
  const cats=[...new Set(SAL.scale.map(r=>r.c))],rows=SAL.scale.map((r,i)=>({r,i})).filter(x=>SAL.flt==='全部'||x.r.c===SAL.flt).sort((a,b)=>a.r.c.localeCompare(b.r.c)||a.r.p-b.r.p||a.r.f.localeCompare(b.r.f));
- return `<div class="card" style="margin-bottom:16px"><div class="card-title" style="margin-bottom:8px">新增版次（單筆）</div>
+ const vref=SAL.ver.map(v=>`<tr><td>${v.f}</td><td>${v.rate}</td><td style="font-size:12px">160點↓ ${v.seg[0]}｜161～220 ${v.seg[1]}｜221～790 ${v.seg[2]}｜791～800 ${v.seg[3]}</td><td style="font-size:12px">${v.doc}</td></tr>`).join('');
+ return `<div class="card" style="margin-bottom:16px"><div class="card-header"><div><div class="card-title">法令版次參考（全國軍公教員工待遇支給要點）</div><div class="card-subtitle">軍、公、教共用同一俸點折算表；俸額依下列折算率（元／點）分段累計，不足 10 元之畸零數以 10 元計</div></div></div>
+ <div class="table-wrapper"><table class="data-table"><thead><tr><th>生效日</th><th>調幅</th><th>俸點折算率</th><th>法令依據</th></tr></thead><tbody>${vref}</tbody></table></div>
+ <div class="form-hint">115 年度未通案調薪，俸額沿用 114/01/01 版；116 年度通案調增 4%（預計 116/01/01 起）之俸額表尚待行政院公告，公告後可由下方「整批產生」或「新增」建檔。</div></div>
+ <div class="card" style="margin-bottom:16px"><div class="card-title" style="margin-bottom:8px">新增版次（單筆）</div>
  <div class="form-row cols-4"><div class="form-group"><label class="form-label">俸點類別</label><select class="form-control" id="ss-c">${cats.map(c=>`<option>${c}</option>`).join('')}</select></div>
  <div class="form-group"><label class="form-label">俸點</label><input class="form-control" id="ss-p" type="number" min="1" placeholder="如 400"></div>
  <div class="form-group"><label class="form-label">俸額（元）</label><input class="form-control" id="ss-a" type="number" min="1" placeholder="如 59200"></div>
@@ -12359,13 +12375,13 @@ function salScale(){
  <div class="page-actions"><button class="btn btn-gold btn-sm" onclick="salScaleAdd()">新增</button></div>
  <div class="form-hint">同一類別＋俸點之生效期間不得重疊；新生效日晚於現行無迄日版次時，系統自動將舊版迄日改為新生效日前一日。</div></div>
  <div class="card" style="margin-bottom:16px"><div class="card-title" style="margin-bottom:8px">整批產生新版次（依調幅）</div>
- <div class="form-row cols-4"><div class="form-group"><label class="form-label">新生效日</label><input class="form-control" id="sb-f" placeholder="114/01/01"></div>
- <div class="form-group"><label class="form-label">調薪幅度（%）</label><input class="form-control" id="sb-r" type="number" step="0.01" placeholder="如 3"></div>
+ <div class="form-row cols-4"><div class="form-group"><label class="form-label">新生效日</label><input class="form-control" id="sb-f" placeholder="116/01/01"></div>
+ <div class="form-group"><label class="form-label">調薪幅度（%）</label><input class="form-control" id="sb-r" type="number" step="0.01" placeholder="如 4"></div>
  <div class="form-group" style="grid-column:span 2"><label class="form-label">說明</label><div class="form-hint" style="padding-top:8px">以各類別現行版次俸額 × (1＋幅度) 四捨五入產生新版；實際俸額以法令公告對照表為準，產生後可由業務組逐筆調整。</div></div></div>
  <div class="page-actions"><button class="btn btn-outline-primary btn-sm" onclick="salScaleBatch()">整批產生</button></div></div>
- <div class="card"><div class="card-header"><div><div class="card-title">俸額對照檔</div><div class="card-subtitle">共 ${rows.length} 筆（示意資料）</div></div>
+ <div class="card"><div class="card-header"><div><div class="card-title">俸額對照檔</div><div class="card-subtitle">共 ${rows.length} 筆（依行政院歷年公告版次與折算率建立之範例）</div></div>
  <div style="display:flex;gap:8px"><select class="form-control" style="width:auto" onchange="SAL.flt=this.value;salRender('salary-scale')">${['全部',...cats].map(c=>`<option ${SAL.flt===c?'selected':''}>${c}</option>`).join('')}</select><button class="btn btn-success btn-sm" onclick="runDownload('俸額對照檔','xlsx')">匯出 Excel</button></div></div>
- <div class="table-wrapper"><table class="data-table"><thead><tr><th>俸點類別</th><th>俸點</th><th>俸額</th><th>生效日</th><th>迄日</th><th>狀態</th><th>操作</th></tr></thead><tbody>${rows.map(x=>`<tr><td>${x.r.c}</td><td>${x.r.p}</td><td style="text-align:right">${sfm(x.r.a)}</td><td>${x.r.f}</td><td>${x.r.t==='999/12/31'?'（無迄日）':x.r.t}</td><td>${sStat(x.r)}</td><td><button class="btn btn-sm btn-danger" onclick="salScaleDel(${x.i})">刪除</button></td></tr>`).join('')}</tbody></table></div></div>`;
+ <div class="table-wrapper"><table class="data-table"><thead><tr><th>俸點類別</th><th>俸點</th><th>俸額</th><th>生效日</th><th>迄日</th><th>調幅</th><th>對照說明</th><th>狀態</th><th>操作</th></tr></thead><tbody>${rows.map(x=>`<tr><td>${x.r.c}</td><td>${x.r.p}</td><td style="text-align:right">${sfm(x.r.a)}</td><td>${x.r.f}</td><td>${x.r.t==='999/12/31'?'（無迄日）':x.r.t}</td><td>${x.r.r||'-'}</td><td style="font-size:12px">${x.r.n||'-'}</td><td>${sStat(x.r)}</td><td><button class="btn btn-sm btn-danger" onclick="salScaleDel(${x.i})">刪除</button></td></tr>`).join('')}</tbody></table></div></div>`;
 }
 function salScaleAdd(){
  const c=sEl('ss-c').value,p=+sEl('ss-p').value,a=+sEl('ss-a').value,f=sEl('ss-f').value.trim(),t=sEl('ss-t').value.trim();
@@ -12375,7 +12391,7 @@ function salScaleAdd(){
  const same=SAL.scale.filter(r=>r.c===c&&r.p===p);
  for(const r of same){ if(r.f<=t&&f<=r.t){ if(r.t==='999/12/31'&&f>r.f){continue;} return sErr('期間重疊',`${c} 俸點 ${p} 已有 ${r.f}～${r.t==='999/12/31'?'無迄日':r.t} 版次，期間重疊`);} }
  same.forEach(r=>{ if(r.t==='999/12/31'&&f>r.f){const d=sD(f);d.setDate(d.getDate()-1);r.t=sS(d);} });
- SAL.scale.push({c,p,a,f,t}); sAudit('調薪',`新增俸額對照檔 ${c} 俸點${p} 俸額${a} 生效${f}`); showToast('success','已新增','俸額對照檔版次已建立'); salRender('salary-scale');
+ SAL.scale.push({c,p,a,f,t,r:'-',n:''}); sAudit('調薪',`新增俸額對照檔 ${c} 俸點${p} 俸額${a} 生效${f}`); showToast('success','已新增','俸額對照檔版次已建立'); salRender('salary-scale');
 }
 function salScaleBatch(){
  const f=sEl('sb-f').value.trim(),r=parseFloat(sEl('sb-r').value);
@@ -12384,7 +12400,7 @@ function salScaleBatch(){
  const cur=SAL.scale.filter(x=>x.t==='999/12/31');
  if(cur.some(x=>x.f>=f))return sErr('生效日過早','新生效日須晚於現行版次生效日（'+sLatestF()+'）');
  const d=sD(f);d.setDate(d.getDate()-1);const e=sS(d);
- cur.forEach(x=>{x.t=e;SAL.scale.push({c:x.c,p:x.p,a:Math.round(x.a*(1+r/100)),f,t:'999/12/31'});});
+ cur.forEach(x=>{x.t=e;SAL.scale.push({c:x.c,p:x.p,a:Math.round(x.a*(1+r/100)),f,t:'999/12/31',r:r+'%',n:x.n||''});});
  sAudit('調薪',`整批產生俸額對照檔新版次 生效${f} 調幅${r}%`); showToast('success','整批產生完成',`已產生 ${cur.length} 筆新版次，舊版迄日已調整為 ${e}`); salRender('salary-scale');
 }
 function salScaleDel(i){const r=SAL.scale[i];if(r.f<=SAL.today)return sErr('不得刪除','已生效版次不得刪除，如需調整請新增版次或修改迄日');if(!confirm('確定刪除此未生效版次？'))return;SAL.scale.splice(i,1);salRender('salary-scale');}
@@ -12614,7 +12630,7 @@ const ANN={cnt:3,seq:7,list:[
 const dT=()=>ROC_TODAY.y+'/'+String(ROC_TODAY.m).padStart(2,'0')+'/'+String(ROC_TODAY.d).padStart(2,'0');
 const dD=s=>{const p=s.slice(0,9).split('/').map(Number);return new Date(p[0]+1911,p[1]-1,p[2]);};
 const dDays=(a,b)=>Math.round((dD(b)-dD(a))/864e5);
-const dOk=s=>/^\d{3}\/\d{2}\/\d{2}$/.test(s)&&!isNaN(dD(s))&&dD(s).getDate()===+s.slice(7);
+const dOk=s=>/^\d{3}\/\d{2}\/\d{2}$/.test(s)&&!isNaN(dD(s))&&dD(s).getMonth()===+s.slice(4,6)-1&&dD(s).getDate()===+s.slice(7);
 const dEl=i=>document.getElementById(i);
 const dFm=n=>Number(n).toLocaleString('en-US');
 const annSt=a=>{const t=dT();return a.manual==='down'?'down':a.up>t?'sched':a.down<t?'down':'up';};
@@ -15439,5 +15455,727 @@ txDiffRender = function () { if (RPS.done) rpShow('e', true); };
 rptSetMask = function (v) { RPT.mask = v === '1'; window.RPT_MASK = RPT.mask; const e = document.getElementById('rpt-mask-global'); if (e) e.value = v; if (RPS.done) Object.keys(RPDEF).forEach(t => { if (RPQ[t]) rpShow(t, true); }); };
 
 </script>
+<script>
+/* ####### V37 ####### */
+/* ===== V37：邏輯修正與功能補強（平台層）=====
+   1. 稽核日誌串接  2. Session 30 分鐘逾時  3. 瀏覽器上一頁／深層連結  4. ESC 關閉彈窗
+   5. Ctrl+K 快速搜尋功能  6. 取代「假查詢／假換頁」通用回饋，改為真實篩選或誠實提示  */
+const V = (function () {
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const fm = n => Number(n || 0).toLocaleString('en-US');
+  const pad = (n, l) => String(n).padStart(l || 2, '0');
+  const today = () => dT();
+  const nowT = () => { const d = new Date(); return today() + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds()); };
+  const hm = () => { const d = new Date(); return pad(d.getHours()) + ':' + pad(d.getMinutes()); };
+  const mask = id => id ? id.slice(0, 4) + '***' + id.slice(7) : '';
+  const isDate = s => { const m = /^(\d{3})\/(\d{2})\/(\d{2})$/.exec(String(s)); if (!m) return false; const d = new Date(+m[1] + 1911, +m[2] - 1, +m[3]); return d.getMonth() === +m[2] - 1 && d.getDate() === +m[3]; };
+  const ymN = s => { const m = /^(\d{3})\/(\d{2})$/.exec(String(s).trim()); if (!m) return NaN; const mo = +m[2]; return (mo < 1 || mo > 12) ? NaN : +m[1] * 12 + mo - 1; };
+  const ymS = n => pad(Math.floor(n / 12), 3) + '/' + pad(n % 12 + 1);
+  const addDays = (s, n) => { const d = dD(s); d.setDate(d.getDate() + n); return (d.getFullYear() - 1911) + '/' + pad(d.getMonth() + 1) + '/' + pad(d.getDate()); };
+  const lv = fn => { try { return dLvl(fn); } catch (e) { return 3; } };
+  const need = (fn, min, what) => { if (lv(fn) >= (min || 2)) return true; showToast('error', '權限不足', '您目前的權限無法' + (what || '執行此操作') + '（需「' + (PM.lv[min || 2]) + '」以上）'); return false; };
+  const user = () => PERM_CUR;
+  /* 稽核日誌 */
+  function audit(ty, mo, fn, ob, bf, af, dt, rs) {
+    try {
+      if (!window.__auAdd) return;
+      const u = PM.users[PERM_CUR] || { role: 'ADM' };
+      window.__auAdd(window.__auR(nowT(), PERM_CUR, pmRN(u.role), ty, mo, fn, ob || '-', bf || '-', af || '-', '192.168.1.101', rs || '成功', dt || []));
+    } catch (e) { console.warn('audit', e); }
+  }
+  /* 分頁控制列 */
+  function pagerHtml(total, page, size, fn) {
+    const pages = Math.max(1, Math.ceil(total / size)); let h = '<button class="page-btn" ' + (page < 2 ? 'disabled' : '') + ' onclick="' + fn + '(' + (page - 1) + ')">上一頁</button>';
+    const show = []; for (let i = 1; i <= pages; i++) if (i === 1 || i === pages || Math.abs(i - page) <= 1) show.push(i);
+    let last = 0; show.forEach(i => { if (i - last > 1) h += '<span style="padding:0 4px;font-size:12px">…</span>'; h += '<button class="page-btn' + (i === page ? ' active' : '') + '" onclick="' + fn + '(' + i + ')">' + i + '</button>'; last = i; });
+    return h + '<button class="page-btn" ' + (page >= pages ? 'disabled' : '') + ' onclick="' + fn + '(' + (page + 1) + ')">下一頁</button>';
+  }
+  function pagerInfo(total, page, size) { return total ? '顯示 ' + ((page - 1) * size + 1) + '-' + Math.min(page * size, total) + ' / 共 ' + total + ' 筆' : '共 0 筆'; }
+  function clampPage(total, page, size) { return Math.min(Math.max(1, page), Math.max(1, Math.ceil(total / size))); }
+  function emptyRow(cols, msg) { return '<tr><td colspan="' + cols + '" style="text-align:center;color:var(--text-secondary);padding:28px">' + (msg || '查無符合條件之資料') + '</td></tr>'; }
+  function badge(c, t) { return '<span class="badge badge-' + c + '">' + esc(t) + '</span>'; }
+  function crumb(group, cur) { return '<div class="breadcrumb"><span class="breadcrumb-item" onclick="navigateTo(\'dashboard\')">首頁</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-item">' + group + '</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-item current">' + cur + '</span></div>'; }
+  function csvDownload(name, rows) {
+    const q = s => '"' + String(s == null ? '' : s).replace(/"/g, '""') + '"';
+    dirSaveBlob(name, new Blob(['\uFEFF' + rows.map(r => r.map(q).join(',')).join('\r\n')], { type: 'text/csv;charset=utf-8' }));
+  }
+  return { $, esc, fm, pad, today, nowT, hm, mask, isDate, ymN, ymS, addDays, lv, need, user, audit, pagerHtml, pagerInfo, clampPage, emptyRow, badge, crumb, csvDownload };
+})();
+
+(function(){const st=document.createElement('style');st.textContent='#ovb-body td,#ovb-body th,#ovd-tb td,#usr-tb td{white-space:nowrap}#ovb-body .table-wrapper{overflow-x:auto}#ovb-body td:last-child{white-space:normal;min-width:190px}@media(max-width:1100px){#view-overflow-batch .layout-2col{grid-template-columns:1fr!important}}#view-overflow-single .btn,#view-overflow-batch .btn,#view-overflow-docs .btn,#view-overflow-recovery .btn,#view-overflow-stats .btn,#view-admin-users .btn{white-space:nowrap}#view-overflow-single .section-title,#view-overflow-batch .section-title,#view-overflow-docs .section-title,#view-overflow-recovery .section-title,#view-overflow-stats .section-title{font-weight:700;margin-bottom:12px}';document.head.appendChild(st);})();
+/* ---------- A. 修正：啟動時誤彈「課稅案件查詢完成」提示 ---------- */
+/* （qcSearch 已於原始碼加入 silent 參數；初始化改為靜默呼叫） */
+
+/* ---------- B. ESC 關閉最上層彈窗 ---------- */
+document.addEventListener('keydown', function (e) {
+  if (e.key !== 'Escape') return;
+  const open = [...document.querySelectorAll('.modal-overlay.open')];
+  if (open.length) { open[open.length - 1].classList.remove('open'); e.preventDefault(); }
+});
+/* 動態建立之彈窗也支援點擊遮罩關閉 */
+document.addEventListener('mousedown', function (e) { const t = e.target; if (t && t.classList && t.classList.contains('modal-overlay') && t.classList.contains('open') && t.dataset.v37 === 'dyn') t.classList.remove('open'); });
+
+/* ---------- C. 瀏覽器上一頁／下一頁、深層連結（#/view-id） ---------- */
+(function () {
+  const _nav = navigateTo; let busy = false, deep = null;
+  const h0 = (location.hash || '').replace(/^#\//, ''); if (h0 && V.$('view-' + h0)) deep = h0;
+  navigateTo = function (id) {
+    _nav(id);
+    if (id === 'dashboard' && deep) { const d = deep; deep = null; if (d !== 'dashboard') setTimeout(() => navigateTo(d), 0); return; }
+    try { if (!busy && currentView && (history.state || {}).v !== currentView) history.pushState({ v: currentView }, '', '#/' + currentView); } catch (e) { }
+    v37Normalize(currentView);
+  };
+  window.addEventListener('popstate', function () {
+    const id = (location.hash || '').replace(/^#\//, ''); const app = V.$('app');
+    if (id && V.$('view-' + id) && app && app.style.display !== 'none') { busy = true; try { navigateTo(id); } finally { busy = false; } }
+  });
+})();
+
+/* ---------- D. Session 逾時（登入頁載明 30 分鐘） ---------- */
+const SESS = { limit: 1800, left: 1800, warn: 60, warned: false, tm: null };
+(function () {
+  const m = document.createElement('div'); m.className = 'modal-overlay'; m.id = 'sess-modal'; m.style.zIndex = 99999;
+  m.innerHTML = '<div class="modal modal-sm" style="max-width:420px"><div class="modal-header"><div class="modal-title">閒置即將登出</div></div><div class="modal-body"><div class="info-card warning"><div style="font-size:14px;line-height:1.8">您已閒置一段時間，為保護個資安全，系統將於 <strong id="sess-cd" style="color:var(--danger);font-size:20px">60</strong> 秒後自動登出。<br>請儲存尚未完成的作業，或按「繼續使用」延長工作階段。</div></div></div><div class="modal-footer"><button class="btn btn-outline" onclick="sessLogout(\'使用者選擇登出\')">立即登出</button><button class="btn btn-gold" onclick="sessKeep()">繼續使用</button></div></div>';
+  document.body.appendChild(m);
+  const reset = () => { if (!SESS.warned) SESS.left = SESS.limit; };
+  ['click', 'keydown', 'mousemove', 'touchstart', 'scroll'].forEach(ev => document.addEventListener(ev, reset, { passive: true, capture: true }));
+  window.sessKeep = function () { SESS.warned = false; SESS.left = SESS.limit; V.$('sess-modal').classList.remove('open'); };
+  window.sessLogout = function (why) {
+    V.$('sess-modal').classList.remove('open'); SESS.warned = false; SESS.left = SESS.limit;
+    V.audit('AUTH-OUT', '登入驗證', '系統登出', '-', '已登入', '已登出', ['原因：' + why]);
+    document.querySelectorAll('.modal-overlay.open').forEach(x => x.classList.remove('open'));
+    _origLogout(); showToast('warning', '已登出', why === '閒置逾時' ? '閒置超過 30 分鐘，系統已自動登出' : '您已登出系統');
+  };
+  window.v37SessionDemo = function (sec) { SESS.limit = SESS.left = Math.max(5, +sec || 1800); SESS.warn = Math.min(60, Math.floor(SESS.limit / 2)); SESS.warned = false; showToast('info', '逾時示範', 'Session 期限已改為 ' + SESS.limit + ' 秒（重新整理頁面即還原為 30 分鐘）'); };
+  SESS.tm = setInterval(function () {
+    const app = V.$('app'); const label = V.$('sess-left');
+    if (!app || app.style.display === 'none') { SESS.left = SESS.limit; SESS.warned = false; return; }
+    SESS.left--;
+    if (label) label.textContent = V.pad(Math.floor(SESS.left / 60)) + ':' + V.pad(SESS.left % 60);
+    if (SESS.left <= SESS.warn && SESS.left > 0) { SESS.warned = true; V.$('sess-cd').textContent = SESS.left; V.$('sess-modal').classList.add('open'); }
+    if (SESS.left <= 0) sessLogout('閒置逾時');
+  }, 1000);
+  const ud = V.$('user-dropdown'); if (ud) { const d = document.createElement('div'); d.style.cssText = 'padding:8px 16px;font-size:12px;color:var(--text-secondary);border-top:1px solid var(--border)'; d.innerHTML = '工作階段剩餘 <strong id="sess-left">30:00</strong>（閒置 30 分鐘自動登出）'; ud.appendChild(d); }
+})();
+const _origLogout = doLogout;
+doLogout = function () { if (V.$('app').style.display !== 'none' && !SESS._out) { V.audit('AUTH-OUT', '登入驗證', '系統登出', '-', '已登入', '已登出', ['原因：使用者主動登出']); } _origLogout(); };
+const _origLogin = doLogin;
+doLogin = function () {
+  const id = V.$('login-id').value.trim(); _origLogin();
+  if (ID_FORMAT_REGEX.test(id)) { SESS.left = SESS.limit; setTimeout(() => V.audit('AUTH-IN', '登入驗證', '系統登入', '-', '-', '登入成功', ['登入方式：' + (typeof LOGIN_METHOD !== 'undefined' ? ({ ic: '自然人憑證', barcode: '行動自然人憑證（條碼）', push: '行動自然人憑證（推播）' }[LOGIN_METHOD] || LOGIN_METHOD) : '自然人憑證'), '登入對象：' + V.mask(id)]), 700); }
+};
+
+/* ---------- E. Ctrl+K 快速搜尋功能 ---------- */
+(function () {
+  const m = document.createElement('div'); m.className = 'modal-overlay'; m.id = 'cmdk'; m.dataset.v37 = 'dyn'; m.style.alignItems = 'flex-start'; m.style.paddingTop = '12vh'; m.style.zIndex = 99998;
+  m.innerHTML = '<div class="modal" style="max-width:560px;width:92%"><div style="padding:12px 14px;border-bottom:1px solid var(--border)"><input id="cmdk-q" class="form-control" placeholder="輸入功能名稱，例如：溢領、止付、課稅…（↑↓ 選擇，Enter 前往，Esc 關閉）" autocomplete="off"></div><div id="cmdk-list" style="max-height:52vh;overflow:auto"></div></div>';
+  document.body.appendChild(m);
+  let items = [], sel = 0;
+  function collect() {
+    items = []; document.querySelectorAll('#sidebar .sidebar-submenu').forEach(sm => {
+      const head = sm.previousElementSibling, hn = head ? (head.querySelector('.sidebar-item-text') || {}).textContent : '';
+      sm.querySelectorAll('.sidebar-sub-item').forEach(it => { const mm = (it.getAttribute('onclick') || '').match(/navigateTo\('([^']+)'\)/); if (mm && !it.classList.contains('perm-hide')) items.push({ id: mm[1], grp: (hn || '').trim(), name: it.childNodes[0].textContent.trim() }); });
+    });
+    ['dashboard', 'site-help'].forEach(id => { const el = document.querySelector('#sidebar .sidebar-item[onclick*="\'' + id + '\'"]'); if (el) items.unshift({ id, grp: '主選單', name: el.querySelector('.sidebar-item-text').textContent.trim() }); });
+  }
+  function draw() {
+    const q = V.$('cmdk-q').value.trim().toLowerCase();
+    const list = items.filter(i => !q || (i.grp + i.name + i.id).toLowerCase().includes(q)); sel = Math.min(sel, Math.max(0, list.length - 1)); m._list = list;
+    V.$('cmdk-list').innerHTML = list.length ? list.map((i, k) => '<div class="cmdk-it" data-k="' + k + '" style="padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between;' + (k === sel ? 'background:var(--bg-hover,#eef3fb)' : '') + '"><span><strong>' + V.esc(i.name) + '</strong></span><span style="color:var(--text-secondary);font-size:12px">' + V.esc(i.grp) + '</span></div>').join('') : '<div style="padding:24px;text-align:center;color:var(--text-secondary)">查無符合的功能（或您沒有該功能的存取權限）</div>';
+  }
+  function go(k) { const it = (m._list || [])[k]; if (!it) return; m.classList.remove('open'); navigateTo(it.id); }
+  window.cmdkOpen = function () { if (V.$('app').style.display === 'none') return; collect(); V.$('cmdk-q').value = ''; sel = 0; draw(); m.classList.add('open'); setTimeout(() => V.$('cmdk-q').focus(), 30); };
+  V.$('cmdk-q').addEventListener('input', () => { sel = 0; draw(); });
+  V.$('cmdk-q').addEventListener('keydown', e => { const n = (m._list || []).length; if (e.key === 'ArrowDown') { sel = (sel + 1) % Math.max(1, n); draw(); e.preventDefault(); } else if (e.key === 'ArrowUp') { sel = (sel - 1 + n) % Math.max(1, n); draw(); e.preventDefault(); } else if (e.key === 'Enter') { go(sel); } });
+  V.$('cmdk-list').addEventListener('click', e => { const t = e.target.closest('.cmdk-it'); if (t) go(+t.dataset.k); });
+  document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); cmdkOpen(); } });
+  const bell = document.querySelector('.header-actions .header-btn'); if (bell) { const b = document.createElement('button'); b.className = 'header-btn'; b.title = '快速搜尋功能（Ctrl+K）'; b.onclick = cmdkOpen; b.innerHTML = '<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'; bell.parentNode.insertBefore(b, bell); }
+})();
+
+/* ---------- F. 取代「假查詢／假換頁」：未自行處理的按鈕改為真實篩選或誠實提示 ---------- */
+function v37Normalize(viewId) {
+  const root = V.$('view-' + viewId); if (!root) return;
+  root.querySelectorAll('.pagination').forEach(p => {
+    if (p.dataset.v37 || p.id || p.querySelector('[id]')) return;
+    const card = p.closest('.table-card') || p.parentElement, tb = card && card.querySelector('table.data-table tbody'); if (!tb) return;
+    if (card.querySelectorAll('table.data-table').length !== 1) return;
+    const n = [...tb.children].filter(r => !r.classList.contains('expanded-detail') && r.style.display !== 'none').length;
+    const info = p.querySelector('.pagination-info'), ctl = p.querySelector('.pagination-controls');
+    if (info && !/上架|顯示前/.test(info.textContent)) info.textContent = V.pagerInfo(n, 1, Math.max(n, 1));
+    if (ctl) ctl.innerHTML = '<button class="page-btn" disabled>上一頁</button><button class="page-btn active">1</button><button class="page-btn" disabled>下一頁</button>';
+  });
+}
+function v37GenericFilter(btn) {
+  const view = btn.closest('.view'); if (!view) return false;
+  const bar = btn.closest('.filter-bar') || btn.closest('.filter-row') || btn.parentElement;
+  const tb = view.querySelector('table.data-table tbody'); if (!bar || !tb) return false;
+  const ctl = [...bar.querySelectorAll('input.filter-control,select.filter-control')].filter(c => c.value && c.value !== '全部' && !/^\d{3}\/\d{2}\/\d{2}$/.test(c.value));
+  let shown = 0, all = 0; [...tb.children].forEach(r => { if (r.classList.contains('expanded-detail')) return; all++; const t = r.textContent; const ok = ctl.every(c => t.toLowerCase().includes(c.value.trim().toLowerCase())); r.style.display = ok ? '' : 'none'; if (ok) shown++; });
+  const info = view.querySelector('.pagination-info'); if (info && !/上架|顯示前/.test(info.textContent)) info.textContent = V.pagerInfo(shown, 1, Math.max(shown, 1));
+  showToast(shown ? 'success' : 'warning', '查詢完成', '符合條件共 ' + shown + ' 筆（資料總數 ' + all + ' 筆）'); return true;
+}
+document.addEventListener('click', function (e) {
+  const b = e.target.closest('button'); if (!b || b.disabled || b.getAttribute('onclick')) return;
+  const t = b.textContent.trim(), isPg = b.classList.contains('page-btn'), isQ = (t === '查詢' || t === '搜尋');
+  if (!isPg && !isQ) return;
+  e.stopImmediatePropagation(); e.preventDefault();
+  if (isPg) { showToast('info', '無其他頁面', '目前資料已全數顯示，沒有其他頁面'); return; }
+  const view = b.closest('.view'); if (view && view.id === 'view-admin-announcements' && typeof annRender === 'function') { annRender(); showToast('success', '查詢完成', '已依條件更新公告清單'); return; }
+  if (!v37GenericFilter(b)) showToast('info', '查詢', '此頁面無可篩選的資料表');
+}, true);
+
+/* ===== V37：溢領管理重建（共用案件庫，五頁連動）===== */
+const OVF = {
+  rule: 'next',               /* next＝亡故次月起算（依函釋：死亡者自次月起停止支領）；cur＝亡故當月起算 */
+  rate: 0.015,                /* 行政執行計息年利率（原型預設） */
+  grace: 30,                  /* 追繳函發文後繳款期限（日） */
+  last: '113/11',             /* 撥付系統最後已撥付月份 */
+  cases: [], feed: [], draft: null, slipSeq: 232, docSeq: 120, pg: { docs: 1, rec: 1, stat: 1 }
+};
+const OVF_REASON = { '01': '亡故後繼續撥付', '02': '喪失領受資格', '03': '重複撥付', '04': '其他' };
+const OVF_STAT_CLS = { '已收回': 'success', '部分收回': 'warning', '分期繳回中': 'info', '行政執行中': 'danger', '未收回': 'secondary' };
+/* 撥付系統（模擬資料庫） */
+const PAYDB = {};
+[['A123456789', '王建民', 68500], ['B234500789', '陳志偉', 68500], ['C345678901', '林淑惠', 71000], ['D456123012', '張文山', 71000], ['C345123678', '林志明', 71000], ['D456123789', '張淑芬', 71000], ['E567123890', '黃建國', 71000], ['F678123901', '李秀蘭', 71000], ['G789123012', '吳文雄', 71000], ['H890123123', '趙麗華', 71000], ['B234567890', '陳美麗', 68500], ['J123456701', '孫國強', 66000], ['K234567812', '鄭秀英', 69500]]
+  .forEach(p => PAYDB[p[0]] = { id: p[0], name: p[1], monthly: p[2], org: p[0] === 'B234567890' ? '臺北市政府教育局' : '臺北市政府', kind: '公務人員月退', bank: '台灣銀行 ***4521', last: '113/11', stopped: true });
+const OVF_DOCS = {
+  '府退一字第1130012345號': { date: '113/11/28', subject: '陳報亡故退休人員溢領退休金追繳案', id: 'B234567890' },
+  '府退一字第1130012346號': { date: '113/12/02', subject: '陳報亡故退休人員溢領退休金追繳案（二）', id: 'H890123123' },
+  '府退二字第1130009876號': { date: '113/11/15', subject: '陳報喪失領受資格人員溢領案', id: '' }
+};
+function ovfHist(p) { const a = []; for (let m = V.ymN('113/07'); m <= V.ymN('113/12'); m++) { const s = V.ymS(m); a.push({ ym: s, amt: p.monthly, st: m <= V.ymN(p.last) ? '已撥付' : '待撥付', note: m > V.ymN(p.last) && p.stopped ? '已止付' : '-' }); } return a; }
+function ovfStart(death) { const m = /^(\d{3})\/(\d{2})/.exec(death); return m ? V.ymN(m[1] + '/' + m[2]) + (OVF.rule === 'next' ? 1 : 0) : NaN; }
+function ovfNo() { const mx = OVF.cases.reduce((a, c) => Math.max(a, +c.no.slice(-4)), 0); return 'OVF-113-' + V.pad(mx + 1, 4); }
+function ovfRec(c) { return c.pay.filter(p => !p.void).reduce((a, p) => a + p.amt, 0); }
+function ovfRemain(c) { return Math.max(0, c.amount - ovfRec(c)); }
+function ovfStat(c) { const r = ovfRemain(c); if (r <= 0) return '已收回'; if (c.exec) return '行政執行中'; if (c.plan) return '分期繳回中'; return ovfRec(c) > 0 ? '部分收回' : '未收回'; }
+function ovfDue(c) { if (!c.docDate || ovfRemain(c) <= 0) return null; if (c.plan) { let acc = 0, rc = ovfRec(c); for (const p of c.plan) { acc += p.amt; if (rc < acc) return p.due; } return null; } return V.addDays(c.docDate, OVF.grace); }
+function ovfOver(c) { const d = ovfDue(c); if (!d) return 0; const n = dDays(d, V.today()); return n > 0 ? n : 0; }
+function ovfInterest(c) { if (!c.exec) return 0; return Math.round(ovfRemain(c) * OVF.rate * Math.max(0, dDays(c.exec.date, V.today())) / 365); }
+function ovfMk(p, death, reason, o) {
+  const from = ovfStart(death), to = V.ymN(p.last), n = Math.max(0, to - from + 1);
+  return Object.assign({ no: '', id: p.id, name: p.name, org: p.org, kind: p.kind, monthly: p.monthly, reason, death, from: V.ymS(from), to: V.ymS(to), months: n, amount: n * p.monthly, handler: '王大明', created: '', docDate: '', docNo: '', docs: {}, slip: null, plan: null, exec: null, pay: [], note: '', src: '' }, o || {});
+}
+function ovfSeed() {
+  const P = PAYDB, C = OVF.cases, add = (no, p, death, o, reason) => { const c = ovfMk(P[p], death, reason || '01', o); c.no = 'OVF-113-' + no; C.push(c); return c; };
+  const gen = (c, d, docs) => { c.docDate = d; c.docNo = '退撫溢字第' + (1130000 + (++OVF.docSeq)) + '號'; c.docs = docs || { fax: 1, di: 1, pay: 1, off: 1 }; c.slip = { no: 'PAY-113-' + V.pad(OVF.slipSeq++, 4), amt: c.amount }; };
+  let c = add('0880', 'A123456789', '113/10/20', { created: '113/10/25', handler: '王大明' }); gen(c, '113/10/28'); c.pay.push({ t: '113/11/20', type: '銀行圈回', amt: 68500, ref: 'BK-1131120-01', by: '系統轉檔' });
+  c = add('0881', 'B234500789', '113/08/12', { created: '113/10/20' }); gen(c, '113/10/23'); c.pay.push({ t: '113/11/20', type: '銀行圈回', amt: 68500, ref: 'BK-1131120-02', by: '系統轉檔' });
+  c = add('0882', 'C345678901', '113/09/03', { created: '113/10/25', handler: '李小華' }); gen(c, '113/10/28'); c.exec = { date: '113/11/30' };
+  c = add('0883', 'D456123012', '113/07/18', { created: '113/09/30', handler: '陳志明' }); gen(c, '113/10/01'); c.plan = [{ due: '113/10/15', amt: 71000 }, { due: '113/11/15', amt: 71000 }, { due: '113/12/15', amt: 71000 }, { due: '114/01/15', amt: 71000 }];
+  c.pay.push({ t: '113/10/15', type: '繳款單', amt: 71000, ref: 'PAY-113-0215', by: '陳志明' }, { t: '113/11/15', type: '繳款單', amt: 71000, ref: 'PAY-113-0221', by: '陳志明' });
+  add('0888', 'C345123678', '113/10/05', { created: '113/11/28' });
+  add('0889', 'D456123789', '113/09/22', { created: '113/11/28' });
+  c = add('0890', 'E567123890', '113/10/18', { created: '113/11/29' }); gen(c, '113/12/02');
+  add('0891', 'F678123901', '113/08/30', { created: '113/11/29', handler: '李小華' });
+  OVF.feed = [
+    { ref: 'BK-1131210-01', date: '113/12/10', no: 'OVF-113-0881', id: 'B234500789', amt: 68500, st: 'pending' },
+    { ref: 'BK-1131210-02', date: '113/12/10', no: 'OVF-113-0882', id: 'C345678901', amt: 71000, st: 'pending' },
+    { ref: 'BK-1131210-03', date: '113/12/10', no: 'OVF-113-0890', id: 'E567123890', amt: 71000, st: 'pending' },
+    { ref: 'BK-1131210-04', date: '113/12/10', no: 'OVF-113-0883', id: 'D456123099', amt: 71000, st: 'pending' },
+    { ref: 'BK-1131210-05', date: '113/12/10', no: 'OVF-113-0999', id: 'A123456780', amt: 30000, st: 'pending' },
+    { ref: 'BK-1131210-06', date: '113/12/10', no: 'OVF-113-0880', id: 'A123456789', amt: 68500, st: 'pending' }
+  ];
+}
+ovfSeed();
+function ovfChanged() { try { if (typeof dashRender === 'function' && currentView === 'dashboard') dashRender(); } catch (e) { } ovfRender(currentView); }
+function ovfFind(no) { return OVF.cases.find(c => c.no === no); }
+function ovfPost(c, o) { const b = ovfStat(c); c.pay.push(Object.assign({ by: V.user() }, o)); const a = ovfStat(c); V.audit('DATA-U', '溢領管理', '溢領收回入帳', c.no, '狀態：' + b + '；已收回 ' + V.fm(ovfRec(c) - o.amt), '狀態：' + a + '；已收回 ' + V.fm(ovfRec(c)), ['入帳方式：' + o.type, '入帳金額：NT$ ' + V.fm(o.amt), '來源／單號：' + (o.ref || '-')]); }
+function ovfCsvSample() { return [['姓名', '身分證字號', '亡故/停發日期', '停發原因代碼', '來源機關'], ['孫國強', 'J123456701', '2024/10/05', '01', '臺北市政府'], ['鄭秀英', 'K234567812', '2024/09/10', '01', '新北市政府'], ['林志明', 'C345123679', '2024/10/05', '01', '臺北市政府'], ['吳文雄', 'G789123012', '2024/11/01', '01', '新北市政府'], ['趙麗華', 'H890123123', '2024/10/15', '02', '臺北市政府'], ['王建民', 'A123456789', '2024/10/20', '01', '臺北市政府'], ['周大同', 'Z999999999', '2024/10/01', '01', '高雄市政府'], ['黃小美', 'E56712389', '2024/10/18', '01', '臺北市政府'], ['李秀蘭', 'F678123901', '2024/13/30', '01', '臺北市政府']]; }
+
+/* =========================================================
+   單筆溢領控管
+   ========================================================= */
+const OVS = { linked: '', manual: false, person: null };
+function ovsBuild() {
+  const v = V.$('view-overflow-single');
+  v.innerHTML = V.crumb('溢領管理', '單筆溢領控管') + '<div class="page-header"><div><div class="page-title">單筆溢領控管</div><div class="page-subtitle">建立單筆溢領控管資料，連結公文系統自動帶入領受人資訊，並即時進行防呆檢核</div></div><span class="badge badge-secondary" id="ovs-badge">草稿</span></div>' +
+    '<div class="card" style="margin-bottom:16px"><div class="section-title">公文資訊區</div><div class="form-row cols-3"><div class="form-group"><label class="form-label">公文文號 <span class="required">*</span></label><div style="display:flex;gap:8px"><input class="form-control" id="ovs-doc" oninput="ovsEdit()" placeholder="例：府退一字第1130012345號"><button class="btn btn-primary btn-sm" onclick="ovsFetchDoc()">連結公文系統</button></div></div><div class="form-group"><label class="form-label">發文日期</label><input class="form-control" id="ovs-docdate" readonly style="background:#f1f3f5"></div><div class="form-group"><label class="form-label">公文主旨</label><input class="form-control" id="ovs-subject" readonly style="background:#f1f3f5"></div></div></div>' +
+    '<div class="card" style="margin-bottom:16px"><div class="section-title">領受人資訊區</div><div class="form-row cols-3"><div class="form-group"><label class="form-label">身分證字號 <span class="required">*</span></label><div style="display:flex;gap:8px"><input class="form-control" id="ovs-id" maxlength="10" oninput="this.value=this.value.toUpperCase();ovsEdit()" placeholder="A123456789"><button class="btn btn-outline btn-sm" onclick="ovsLookup(true)">查詢</button></div></div></div>' +
+    '<div class="info-card" id="ovs-person" style="margin:8px 0 14px"></div><div style="font-weight:700;margin-bottom:6px">歷史撥付紀錄（<span style="font-weight:400;font-size:12px;color:var(--text-secondary)">底色標示者為本次溢領期間</span>）</div><div class="table-wrapper"><table class="data-table"><thead><tr><th>撥付期間</th><th>撥付金額</th><th>撥付狀態</th><th>銀行帳號</th><th>備註</th></tr></thead><tbody id="ovs-hist"></tbody></table></div></div>' +
+    '<div class="card" style="margin-bottom:16px"><div class="section-title">溢領資料區</div><div class="form-row cols-3"><div class="form-group"><label class="form-label">溢領原因 <span class="required">*</span></label><select class="form-control" id="ovs-reason" onchange="ovsEdit()"><option value="01">亡故後繼續撥付</option><option value="02">喪失領受資格</option><option value="03">重複撥付</option><option value="04">其他</option></select></div><div class="form-group"><label class="form-label">亡故／事實發生日期 <span class="required">*</span></label><input class="form-control" id="ovs-death" placeholder="113/09/15" oninput="ovsEdit()"></div><div class="form-group"><label class="form-label">&nbsp;</label><button class="btn btn-outline btn-sm" onclick="ovsAuto()">依函釋規則帶入溢領期間</button></div></div>' +
+    '<div class="form-row cols-3"><div class="form-group"><label class="form-label">溢領起始年月 <span class="required">*</span></label><input class="form-control" id="ovs-from" placeholder="113/10" oninput="ovsEdit()"></div><div class="form-group"><label class="form-label">溢領終止年月 <span class="required">*</span></label><input class="form-control" id="ovs-to" placeholder="113/11" oninput="ovsEdit()"></div><div class="form-group"><label class="form-label">溢領金額（NT$）<span class="required">*</span></label><input class="form-control" id="ovs-amt" oninput="ovsAmtEdit()" style="font-weight:700"><div style="font-size:11px;color:var(--text-secondary);margin-top:3px" id="ovs-calc"></div></div></div>' +
+    '<div class="form-group"><label class="form-label">備註 <span id="ovs-note-req" style="color:var(--danger);display:none">*</span></label><textarea class="form-control" id="ovs-note" rows="2" oninput="ovsEdit()" placeholder="溢領原因為「其他」或金額與撥付紀錄不符時，須填寫說明"></textarea></div></div>' +
+    '<div class="card" style="margin-bottom:16px"><div class="section-title">防呆檢核結果 <span style="font-size:12px;font-weight:400;color:var(--text-secondary)">（隨輸入即時更新）</span></div><div id="ovs-val"></div></div>' +
+    '<div style="display:flex;justify-content:flex-end;gap:10px;margin-bottom:24px"><button class="btn btn-outline" onclick="ovsReset()">清除重填</button><button class="btn btn-outline" onclick="ovsDraft()">暫存草稿</button><button class="btn btn-gold" id="ovs-save" onclick="ovsSave()">儲存並建置案件</button></div>';
+  const d = OVF.draft || { doc: '府退一字第1130012345號', id: 'B234567890', reason: '01', death: '113/09/15', note: '' };
+  OVS.linked = ''; OVS.manual = false;
+  V.$('ovs-doc').value = d.doc; V.$('ovs-id').value = d.id; V.$('ovs-reason').value = d.reason; V.$('ovs-death').value = d.death; V.$('ovs-note').value = d.note || '';
+  if (d.from) { V.$('ovs-from').value = d.from; V.$('ovs-to').value = d.to; V.$('ovs-amt').value = d.amt || ''; OVS.manual = !!d.manual; }
+  if (OVF_DOCS[d.doc] && !OVF.draft) ovsFetchDoc(true); else if (OVF.draft) { OVS.linked = d.linked || ''; ovsShowDoc(); V.$('ovs-badge').textContent = '草稿（' + d.at + ' 暫存）'; }
+  ovsLookup(false); if (!d.from) ovsAuto(true); ovsEdit();
+}
+function ovsShowDoc() { const d = OVF_DOCS[OVS.linked]; V.$('ovs-docdate').value = d ? d.date : ''; V.$('ovs-subject').value = d ? d.subject : ''; }
+function ovsFetchDoc(silent) {
+  const no = V.$('ovs-doc').value.trim(), d = OVF_DOCS[no];
+  if (!no) { showToast('error', '請輸入公文文號', '公文文號為必填欄位'); return; }
+  if (!d) { OVS.linked = ''; ovsShowDoc(); ovsEdit(); showToast('error', '查無此公文', '公文系統中找不到文號「' + no + '」，請確認後重新輸入'); return; }
+  OVS.linked = no; ovsShowDoc(); if (d.id && !V.$('ovs-id').value.trim()) { V.$('ovs-id').value = d.id; ovsLookup(false); }
+  if (d.id && V.$('ovs-id').value.trim() !== d.id) showToast('warning', '公文與領受人不一致', '此公文所陳報之領受人為 ' + V.mask(d.id) + '，與目前輸入之身分證字號不同');
+  else if (!silent) showToast('success', '連結成功', '已帶入發文日期及主旨'); ovsEdit();
+}
+function ovsLookup(toast) {
+  const id = V.$('ovs-id').value.trim().toUpperCase(), p = PAYDB[id]; OVS.person = p || null; const box = V.$('ovs-person');
+  if (!p) { box.innerHTML = '<div style="color:var(--danger);padding:6px">' + (id ? (ID_FORMAT_REGEX.test(id) ? '撥付系統查無此人（' + V.esc(id) + '）' : '身分證字號格式不正確（應為 1 碼大寫英文＋9 碼數字）') : '請輸入身分證字號後按「查詢」') + '</div>'; V.$('ovs-hist').innerHTML = V.emptyRow(5, '尚無撥付紀錄'); if (toast) showToast('error', '查詢無資料', '撥付系統查無此身分證字號'); return; }
+  box.innerHTML = '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px"><div><div class="info-key">姓名</div><div style="font-weight:700">' + V.esc(p.name) + '</div></div><div><div class="info-key">身分證字號</div><div style="font-weight:700">' + V.mask(p.id) + '</div></div><div><div class="info-key">服務機關</div><div style="font-weight:700">' + V.esc(p.org) + '</div></div><div><div class="info-key">退休類別</div><div style="font-weight:700">' + V.esc(p.kind) + '</div></div></div>';
+  ovsHist(); if (toast) showToast('success', '查詢完成', '已帶入領受人資料及撥付紀錄');
+}
+function ovsHist() {
+  const p = OVS.person; if (!p) return; const f = V.ymN(V.$('ovs-from').value.trim()), t = V.ymN(V.$('ovs-to').value.trim());
+  V.$('ovs-hist').innerHTML = ovfHist(p).map(h => { const n = V.ymN(h.ym), hit = !isNaN(f) && !isNaN(t) && n >= f && n <= t; return '<tr' + (hit ? ' style="background:#fff8e1"' : '') + '><td>' + h.ym + '</td><td>NT$ ' + V.fm(h.amt) + '</td><td>' + V.badge(h.st === '已撥付' ? 'success' : 'warning', h.st) + '</td><td>' + p.bank + '</td><td>' + h.note + '</td></tr>'; }).join('');
+}
+function ovsAuto(silent) {
+  const d = V.$('ovs-death').value.trim(), p = OVS.person; if (!V.isDate(d)) { if (!silent) showToast('error', '無法帶入', '請先輸入正確之亡故／事實發生日期（民國 yyy/mm/dd）'); return; }
+  if (!p) { if (!silent) showToast('error', '無法帶入', '請先查詢領受人'); return; }
+  const f = ovfStart(d); V.$('ovs-from').value = V.ymS(f); V.$('ovs-to').value = p.last; OVS.manual = false; ovsEdit();
+  if (!silent) showToast('success', '已帶入溢領期間', '依函釋「死亡者自次月起停止支領」，自 ' + V.ymS(f) + ' 起至最後撥付月 ' + p.last);
+}
+function ovsCalc() { const p = OVS.person; if (!p) return null; const f = V.ymN(V.$('ovs-from').value.trim()), t = V.ymN(V.$('ovs-to').value.trim()); if (isNaN(f) || isNaN(t) || f > t) return null; return ovfHist(p).filter(h => h.st === '已撥付' && V.ymN(h.ym) >= f && V.ymN(h.ym) <= t).reduce((a, h) => a + h.amt, 0); }
+function ovsAmtEdit() { OVS.manual = true; ovsEdit(); }
+function ovsEdit() {
+  const id = V.$('ovs-id').value.trim().toUpperCase(); if ((OVS.person ? OVS.person.id : '') !== id) { ovsLookup(false); }
+  const c = ovsCalc(); if (!OVS.manual && c != null) V.$('ovs-amt').value = V.fm(c); else if (!OVS.manual && c == null) V.$('ovs-amt').value = '';
+  V.$('ovs-calc').textContent = c == null ? '' : '依撥付紀錄加總：NT$ ' + V.fm(c); ovsHist();
+  const items = [], E = m => items.push({ l: 'err', m }), W = m => items.push({ l: 'warn', m }), O = m => items.push({ l: 'ok', m });
+  const doc = V.$('ovs-doc').value.trim(), rs = V.$('ovs-reason').value, death = V.$('ovs-death').value.trim(), note = V.$('ovs-note').value.trim();
+  V.$('ovs-note-req').style.display = (rs === '04') ? '' : 'none';
+  if (!/^.{2,6}字第\d{7,12}號$/.test(doc)) E('公文文號格式不正確（例：府退一字第1130012345號）'); else if (OVS.linked !== doc) W('公文尚未連結公文系統，請按「連結公文系統」以核對文號'); else O('公文文號 ' + doc + ' 已連結並核對無誤');
+  const dd = OVF_DOCS[OVS.linked]; if (dd && dd.id && OVS.person && dd.id !== OVS.person.id) E('公文所陳報之領受人（' + V.mask(dd.id) + '）與目前領受人不一致');
+  const p = OVS.person; if (!p) E('領受人不存在於撥付系統，請確認身分證字號並按「查詢」'); else O('領受人 ' + p.name + '（' + V.mask(p.id) + '）存在於撥付系統');
+  const f = V.ymN(V.$('ovs-from').value.trim()), t = V.ymN(V.$('ovs-to').value.trim());
+  if (isNaN(f) || isNaN(t)) E('溢領起訖年月格式不正確（應為 yyy/mm，例：113/10）'); else if (f > t) E('溢領起始年月不得晚於終止年月'); else if (p && t > V.ymN(p.last)) E('終止年月（' + V.$('ovs-to').value + '）晚於最後撥付月 ' + p.last + '，該期間尚無撥付紀錄可追繳'); else if (p) O('溢領期間 ' + V.$('ovs-from').value + ' ～ ' + V.$('ovs-to').value + '，共 ' + (t - f + 1) + ' 個月');
+  if (rs === '01' || rs === '02') {
+    if (!V.isDate(death)) E('「亡故／事實發生日期」格式不正確（民國 yyy/mm/dd）'); else if (death > V.today()) E('亡故／事實發生日期不得晚於今日（' + V.today() + '）');
+    else if (!isNaN(f)) { const s = ovfStart(death); if (f < s) E('依函釋，自事實發生之次月（' + V.ymS(s) + '）起停止支領，起始年月不得早於 ' + V.ymS(s)); else if (f > s) W('起始年月晚於應停止支領月 ' + V.ymS(s) + '，請確認 ' + V.ymS(s) + ' ～ ' + V.ymS(f - 1) + ' 是否已另案追繳'); else O('起始年月符合函釋規定（事實發生次月起算）'); }
+  }
+  const amt = +String(V.$('ovs-amt').value).replace(/,/g, '');
+  if (!V.$('ovs-amt').value.trim() || isNaN(amt) || amt <= 0 || amt !== Math.floor(amt)) E('溢領金額須為大於 0 之整數'); else if (c != null && amt !== c) { if (!note) E('溢領金額（' + V.fm(amt) + '）與撥付紀錄加總（' + V.fm(c) + '）不符，差額 ' + V.fm(amt - c) + ' 元，備註須說明原因'); else W('溢領金額與撥付紀錄加總差 ' + V.fm(amt - c) + ' 元，已於備註說明'); } else if (c != null) O('溢領金額 NT$ ' + V.fm(amt) + ' 與撥付紀錄加總相符');
+  if (rs === '04' && !note) E('溢領原因為「其他」時，備註為必填');
+  if (p && !isNaN(f) && !isNaN(t)) { const dup = OVF.cases.find(x => x.id === p.id && !x.void && V.ymN(x.from) <= t && V.ymN(x.to) >= f); if (dup) E('重複建置：已有案件 ' + dup.no + '（' + dup.from + '～' + dup.to + '）與本次期間重疊'); else O('無重複溢領案件'); }
+  if (p && ovfHist(p).some(h => h.st === '待撥付')) { if (p.stopped) O('113/12 待撥付款項已止付'); else W('尚有待撥付款項，請確認已辦理止付'); }
+  OVS.items = items; const ne = items.filter(i => i.l === 'err').length, nw = items.filter(i => i.l === 'warn').length;
+  V.$('ovs-val').innerHTML = items.map(i => '<div style="display:flex;gap:8px;padding:6px 10px;margin-bottom:4px;border-radius:4px;font-size:13px;background:' + (i.l === 'err' ? '#fdecea' : i.l === 'warn' ? '#fff8e1' : '#e8f5e9') + '"><strong style="color:' + (i.l === 'err' ? 'var(--danger)' : i.l === 'warn' ? '#b7791f' : 'var(--success)') + '">' + (i.l === 'err' ? '✕ 錯誤' : i.l === 'warn' ? '！提醒' : '✓ 通過') + '</strong><span>' + V.esc(i.m) + '</span></div>').join('') + '<div style="font-size:12px;margin-top:6px;color:' + (ne ? 'var(--danger)' : 'var(--success)') + '">' + (ne ? '尚有 ' + ne + ' 項錯誤須修正，始得儲存' : '檢核通過' + (nw ? '（另有 ' + nw + ' 項提醒）' : '，可儲存建置')) + '</div>';
+  V.$('ovs-save').disabled = ne > 0; V.$('ovs-save').style.opacity = ne ? .5 : 1;
+}
+function runValidation() { ovsEdit(); showToast('info', '檢核完成', '請見「防呆檢核結果」'); }
+function ovsFormData() { return { doc: V.$('ovs-doc').value.trim(), id: V.$('ovs-id').value.trim(), reason: V.$('ovs-reason').value, death: V.$('ovs-death').value.trim(), from: V.$('ovs-from').value.trim(), to: V.$('ovs-to').value.trim(), amt: V.$('ovs-amt').value, manual: OVS.manual, note: V.$('ovs-note').value, linked: OVS.linked, at: V.hm() }; }
+function ovsDraft() { OVF.draft = ovsFormData(); V.$('ovs-badge').textContent = '草稿（' + OVF.draft.at + ' 暫存）'; showToast('success', '已暫存草稿', '離開本頁後再回來仍會保留（本次登入期間有效）'); }
+function ovsReset() { OVF.draft = null; ovsBuild(); showToast('info', '已清除', '表單已重設'); }
+function ovsSave() {
+  if (!V.need('overflow-single', 2, '建置溢領案件')) return; ovsEdit();
+  if (OVS.items.some(i => i.l === 'err')) { showToast('error', '無法儲存', '請先修正防呆檢核之錯誤項目'); return; }
+  const f = ovsFormData(), p = OVS.person, amt = +String(f.amt).replace(/,/g, '');
+  const c = ovfMk(p, f.death || V.today(), f.reason, { no: ovfNo(), created: V.today(), handler: V.user(), note: f.note, src: f.doc, from: f.from, to: f.to, months: V.ymN(f.to) - V.ymN(f.from) + 1, amount: amt });
+  OVF.cases.push(c); OVF.draft = null; V.audit('DATA-C', '溢領管理', '建置單筆溢領案件', c.no, '-', '溢領 NT$ ' + V.fm(amt) + '；期間 ' + c.from + '～' + c.to, ['領受人：' + V.mask(p.id) + ' ' + p.name, '公文文號：' + f.doc, '原因：' + OVF_REASON[f.reason]]);
+  showToast('success', '儲存成功', '已建置溢領案件 ' + c.no + '，狀態：待產製追繳函表'); ovsBuild(); ovfChanged();
+  setTimeout(() => { if (confirm('案件 ' + c.no + ' 已建置。是否前往「追繳與圈存函表」產製函表？')) navigateTo('overflow-docs'); }, 200);
+}
+
+/* =========================================================
+   批次溢領計算
+   ========================================================= */
+const OVB = { rows: [], file: '', done: false, res: '' };
+function ovbBuild() {
+  const v = V.$('view-overflow-batch');
+  v.innerHTML = V.crumb('溢領管理', '批次溢領計算') + '<div class="page-header"><div><div class="page-title">批次溢領計算</div><div class="page-subtitle">上傳停發報表，系統逐筆檢核、計算溢領金額，勾選後批次建置案件</div></div></div>' +
+    '<div class="layout-2col" style="display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px"><div><div class="card" style="margin-bottom:16px"><div class="section-title">上傳停發報表</div><div class="upload-zone" id="ovb-zone" ondragover="event.preventDefault();this.style.borderColor=\'var(--primary)\'" ondragleave="this.style.borderColor=\'\'" ondrop="event.preventDefault();this.style.borderColor=\'\';ovbPick(event.dataTransfer.files[0])"><div style="font-weight:700;font-size:15px;margin-bottom:6px">拖曳檔案至此處，或點擊選擇檔案</div><div style="font-size:12px;color:var(--text-secondary);margin-bottom:10px">支援格式：Excel (.xlsx)、CSV (.csv) ｜ 檔案大小上限：10MB</div><input type="file" id="ovb-file" accept=".xlsx,.xls,.csv" style="display:none" onchange="ovbPick(this.files[0]);this.value=\'\'"><button class="btn btn-outline" onclick="V.$(\'ovb-file\').click()">選擇檔案</button> <button class="btn btn-outline" onclick="ovbSample()">載入範例資料</button></div></div><div id="ovb-body"></div></div>' +
+    '<div class="card" style="align-self:flex-start"><div class="section-title">檔案格式說明</div><div style="font-size:13px;line-height:2">必要欄位：<br>A欄：姓名<br>B欄：身分證字號<br>C欄：亡故／停發日期（YYYY/MM/DD，西元或民國皆可）<br>D欄：停發原因代碼<br>E欄：來源機關<br><br><strong>停發原因代碼</strong><br>01＝亡故 ｜ 02＝喪失資格<br>03＝重複撥付 ｜ 04＝其他<br><span style="font-size:12px;color:var(--text-secondary)">03、04 須逐案以「單筆溢領控管」建置，批次不計算。</span></div><div class="info-card warning" style="margin-top:10px;font-size:12px">第一列為標題列，資料從第二列開始。<br>溢領起算規則：<strong>' + (OVF.rule === 'next' ? '事實發生之次月起（依函釋）' : '事實發生當月起') + '</strong>，迄撥付系統最後已撥付月（' + OVF.last + '）。</div><button class="btn btn-outline btn-sm" style="width:100%;margin-top:10px" onclick="ovbTemplate()">下載範本檔案</button></div></div>';
+  ovbRender();
+}
+function ovbTemplate() { V.csvDownload('批次溢領_範本.csv', ovfCsvSample().slice(0, 4)); showToast('success', '已下載範本', '批次溢領_範本.csv'); }
+function ovbSample() { ovbParse(ovfCsvSample().slice(1).map(r => r.map(String)), '範例資料.csv'); }
+async function ovbPick(f) {
+  if (!f) return; if (f.size > 10 * 1024 * 1024) { showToast('error', '檔案過大', '檔案大小上限為 10MB'); return; }
+  const ext = (f.name.split('.').pop() || '').toLowerCase();
+  try {
+    let rows;
+    if (ext === 'csv') { const t = await f.text(); rows = tbParseCsv(t.replace(/^\uFEFF/, '')).rows.map(r => r.cells.map(c => c.v)); }
+    else if (ext === 'xlsx') { const r = await tbReadXlsx(f); rows = r.rows.map(r => { const a = []; (r.cells || []).forEach((c, i) => a[i] = c ? (c.num && /^\d{5}$/.test(c.v) ? ovbSerial(+c.v) : c.v) : ''); return Array.from(a, x => x == null ? '' : x); }); }
+    else { showToast('error', '不支援之格式', ext === 'xls' ? '請將 .xls 另存為 .xlsx 或 .csv 後再上傳' : '僅支援 .xlsx、.csv'); return; }
+    if (rows.length && /姓名/.test(rows[0][0] || '')) rows = rows.slice(1);
+    rows = rows.filter(r => r.some(x => String(x || '').trim()));
+    if (!rows.length) { showToast('error', '檔案無資料', '第二列起未發現任何資料列'); return; }
+    ovbParse(rows, f.name);
+  } catch (e) { showToast('error', '檔案解析失敗', e.message || String(e)); }
+}
+function ovbSerial(n) { const d = new Date(Date.UTC(1899, 11, 30) + n * 864e5); return d.getUTCFullYear() + '/' + V.pad(d.getUTCMonth() + 1) + '/' + V.pad(d.getUTCDate()); }
+function ovbDate(s) { s = String(s || '').trim().replace(/-/g, '/'); const m = /^(\d{3,4})\/(\d{1,2})\/(\d{1,2})$/.exec(s); if (!m) return ''; let y = +m[1]; if (y > 1911) y -= 1911; const r = V.pad(y, 3) + '/' + V.pad(+m[2]) + '/' + V.pad(+m[3]); return V.isDate(r) ? r : ''; }
+function ovbParse(raw, name) {
+  const seen = {}; OVB.file = name; OVB.done = false; OVB.res = '';
+  OVB.rows = raw.map((r, i) => {
+    const o = { n: i + 2, name: String(r[0] || '').trim(), id: String(r[1] || '').trim().toUpperCase(), rawDate: String(r[2] || '').trim(), code: String(r[3] || '').trim().padStart(2, '0'), org: String(r[4] || '').trim(), st: 'ok', msg: '', amount: 0, months: 0, from: '', to: '', chk: false };
+    const E = m => { o.st = 'err'; o.msg = m; }; o.date = ovbDate(o.rawDate); const p = PAYDB[o.id];
+    if (!o.name) E('姓名為必填'); else if (!ID_FORMAT_REGEX.test(o.id)) E('身分證字號格式錯誤'); else if (!o.date) E('日期格式錯誤或不存在（' + (o.rawDate || '空白') + '）'); else if (!OVF_REASON[o.code]) E('原因代碼須為 01～04'); else if (o.code === '03' || o.code === '04') E('原因代碼 ' + o.code + ' 須以單筆溢領控管建置'); else if (!p) E('撥付系統查無此人'); else if (p.name !== o.name) E('姓名與撥付系統不符（系統：' + p.name + '）'); else if (seen[o.id]) E('檔案內身分證字號重複（第 ' + seen[o.id] + ' 列）');
+    seen[o.id] = seen[o.id] || o.n;
+    if (o.st === 'ok') {
+      const f = ovfStart(o.date), t = V.ymN(p.last); o.from = V.ymS(f); o.to = p.last; o.months = t - f + 1; o.amount = Math.max(0, o.months) * p.monthly;
+      const dup = OVF.cases.find(x => x.id === o.id && !x.void && V.ymN(x.from) <= t && V.ymN(x.to) >= f);
+      if (dup) E('已有案件 ' + dup.no + ' 期間重疊'); else if (o.months <= 0) { o.st = 'zero'; o.msg = '停發後無撥付紀錄，無溢領（最後撥付月 ' + p.last + '）'; o.months = 0; } else o.chk = true;
+    }
+    return o;
+  });
+  ovbRender(); const ok = OVB.rows.filter(r => r.st === 'ok').length; showToast(ok ? 'success' : 'warning', '檔案解析完成', '共 ' + OVB.rows.length + ' 筆，可計算 ' + ok + ' 筆，異常 ' + OVB.rows.filter(r => r.st === 'err').length + ' 筆，無溢領 ' + OVB.rows.filter(r => r.st === 'zero').length + ' 筆');
+}
+function ovbRender() {
+  const b = V.$('ovb-body'); if (!b) return;
+  if (!OVB.rows.length) { b.innerHTML = '<div class="card" style="text-align:center;color:var(--text-secondary);padding:30px">尚未上傳檔案。請選擇檔案，或按「載入範例資料」體驗完整流程。</div>'; return; }
+  const R = OVB.rows, ok = R.filter(r => r.st === 'ok'), er = R.filter(r => r.st === 'err'), zr = R.filter(r => r.st === 'zero');
+  b.innerHTML = '<div class="card"><div class="section-title">計算預覽 <span style="font-size:12px;font-weight:400;color:var(--text-secondary)">檔案：' + V.esc(OVB.file) + '</span></div>' +
+    '<div style="display:flex;gap:16px;margin-bottom:10px;font-size:13px"><span>總筆數 <strong>' + R.length + '</strong></span><span style="color:var(--success)">可建置 <strong>' + ok.length + '</strong></span><span style="color:var(--danger)">異常 <strong>' + er.length + '</strong></span><span style="color:#b7791f">無溢領 <strong>' + zr.length + '</strong></span></div>' +
+    '<div class="table-wrapper"><table class="data-table"><thead><tr><th style="width:36px"><input type="checkbox" id="ovb-all" onchange="ovbAll(this.checked)" ' + (ok.length && ok.every(r => r.chk) ? 'checked' : '') + ' ' + (OVB.done || !ok.length ? 'disabled' : '') + '></th><th>列</th><th>姓名</th><th>身分證字號</th><th>停發日期</th><th>原因</th><th>溢領期間</th><th>月數</th><th style="text-align:right">溢領金額</th><th>檢核</th></tr></thead><tbody>' +
+    R.map((r, i) => '<tr style="' + (r.st === 'err' ? 'background:#fdecea' : r.st === 'zero' ? 'background:#fff8e1' : '') + '"><td>' + (r.st === 'ok' ? '<input type="checkbox" ' + (r.chk ? 'checked' : '') + ' ' + (OVB.done ? 'disabled' : '') + ' onchange="ovbChk(' + i + ',this.checked)">' : '') + '</td><td>' + r.n + '</td><td>' + V.esc(r.name) + '</td><td>' + V.mask(r.id) + '</td><td>' + V.esc(r.date || r.rawDate) + '</td><td>' + (OVF_REASON[r.code] || V.esc(r.code)) + '</td><td>' + (r.from ? r.from + '～' + r.to : '-') + '</td><td>' + (r.months || '-') + '</td><td style="text-align:right">' + (r.amount ? 'NT$ ' + V.fm(r.amount) : '-') + '</td><td>' + (r.st === 'ok' ? (r.created ? V.badge('success', '已建置 ' + r.created) : V.badge('success', '通過')) : V.badge(r.st === 'err' ? 'danger' : 'warning', r.msg)) + '</td></tr>').join('') + '</tbody></table></div>' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;flex-wrap:wrap;gap:10px"><div id="ovb-sum" style="font-size:14px"></div><div style="display:flex;gap:8px"><button class="btn btn-outline btn-sm" onclick="ovbExc()" ' + (er.length + zr.length ? '' : 'disabled') + '>下載異常／無溢領清單</button><button class="btn btn-gold" id="ovb-run" onclick="ovbRun()">執行批次建置</button></div></div><div id="ovb-prog"></div><div id="ovb-res">' + (OVB.res || '') + '</div></div>';
+  ovbSum();
+}
+function ovbSum() { const c = OVB.rows.filter(r => r.chk); V.$('ovb-sum').innerHTML = '已勾選 <strong>' + c.length + '</strong> 筆，合計溢領金額 <strong style="color:var(--danger)">NT$ ' + V.fm(c.reduce((a, r) => a + r.amount, 0)) + '</strong>'; const run = V.$('ovb-run'); run.disabled = !c.length || OVB.done; run.style.opacity = run.disabled ? .5 : 1; const all = V.$('ovb-all'); if (all) { const ok = OVB.rows.filter(r => r.st === 'ok'); all.checked = ok.length > 0 && ok.every(r => r.chk); } }
+function ovbChk(i, v) { OVB.rows[i].chk = v; ovbSum(); }
+function ovbAll(v) { OVB.rows.forEach(r => { if (r.st === 'ok' && !r.created) r.chk = v; }); ovbRender(); }
+function ovbExc() { const rows = [['列', '姓名', '身分證字號', '日期', '原因代碼', '結果', '說明']].concat(OVB.rows.filter(r => r.st !== 'ok').map(r => [r.n, r.name, r.id, r.rawDate, r.code, r.st === 'err' ? '異常' : '無溢領', r.msg])); dirDownloadXlsx('批次溢領_異常清單', rows, '異常清單', [6, 12, 16, 14, 10, 10, 50]); }
+function ovbRun() {
+  if (!V.need('overflow-batch', 2, '批次建置溢領案件')) return; const sel = OVB.rows.filter(r => r.chk && !r.created); if (!sel.length) { showToast('error', '未勾選任何案件', '請至少勾選一筆可建置之案件'); return; }
+  if (!confirm('確定建置 ' + sel.length + ' 筆溢領案件（合計 NT$ ' + V.fm(sel.reduce((a, r) => a + r.amount, 0)) + '）？')) return;
+  const t0 = Date.now(), pr = V.$('ovb-prog'); let k = 0; V.$('ovb-run').disabled = true;
+  const tm = setInterval(() => { k += Math.ceil(sel.length / 8); const pct = Math.min(100, Math.round(k / sel.length * 100)); pr.innerHTML = '<div style="margin-top:12px"><div style="height:8px;background:#e3e8ef;border-radius:4px;overflow:hidden"><div style="height:100%;width:' + pct + '%;background:var(--gold,#c9a227)"></div></div><div style="font-size:12px;margin-top:4px">建置中… ' + pct + '%</div></div>'; if (pct >= 100) { clearInterval(tm); fin(); } }, 150);
+  function fin() {
+    let okN = 0, fail = [], sum = 0;
+    sel.forEach(r => { const p = PAYDB[r.id], t = V.ymN(p.last), f = V.ymN(r.from); const dup = OVF.cases.find(x => x.id === r.id && !x.void && V.ymN(x.from) <= t && V.ymN(x.to) >= f); if (dup) { fail.push([r, '已有案件 ' + dup.no]); r.chk = false; return; } const c = ovfMk(p, r.date, r.code, { no: ovfNo(), created: V.today(), handler: V.user(), src: '批次：' + OVB.file }); OVF.cases.push(c); r.created = c.no; r.chk = false; okN++; sum += c.amount; V.audit('DATA-C', '溢領管理', '批次建置溢領案件', c.no, '-', '溢領 NT$ ' + V.fm(c.amount), ['領受人：' + V.mask(c.id) + ' ' + c.name, '來源檔案：' + OVB.file]); });
+    OVB.done = true; const skipped = OVB.rows.filter(r => r.st === 'ok' && !r.created).length - fail.length;
+    V.$('ovb-prog').innerHTML = ''; ovbRender();
+    OVB.res = '<div class="info-card success" style="margin-top:12px"><strong>批次建置完成</strong>（耗時 ' + ((Date.now() - t0) / 1000).toFixed(1) + ' 秒）<div style="margin-top:6px;font-size:13px;line-height:1.9">成功建置：<strong>' + okN + '</strong> 筆（NT$ ' + V.fm(sum) + '）｜失敗：<strong style="color:var(--danger)">' + fail.length + '</strong> 筆｜未勾選略過：' + Math.max(0, skipped) + ' 筆｜原始異常／無溢領：' + OVB.rows.filter(r => r.st !== 'ok').length + ' 筆</div><div style="margin-top:8px;display:flex;gap:8px"><button class="btn btn-outline btn-sm" onclick="ovbResXlsx()">下載建置結果</button><button class="btn btn-primary btn-sm" onclick="navigateTo(\'overflow-docs\')">前往產製追繳函表</button></div></div>'; V.$('ovb-res').innerHTML = OVB.res;
+    showToast('success', '批次建置完成', '成功 ' + okN + ' 筆，失敗 ' + fail.length + ' 筆'); ovfChanged(); V.$('ovb-run').disabled = true;
+  }
+}
+function ovbResXlsx() { const rows = [['列', '案號', '姓名', '身分證字號', '溢領期間', '溢領金額']].concat(OVB.rows.filter(r => r.created).map(r => [r.n, r.created, r.name, r.id, r.from + '～' + r.to, r.amount])); dirDownloadXlsx('批次溢領_建置結果', rows, '建置結果', [6, 16, 12, 16, 18, 14]); }
+
+/* =========================================================
+   追繳與圈存函表
+   ========================================================= */
+const OVD = { sel: new Set(), f: { st: '待產製', from: '113/01/01', to: '', who: '全部', q: '' }, last: null };
+function ovdBuild() {
+  const v = V.$('view-overflow-docs'); OVD.f.to = V.today();
+  v.innerHTML = V.crumb('溢領管理', '追繳與圈存函表') + '<div class="page-header"><div><div class="page-title">追繳與圈存函表</div><div class="page-subtitle">勾選案件並選擇文件類型，產製追繳通知函、銀行圈存傳真表、DI 檔及繳款單</div></div></div>' +
+    '<div class="card" style="margin-bottom:16px"><div class="filter-row" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end"><div class="filter-group"><div class="filter-label">函表狀態</div><select class="filter-control" id="ovd-st"><option>待產製</option><option>已產製</option><option>全部</option></select></div><div class="filter-group"><div class="filter-label">建置日期起</div><input class="filter-control" id="ovd-from" value="113/01/01"></div><div class="filter-group"><div class="filter-label">建置日期迄</div><input class="filter-control" id="ovd-to"></div><div class="filter-group"><div class="filter-label">承辦人</div><select class="filter-control" id="ovd-who"></select></div><div class="filter-group" style="flex:1;min-width:160px"><div class="filter-label">關鍵字（案號／姓名／身分證）</div><input class="filter-control" id="ovd-q" style="width:100%" onkeydown="if(event.key===\'Enter\')ovdQuery()"></div><button class="btn btn-primary btn-sm" onclick="ovdQuery()">查詢</button><button class="btn btn-outline btn-sm" onclick="ovdReset()">重設</button></div></div>' +
+    '<div class="table-card" style="margin-bottom:16px"><div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between"><div class="card-title" id="ovd-title"></div><div style="font-size:13px">已選 <strong id="ovd-n">0</strong> 筆</div></div><div class="table-wrapper"><table class="data-table"><thead><tr><th style="width:36px"><input type="checkbox" id="ovd-all" onchange="ovdAll(this.checked)"></th><th>案號</th><th>領受人</th><th>溢領期間</th><th style="text-align:right">溢領金額</th><th style="text-align:right">未收回</th><th>函表狀態</th><th>操作</th></tr></thead><tbody id="ovd-tb"></tbody></table></div><div class="pagination"><div class="pagination-info" id="ovd-info"></div><div class="pagination-controls" id="ovd-pg"></div></div></div>' +
+    '<div class="card"><div class="section-title">產製文件</div><div style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:12px"><label><input type="checkbox" id="ovd-t-off" checked> 追繳通知函</label><label><input type="checkbox" id="ovd-t-fax" checked> 銀行圈存傳真表</label><label><input type="checkbox" id="ovd-t-di" checked> 圈存 DI 檔</label><label><input type="checkbox" id="ovd-t-pay" checked> 追繳繳款單</label></div><div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:12px;color:var(--text-secondary)">繳款期限：發文日起 ' + OVF.grace + ' 日。已收回案件不得產製。重新產製沿用原發文字號。</div><button class="btn btn-gold" onclick="ovdGen()">產製函表</button></div><div id="ovd-res"></div></div>';
+  const who = ['全部'].concat([...new Set(OVF.cases.map(c => c.handler))]); V.$('ovd-who').innerHTML = who.map(w => '<option>' + w + '</option>').join(''); ovdSync(true); ovdRender();
+}
+function ovdSync(toUi) { const m = { st: 'ovd-st', from: 'ovd-from', to: 'ovd-to', who: 'ovd-who', q: 'ovd-q' }; Object.keys(m).forEach(k => { if (toUi) V.$(m[k]).value = OVD.f[k]; else OVD.f[k] = V.$(m[k]).value.trim(); }); }
+function ovdList() {
+  const f = OVD.f, q = f.q.toLowerCase();
+  return OVF.cases.filter(c => !c.void && ovfRemain(c) > 0 && (f.st === '全部' || (f.st === '待產製') === !c.docDate) && (!f.from || c.created >= f.from) && (!f.to || c.created <= f.to) && (f.who === '全部' || c.handler === f.who) && (!q || (c.no + c.name + c.id).toLowerCase().includes(q)));
+}
+function ovdQuery() {
+  ovdSync(false); if ((OVD.f.from && !V.isDate(OVD.f.from)) || (OVD.f.to && !V.isDate(OVD.f.to))) { showToast('error', '日期格式錯誤', '請輸入民國 yyy/mm/dd'); return; }
+  if (OVD.f.from && OVD.f.to && OVD.f.from > OVD.f.to) { showToast('error', '日期區間錯誤', '起日不得晚於迄日'); return; }
+  OVF.pg.docs = 1; ovdRender(); showToast('success', '查詢完成', '符合條件共 ' + ovdList().length + ' 筆');
+}
+function ovdReset() { OVD.f = { st: '待產製', from: '113/01/01', to: V.today(), who: '全部', q: '' }; ovdSync(true); OVF.pg.docs = 1; ovdRender(); }
+function ovdPage(p) { OVF.pg.docs = p; ovdRender(); }
+function ovdRender() {
+  const L = ovdList(), S = 5; OVF.pg.docs = V.clampPage(L.length, OVF.pg.docs, S); const pg = L.slice((OVF.pg.docs - 1) * S, OVF.pg.docs * S);
+  [...OVD.sel].forEach(n => { const c = ovfFind(n); if (!c || ovfRemain(c) <= 0) OVD.sel.delete(n); });
+  V.$('ovd-title').textContent = '案件清單（共 ' + L.length + ' 筆）';
+  V.$('ovd-tb').innerHTML = pg.length ? pg.map(c => '<tr><td><input type="checkbox" ' + (OVD.sel.has(c.no) ? 'checked' : '') + ' onchange="ovdChk(\'' + c.no + '\',this.checked)"></td><td>' + c.no + '</td><td>' + V.esc(c.name) + '<br><span style="font-size:11px;color:var(--text-secondary)">' + V.mask(c.id) + '</span></td><td>' + c.from + '～' + c.to + '</td><td style="text-align:right">NT$ ' + V.fm(c.amount) + '</td><td style="text-align:right">NT$ ' + V.fm(ovfRemain(c)) + '</td><td>' + (c.docDate ? V.badge('success', '已產製 ' + c.docDate) : V.badge('warning', '待產製')) + '</td><td><button class="btn btn-sm btn-outline" onclick="ovdPreview(\'' + c.no + '\')">預覽函文</button></td></tr>').join('') : V.emptyRow(8);
+  V.$('ovd-info').textContent = V.pagerInfo(L.length, OVF.pg.docs, S); V.$('ovd-pg').innerHTML = V.pagerHtml(L.length, OVF.pg.docs, S, 'ovdPage');
+  V.$('ovd-n').textContent = OVD.sel.size; V.$('ovd-all').checked = pg.length > 0 && pg.every(c => OVD.sel.has(c.no));
+}
+function ovdChk(no, v) { v ? OVD.sel.add(no) : OVD.sel.delete(no); V.$('ovd-n').textContent = OVD.sel.size; ovdRender(); }
+function ovdAll(v) { const S = 5; ovdList().slice((OVF.pg.docs - 1) * S, OVF.pg.docs * S).forEach(c => v ? OVD.sel.add(c.no) : OVD.sel.delete(c.no)); ovdRender(); }
+function ovdLetter(c, prev) {
+  const due = c.docDate ? V.addDays(c.docDate, OVF.grace) : V.addDays(V.today(), OVF.grace);
+  return '<div class="ltr">' + (prev ? '<div class="stamp">預覽</div>' : '') + '<h1>公務人員退休撫卹基金管理局　函</h1><div class="sub">追繳溢領退休金通知</div><table><tr><th style="width:90px">發文字號</th><td>' + (c.docNo || '（尚未產製）') + '</td><th style="width:90px">發文日期</th><td>' + (c.docDate || V.today()) + '</td></tr><tr><th>受文者</th><td>' + V.esc(c.name) + '（' + V.mask(c.id) + '）</td><th>案號</th><td>' + c.no + '</td></tr></table>' +
+    '<p><strong>主旨：</strong>貴員（君）' + OVF_REASON[c.reason] + '，溢領月退休金計 NT$ ' + V.fm(c.amount) + '，請於 ' + due + ' 前繳回，請查照。</p><p><strong>說明：</strong></p><p>一、依公務人員退休資遣撫卹法及本局函釋，' + (c.reason === '01' ? '死亡者自死亡之次月起停止支領月退休金' : '喪失領受資格者自事實發生之次月起停止支領') + '。</p><p>二、溢領期間：' + c.from + ' 至 ' + c.to + '，共 ' + c.months + ' 個月，每月 NT$ ' + V.fm(c.monthly) + '。</p><p>三、截至目前尚未繳回金額為 NT$ ' + V.fm(ovfRemain(c)) + '，' + (c.slip ? '繳款單編號 ' + c.slip.no + '，' : '') + '逾期未繳將依法移送行政執行。</p><div class="sign"><span>承辦人：' + V.esc(c.handler) + '</span><span>單位主管：＿＿＿＿＿</span></div><div class="note">本函為原型示意文件，非正式公文。</div></div>';
+}
+function ovdPreview(no) { const c = ovfFind(no); if (!c) return; const t = '追繳通知函_' + c.no, h = ovdLetter(c, !c.docDate); dirOpenDoc('追繳通知函 ' + c.no, h, { dlLabel: t, dlExt: 'pdf', print: () => dirPrintHtml(t, h), dl: () => dirDownloadPdf(t, h) }); }
+function ovdGen() {
+  if (!V.need('overflow-docs', 2, '產製追繳函表')) return;
+  const cs = [...OVD.sel].map(ovfFind).filter(c => c && ovfRemain(c) > 0), T = { off: V.$('ovd-t-off').checked, fax: V.$('ovd-t-fax').checked, di: V.$('ovd-t-di').checked, pay: V.$('ovd-t-pay').checked };
+  if (!cs.length) { showToast('error', '未選擇案件', '請於清單勾選至少一筆案件'); return; }
+  if (!Object.values(T).some(Boolean)) { showToast('error', '未選擇文件類型', '請至少勾選一種文件'); return; }
+  const redo = cs.filter(c => c.docDate).length; if (!confirm('確定對 ' + cs.length + ' 筆案件產製文件？' + (redo ? '\n其中 ' + redo + ' 筆為重新產製（沿用原發文字號）。' : ''))) return;
+  cs.forEach(c => { const first = !c.docDate; if (first) { c.docDate = V.today(); c.docNo = '退撫溢字第' + (1130000 + (++OVF.docSeq)) + '號'; } Object.keys(T).forEach(k => { if (T[k]) c.docs[k] = 1; }); if (T.pay) { if (!c.slip) c.slip = { no: 'PAY-113-' + V.pad(OVF.slipSeq++, 4), amt: ovfRemain(c) }; else c.slip.amt = ovfRemain(c); } V.audit('OUT-X', '溢領管理', '產製追繳函表', c.no, first ? '待產製' : '已產製', '已產製', ['文件：' + Object.keys(T).filter(k => T[k]).map(k => ({ off: '追繳通知函', fax: '圈存傳真表', di: 'DI檔', pay: '繳款單' }[k])).join('、'), '發文字號：' + c.docNo]); });
+  OVD.last = { cs: cs.map(c => c.no), T }; const n = cs.length, sum = cs.reduce((a, c) => a + ovfRemain(c), 0);
+  V.$('ovd-res').innerHTML = '<div class="info-card success" style="margin-top:14px"><strong>產製完成</strong>：' + n + ' 筆案件、' + Object.values(T).filter(Boolean).length + ' 種文件，追繳金額合計 NT$ ' + V.fm(sum) + '<div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">' + (T.off ? '<button class="btn btn-outline btn-sm" onclick="ovdOut(\'off\')">列印追繳通知函</button>' : '') + (T.fax ? '<button class="btn btn-outline btn-sm" onclick="ovdOut(\'fax\')">下載圈存傳真表</button>' : '') + (T.di ? '<button class="btn btn-outline btn-sm" onclick="ovdOut(\'di\')">下載圈存 DI 檔</button>' : '') + (T.pay ? '<button class="btn btn-outline btn-sm" onclick="ovdOut(\'pay\')">列印繳款單</button>' : '') + '</div></div>';
+  OVD.sel.clear(); showToast('success', '產製完成', n + ' 筆案件函表已產製'); ovdRender(); ovfChanged();
+}
+function ovdOut(k) {
+  const cs = (OVD.last ? OVD.last.cs : []).map(ovfFind).filter(Boolean); if (!cs.length) return; const d = V.today().replace(/\//g, '');
+  if (k === 'off') { const h = cs.map(c => ovdLetter(c)).join('<div style="page-break-after:always"></div>'); dirDownloadPdf('追繳通知函_' + d, h); }
+  else if (k === 'fax') { const h = '<div class="ltr"><h1>銀行圈存傳真表</h1><div class="sub">產製日期 ' + V.today() + '</div><table><tr><th>案號</th><th>姓名</th><th>身分證字號</th><th>銀行帳號</th><th>圈存金額</th></tr>' + cs.map(c => '<tr><td>' + c.no + '</td><td>' + V.esc(c.name) + '</td><td>' + c.id + '</td><td>' + (PAYDB[c.id] ? PAYDB[c.id].bank : '') + '</td><td class="num">' + V.fm(ovfRemain(c)) + '</td></tr>').join('') + '<tr class="total"><td colspan="4">合計</td><td class="num">' + V.fm(cs.reduce((a, c) => a + ovfRemain(c), 0)) + '</td></tr></table></div>'; dirDownloadPdf('銀行圈存傳真表_' + d, h); }
+  else if (k === 'di') dirDownloadText('圈存DI檔_' + d, 'txt', cs.map(c => ['H', c.no, c.id, c.name, String(ovfRemain(c)).padStart(10, '0'), V.today().replace(/\//g, '')].join('|')).join('\r\n'));
+  else if (k === 'pay') { const h = cs.map(c => '<div class="ltr"><h1>追繳繳款單</h1><div class="sub">' + (c.slip ? c.slip.no : '') + '</div><table><tr><th>案號</th><td>' + c.no + '</td><th>繳款人</th><td>' + V.esc(c.name) + '</td></tr><tr><th>應繳金額</th><td class="num">NT$ ' + V.fm(c.slip ? c.slip.amt : ovfRemain(c)) + '</td><th>繳款期限</th><td>' + ovfDue(c) + '</td></tr></table></div>').join('<div style="page-break-after:always"></div>'); dirDownloadPdf('追繳繳款單_' + d, h); }
+}
+
+/* =========================================================
+   溢領收回與轉檔
+   ========================================================= */
+const OVR = { tab: 'bank', slipNo: '', execNo: '', cancelKey: '', modalNo: '' };
+function ovrBuild() {
+  V.$('view-overflow-recovery').innerHTML = V.crumb('溢領管理', '溢領收回與轉檔') + '<div class="page-header"><div><div class="page-title">溢領收回與轉檔</div><div class="page-subtitle">銀行圈回勾稽、繳款單入帳、行政執行入帳及錯帳取消，所有入帳即時更新案件餘額與狀態</div></div></div><div class="tabs" id="ovr-tabs">' +
+    [['bank', '銀行圈回勾稽'], ['slip', '繳款單入帳'], ['exec', '行政執行入帳'], ['cancel', '錯帳取消']].map(t => '<div class="tab-item" data-t="' + t[0] + '" onclick="ovrTab(\'' + t[0] + '\')">' + t[1] + '</div>').join('') + '</div><div id="ovr-body"></div>';
+  ovrRender();
+}
+function ovrTab(t) { OVR.tab = t; ovrRender(); }
+function ovrRender() {
+  document.querySelectorAll('#ovr-tabs .tab-item').forEach(e => e.classList.toggle('active', e.dataset.t === OVR.tab));
+  V.$('ovr-body').innerHTML = { bank: ovrBank, slip: ovrSlip, exec: ovrExec, cancel: ovrCancel }[OVR.tab]();
+  if (OVR.tab === 'slip') ovrSlipChk(); if (OVR.tab === 'exec') ovrExecChk();
+}
+function ovrBank() {
+  const F = OVF.feed, ok = F.filter(f => f.st === 'ok'), er = F.filter(f => f.st === 'err'), pd = F.filter(f => f.st === 'posted'), pend = F.filter(f => f.st === 'pending');
+  const sum = F.reduce((a, f) => a + f.amt, 0), L = OVF.cases.filter(c => !c.void), S = 6; OVF.pg.rec = V.clampPage(L.length, OVF.pg.rec, S);
+  return '<div class="card" style="margin-bottom:16px"><div class="section-title">銀行圈回入帳檔勾稽（' + V.today() + '）</div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:12px"><div class="stat-card"><div class="stat-label">本日入帳筆數／金額</div><div class="stat-value" style="font-size:20px">' + F.length + ' 筆</div><div class="stat-sub">NT$ ' + V.fm(sum) + '</div></div><div class="stat-card success"><div class="stat-label">勾稽正確（待轉檔）</div><div class="stat-value" style="font-size:20px">' + ok.length + '</div><div class="stat-sub">NT$ ' + V.fm(ok.reduce((a, f) => a + f.amt, 0)) + '</div></div><div class="stat-card danger"><div class="stat-label">勾稽異常</div><div class="stat-value" style="font-size:20px">' + er.length + '</div><div class="stat-sub">須人工處理</div></div><div class="stat-card info"><div class="stat-label">已轉檔入帳</div><div class="stat-value" style="font-size:20px">' + pd.length + '</div><div class="stat-sub">未勾稽 ' + pend.length + ' 筆</div></div></div>' +
+    '<div class="table-wrapper"><table class="data-table"><thead><tr><th>入帳序號</th><th>案號</th><th>身分證字號</th><th style="text-align:right">金額</th><th>勾稽結果</th></tr></thead><tbody>' + F.map(f => '<tr><td>' + f.ref + '</td><td>' + f.no + '</td><td>' + V.mask(f.id) + '</td><td style="text-align:right">' + V.fm(f.amt) + '</td><td>' + ({ pending: V.badge('secondary', '待勾稽'), ok: V.badge('success', '正確'), err: V.badge('danger', f.msg), posted: V.badge('info', '已轉檔入帳') }[f.st]) + '</td></tr>').join('') + '</tbody></table></div><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px"><button class="btn btn-primary btn-sm" onclick="ovrReconcile()">立即執行勾稽</button><button class="btn btn-gold btn-sm" onclick="ovrPostFeed()">執行繳回金額轉檔</button></div></div>' +
+    '<div class="table-card"><div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center"><div class="card-title">溢領收回彙整表（共 ' + L.length + ' 筆）</div><button class="btn btn-outline btn-sm" onclick="ovrXlsx()">匯出 Excel</button></div><div class="table-wrapper"><table class="data-table"><thead><tr><th>案號</th><th>領受人</th><th style="text-align:right">溢領金額</th><th style="text-align:right">已收回</th><th style="text-align:right">未收回</th><th>狀態</th><th>操作</th></tr></thead><tbody>' +
+    L.slice((OVF.pg.rec - 1) * S, OVF.pg.rec * S).map(c => '<tr><td>' + c.no + '</td><td>' + V.esc(c.name) + '</td><td style="text-align:right">' + V.fm(c.amount) + '</td><td style="text-align:right">' + V.fm(ovfRec(c)) + '</td><td style="text-align:right;font-weight:700">' + V.fm(ovfRemain(c)) + '</td><td>' + V.badge(OVF_STAT_CLS[ovfStat(c)], ovfStat(c)) + '</td><td><button class="btn btn-sm btn-outline" onclick="ovrDetail(\'' + c.no + '\')">明細</button> ' + (ovfRemain(c) > 0 ? '<button class="btn btn-sm btn-primary" onclick="ovrOpen(\'' + c.no + '\')">收回登錄</button>' : '') + '</td></tr>').join('') + '</tbody></table></div><div class="pagination"><div class="pagination-info">' + V.pagerInfo(L.length, OVF.pg.rec, S) + '</div><div class="pagination-controls">' + V.pagerHtml(L.length, OVF.pg.rec, S, 'ovrPage') + '</div></div></div>';
+}
+function ovrPage(p) { OVF.pg.rec = p; ovrRender(); }
+function ovrXlsx() { dirDownloadXlsx('溢領收回彙整表_' + V.today().replace(/\//g, ''), [['案號', '姓名', '身分證字號', '溢領金額', '已收回', '未收回', '狀態']].concat(OVF.cases.filter(c => !c.void).map(c => [c.no, c.name, c.id, c.amount, ovfRec(c), ovfRemain(c), ovfStat(c)])), '收回彙整', [16, 12, 16, 12, 12, 12, 12]); }
+function ovrReconcile() {
+  const pend = OVF.feed.filter(f => f.st === 'pending'); if (!pend.length) { showToast('info', '無待勾稽資料', '所有入帳資料均已勾稽'); return; }
+  const carry = {}; pend.forEach(f => { const c = ovfFind(f.no); let m = ''; if (!c || c.void) m = '查無此案號'; else if (c.id !== f.id) m = '身分證字號與案件不符'; else if (ovfRemain(c) <= 0) m = '案件已收回，不應再有入帳'; else if (f.amt > ovfRemain(c) - (carry[f.no] || 0)) m = '入帳金額超過未收回餘額 ' + V.fm(ovfRemain(c)); if (m) { f.st = 'err'; f.msg = m; } else { f.st = 'ok'; carry[f.no] = (carry[f.no] || 0) + f.amt; } });
+  V.audit('DATA-R', '溢領管理', '銀行圈回入帳勾稽', V.today(), '-', '正確 ' + OVF.feed.filter(f => f.st === 'ok').length + ' 筆，異常 ' + OVF.feed.filter(f => f.st === 'err').length + ' 筆'); ovrRender(); showToast('success', '勾稽完成', '正確 ' + OVF.feed.filter(f => f.st === 'ok').length + ' 筆，異常 ' + OVF.feed.filter(f => f.st === 'err').length + ' 筆');
+}
+function ovrPostFeed() {
+  if (!V.need('overflow-recovery', 2, '轉檔入帳')) return; const ok = OVF.feed.filter(f => f.st === 'ok'); if (!ok.length) { showToast('error', '無可轉檔資料', OVF.feed.some(f => f.st === 'pending') ? '請先執行「立即執行勾稽」' : '尚無勾稽正確且未轉檔之資料'); return; }
+  if (!confirm('確定將 ' + ok.length + ' 筆勾稽正確資料轉檔入帳（NT$ ' + V.fm(ok.reduce((a, f) => a + f.amt, 0)) + '）？')) return;
+  ok.forEach(f => { ovfPost(ovfFind(f.no), { t: f.date, type: '銀行圈回', amt: f.amt, ref: f.ref, by: '系統轉檔' }); f.st = 'posted'; }); ovfChanged(); showToast('success', '轉檔完成', '已入帳 ' + ok.length + ' 筆；異常 ' + OVF.feed.filter(f => f.st === 'err').length + ' 筆保留待處理');
+}
+function ovrDetail(no) {
+  const c = ovfFind(no), due = ovfDue(c), od = ovfOver(c); let h = '<div class="info-card" style="margin-bottom:12px"><div class="info-row"><div class="info-key">案號</div><div class="info-val">' + c.no + '</div></div><div class="info-row"><div class="info-key">領受人</div><div class="info-val">' + V.esc(c.name) + '（' + V.mask(c.id) + '）</div></div><div class="info-row"><div class="info-key">溢領期間／金額</div><div class="info-val">' + c.from + '～' + c.to + '（' + c.months + ' 個月）／NT$ ' + V.fm(c.amount) + '</div></div><div class="info-row"><div class="info-key">已收回／未收回</div><div class="info-val">NT$ ' + V.fm(ovfRec(c)) + ' ／ <strong>NT$ ' + V.fm(ovfRemain(c)) + '</strong></div></div><div class="info-row"><div class="info-key">狀態</div><div class="info-val">' + V.badge(OVF_STAT_CLS[ovfStat(c)], ovfStat(c)) + (od ? ' ' + V.badge('danger', '逾期 ' + od + ' 日') : '') + '</div></div>' + (c.exec ? '<div class="info-row"><div class="info-key">行政執行</div><div class="info-val">移送日 ' + c.exec.date + '；累計利息 NT$ ' + V.fm(ovfInterest(c)) + '</div></div>' : '') + '</div>';
+  if (c.plan) { let acc = 0, rc = ovfRec(c); h += '<div style="font-weight:700;margin:8px 0">分期繳回計畫</div><table class="data-table"><thead><tr><th>期別</th><th>應繳日</th><th>金額</th><th>繳款狀態</th></tr></thead><tbody>' + c.plan.map((p, i) => { acc += p.amt; const paid = rc >= acc; return '<tr><td>第 ' + (i + 1) + ' 期</td><td>' + p.due + '</td><td>NT$ ' + V.fm(p.amt) + '</td><td>' + (paid ? V.badge('success', '已繳') : p.due < V.today() ? V.badge('danger', '逾期') : V.badge('secondary', '未到期')) + '</td></tr>'; }).join('') + '</tbody></table>'; }
+  h += '<div style="font-weight:700;margin:12px 0 6px">入帳紀錄</div><table class="data-table"><thead><tr><th>入帳日期</th><th>方式</th><th>金額</th><th>單號</th><th>經辦</th><th>狀態</th></tr></thead><tbody>' + (c.pay.length ? c.pay.map(p => '<tr style="' + (p.void ? 'color:#999;text-decoration:line-through' : '') + '"><td>' + p.t + '</td><td>' + p.type + '</td><td>NT$ ' + V.fm(p.amt) + '</td><td>' + (p.ref || '-') + '</td><td>' + V.esc(p.by) + '</td><td>' + (p.void ? '已取消（' + V.esc(p.voidReason) + '）' : '有效') + '</td></tr>').join('') : V.emptyRow(6, '尚無入帳紀錄')) + '</tbody></table>';
+  openDetailModal('溢領案件明細 ' + c.no, h, '溢領案件明細_' + c.no, 'xlsx'); V.$('detail-modal-dl-btn').setAttribute('onclick', "ovrDetXlsx('" + c.no + "')");
+}
+function ovrDetXlsx(no) { const c = ovfFind(no); dirDownloadXlsx('溢領案件明細_' + no, [['入帳日期', '方式', '金額', '單號', '經辦', '狀態']].concat(c.pay.map(p => [p.t, p.type, p.amt, p.ref || '', p.by, p.void ? '已取消' : '有效'])), '入帳紀錄', [12, 12, 12, 18, 12, 10]); }
+/* 收回登錄彈窗 */
+(function () { const m = document.createElement('div'); m.className = 'modal-overlay'; m.id = 'ovr-modal'; m.dataset.v37 = 'dyn'; m.innerHTML = '<div class="modal modal-md"><div class="modal-header"><div class="modal-title" id="ovr-m-title">收回登錄</div><button class="modal-close" onclick="closeModal(\'ovr-modal\')">×</button></div><div class="modal-body"><div id="ovr-m-info" class="info-card" style="margin-bottom:12px"></div><div class="form-row cols-2"><div class="form-group"><label class="form-label">入帳金額 <span class="required">*</span></label><input class="form-control" id="ovr-m-amt" oninput="ovrMChk()"></div><div class="form-group"><label class="form-label">入帳日期 <span class="required">*</span></label><input class="form-control" id="ovr-m-date" oninput="ovrMChk()"></div></div><div class="form-row cols-2"><div class="form-group"><label class="form-label">入帳方式</label><select class="form-control" id="ovr-m-type"><option>銀行圈回</option><option>繳款單</option><option>人工登錄</option></select></div><div class="form-group"><label class="form-label">單號／備註</label><input class="form-control" id="ovr-m-ref"></div></div><div id="ovr-m-err" style="color:var(--danger);font-size:13px;min-height:20px"></div></div><div class="modal-footer"><button class="btn btn-outline" onclick="closeModal(\'ovr-modal\')">取消</button><button class="btn btn-gold" id="ovr-m-ok" onclick="ovrMSave()">確認入帳</button></div></div>'; document.body.appendChild(m); })();
+function ovrOpen(no) { const c = ovfFind(no); OVR.modalNo = no; V.$('ovr-m-title').textContent = '收回登錄 ' + no; V.$('ovr-m-info').innerHTML = V.esc(c.name) + '｜溢領 NT$ ' + V.fm(c.amount) + '｜已收回 NT$ ' + V.fm(ovfRec(c)) + '｜<strong>未收回 NT$ ' + V.fm(ovfRemain(c)) + '</strong>'; V.$('ovr-m-amt').value = ovfRemain(c); V.$('ovr-m-date').value = V.today(); V.$('ovr-m-ref').value = ''; ovrMChk(); openModal('ovr-modal'); }
+function ovrMChk() { const c = ovfFind(OVR.modalNo), a = +V.$('ovr-m-amt').value.replace(/,/g, ''), d = V.$('ovr-m-date').value.trim(); let e = ''; if (!V.$('ovr-m-amt').value.trim() || isNaN(a) || a <= 0 || a !== Math.floor(a)) e = '入帳金額須為大於 0 之整數'; else if (a > ovfRemain(c)) e = '入帳金額（' + V.fm(a) + '）超過未收回餘額 NT$ ' + V.fm(ovfRemain(c)); else if (!V.isDate(d)) e = '入帳日期格式不正確（yyy/mm/dd）'; else if (d > V.today()) e = '入帳日期不得晚於今日'; V.$('ovr-m-err').textContent = e; V.$('ovr-m-ok').disabled = !!e; return !e; }
+function ovrMSave() { if (!V.need('overflow-recovery', 2, '登錄收回')) return; if (!ovrMChk()) return; const c = ovfFind(OVR.modalNo), a = +V.$('ovr-m-amt').value.replace(/,/g, ''); ovfPost(c, { t: V.$('ovr-m-date').value.trim(), type: V.$('ovr-m-type').value, amt: a, ref: V.$('ovr-m-ref').value.trim() }); closeModal('ovr-modal'); showToast('success', '入帳成功', c.no + ' 已入帳 NT$ ' + V.fm(a) + '，目前狀態：' + ovfStat(c)); ovfChanged(); }
+/* 繳款單入帳 */
+function ovrSlip() {
+  const L = OVF.cases.filter(c => !c.void && c.slip && ovfRemain(c) > 0); if (!L.length) return '<div class="card" style="text-align:center;padding:30px;color:var(--text-secondary)">目前沒有已產製繳款單且尚有未收回餘額之案件。請先至「追繳與圈存函表」產製繳款單。</div>';
+  if (!L.find(c => c.no === OVR.slipNo)) OVR.slipNo = L[0].no; const c = ovfFind(OVR.slipNo);
+  return '<div class="card"><div class="section-title">繳款單入帳</div><div class="form-row cols-3"><div class="form-group"><label class="form-label">案件 <span class="required">*</span></label><select class="form-control" id="ovrs-case" onchange="OVR.slipNo=this.value;ovrRender()">' + L.map(x => '<option value="' + x.no + '" ' + (x.no === OVR.slipNo ? 'selected' : '') + '>' + x.no + ' ' + x.name + '</option>').join('') + '</select></div><div class="form-group"><label class="form-label">繳款單編號 <span class="required">*</span></label><input class="form-control" id="ovrs-no" value="' + c.slip.no + '" oninput="ovrSlipChk()"></div><div class="form-group"><label class="form-label">入帳日期 <span class="required">*</span></label><input class="form-control" id="ovrs-date" value="' + V.today() + '" oninput="ovrSlipChk()"></div></div><div class="form-row cols-3"><div class="form-group"><label class="form-label">繳款單應繳金額</label><input class="form-control" readonly style="background:#f1f3f5" value="NT$ ' + V.fm(c.slip.amt) + '"></div><div class="form-group"><label class="form-label">未收回餘額</label><input class="form-control" readonly style="background:#f1f3f5" value="NT$ ' + V.fm(ovfRemain(c)) + '"></div><div class="form-group"><label class="form-label">實際入帳金額 <span class="required">*</span></label><input class="form-control" id="ovrs-amt" value="' + Math.min(c.slip.amt, ovfRemain(c)) + '" oninput="ovrSlipChk()"></div></div><label id="ovrs-ack-w" style="display:none;font-size:13px;color:#b7791f"><input type="checkbox" id="ovrs-ack" onchange="ovrSlipChk()"> 入帳金額與繳款單金額不同，已確認原因無誤</label><div id="ovrs-err" style="color:var(--danger);font-size:13px;min-height:22px;margin:6px 0"></div><div style="text-align:right"><button class="btn btn-gold" id="ovrs-ok" onclick="ovrSlipSave()">確認入帳</button></div></div>';
+}
+function ovrSlipChk() {
+  const c = ovfFind(OVR.slipNo); if (!c || !V.$('ovrs-amt')) return false; const a = +V.$('ovrs-amt').value.replace(/,/g, ''), d = V.$('ovrs-date').value.trim(), n = V.$('ovrs-no').value.trim(); let e = '';
+  const diff = a !== c.slip.amt && !isNaN(a); V.$('ovrs-ack-w').style.display = diff ? 'block' : 'none';
+  if (n !== c.slip.no) e = '繳款單編號與案件 ' + c.no + ' 不符（應為 ' + c.slip.no + '）'; else if (!V.$('ovrs-amt').value.trim() || isNaN(a) || a <= 0 || a !== Math.floor(a)) e = '入帳金額須為大於 0 之整數'; else if (a > ovfRemain(c)) e = '入帳金額超過未收回餘額 NT$ ' + V.fm(ovfRemain(c)); else if (!V.isDate(d) || d > V.today()) e = '入帳日期格式不正確或晚於今日'; else if (diff && !V.$('ovrs-ack').checked) e = '金額與繳款單不符，請勾選確認後再入帳';
+  V.$('ovrs-err').textContent = e; V.$('ovrs-ok').disabled = !!e; V.$('ovrs-ok').style.opacity = e ? .5 : 1; return !e;
+}
+function ovrSlipSave() { if (!V.need('overflow-recovery', 2, '繳款單入帳')) return; if (!ovrSlipChk()) return; const c = ovfFind(OVR.slipNo), a = +V.$('ovrs-amt').value.replace(/,/g, ''); ovfPost(c, { t: V.$('ovrs-date').value.trim(), type: '繳款單', amt: a, ref: c.slip.no }); showToast('success', '入帳成功', c.no + ' 已入帳 NT$ ' + V.fm(a) + '，狀態：' + ovfStat(c)); ovfChanged(); }
+/* 行政執行入帳 */
+function ovrExec() {
+  const L = OVF.cases.filter(c => !c.void && ovfRemain(c) > 0 && c.docDate); if (!L.length) return '<div class="card" style="text-align:center;padding:30px;color:var(--text-secondary)">目前沒有已發函且尚有未收回餘額之案件。</div>';
+  if (!L.find(c => c.no === OVR.execNo)) OVR.execNo = L[0].no; const c = ovfFind(OVR.execNo), od = ovfOver(c);
+  return '<div class="card"><div class="section-title">行政執行入帳</div><div class="form-row cols-3"><div class="form-group"><label class="form-label">案件 <span class="required">*</span></label><select class="form-control" onchange="OVR.execNo=this.value;ovrRender()">' + L.map(x => '<option value="' + x.no + '" ' + (x.no === OVR.execNo ? 'selected' : '') + '>' + x.no + ' ' + x.name + '</option>').join('') + '</select></div><div class="form-group"><label class="form-label">未收回本金</label><input class="form-control" readonly style="background:#f1f3f5" value="NT$ ' + V.fm(ovfRemain(c)) + '"></div><div class="form-group"><label class="form-label">繳款期限／逾期</label><input class="form-control" readonly style="background:#f1f3f5" value="' + ovfDue(c) + (od ? '（逾期 ' + od + ' 日）' : '（未逾期）') + '"></div></div>' +
+    (c.exec ? '<div class="info-card" style="margin-bottom:12px">已於 <strong>' + c.exec.date + '</strong> 移送行政執行｜計息 ' + Math.max(0, dDays(c.exec.date, V.today())) + ' 日｜累計利息 <strong>NT$ ' + V.fm(ovfInterest(c)) + '</strong>（年息 ' + (OVF.rate * 100).toFixed(1) + '%，不抵本金）</div><div class="form-row cols-3"><div class="form-group"><label class="form-label">入帳來源</label><select class="form-control" id="ovre-src"><option>介接行政執行署</option><option>人工輸入</option></select></div><div class="form-group"><label class="form-label">入帳金額 <span class="required">*</span></label><input class="form-control" id="ovre-amt" oninput="ovrExecChk()" value="' + Math.min(50000, ovfRemain(c)) + '"></div><div class="form-group"><label class="form-label">入帳日期 <span class="required">*</span></label><input class="form-control" id="ovre-date" oninput="ovrExecChk()" value="' + V.today() + '"></div></div><div id="ovre-err" style="color:var(--danger);font-size:13px;min-height:22px"></div><div style="display:flex;justify-content:flex-end;gap:8px"><button class="btn btn-outline" onclick="ovrExecCalc()">產製利息計算單</button><button class="btn btn-gold" id="ovre-ok" onclick="ovrExecSave()">確認入帳</button></div>'
+      : '<div class="info-card warning" style="margin-bottom:12px">此案件尚未移送行政執行。' + (od > 0 ? '已逾期 ' + od + ' 日，得辦理移送。' : '尚未逾繳款期限，不得移送。') + '</div><div style="text-align:right"><button class="btn btn-gold" onclick="ovrExecMove()">移送行政執行</button></div>') + '</div>';
+}
+function ovrExecMove() { if (!V.need('overflow-recovery', 2, '移送行政執行')) return; const c = ovfFind(OVR.execNo); if (ovfOver(c) <= 0) { showToast('error', '不得移送', '案件尚未逾繳款期限（' + ovfDue(c) + '），不得移送行政執行'); return; } if (!confirm('確定將 ' + c.no + ' 移送行政執行？')) return; c.exec = { date: V.today() }; V.audit('DATA-U', '溢領管理', '移送行政執行', c.no, ovfStat(Object.assign({}, c, { exec: null })), '行政執行中', ['未收回本金：NT$ ' + V.fm(ovfRemain(c))]); showToast('success', '已移送行政執行', c.no + ' 自 ' + V.today() + ' 起計息'); ovfChanged(); }
+function ovrExecChk() { const c = ovfFind(OVR.execNo); if (!c || !V.$('ovre-amt')) return false; const a = +V.$('ovre-amt').value.replace(/,/g, ''), d = V.$('ovre-date').value.trim(); let e = ''; if (!V.$('ovre-amt').value.trim() || isNaN(a) || a <= 0 || a !== Math.floor(a)) e = '入帳金額須為大於 0 之整數'; else if (a > ovfRemain(c)) e = '入帳金額超過未收回本金 NT$ ' + V.fm(ovfRemain(c)); else if (!V.isDate(d) || d > V.today() || d < c.exec.date) e = '入帳日期須介於移送日 ' + c.exec.date + ' 與今日之間'; V.$('ovre-err').textContent = e; V.$('ovre-ok').disabled = !!e; V.$('ovre-ok').style.opacity = e ? .5 : 1; return !e; }
+function ovrExecSave() { if (!V.need('overflow-recovery', 2, '行政執行入帳')) return; if (!ovrExecChk()) return; const c = ovfFind(OVR.execNo), a = +V.$('ovre-amt').value.replace(/,/g, ''); ovfPost(c, { t: V.$('ovre-date').value.trim(), type: '行政執行', amt: a, ref: V.$('ovre-src').value }); showToast('success', '入帳成功', c.no + ' 已入帳 NT$ ' + V.fm(a) + '，狀態：' + ovfStat(c)); ovfChanged(); }
+function ovrExecCalc() { const c = ovfFind(OVR.execNo), d = Math.max(0, dDays(c.exec.date, V.today())), h = '<div class="ltr"><h1>行政執行利息計算單</h1><div class="sub">' + c.no + '</div><table><tr><th>領受人</th><td>' + V.esc(c.name) + '</td><th>移送日</th><td>' + c.exec.date + '</td></tr><tr><th>未收回本金</th><td class="num">' + V.fm(ovfRemain(c)) + '</td><th>計息天數</th><td>' + d + '</td></tr><tr><th>年利率</th><td>' + (OVF.rate * 100).toFixed(1) + '%</td><th>應付利息</th><td class="num">' + V.fm(ovfInterest(c)) + '</td></tr></table><div class="note">利息 ＝ 本金 × 年利率 × 天數 ÷ 365，四捨五入至整數。</div></div>'; dirDownloadPdf('行政執行利息計算單_' + c.no, h); }
+/* 錯帳取消 */
+function ovrCancel() {
+  const all = []; OVF.cases.forEach(c => c.pay.forEach((p, i) => { if (!p.void) all.push({ k: c.no + '|' + i, c, p }); })); const vd = []; OVF.cases.forEach(c => c.pay.forEach(p => { if (p.void) vd.push({ c, p }); }));
+  if (!all.find(x => x.k === OVR.cancelKey)) OVR.cancelKey = all.length ? all[0].k : '';
+  return '<div class="card" style="margin-bottom:16px"><div class="section-title">錯帳取消</div>' + (all.length ? '<div class="form-group"><label class="form-label">選擇欲取消之入帳紀錄 <span class="required">*</span></label><select class="form-control" id="ovrc-sel" onchange="OVR.cancelKey=this.value">' + all.map(x => '<option value="' + x.k + '" ' + (x.k === OVR.cancelKey ? 'selected' : '') + '>' + x.c.no + '｜' + x.c.name + '｜NT$ ' + V.fm(x.p.amt) + '｜' + x.p.t + '｜' + x.p.type + '</option>').join('') + '</select></div><div class="form-group"><label class="form-label">取消原因 <span class="required">*</span>（至少 5 字）</label><textarea class="form-control" id="ovrc-why" rows="2" oninput="V.$(\'ovrc-cnt\').textContent=this.value.trim().length"></textarea><div style="font-size:11px;color:var(--text-secondary)">已輸入 <span id="ovrc-cnt">0</span> 字</div></div><div style="text-align:right"><button class="btn btn-danger btn-sm" style="background:var(--danger);color:#fff" onclick="ovrCancelSave()">確認取消入帳</button></div>' : '<div style="color:var(--text-secondary);padding:12px">目前沒有可取消之入帳紀錄。</div>') + '</div>' +
+    '<div class="table-card"><div style="padding:14px 16px;border-bottom:1px solid var(--border)"><div class="card-title">錯帳取消紀錄（共 ' + vd.length + ' 筆）</div></div><table class="data-table"><thead><tr><th>案號</th><th>入帳日期</th><th>金額</th><th>取消人</th><th>取消時間</th><th>原因</th></tr></thead><tbody>' + (vd.length ? vd.map(x => '<tr><td>' + x.c.no + '</td><td>' + x.p.t + '</td><td>NT$ ' + V.fm(x.p.amt) + '</td><td>' + V.esc(x.p.voidBy) + '</td><td>' + x.p.voidAt + '</td><td>' + V.esc(x.p.voidReason) + '</td></tr>').join('') : V.emptyRow(6, '尚無取消紀錄')) + '</tbody></table></div>';
+}
+function ovrCancelSave() {
+  if (!V.need('overflow-recovery', 3, '取消入帳（需單位管理者核准層級）')) return; const k = V.$('ovrc-sel').value, why = V.$('ovrc-why').value.trim(); if (why.length < 5) { showToast('error', '請填寫取消原因', '取消原因至少 5 個字'); return; }
+  const [no, i] = k.split('|'), c = ovfFind(no), p = c.pay[+i]; if (!confirm('確定取消 ' + no + ' 於 ' + p.t + ' 之入帳 NT$ ' + V.fm(p.amt) + '？\n取消後案件餘額將恢復。')) return;
+  const b = ovfStat(c); p.void = true; p.voidBy = V.user(); p.voidAt = V.nowT(); p.voidReason = why; if (p.ref && /^BK-/.test(p.ref)) { const f = OVF.feed.find(x => x.ref === p.ref); if (f) f.st = 'pending'; }
+  V.audit('DATA-D', '溢領管理', '錯帳取消', c.no, b + '；已收回 ' + V.fm(ovfRec(c) + p.amt), ovfStat(c) + '；已收回 ' + V.fm(ovfRec(c)), ['取消金額：NT$ ' + V.fm(p.amt), '原因：' + why]); showToast('success', '已取消入帳', c.no + ' 餘額恢復為 NT$ ' + V.fm(ovfRemain(c)) + '，狀態：' + ovfStat(c)); ovfChanged();
+}
+
+/* =========================================================
+   統計查詢與檢核
+   ========================================================= */
+const OVT = { f: { from: '113/01/01', to: '', st: '全部', who: '全部', q: '' } };
+function ovtBuild() {
+  OVT.f.to = V.today(); const who = ['全部'].concat([...new Set(OVF.cases.map(c => c.handler))]);
+  V.$('view-overflow-stats').innerHTML = V.crumb('溢領管理', '統計查詢與檢核') + '<div class="page-header"><div><div class="page-title">統計查詢與檢核</div><div class="page-subtitle">依查詢條件統計案件收回進度，並可匯出報表</div></div></div>' +
+    '<div class="card" style="margin-bottom:16px"><div class="filter-row" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end"><div class="filter-group"><div class="filter-label">建置日期起</div><input class="filter-control" id="ovt-from" value="' + OVT.f.from + '"></div><div class="filter-group"><div class="filter-label">建置日期迄</div><input class="filter-control" id="ovt-to" value="' + OVT.f.to + '"></div><div class="filter-group"><div class="filter-label">案件狀態</div><select class="filter-control" id="ovt-st">' + ['全部', '未收回', '部分收回', '分期繳回中', '行政執行中', '已收回'].map(s => '<option>' + s + '</option>').join('') + '</select></div><div class="filter-group"><div class="filter-label">承辦人</div><select class="filter-control" id="ovt-who">' + who.map(w => '<option>' + w + '</option>').join('') + '</select></div><div class="filter-group" style="flex:1;min-width:150px"><div class="filter-label">關鍵字</div><input class="filter-control" id="ovt-q" style="width:100%" placeholder="案號／姓名／身分證" onkeydown="if(event.key===\'Enter\')ovtQuery()"></div><button class="btn btn-primary btn-sm" onclick="ovtQuery()">查詢</button><button class="btn btn-outline btn-sm" onclick="ovtReset()">重設</button></div></div><div id="ovt-body"></div>';
+  ovtRender();
+}
+function ovtSync() { const m = { from: 'ovt-from', to: 'ovt-to', st: 'ovt-st', who: 'ovt-who', q: 'ovt-q' }; Object.keys(m).forEach(k => OVT.f[k] = V.$(m[k]).value.trim()); }
+function ovtQuery() { ovtSync(); const f = OVT.f; if ((f.from && !V.isDate(f.from)) || (f.to && !V.isDate(f.to))) { showToast('error', '日期格式錯誤', '請輸入民國 yyy/mm/dd'); return; } if (f.from && f.to && f.from > f.to) { showToast('error', '日期區間錯誤', '起日不得晚於迄日'); return; } OVF.pg.stat = 1; ovtRender(); showToast('success', '查詢完成', '符合條件共 ' + ovtList().length + ' 筆'); }
+function ovtReset() { OVT.f = { from: '113/01/01', to: V.today(), st: '全部', who: '全部', q: '' }; const m = { from: 'ovt-from', to: 'ovt-to', st: 'ovt-st', who: 'ovt-who', q: 'ovt-q' }; Object.keys(m).forEach(k => V.$(m[k]).value = OVT.f[k]); OVF.pg.stat = 1; ovtRender(); }
+function ovtList() { const f = OVT.f, q = (f.q || '').toLowerCase(); return OVF.cases.filter(c => !c.void && (!f.from || c.created >= f.from) && (!f.to || c.created <= f.to) && (f.st === '全部' || ovfStat(c) === f.st) && (f.who === '全部' || c.handler === f.who) && (!q || (c.no + c.name + c.id).toLowerCase().includes(q))); }
+function ovtPage(p) { OVF.pg.stat = p; ovtRender(); }
+function ovtRender() {
+  const b = V.$('ovt-body'); if (!b) return; const L = ovtList(), S = 6; OVF.pg.stat = V.clampPage(L.length, OVF.pg.stat, S);
+  const sum = a => a.reduce((x, c) => x + c.amount, 0), done = L.filter(c => ovfRemain(c) <= 0), part = L.filter(c => ovfRemain(c) > 0 && ovfRec(c) > 0), open = L.filter(c => ovfRec(c) === 0), odue = L.filter(c => ovfOver(c) > 0);
+  const rate = sum(L) ? Math.round(L.reduce((a, c) => a + ovfRec(c), 0) / sum(L) * 100) : 0;
+  const mon = {}; L.forEach(c => { const k = c.created.slice(0, 6); mon[k] = (mon[k] || 0) + 1; }); const ks = Object.keys(mon).sort(), mx = Math.max(1, ...ks.map(k => mon[k]));
+  b.innerHTML = '<div class="stats-grid" style="margin-bottom:16px"><div class="stat-card"><div class="stat-label">案件總數</div><div class="stat-value">' + L.length + '</div><div class="stat-sub">溢領金額 NT$ ' + V.fm(sum(L)) + '</div></div><div class="stat-card success"><div class="stat-label">已收回（結案）</div><div class="stat-value">' + done.length + '</div><div class="stat-sub">NT$ ' + V.fm(sum(done)) + '</div></div><div class="stat-card warning"><div class="stat-label">部分／分期／執行中</div><div class="stat-value">' + part.length + '</div><div class="stat-sub">未收回 NT$ ' + V.fm(part.reduce((a, c) => a + ovfRemain(c), 0)) + '</div></div><div class="stat-card danger"><div class="stat-label">完全未收回</div><div class="stat-value">' + open.length + '</div><div class="stat-sub">NT$ ' + V.fm(sum(open)) + '｜逾期 ' + odue.length + ' 件</div></div><div class="stat-card info"><div class="stat-label">收回率（金額）</div><div class="stat-value">' + rate + '%</div><div class="stat-sub">已收回 NT$ ' + V.fm(L.reduce((a, c) => a + ovfRec(c), 0)) + '</div></div></div>' +
+    '<div class="card" style="margin-bottom:16px"><div class="section-title">各月建置案件數</div>' + (ks.length ? '<div style="display:flex;align-items:flex-end;gap:14px;height:150px;padding:8px 4px">' + ks.map(k => '<div style="flex:1;max-width:70px;text-align:center"><div style="font-size:12px;font-weight:700">' + mon[k] + '</div><div style="height:' + Math.round(mon[k] / mx * 100) + 'px;background:linear-gradient(180deg,var(--primary),#2c5282);border-radius:4px 4px 0 0"></div><div style="font-size:11px;margin-top:4px">' + k + '</div></div>').join('') + '</div>' : '<div style="color:var(--text-secondary);padding:20px;text-align:center">無資料</div>') + '</div>' +
+    '<div class="table-card"><div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center"><div class="card-title">案件清單（共 ' + L.length + ' 筆）</div><div style="display:flex;gap:8px"><button class="btn btn-outline btn-sm" onclick="ovtXlsx()">匯出 Excel</button><button class="btn btn-outline btn-sm" onclick="ovtPdf()">匯出 PDF</button></div></div><div class="table-wrapper"><table class="data-table"><thead><tr><th>案號</th><th>領受人</th><th style="text-align:right">溢領金額</th><th style="text-align:right">已收回</th><th style="text-align:right">未收回</th><th>狀態</th><th>逾期</th><th>承辦人</th><th>操作</th></tr></thead><tbody>' +
+    (L.length ? L.slice((OVF.pg.stat - 1) * S, OVF.pg.stat * S).map(c => '<tr><td>' + c.no + '</td><td>' + V.esc(c.name) + '</td><td style="text-align:right">' + V.fm(c.amount) + '</td><td style="text-align:right">' + V.fm(ovfRec(c)) + '</td><td style="text-align:right;font-weight:700">' + V.fm(ovfRemain(c)) + '</td><td>' + V.badge(OVF_STAT_CLS[ovfStat(c)], ovfStat(c)) + '</td><td>' + (ovfOver(c) ? V.badge('danger', ovfOver(c) + ' 日') : '-') + '</td><td>' + V.esc(c.handler) + '</td><td><button class="btn btn-sm btn-outline" onclick="ovrDetail(\'' + c.no + '\')">明細</button></td></tr>').join('') : V.emptyRow(9)) + '</tbody></table></div><div class="pagination"><div class="pagination-info">' + V.pagerInfo(L.length, OVF.pg.stat, S) + '</div><div class="pagination-controls">' + V.pagerHtml(L.length, OVF.pg.stat, S, 'ovtPage') + '</div></div></div>';
+}
+function ovtRows() { return ovtList().map(c => [c.no, c.name, c.id, c.from + '～' + c.to, c.amount, ovfRec(c), ovfRemain(c), ovfStat(c), ovfOver(c), c.handler]); }
+function ovtXlsx() { dirDownloadXlsx('溢領案件統計_' + V.today().replace(/\//g, ''), [['案號', '姓名', '身分證字號', '溢領期間', '溢領金額', '已收回', '未收回', '狀態', '逾期天數', '承辦人']].concat(ovtRows()), '案件統計', [16, 12, 16, 18, 12, 12, 12, 12, 10, 10]); }
+function ovtPdf() { const h = '<div class="ltr"><h1>溢領案件統計表</h1><div class="sub">統計日期 ' + V.today() + '</div><table><tr><th>案號</th><th>姓名</th><th>溢領金額</th><th>已收回</th><th>未收回</th><th>狀態</th></tr>' + ovtRows().map(r => '<tr><td>' + r[0] + '</td><td>' + V.esc(r[1]) + '</td><td class="num">' + V.fm(r[4]) + '</td><td class="num">' + V.fm(r[5]) + '</td><td class="num">' + V.fm(r[6]) + '</td><td>' + r[7] + '</td></tr>').join('') + '</table></div>'; dirDownloadPdf('溢領案件統計表_' + V.today().replace(/\//g, ''), h); }
+
+/* ---------- 分派、儀表板連動 ---------- */
+const OVF_BUILT = {};
+function ovfRender(id) {
+  const B = { 'overflow-single': [ovsBuild, ovsEdit], 'overflow-batch': [ovbBuild, ovbRender], 'overflow-docs': [ovdBuild, ovdRender], 'overflow-recovery': [ovrBuild, ovrRender], 'overflow-stats': [ovtBuild, ovtRender] }[id]; if (!B) return;
+  if (!OVF_BUILT[id]) { OVF_BUILT[id] = 1; B[0](); } else B[1]();
+}
+dOvf = function () { const C = OVF.cases.filter(c => !c.void); let done = 0, part = 0, open = 0, oa = 0, pa = 0; C.forEach(c => { const r = ovfRemain(c); if (r <= 0) done++; else if (ovfRec(c) > 0) { part++; pa += r; } else { open++; oa += r; } }); return { total: C.length, done, part, open, openAmt: oa, partAmt: pa }; };
+(function () { const _n = navigateTo; navigateTo = function (id) { _n(id); if (/^overflow-/.test(id) && currentView === id) ovfRender(id); if (id === 'admin-audit' && typeof auQuery === 'function') { try { auQuery(1); } catch (e) { } } }; })();
+
+/* =========================================================
+   使用者管理（改由 PM.users 驅動，與「權限設定」頁同源）
+   ========================================================= */
+const USR = { rows: [], f: { q: '', role: '全部', dept: '全部', st: '全部' }, pg: 1, edit: null };
+const USR_BADGE = { ADM: 'danger', UNIT: 'primary', HOST: 'warning', STAFF: 'info', QRY: 'secondary', AUD: 'success' };
+const usrRoleName = k => (PM.roles.find(r => r[0] === k) || [k, k])[1];
+const usrRoleKey = n => (PM.roles.find(r => r[1] === n) || [n])[0];
+(function usrInit() {
+  const old = {}; document.querySelectorAll('#view-admin-users tbody tr').forEach(r => { const c = r.children; old[c[0].textContent.trim()] = { mid: c[1].textContent.trim(), last: c[4].textContent.trim(), st: c[5].textContent.trim() }; });
+  Object.keys(PM.users).forEach((n, i) => {
+    const u = PM.users[n], o = old[n]; const id = o && /^[A-Z]\d{3}\*{3}\d{3}$/.test(o.mid) ? o.mid.slice(0, 4) + '456' + o.mid.slice(7) : String.fromCharCode(65 + (i * 7) % 26) + (1 + i % 2) + String((i + 3) * 7919 * 13 % 1e7).padStart(7, '0');
+    USR.rows.push({ name: n, id, dept: u.dept, role: u.role, email: 'user' + V.pad(i + 1) + '@pension.gov.tw', last: o ? o.last : '113/12/0' + (1 + i % 9) + ' ' + V.pad(8 + i % 9) + ':' + V.pad((i * 13) % 60), st: o ? o.st : '啟用' });
+  });
+  const w = USR.rows.find(r => r.name === '王大明'); if (w) w.email = 'wang.daming@pension.gov.tw';
+  const v = V.$('view-admin-users'); v.querySelector('.filter-bar').outerHTML = '<div class="filter-bar"><div class="filter-row"><div class="filter-group"><div class="filter-label">搜尋</div><input type="text" class="filter-control" id="usr-q" placeholder="姓名或身分證字號" onkeydown="if(event.key===\'Enter\')usrQuery()"></div><div class="filter-group"><div class="filter-label">角色</div><select class="filter-control" id="usr-role"><option>全部</option>' + PM.roles.map(r => '<option>' + r[1] + '</option>').join('') + '</select></div><div class="filter-group"><div class="filter-label">單位</div><select class="filter-control" id="usr-dept"></select></div><div class="filter-group"><div class="filter-label">狀態</div><select class="filter-control" id="usr-st"><option>全部</option><option>啟用</option><option>停用</option></select></div><button class="btn btn-primary btn-sm" style="align-self:flex-end" onclick="usrQuery()">查詢</button><button class="btn btn-outline btn-sm" style="align-self:flex-end" onclick="usrReset()">重設</button></div></div>';
+  v.querySelector('.table-card').innerHTML = '<div class="table-wrapper"><table class="data-table"><thead><tr><th>姓名</th><th>身分證字號</th><th>單位</th><th>角色</th><th>最後登入</th><th>狀態</th><th>操作</th></tr></thead><tbody id="usr-tb"></tbody></table></div><div class="pagination"><div class="pagination-info" id="usr-info"></div><div class="pagination-controls" id="usr-pg"></div></div>';
+})();
+const USR_DEPTS = () => [...new Set(['給付科', '稽核科', '人事室', '資訊室', '企劃科', '會計室'].concat(Object.values(PM.users).map(u => u.dept)))];
+function usrScope() { const u = PM.users[PERM_CUR]; return u && u.role === 'UNIT' ? u.dept : null; }
+function usrList() { const f = USR.f, q = f.q.toLowerCase(), sc = usrScope(); return USR.rows.filter(r => (!sc || r.dept === sc) && (!q || r.name.toLowerCase().includes(q) || r.id.toLowerCase().includes(q)) && (f.role === '全部' || usrRoleName(r.role) === f.role) && (f.dept === '全部' || r.dept === f.dept) && (f.st === '全部' || r.st === f.st)); }
+function usrRender() {
+  const d = V.$('usr-dept'); if (d && d.dataset.n !== String(USR_DEPTS().length)) { d.innerHTML = '<option>全部</option>' + USR_DEPTS().map(x => '<option>' + x + '</option>').join(''); d.dataset.n = USR_DEPTS().length; d.value = USR.f.dept; }
+  const L = usrList(), S = 8; USR.pg = V.clampPage(L.length, USR.pg, S);
+  V.$('usr-tb').innerHTML = L.length ? L.slice((USR.pg - 1) * S, USR.pg * S).map(r => { const on = r.st === '啟用', bi = r.name === '系統管理員'; return '<tr><td><strong>' + V.esc(r.name) + '</strong></td><td class="masked">' + V.mask(r.id) + '</td><td>' + r.dept + '</td><td>' + V.badge(USR_BADGE[r.role], usrRoleName(r.role)) + '</td><td>' + r.last + '</td><td>' + V.badge(on ? 'success' : 'danger', r.st) + '</td><td><button class="btn btn-sm btn-outline" onclick="openUserEditModal(\'' + r.name + '\')">編輯</button> <button class="btn btn-sm btn-outline" onclick="pmGoUser(\'' + r.name + '\')">權限</button> ' + (bi ? '' : '<button class="btn btn-sm ' + (on ? 'btn-danger' : 'btn-success') + '" onclick="toggleUserStatus(this,\'' + r.name + '\')">' + (on ? '停用' : '啟用') + '</button>') + '</td></tr>'; }).join('') : V.emptyRow(7);
+  V.$('usr-info').textContent = V.pagerInfo(L.length, USR.pg, S); V.$('usr-pg').innerHTML = V.pagerHtml(L.length, USR.pg, S, 'usrPage');
+}
+function usrPage(p) { USR.pg = p; usrRender(); }
+function usrQuery() { USR.f = { q: V.$('usr-q').value.trim(), role: V.$('usr-role').value, dept: V.$('usr-dept').value, st: V.$('usr-st').value }; USR.pg = 1; usrRender(); showToast('success', '查詢完成', '符合條件共 ' + usrList().length + ' 筆'); }
+function usrReset() { USR.f = { q: '', role: '全部', dept: '全部', st: '全部' }; ['q', 'role', 'dept', 'st'].forEach(k => V.$('usr-' + k).value = USR.f[k] || '全部'); V.$('usr-q').value = ''; USR.pg = 1; usrRender(); }
+/* 編輯／新增彈窗 */
+(function () {
+  const m = V.$('user-edit-modal'), b = m.querySelector('.modal-body');
+  b.innerHTML = '<div class="form-row cols-2"><div class="form-group"><label class="form-label">姓名 <span class="required">*</span></label><input class="form-control" id="u-name" maxlength="10"></div><div class="form-group"><label class="form-label">身分證字號 <span class="required">*</span></label><input class="form-control" id="u-id" maxlength="10" oninput="this.value=this.value.toUpperCase()"></div></div><div class="form-row cols-2"><div class="form-group"><label class="form-label">所屬單位 <span class="required">*</span></label><select class="form-control" id="u-dept"></select></div><div class="form-group"><label class="form-label">角色 <span class="required">*</span></label><select class="form-control" id="u-role">' + PM.roles.map(r => '<option value="' + r[0] + '">' + r[1] + '</option>').join('') + '</select></div></div><div class="form-row cols-2"><div class="form-group"><label class="form-label">電子郵件 <span class="required">*</span></label><input class="form-control" id="u-email"></div><div class="form-group"><label class="form-label">帳號狀態</label><select class="form-control" id="u-st"><option>啟用</option><option>停用</option></select></div></div><div id="u-err" style="color:var(--danger);font-size:13px;min-height:20px"></div>';
+  m.querySelector('.modal-footer .btn-gold').setAttribute('onclick', 'usrSave()');
+})();
+openUserEditModal = function (name) {
+  const r = name ? USR.rows.find(x => x.name === name) : null; USR.edit = r ? r.name : null; const sc = usrScope();
+  V.$('u-dept').innerHTML = USR_DEPTS().filter(d => !sc || d === sc).map(d => '<option>' + d + '</option>').join('');
+  V.$('user-edit-modal').querySelector('.modal-title').textContent = r ? '編輯使用者：' + r.name : '新增使用者';
+  V.$('u-name').value = r ? r.name : ''; V.$('u-id').value = r ? r.id : ''; V.$('u-dept').value = r ? r.dept : (sc || '給付科'); V.$('u-role').value = r ? r.role : 'STAFF'; V.$('u-email').value = r ? r.email : ''; V.$('u-st').value = r ? r.st : '啟用'; V.$('u-err').textContent = '';
+  const bi = r && r.name === '系統管理員'; ['u-name', 'u-role', 'u-st'].forEach(i => V.$(i).disabled = !!bi); openModal('user-edit-modal');
+};
+function usrSave() {
+  if (!V.need('admin-users', 2, '維護使用者')) return; const E = m => { V.$('u-err').textContent = m; return false; };
+  const name = V.$('u-name').value.trim(), id = V.$('u-id').value.trim().toUpperCase(), dept = V.$('u-dept').value, role = V.$('u-role').value, em = V.$('u-email').value.trim(), st = V.$('u-st').value, old = USR.edit ? USR.rows.find(r => r.name === USR.edit) : null;
+  if (!/^[\u4e00-\u9fa5A-Za-z·]{2,10}$/.test(name)) return E('姓名須為 2～10 個中英文字');
+  if (!ID_FORMAT_REGEX.test(id)) return E('身分證字號格式不正確（1 碼大寫英文＋9 碼數字）');
+  if (!/^[\w.+-]+@[\w-]+(\.[\w-]+)+$/.test(em)) return E('電子郵件格式不正確');
+  if (USR.rows.some(r => r !== old && r.name === name)) return E('姓名「' + name + '」已存在，系統以姓名識別使用者，不得重複');
+  if (USR.rows.some(r => r !== old && r.id === id)) return E('此身分證字號已被其他使用者使用');
+  const sc = usrScope(); if (sc && dept !== sc) return E('單位管理者僅能維護本單位（' + sc + '）使用者');
+  const adm = USR.rows.filter(r => r.role === 'ADM' && r.st === '啟用'); if (old && old.role === 'ADM' && (role !== 'ADM' || st === '停用') && adm.length <= 1) return E('不得變更最後一位啟用中的最高管理者');
+  if (old && old.name === PERM_CUR && (st === '停用' || role !== old.role)) return E('不得變更自己的角色或停用自己的帳號');
+  const lines = []; const diff = (k, a, b) => { if (a !== b) { lines.push('- ' + k + '：' + a); lines.push('+ ' + k + '：' + b); } };
+  if (old) { diff('姓名', old.name, name); diff('身分證字號', V.mask(old.id), V.mask(id)); diff('單位', old.dept, dept); diff('角色', usrRoleName(old.role), usrRoleName(role)); diff('電子郵件', old.email, em); diff('狀態', old.st, st); if (!lines.length) { closeModal('user-edit-modal'); showToast('info', '未變更', '資料沒有異動'); return; } if (old.name !== name) { PM.users[name] = PM.users[old.name]; delete PM.users[old.name]; } PM.users[name].dept = dept; PM.users[name].role = role; Object.assign(old, { name, id, dept, role, email: em, st }); V.audit('DATA-U', '系統管理', '使用者資料維護', name, '-', '已修改', lines); showToast('success', '儲存成功', name + ' 的資料已更新'); }
+  else { PM.users[name] = { role, dept, ov: {} }; USR.rows.push({ name, id, dept, role, email: em, last: '尚未登入', st }); V.audit('DATA-C', '系統管理', '新增使用者', name, '-', '已建立', ['姓名：' + name, '身分證字號：' + V.mask(id), '單位：' + dept, '角色：' + usrRoleName(role)]); showToast('success', '新增成功', name + ' 已建立，預設權限依角色「' + usrRoleName(role) + '」'); }
+  closeModal('user-edit-modal'); try { if (V.$('pm-box')) pmRender(); } catch (e) { } usrRender();
+}
+toggleUserStatus = function (btn, name) {
+  if (!V.need('admin-users', 2, '變更帳號狀態')) return; const r = USR.rows.find(x => x.name === name); if (!r) return; const dis = r.st === '啟用';
+  if (dis) { if (name === PERM_CUR) { showToast('error', '不得停用', '不能停用自己目前登入的帳號'); return; } if (r.role === 'ADM' && USR.rows.filter(x => x.role === 'ADM' && x.st === '啟用').length <= 1) { showToast('error', '不得停用', '至少須保留一位啟用中的最高管理者'); return; } }
+  if (!confirm('確定要' + (dis ? '停用' : '啟用') + '「' + name + '」的帳號？')) return; r.st = dis ? '停用' : '啟用'; PM.users[name].off = dis;
+  V.audit('DATA-U', '系統管理', dis ? '停用使用者帳號' : '啟用使用者帳號', name, '- 狀態：' + (dis ? '啟用' : '停用'), '+ 狀態：' + r.st, ['- 狀態：' + (dis ? '啟用' : '停用'), '+ 狀態：' + r.st]); showToast('success', dis ? '已停用帳號' : '已啟用帳號', name + (dis ? ' 的帳號已停用，將無法登入' : ' 的帳號已重新啟用')); usrRender();
+};
+usrRender();
+
+/* =========================================================
+   函釋：查詢與維護共用資料
+   ========================================================= */
+const RUL = { rows: [], f: { kw: '', d1: '', d2: '', id: '全部', no: '' }, pg: 1, edit: null };
+(function rulInit() {
+  const mk = {}; document.querySelectorAll('#view-ruling-maintain tbody tr').forEach(r => { const c = r.children; mk[c[0].textContent.trim()] = { creator: c[4].textContent.trim(), st: c[5].textContent.trim() }; });
+  const detail = '一、依公務人員退休資遣撫卹法第77條規定，月退休金領受人有下列情形之一者，停止支領月退休金：\n（一）死亡。\n（二）喪失中華民國國籍。\n（三）依法停止任用。\n（四）再任有給職務。\n\n二、前項第一款情形，自死亡之次月起停止支領；其他各款情形，自事實發生之次月起停止支領。\n\n三、已停止支領而仍繼續撥付者，應依規定追繳溢領金額，並依相關規定辦理。';
+  document.querySelectorAll('#view-ruling-search tbody tr').forEach((r, i) => { const c = r.children, no = c[0].textContent.trim(); const m = mk[no] || { creator: '系統管理員', st: '正常' }; RUL.rows.push({ no, subject: c[1].textContent.trim(), date: c[2].textContent.trim(), ident: c[3].textContent.trim(), creator: m.creator, st: m.st === '正常' ? '正常' : '已停用', content: i === 0 ? detail : '' }); });
+  Object.keys(mk).forEach(no => { if (!RUL.rows.find(x => x.no === no)) RUL.rows.push({ no, subject: '（維護頁資料）', date: '', ident: '公務人員', creator: mk[no].creator, st: mk[no].st === '正常' ? '正常' : '已停用', content: '' }); });
+  const v = V.$('view-ruling-search'); v.querySelector('.card').innerHTML = '<div class="filter-row" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end"><div class="filter-group" style="flex:1;min-width:200px"><div class="filter-label">關鍵字搜尋</div><input class="filter-control" id="rs-kw" placeholder="輸入關鍵字（如：月退金、溢領）" style="width:100%" onkeydown="if(event.key===\'Enter\')rulQuery()"></div><div class="filter-group"><div class="filter-label">發文日期起</div><input class="filter-control" id="rs-d1" placeholder="110/01/01"></div><div class="filter-group"><div class="filter-label">發文日期迄</div><input class="filter-control" id="rs-d2" placeholder="113/12/10"></div><div class="filter-group"><div class="filter-label">適用身分別</div><select class="filter-control" id="rs-id"><option>全部</option><option>公務人員</option><option>教職人員</option><option>軍職人員</option></select></div><div class="filter-group"><div class="filter-label">文號</div><input class="filter-control" id="rs-no" placeholder="輸入文號..." onkeydown="if(event.key===\'Enter\')rulQuery()"></div><button class="btn btn-primary btn-sm" style="align-self:flex-end" onclick="rulQuery()">搜尋</button><button class="btn btn-outline btn-sm" style="align-self:flex-end" onclick="rulReset()">重設</button></div>';
+  const tc = v.querySelector('.table-card'); tc.innerHTML = '<div style="padding:14px 16px;border-bottom:1px solid var(--border)"><div class="card-title" id="rs-title"></div></div><div class="table-wrapper"><table class="data-table"><thead><tr><th>發文字號</th><th>主旨</th><th>發文日期</th><th>適用身分別</th><th>操作</th></tr></thead><tbody id="rs-tb"></tbody></table></div><div class="pagination"><div class="pagination-info" id="rs-info"></div><div class="pagination-controls" id="rs-pg"></div></div>';
+  const mt = V.$('view-ruling-maintain'); const tb = mt.querySelector('tbody'); tb.id = 'rm-tb'; const pgn = mt.querySelector('.pagination'); if (pgn) pgn.remove();
+  const m = V.$('ruling-edit-modal'), ins = m.querySelectorAll('input.form-control'), sl = m.querySelectorAll('select.form-control'); ins[0].id = 'rl-no'; ins[1].id = 'rl-date'; ins[2].id = 'rl-subject'; sl[0].id = 'rl-ident'; sl[1].id = 'rl-st'; m.querySelector('textarea').id = 'rl-content'; m.querySelector('.modal-footer .btn-gold').setAttribute('onclick', 'rulSave()');
+  const bd = m.querySelector('.modal-body'); const er = document.createElement('div'); er.id = 'rl-err'; er.style.cssText = 'color:var(--danger);font-size:13px;min-height:20px'; bd.appendChild(er);
+})();
+const rulNorm = s => String(s).replace(/月退金/g, '月退休金');
+function rulHit(r) { const f = RUL.f; if (r.st !== '正常') return false; if (f.kw && !rulNorm(r.no + r.subject + r.content).includes(rulNorm(f.kw))) return false; if (f.id !== '全部' && r.ident !== f.id) return false; if (f.no && !r.no.includes(f.no)) return false; if (f.d1 && r.date < f.d1) return false; if (f.d2 && r.date > f.d2) return false; return true; }
+function rulQuery() { const f = { kw: V.$('rs-kw').value.trim(), d1: V.$('rs-d1').value.trim(), d2: V.$('rs-d2').value.trim(), id: V.$('rs-id').value, no: V.$('rs-no').value.trim() }; if ((f.d1 && !V.isDate(f.d1)) || (f.d2 && !V.isDate(f.d2))) { showToast('error', '日期格式錯誤', '請輸入民國 yyy/mm/dd'); return; } if (f.d1 && f.d2 && f.d1 > f.d2) { showToast('error', '日期區間錯誤', '起日不得晚於迄日'); return; } RUL.f = f; RUL.pg = 1; rulRender(); showToast('success', '搜尋完成', '符合條件共 ' + RUL.rows.filter(rulHit).length + ' 筆（已停用函釋不列入查詢）'); }
+function rulReset() { RUL.f = { kw: '', d1: '', d2: '', id: '全部', no: '' }; ['rs-kw', 'rs-d1', 'rs-d2', 'rs-no'].forEach(i => V.$(i).value = ''); V.$('rs-id').value = '全部'; RUL.pg = 1; rulRender(); }
+function rulPage(p) { RUL.pg = p; rulRender(); }
+function rulRender() {
+  const L = RUL.rows.filter(rulHit).sort((a, b) => b.date.localeCompare(a.date)), S = 5; RUL.pg = V.clampPage(L.length, RUL.pg, S);
+  V.$('rs-title').textContent = '搜尋結果 (共 ' + L.length + ' 筆)';
+  V.$('rs-tb').innerHTML = L.length ? L.slice((RUL.pg - 1) * S, RUL.pg * S).map(r => '<tr><td style="font-size:calc(11px * var(--font-scale));white-space:nowrap">' + V.esc(r.no) + '</td><td style="cursor:pointer;color:var(--info)" onclick="openRulingModal(\'' + r.no + '\')">' + V.esc(r.subject) + '</td><td>' + r.date + '</td><td>' + V.badge('primary', r.ident) + '</td><td><button class="btn btn-sm btn-outline" onclick="openRulingModal(\'' + r.no + '\')">查看</button></td></tr>').join('') : V.emptyRow(5);
+  V.$('rs-info').textContent = V.pagerInfo(L.length, RUL.pg, S); V.$('rs-pg').innerHTML = V.pagerHtml(L.length, RUL.pg, S, 'rulPage');
+  V.$('rm-tb').innerHTML = RUL.rows.map(r => '<tr><td style="font-size:calc(11px * var(--font-scale));white-space:nowrap">' + V.esc(r.no) + '</td><td>' + V.esc(r.subject) + '</td><td>' + r.date + '</td><td>' + V.badge('primary', r.ident) + '</td><td>' + V.esc(r.creator) + '</td><td>' + V.badge(r.st === '正常' ? 'success' : 'secondary', r.st) + '</td><td><button class="btn btn-sm btn-outline" onclick="openRulingEditModal(\'' + r.no + '\')">編輯</button> <button class="btn btn-sm btn-danger" onclick="rulDel(\'' + r.no + '\')">刪除</button> <button class="btn btn-sm ' + (r.st === '正常' ? 'btn-outline' : 'btn-success') + '" onclick="toggleRulingStatus(this,\'' + r.no + '\')">' + (r.st === '正常' ? '停用' : '啟用') + '</button></td></tr>').join('') || V.emptyRow(7);
+}
+openRulingModal = function (no) {
+  const r = RUL.rows.find(x => x.no === no); if (!r) return; const m = V.$('ruling-modal'), iv = m.querySelectorAll('.info-val'), bx = [...m.querySelectorAll('div')].filter(d => (d.getAttribute('style') || '').includes('background:#f8f9fa'));
+  const p = r.date.split('/'); iv[0].textContent = r.no; iv[1].textContent = p.length === 3 ? '中華民國' + +p[0] + '年' + +p[1] + '月' + +p[2] + '日' : r.date; iv[2].innerHTML = V.badge('primary', r.ident);
+  bx[0].textContent = r.subject; bx[1].innerHTML = r.content ? V.esc(r.content).replace(/\n/g, '<br>') : '<span style="color:var(--text-secondary)">（原型未收錄此函釋全文，請至公文管理系統調閱原文）</span>';
+  const btns = m.querySelectorAll('.modal-footer button'); btns[1].setAttribute('onclick', "rulPrint('" + r.no + "')"); btns[2].setAttribute('onclick', "rulPrint('" + r.no + "')"); btns[2].textContent = '下載 PDF'; openModal('ruling-modal');
+};
+function rulPrint(no) { const r = RUL.rows.find(x => x.no === no), h = '<div class="ltr"><h1>函釋</h1><div class="sub">' + V.esc(r.no) + '　發文日期 ' + r.date + '</div><p><strong>主旨：</strong>' + V.esc(r.subject) + '</p><p><strong>說明：</strong></p><p>' + (r.content ? V.esc(r.content).replace(/\n/g, '<br>') : '（全文請至公文管理系統調閱）') + '</p></div>'; dirDownloadPdf('函釋_' + r.no, h); }
+openRulingEditModal = function (no) {
+  const r = no ? RUL.rows.find(x => x.no === no) : null; RUL.edit = r ? r.no : null; V.$('rl-err').textContent = ''; V.$('rl-no').value = r ? r.no : ''; V.$('rl-date').value = r ? r.date : ''; V.$('rl-subject').value = r ? r.subject : ''; V.$('rl-ident').value = r ? r.ident : '公務人員'; V.$('rl-st').value = r ? (r.st === '正常' ? '正常' : '停用') : '正常'; V.$('rl-content').value = r ? r.content : '';
+  V.$('ruling-edit-modal').querySelector('.modal-title').textContent = r ? '編輯函釋' : '新增函釋'; openModal('ruling-edit-modal');
+};
+function rulSave() {
+  if (!V.need('ruling-maintain', 2, '維護函釋')) return; const E = m => { V.$('rl-err').textContent = m; return false; };
+  const o = { no: V.$('rl-no').value.trim(), date: V.$('rl-date').value.trim(), subject: V.$('rl-subject').value.trim(), ident: V.$('rl-ident').value, st: V.$('rl-st').value === '正常' ? '正常' : '已停用', content: V.$('rl-content').value.trim() }, old = RUL.edit ? RUL.rows.find(x => x.no === RUL.edit) : null;
+  if (!/^.{2,10}字第\d{7,12}號$/.test(o.no)) return E('發文字號格式不正確（例：銓敘部退字第1130123456號）'); if (RUL.rows.some(r => r !== old && r.no === o.no)) return E('發文字號已存在');
+  if (!V.isDate(o.date)) return E('發文日期格式不正確（民國 yyy/mm/dd）'); if (o.date > V.today()) return E('發文日期不得晚於今日'); if (o.subject.length < 5) return E('主旨至少 5 個字'); if (o.content.length < 10) return E('函釋內容至少 10 個字');
+  if (old) { const ls = []; ['subject', 'date', 'ident', 'st'].forEach(k => { if (old[k] !== o[k]) { ls.push('- ' + k + '：' + old[k]); ls.push('+ ' + k + '：' + o[k]); } }); if (old.content !== o.content) ls.push('+ 函釋內容已修改'); Object.assign(old, o); V.audit('DATA-U', '系統管理', '函釋資料維護', o.no, '-', '已修改', ls.length ? ls : ['無欄位異動']); showToast('success', '儲存成功', '函釋已更新'); }
+  else { RUL.rows.unshift(Object.assign(o, { creator: V.user() })); V.audit('DATA-C', '系統管理', '新增函釋', o.no, '-', '已建立', ['主旨：' + o.subject]); showToast('success', '新增成功', '函釋已建立'); }
+  closeModal('ruling-edit-modal'); rulRender();
+}
+toggleRulingStatus = function (btn, no) { if (!V.need('ruling-maintain', 2, '停用／啟用函釋')) return; const r = RUL.rows.find(x => x.no === no); if (!r) return; const en = r.st !== '正常'; r.st = en ? '正常' : '已停用'; V.audit('DATA-U', '系統管理', en ? '啟用函釋' : '停用函釋', no, '- 狀態：' + (en ? '已停用' : '正常'), '+ 狀態：' + r.st, ['- 狀態：' + (en ? '已停用' : '正常'), '+ 狀態：' + r.st]); showToast('success', en ? '已啟用' : '已停用', en ? '該函釋已重新啟用，將納入函釋查詢' : '該函釋已停用，函釋查詢不再顯示'); rulRender(); };
+function rulDel(no) { if (!V.need('ruling-maintain', 3, '刪除函釋')) return; if (!confirm('確定刪除函釋「' + no + '」？此操作無法復原。')) return; RUL.rows = RUL.rows.filter(r => r.no !== no); V.audit('DATA-D', '系統管理', '刪除函釋', no, '已存在', '已刪除'); showToast('success', '已刪除', '函釋 ' + no + ' 已刪除'); rulRender(); }
+rulRender();
+
+/* =========================================================
+   介接管理：儲存／連線測試改為真實檢核並更新列表
+   ========================================================= */
+(function () {
+  const m = V.$('interface-modal'), b1 = m.querySelector('#interface-tab-basic'), b2 = m.querySelector('#interface-tab-conn');
+  b1.querySelector('select').id = 'if-type'; b1.querySelectorAll('input.form-control')[2].id = 'if-owner'; b2.querySelectorAll('input.form-control')[0].id = 'if-url'; b2.querySelectorAll('input.form-control')[1].id = 'if-port'; b2.querySelector('select').id = 'if-proto'; b2.querySelectorAll('input.form-control')[2].id = 'if-timeout';
+  const er = document.createElement('div'); er.id = 'if-err'; er.style.cssText = 'color:var(--danger);font-size:13px;min-height:20px;margin-top:8px'; m.querySelector('.modal-body').appendChild(er);
+})();
+let IF_ROW = null; const _oim = openInterfaceModal;
+openInterfaceModal = function (btn, goConn) { IF_ROW = btn ? btn.closest('tr') : null; _oim(btn, goConn); V.$('if-err').textContent = ''; if (IF_ROW) { V.$('if-url').value = IF_ROW.children[3].textContent.trim(); const t = IF_ROW.children[2].textContent.trim(); if ([...V.$('if-type').options].some(o => o.text === t)) V.$('if-type').value = t; V.$('if-proto').value = /^sftp/i.test(V.$('if-url').value) ? 'SFTP' : /^https/i.test(V.$('if-url').value) ? 'HTTPS' : /^http/i.test(V.$('if-url').value) ? 'HTTP' : V.$('if-proto').value; } else { ['if-url', 'if-port', 'if-owner'].forEach(i => V.$(i).value = ''); V.$('if-timeout').value = 30; } };
+function ifUrlErr() { const u = V.$('if-url').value.trim(), p = V.$('if-proto').value; if (!u) return '連線位址為必填'; if (p === 'TCP/IP (DB)') return /^[\w.-]+(:\d+)?$/.test(u) ? '' : '資料庫連結請輸入主機名稱或 IP（例：db.example.gov.tw）'; const m = /^(https?|sftp):\/\/([\w.-]+)(:\d+)?(\/.*)?$/i.exec(u); if (!m) return '連線位址格式不正確（須以 https://、http:// 或 sftp:// 開頭）'; if (!/^sftp$/i.test(m[1]) !== (p !== 'SFTP')) return '通訊協定（' + p + '）與位址開頭（' + m[1] + '://）不一致'; if (p === 'HTTPS' && !/^https$/i.test(m[1])) return '通訊協定為 HTTPS，位址須以 https:// 開頭'; if (p === 'HTTP' && !/^http$/i.test(m[1])) return '通訊協定為 HTTP，位址須以 http:// 開頭'; if (!/\./.test(m[2]) && m[2] !== 'localhost') return '主機名稱不正確'; return ''; }
+testInterfaceConnection = function () {
+  const r = V.$('conn-test-result'), e = ifUrlErr(), to = +V.$('if-timeout').value; let msg = '', ok = false;
+  if (e) msg = '連線測試失敗：' + e; else if (!(to >= 1 && to <= 300)) msg = '連線測試失敗：逾時時間須為 1～300 秒'; else if (V.$('if-port').value.trim() && !(+V.$('if-port').value >= 1 && +V.$('if-port').value <= 65535)) msg = '連線測試失敗：連接埠須為 1～65535'; else { ok = true; msg = '連線測試成功，回應時間 ' + (60 + V.$('if-url').value.length * 3) + 'ms（原型為模擬測試，未實際連線）'; }
+  r.className = 'conn-test-result show ' + (ok ? 'ok' : 'fail'); r.textContent = msg; showToast(ok ? 'success' : 'error', ok ? '連線測試成功' : '連線測試失敗', ok ? '介接系統連線正常' : e || msg);
+};
+saveInterfaceSystem = function () {
+  if (!V.need('admin-interface', 2, '維護介接系統')) return; const E = m => { V.$('if-err').textContent = m; return false; };
+  const name = V.$('interface-name').value.trim(), code = V.$('interface-code').value.trim().toUpperCase(), type = V.$('if-type').value, on = V.$('interface-status-toggle').checked, url = V.$('if-url').value.trim();
+  if (!name) return E('介接系統名稱為必填'); if (!/^IF-[A-Z]{2,5}-\d{2}$/.test(code)) return E('系統代碼格式不正確（例：IF-MIL-01）'); const dupe = [...document.querySelectorAll('#view-admin-interface tbody tr')].find(r => r !== IF_ROW && r.children[1].textContent.trim() === code); if (dupe) return E('系統代碼 ' + code + ' 已存在');
+  const ue = ifUrlErr(); if (ue) return E(ue); const to = +V.$('if-timeout').value; if (!(to >= 1 && to <= 300)) return E('逾時時間須為 1～300 秒'); if (V.$('if-port').value.trim() && !(+V.$('if-port').value >= 1 && +V.$('if-port').value <= 65535)) return E('連接埠須為 1～65535');
+  const st = on ? '<span class="badge badge-success">啟用</span>' : '<span class="badge badge-danger">停用</span>';
+  if (IF_ROW) { const c = IF_ROW.children; c[0].innerHTML = '<strong>' + V.esc(name) + '</strong>'; c[1].textContent = code; c[2].innerHTML = '<span class="badge badge-info">' + V.esc(type) + '</span>'; c[3].textContent = url; c[5].innerHTML = st; const tg = c[6].querySelector('.btn-danger,.btn-success'); if (tg) { tg.className = 'btn btn-sm ' + (on ? 'btn-danger' : 'btn-success'); tg.textContent = on ? '停用' : '啟用'; tg.setAttribute('onclick', "toggleInterfaceStatus(this,'" + (on ? 'off' : 'on') + "')"); } V.audit('CFG-U', '系統管理', '介接系統設定維護', code, '-', '已修改', ['名稱：' + name, '位址：' + url, '狀態：' + (on ? '啟用' : '停用')]); }
+  else { const tr = document.createElement('tr'); tr.innerHTML = '<td><strong>' + V.esc(name) + '</strong></td><td class="masked">' + code + '</td><td><span class="badge badge-info">' + V.esc(type) + '</span></td><td>' + V.esc(url) + '</td><td>尚未連線</td><td>' + st + '</td><td><button class="btn btn-sm btn-outline" onclick="openInterfaceModal(this)">編輯</button> <button class="btn btn-sm btn-outline" onclick="openInterfaceModal(this,true)">連線設定</button> <button class="btn btn-sm ' + (on ? 'btn-danger' : 'btn-success') + '" onclick="toggleInterfaceStatus(this,\'' + (on ? 'off' : 'on') + '\')">' + (on ? '停用' : '啟用') + '</button></td>'; document.querySelector('#view-admin-interface tbody').appendChild(tr); V.audit('CFG-U', '系統管理', '新增介接系統', code, '-', '已建立', ['名稱：' + name, '位址：' + url]); }
+  closeModal('interface-modal'); v37Normalize('admin-interface'); showToast('success', '儲存成功', '介接系統「' + name + '」設定已儲存');
+};
+
+</script>
+
 </body>
 </html>
