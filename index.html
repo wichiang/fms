@@ -4229,7 +4229,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
     </div>
     <div class="view" id="view-salary-ret">
       <div class="breadcrumb"><span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-item">調薪作業</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-item current">退職調薪資料表</span></div>
-      <div class="page-header"><div><div class="page-title">退職調薪資料表</div><div class="page-subtitle">配合政府法令公告之軍、公、教退職人員調薪內容，建立調薪資料表（調薪幅度、生效日），並比對法令生效日與實際發放日</div></div></div>
+      <div class="page-header"><div><div class="page-title">退職調薪資料表</div><div class="page-subtitle">配合考試院、行政院會同公告之軍、公、教退職人員定期退撫(除)給與調整內容，建立調薪資料表（調薪幅度、生效日），並比對法令生效日與實際發放日</div></div></div>
       <div id="sal-b2"></div>
     </div>
     <div class="view" id="view-salary-retdiff">
@@ -12342,8 +12342,10 @@ const SAL={scale:[],adj:[],ret:[],rec:[],flt:'全部',nid:3,today:'115/10/28',
   '公務本俸':[[160,'委任第1職等本俸1級'],[280,'委任第3職等本俸1級'],[370,'委任第5職等本俸5級'],[385,'薦任第6職等本俸1級'],[710,'簡任第13職等本俸1級'],[800,'簡任第14職等']],
   '教育本薪':[[230],[245],[330],[450],[475],[800]]};
  Object.keys(pts).forEach(c=>pts[c].forEach(([p,n])=>SAL.ver.forEach(v=>SAL.scale.push({c,p,a:calc(p,v.seg),f:v.f,t:v.t,r:v.rate,n:n||''}))));
- SAL.adj=[{id:1,tgt:'軍、公、教退休(職)、退伍、撫卹(育)人員',rate:3.0,eff:'113/01/01',ann:'113/03/20',pay:'113/05/01'},
-          {id:2,tgt:'軍、公、教退休(職)、退伍、撫卹(育)人員',rate:2.0,eff:'112/01/01',ann:'111/12/20',pay:'112/01/01'}];
+ /* 退休(職)、退伍、撫卹(育)人員定期退撫(除)給與：107/07/01 年金改革後不再隨現職待遇調整，
+    改依物價指數(CPI)累計成長率達±5%或至少每4年檢討，由考試院會同行政院核定公告。 */
+ SAL.adj=[{id:1,tgt:'軍、公、教退休(職)、退伍、撫卹(育)人員',rate:4.0,eff:'113/01/01',ann:'113/03/08',pay:'113/04/01',doc:'考試院、行政院 113/03/08 會同公告；112/12/31(含)前生效之退撫案件適用，113/04/01 起按調增後金額發放並補發 113/01～03 差額'},
+          {id:2,tgt:'軍、公、教退休(職)、退伍、撫卹(育)人員',rate:2.0,eff:'111/07/01',ann:'111/04/07',pay:'111/07/01',doc:'考試院、行政院 111/04/07 會同公告；111/06/30(含)前生效之退撫案件適用，年金改革後首次調整（每4年檢討）'}];
  SAL.ret=[['王建國','A123***789','軍職月退',52000],['林美玲','F223***456','公務月退',48500],['陳志豪','H121***332','教育月退',61200],['張淑芬','E222***018','公務遺屬',24800],['李文彬','B120***654','軍職月退',45600],['黃雅惠','D221***907','教育月退',57300]];
 })();
 const sfm=n=>Number(n).toLocaleString('en-US');
@@ -12409,20 +12411,20 @@ function salScaleDel(i){const r=SAL.scale[i];if(r.f<=SAL.today)return sErr('不�
 function salRet(){
  return `<div class="card" style="margin-bottom:16px"><div class="card-title" style="margin-bottom:8px">新增調薪資料</div>
  <div class="form-row cols-4"><div class="form-group"><label class="form-label">適用對象</label><select class="form-control" id="sr-t"><option>軍、公、教退休(職)、退伍、撫卹(育)人員</option><option>軍職退伍人員</option><option>公務人員退休(職)人員</option><option>教育人員退休人員</option></select></div>
- <div class="form-group"><label class="form-label">調薪幅度（%）</label><input class="form-control" id="sr-r" type="number" step="0.01" placeholder="如 3"></div>
- <div class="form-group"><label class="form-label">法令生效日</label><input class="form-control" id="sr-e" placeholder="114/01/01"></div>
- <div class="form-group"><label class="form-label">公告日</label><input class="form-control" id="sr-a" placeholder="113/12/20"></div></div>
- <div class="form-row cols-4"><div class="form-group"><label class="form-label">實際發放起月（首次按新標準發放）</label><input class="form-control" id="sr-p" placeholder="114/02/01"></div></div>
+ <div class="form-group"><label class="form-label">調薪幅度（%）</label><input class="form-control" id="sr-r" type="number" step="0.01" placeholder="如 4"></div>
+ <div class="form-group"><label class="form-label">法令生效日</label><input class="form-control" id="sr-e" placeholder="如 113/01/01"></div>
+ <div class="form-group"><label class="form-label">公告日</label><input class="form-control" id="sr-a" placeholder="如 113/03/08"></div></div>
+ <div class="form-row cols-4"><div class="form-group"><label class="form-label">實際發放起月（首次按新標準發放）</label><input class="form-control" id="sr-p" placeholder="如 113/04/01"></div></div>
  <div class="page-actions"><button class="btn btn-gold btn-sm" onclick="salAdjAdd()">新增</button></div></div>
- <div class="card"><div class="card-title" style="margin-bottom:8px">退職人員調薪資料表</div><div class="table-wrapper"><table class="data-table"><thead><tr><th>適用對象</th><th>調薪幅度</th><th>生效日</th><th>公告日</th><th>實際發放起月</th><th>差額月數</th><th>處理</th></tr></thead><tbody>${[...SAL.adj].sort((a,b)=>b.eff.localeCompare(a.eff)).map(a=>{const m=sM(a.eff,a.pay);return `<tr><td>${a.tgt}</td><td>${a.rate.toFixed(2)}%</td><td>${a.eff}</td><td>${a.ann}</td><td>${a.pay}</td><td>${m>0?`<span class="badge badge-warning">${m} 個月</span>`:'<span class="badge badge-success">無差額</span>'}</td><td>${m>0?`<button class="btn btn-sm btn-gold" onclick="SAL.rd={id:${a.id},calc:null,written:false};navigateTo('salary-retdiff')">差額處理</button>`:'-'}</td></tr>`;}).join('')}</tbody></table></div>
- <div class="form-hint" style="margin-top:8px">法令生效日早於實際發放起月者，期間差額須於「退職調薪差額處理」補發並寫入支領紀錄檔。</div></div>`;
+ <div class="card"><div class="card-title" style="margin-bottom:8px">退職人員調薪資料表</div><div class="table-wrapper"><table class="data-table"><thead><tr><th>適用對象</th><th>調薪幅度</th><th>生效日</th><th>公告日</th><th>實際發放起月</th><th>差額月數</th><th>法令依據／說明</th><th>處理</th></tr></thead><tbody>${[...SAL.adj].sort((a,b)=>b.eff.localeCompare(a.eff)).map(a=>{const m=sM(a.eff,a.pay);return `<tr><td>${a.tgt}</td><td>${a.rate.toFixed(2)}%</td><td>${a.eff}</td><td>${a.ann}</td><td>${a.pay}</td><td>${m>0?`<span class="badge badge-warning">${m} 個月</span>`:'<span class="badge badge-success">無差額</span>'}</td><td style="font-size:12px;max-width:340px">${a.doc||'-'}</td><td>${m>0?`<button class="btn btn-sm btn-gold" onclick="SAL.rd={id:${a.id},calc:null,written:false};navigateTo('salary-retdiff')">差額處理</button>`:'-'}</td></tr>`;}).join('')}</tbody></table></div>
+ <div class="form-hint" style="margin-top:8px">法令生效日早於實際發放起月者，期間差額須於「退職調薪差額處理」補發並寫入支領紀錄檔。<br>退休(職)人員之定期退撫給與自 107/07/01 起不再隨現職待遇調整，改依消費者物價指數累計成長率達正、負 5% 時，或至少每 4 年檢討調整，調幅由考試院會同行政院核定公告。</div></div>`;
 }
 function salAdjAdd(){
  const r=parseFloat(sEl('sr-r').value),e=sEl('sr-e').value.trim(),a=sEl('sr-a').value.trim(),p=sEl('sr-p').value.trim();
  if(!(r>0))return sErr('調幅錯誤','調薪幅度須大於 0');
  if(!sOk(e)||!sOk(a)||!sOk(p))return sErr('日期格式錯誤','生效日、公告日、實際發放起月均須為民國 yyy/mm/dd');
  if(p<e)return sErr('日期錯誤','實際發放起月不得早於法令生效日');
- SAL.adj.push({id:SAL.nid++,tgt:sEl('sr-t').value,rate:r,eff:e,ann:a,pay:p}); sAudit('調薪',`新增退職調薪資料 幅度${r}% 生效${e}`); showToast('success','已新增','退職調薪資料已建立'); salRender('salary-ret');
+ SAL.adj.push({id:SAL.nid++,tgt:sEl('sr-t').value,rate:r,eff:e,ann:a,pay:p,doc:''}); sAudit('調薪',`新增退職調薪資料 幅度${r}% 生效${e}`); showToast('success','已新增','退職調薪資料已建立'); salRender('salary-ret');
 }
 
 /* ---- B 退職差額處理 ---- */
