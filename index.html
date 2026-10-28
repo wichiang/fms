@@ -16598,5 +16598,106 @@ const _n=navigateTo;navigateTo=function(id){_n(id);if(id==='admin-glyph-mgmt')pi
 run();
 })();
 </script>
+<!-- ===== RWD V43 調整補丁（置於最後，覆寫既有規則） ===== -->
+<style id="rwd-v43-patch">
+/* 1. 基礎防護：避免 grid/flex 子項被內容撐寬 */
+#main,.view,.card,.table-card,.form-group,.form-row>*,.page-header>*,.dashboard-grid>*,.stats-grid>*,.tx-two>*,.sp-grid2>*,.qr-grid>*,.help-layout>*,.menu-layout>*{min-width:0}
+img,svg,canvas,video{max-width:100%}
+.rwd-scroll{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--radius-card)}
+.rwd-scroll>table{min-width:560px}
+.page-actions{flex-wrap:wrap}
+.view{max-width:1680px;margin-inline:auto}
+#login-page{min-height:100dvh}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* 2. 平板橫向（901–1100）：縮窄側欄，保留內容寬度 */
+@media(min-width:901px) and (max-width:1100px){
+  :root{--sidebar-w:208px}
+  .page-header{flex-wrap:wrap;gap:10px}
+  .tx-two,.sp-grid2,.qr-grid,.help-layout,.menu-layout{grid-template-columns:1fr}
+}
+
+/* 3. 平板直式／手機（≤900）：觸控友善 */
+@media(max-width:900px){
+  .btn{min-height:40px}
+  .btn-sm,.page-btn{min-height:36px;min-width:36px}
+  .tab-item,.sidebar-item,.sidebar-sub-item{min-height:44px;display:flex;align-items:center}
+  .form-control,select,input:not([type=checkbox]):not([type=radio]),textarea{min-height:40px;font-size:max(16px,calc(14px*var(--font-scale)))}
+  input[type=checkbox],input[type=radio]{width:20px;height:20px;min-width:20px}
+  .header-btn{width:40px;height:40px}
+  [style*="font-size:10px"],[style*="font-size:11px"]{font-size:12px!important}
+  .pm-tbl{min-width:640px}
+  .page-header{align-items:flex-start}
+  .page-title,.page-subtitle{text-align:left}
+  #main{padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right));padding-bottom:max(16px,env(safe-area-inset-bottom))}
+}
+
+/* 4. 手機（≤600）：標題列不再被擠成直排 */
+@media(max-width:600px){
+  #header{padding:0 8px}
+  .header-logo{margin-left:2px;gap:6px;min-width:0;flex:1 1 auto}
+  .header-title{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:calc(13px*var(--font-scale))}
+  .header-title small{display:none}
+  .header-logo-icon{margin-bottom:0;flex:0 0 36px;width:36px;height:36px}
+  .header-logo-icon svg{width:36px;height:36px}
+  .header-spacer{flex:0 0 0}
+  .header-actions{gap:2px;flex:0 0 auto}
+  .header-btn{width:36px;height:36px}
+  .font-size-btn{padding:6px 7px}
+}
+@media(max-width:400px){
+  .header-title{display:none}
+  .header-logo{flex:0 0 auto}
+  .header-actions{margin-left:auto}
+}
+
+/* 5. 手機（≤600）：資料表改為卡片式堆疊（單列表頭、無合併儲存格者） */
+@media(max-width:600px){
+  table.rwd-stackable{min-width:0!important}
+  .rwd-scroll>table.rwd-stackable{min-width:0!important}
+  table.rwd-stackable thead{position:absolute;left:-9999px;top:auto}
+  table.rwd-stackable,table.rwd-stackable tbody,table.rwd-stackable tr,table.rwd-stackable td{display:block;width:100%}
+  table.rwd-stackable tr{border:1px solid var(--border);border-radius:8px;margin:10px 0;padding:6px 12px;background:var(--card)}
+  table.rwd-stackable td{display:flex;justify-content:space-between;align-items:center;gap:12px;text-align:right;border:none!important;padding:6px 0!important;border-bottom:1px dashed var(--border)!important;word-break:break-word}
+  table.rwd-stackable td:last-child{border-bottom:none!important}
+  table.rwd-stackable td[data-label]::before{content:attr(data-label);flex:0 0 40%;text-align:left;font-weight:600;color:var(--text-secondary);font-size:calc(12px*var(--font-scale))}
+  table.rwd-stackable td:empty{display:none}
+  table.no-stack{min-width:600px}
+}
+</style>
+<script id="rwd-v43-patch-js">
+(function(){
+  function wrapTables(){
+    document.querySelectorAll('table').forEach(function(t){
+      if(t.closest('.table-wrapper,.table-card,.rwd-scroll'))return;
+      var w=document.createElement('div');w.className='rwd-scroll';
+      t.parentNode.insertBefore(w,t);w.appendChild(t);
+    });
+  }
+  function labelTables(){
+    document.querySelectorAll('table').forEach(function(t){
+      if(t.classList.contains('no-stack')||!t.tHead||t.tHead.rows.length!==1||t.querySelector('[colspan],[rowspan]'))return;
+      var names=[].map.call(t.tHead.rows[0].cells,function(c){return c.textContent.trim();});
+      if(names.length<2)return;
+      [].forEach.call(t.tBodies,function(tb){[].forEach.call(tb.rows,function(tr){
+        [].forEach.call(tr.cells,function(td,i){
+          if(names[i]&&td.getAttribute('data-label')!==names[i])td.setAttribute('data-label',names[i]);
+        });
+      });});
+      t.classList.add('rwd-stackable');
+    });
+  }
+  var timer;
+  function run(){wrapTables();labelTables();}
+  function schedule(){clearTimeout(timer);timer=setTimeout(run,80);}
+  document.addEventListener('DOMContentLoaded',function(){
+    run();
+    var m=document.getElementById('main')||document.body;
+    new MutationObserver(schedule).observe(m,{childList:true,subtree:true});
+  });
+  if(document.readyState!=='loading')document.dispatchEvent(new Event('DOMContentLoaded'));
+})();
+</script>
+
 </body>
 </html>
