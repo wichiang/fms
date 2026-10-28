@@ -795,6 +795,30 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 @media(max-width:1100px){.help-layout,.menu-layout{grid-template-columns:1fr}.sb-preview-wrap{position:static}}
 @media(max-width:600px){.mc-row.child{margin-left:16px}.manual-item{flex-wrap:wrap}}
 
+
+/* ===== V40 首頁區塊管理 ===== */
+.hb-desc{display:block;font-weight:400;font-size:calc(12px * var(--font-scale));color:var(--text-secondary);margin-top:2px}
+.mc-row{flex-wrap:wrap}
+.hb-sel{width:auto;max-width:210px;min-width:140px;padding:5px 8px;font-size:calc(12.5px * var(--font-scale))}
+.hb-in{flex:1;min-width:90px;max-width:150px;padding:5px 8px;font-size:calc(12.5px * var(--font-scale))}
+.mc-row.hb-btnrow{margin-left:72px;background:#fff;border-style:dashed}
+.hb-btnno{font-size:calc(11px * var(--font-scale));color:var(--text-secondary);width:38px;flex-shrink:0}
+.hb-add{margin:0 0 10px 72px}
+.hbp{font-size:12px;display:flex;flex-direction:column;gap:8px;max-height:72vh;overflow-y:auto}
+.hbp-head{background:#f5f7fa;border:1px dashed var(--border);border-radius:6px;padding:6px 8px;color:var(--text-secondary)}
+.hbp-bar{background:#fff3cd;border:1px solid #f0d98a;border-radius:6px;padding:6px 8px;color:#8a6d00;font-weight:600}
+.hbp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.hbp-tile{background:#fff;border:1px solid var(--border);border-top:3px solid var(--accent-gold);border-radius:6px;padding:6px;color:var(--primary);line-height:1.3}
+.hbp-card{background:#fff;border:1px solid var(--border);border-radius:6px;padding:6px;color:var(--primary)}
+.hbp-chips{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px}
+.hbp-chip{border:1px solid var(--secondary);color:var(--secondary);border-radius:4px;padding:1px 5px;font-size:11px}
+.hbp-chip.p{background:var(--primary);border-color:var(--primary);color:#fff}
+.hbp-box{background:#fff;border:1px solid var(--border);border-radius:6px;padding:14px 8px;color:var(--primary);font-weight:600;text-align:center}
+.hbp-two{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.hbp-two.one{grid-template-columns:1fr}
+.hbp-empty{color:var(--text-secondary);padding:8px;text-align:center;grid-column:1/-1}
+@media(max-width:600px){.mc-row.hb-btnrow{margin-left:16px}.hb-add{margin-left:16px}}
+
 /* ===== V12 課稅管理改版 ===== */
 .tx-steps{display:flex;gap:0;margin-bottom:20px;background:var(--card);border-radius:var(--radius-card);box-shadow:var(--shadow-sm);overflow:hidden;flex-wrap:wrap}
 .tx-step{flex:1;min-width:170px;display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;border-bottom:3px solid transparent;color:var(--text-secondary);transition:var(--transition)}
@@ -1304,6 +1328,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div class="sidebar-sub-item" onclick="navigateTo('admin-audit')">稽核日誌</div>
         <div class="sidebar-sub-item" onclick="navigateTo('admin-announcements')">公告管理</div>
 		<div class="sidebar-sub-item" onclick="navigateTo('admin-site-help')">網站說明管理</div>
+        <div class="sidebar-sub-item" onclick="navigateTo('admin-home-blocks')">首頁區塊管理</div>
         <div class="sidebar-sub-item" onclick="navigateTo('admin-menu-config')">功能表管理</div>
 		<div class="sidebar-sub-item" onclick="navigateTo('admin-tax-params')">課稅參數設定</div>
         <div class="sidebar-sub-item" onclick="navigateTo('admin-workday')">工作日管理</div>
@@ -1323,7 +1348,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div><div class="page-title">系統儀表板</div><div class="page-subtitle" id="dash-sub"></div></div>
         <div class="page-actions"><button class="btn btn-outline btn-sm" style="margin-right:10px" onclick="tourStart()">網站導覽</button><span id="dash-date" style="font-size:calc(13px * var(--font-scale));color:var(--text-secondary)"></span></div>
       </div>
-      <div class="stats-grid" id="dash-stats"></div>
+      <div id="dash-blocks" style="display:flex;flex-direction:column"><div class="stats-grid" id="dash-stats"></div>
       <div class="dashboard-grid" id="dash-cards"></div>
       <div class="dashboard-grid" style="grid-template-columns:1fr;margin-top:0" id="dash-alert-wrap">
         <div class="dashboard-card" id="dash-alert-card" style="cursor:default">
@@ -1332,10 +1357,10 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           <div id="dash-alert-list"></div>
         </div>
       </div>
-      <div class="dashboard-grid" style="margin-top:16px">
-        <div class="dashboard-card"><div class="dashboard-card-header"><div class="dashboard-card-icon warning"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:24px;height:24px"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div><div><div class="dashboard-card-title">待辦與提醒</div><div class="dashboard-card-sub">依目前登入角色之功能權限，彙整各模組待處理事項</div></div></div><div id="dash-todo"></div></div>
-        <div class="dashboard-card"><div class="dashboard-card-header"><div class="dashboard-card-icon warning"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:24px;height:24px"><path d="M3 11v2a1 1 0 0 0 1 1h3l8 4V6L7 10H4a1 1 0 0 0-1 1z"/><path d="M18.5 9a4 4 0 0 1 0 6"/></svg></div><div><div class="dashboard-card-title">系統公告</div><div class="dashboard-card-sub" id="dash-ann-sub">System Announcements</div></div></div><ul class="announcement-list" id="dash-ann"></ul></div>
-      </div>
+      <div class="dashboard-grid" style="margin-top:16px" id="dash-bottom-grid">
+        <div class="dashboard-card" id="dash-todo-card"><div class="dashboard-card-header"><div class="dashboard-card-icon warning"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:24px;height:24px"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div><div><div class="dashboard-card-title">待辦與提醒</div><div class="dashboard-card-sub">依目前登入角色之功能權限，彙整各模組待處理事項</div></div></div><div id="dash-todo"></div></div>
+        <div class="dashboard-card" id="dash-ann-card"><div class="dashboard-card-header"><div class="dashboard-card-icon warning"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:24px;height:24px"><path d="M3 11v2a1 1 0 0 0 1 1h3l8 4V6L7 10H4a1 1 0 0 0-1 1z"/><path d="M18.5 9a4 4 0 0 1 0 6"/></svg></div><div><div class="dashboard-card-title">系統公告</div><div class="dashboard-card-sub" id="dash-ann-sub">System Announcements</div></div></div><ul class="announcement-list" id="dash-ann"></ul></div>
+      </div></div>
     </div>
 
 <!-- ===== OVERFLOW SINGLE ===== -->
@@ -5669,6 +5694,39 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       </div>
     </div>
 
+
+    <!-- ===== ADMIN HOME BLOCKS ===== -->
+    <div class="view" id="view-admin-home-blocks">
+      <div class="breadcrumb">
+        <span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span><span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item">系統管理</span><span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item current">首頁區塊管理</span></div>
+      <div class="page-header">
+        <div><div class="page-title">首頁區塊管理</div><div class="page-subtitle">設定首頁儀表板各區塊的顯示開關與排列順序，並管理業務統計卡、業務模組卡之連結頁面與快速操作按鈕；儲存後即時套用至使用者首頁</div></div>
+        <div class="page-actions">
+          <button class="btn btn-outline" onclick="hbReset()">還原系統預設</button>
+          <button class="btn btn-outline" onclick="hbCancel()">取消變更</button>
+          <button class="btn btn-gold" onclick="hbSave()">儲存並套用</button>
+        </div>
+      </div>
+      <div class="dirty-bar" id="hb-dirty">⚠ 尚有未儲存的變更，請按「儲存並套用」使首頁生效</div>
+      <div class="menu-layout">
+        <div class="card">
+          <div class="card-header"><div><div class="card-title">區塊清單</div><div class="card-subtitle" id="hb-stat"></div></div>
+            <div class="page-actions"><button class="btn btn-outline btn-sm" onclick="hbExpandAll(true)">全部展開</button><button class="btn btn-outline btn-sm" onclick="hbExpandAll(false)">全部收合</button></div></div>
+          <div id="hb-tree"></div>
+          <div class="form-hint" style="margin-top:12px">※ 「業務統計卡」與「業務模組卡」可展開設定各卡片之顯示、順序與連結頁面；模組卡可自訂最多 4 顆快速操作按鈕（名稱、連結頁面、順序）。<br>※ 按鈕與卡片之連結目標若超出登入者之功能權限，該按鈕或卡片仍會自動隱藏；「系統異常告警」統計卡固定為捲動至告警彙整區。<br>※ 「待辦與提醒」與「系統公告」為並列排版，移動順序時視為同一列。</div>
+        </div>
+        <div class="sb-preview-wrap">
+          <div class="card" style="padding:14px">
+            <div class="card-title" style="margin-bottom:2px">首頁版面預覽</div>
+            <div class="card-subtitle" style="margin-bottom:10px">依目前設定呈現區塊順序與內容（示意）</div>
+            <div class="hbp" id="hb-preview"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ===== ADMIN MENU CONFIG ===== -->
     <div class="view" id="view-admin-menu-config">
       <div class="breadcrumb">
@@ -7189,7 +7247,7 @@ function navigateTo(viewId) {
     'query-individual': 'query', 'query-batch': 'query', 'query-flexible': 'query',
     'ruling-search': 'ruling', 'ruling-maintain': 'ruling',
     'admin-users': 'admin', 'admin-permissions': 'admin', 'admin-simulate': 'admin', 'admin-audit': 'admin',
-    'admin-announcements': 'admin', 'admin-workday': 'admin', 'admin-interface': 'admin', 'admin-tax-params': 'admin'
+    'admin-announcements': 'admin', 'admin-home-blocks': 'admin', 'admin-workday': 'admin', 'admin-interface': 'admin', 'admin-tax-params': 'admin'
   };
   
   if (menuMap[viewId]) {
@@ -12521,6 +12579,56 @@ navigateTo=function(id){_navSal(id);if(id.indexOf('salary-')===0){const sm=sEl('
 </script>
 
 <script>
+/* ===== V40：首頁區塊管理（設定資料與儀表板套用） ===== */
+const HB = {
+  KEYS: {stat: ['supervisor-approval', 'overflow-stats', 'stop-payment', 'tax-uncalc', 'monthly-dashboard', 'alert'],
+         mod: ['direct-register', 'overflow-single', 'stop-payment', 'tax-calc', 'monthly-dashboard', 'salary-active', 'query-individual']},
+  BLK: {stats: ['業務統計卡', '直撥、溢領、止付、課稅、定撥及告警等關鍵數字卡，點選可前往對應頁面'],
+        cards: ['業務模組卡', '各業務模組概況與快速操作按鈕'],
+        alerts: ['系統異常告警彙整', '集中顯示各業務告警，可依業務別篩選'],
+        todo: ['待辦與提醒', '依登入者功能權限彙整各模組待處理事項'],
+        ann: ['系統公告', '同步「公告管理」上架中之公告']},
+  STATN: {'supervisor-approval': '待核符直撥案件', 'overflow-stats': '溢領未收回', 'stop-payment': '止付案件處理中', 'tax-uncalc': '未完成課稅計算', 'monthly-dashboard': '當月定撥進度', 'alert': '系統異常告警'},
+  MODN: {'direct-register': '直撥登錄', 'overflow-single': '溢領管理', 'stop-payment': '止付作業', 'tax-calc': '課稅管理', 'monthly-dashboard': '定撥作業', 'salary-active': '調薪作業', 'query-individual': '查詢與函釋'},
+  BTN: {'direct-register': [['direct-register', '手動建置'], ['supervisor-approval', '科長核符'], ['direct-letter', '書函產製']],
+        'overflow-single': [['overflow-single', '單筆建置'], ['overflow-batch', '批次計算'], ['overflow-docs', '產製函表']],
+        'stop-payment': [['stop-register', '登錄止付案件'], ['stop-tracking', '追蹤查詢']],
+        'tax-calc': [['tax-calc', '課稅計算'], ['tax-report', '報表彙整']],
+        'monthly-dashboard': [['monthly-prep', '前置準備'], ['monthly-exec', '執行定撥']],
+        'salary-active': [['salary-retdiff', '退職差額'], ['salary-active', '現職調薪']],
+        'query-individual': [['query-individual', '個人查詢'], ['query-batch', '批次查詢'], ['ruling-search', '函釋查詢']]},
+  MAXBTN: 4, open: {}
+};
+HB.mk = () => ({
+  banner: true, order: ['stats', 'cards', 'alerts', 'todo', 'ann'], vis: {stats: true, cards: true, alerts: true, todo: true, ann: true},
+  statOrder: HB.KEYS.stat.slice(), stat: Object.fromEntries(HB.KEYS.stat.map(k => [k, {on: true, go: k === 'alert' ? '' : k}])),
+  modOrder: HB.KEYS.mod.slice(), mod: Object.fromEntries(HB.KEYS.mod.map(k => [k, {on: true, go: k, btns: HB.BTN[k].map(b => ({t: b[1], go: b[0], on: true}))}]))
+});
+HB.applied = HB.mk(); HB.draft = HB.mk();
+const hbEsc = t => String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const hbStat = go => HB.applied.stat[go] || {on: true, go};
+const hbMod = go => HB.applied.mod[go] || {on: true, go, btns: (HB.BTN[go] || []).map(b => ({t: b[1], go: b[0], on: true}))};
+const hbCan = g => { const v = dLvl(g); return v === undefined || v > 0; };
+function hbSort(kind, arr) {
+  const K = HB.KEYS[kind], c = HB.applied, ord = kind === 'stat' ? c.statOrder : c.modOrder, tab = kind === 'stat' ? c.stat : c.mod;
+  return ord.map(k => (tab[k] && tab[k].on) ? arr[K.indexOf(k)] : '').filter(Boolean).join('');
+}
+function hbApply(c) {
+  const g = id => document.getElementById(id); if (!g('dash-blocks')) return;
+  const pos = k => c.order.indexOf(k);
+  g('dash-banner').style.display = c.banner ? '' : 'none';
+  const U = {stats: g('dash-stats'), cards: g('dash-cards'), alerts: g('dash-alert-wrap')};
+  Object.keys(U).forEach(k => { U[k].style.order = pos(k); U[k].style.display = c.vis[k] ? '' : 'none'; });
+  const bg = g('dash-bottom-grid'), t = g('dash-todo-card'), a = g('dash-ann-card');
+  bg.style.order = Math.min(pos('todo'), pos('ann'));
+  t.style.order = pos('todo'); a.style.order = pos('ann');
+  t.style.display = c.vis.todo ? '' : 'none'; a.style.display = c.vis.ann ? '' : 'none';
+  bg.style.display = (c.vis.todo || c.vis.ann) ? '' : 'none';
+  bg.style.gridTemplateColumns = (c.vis.todo && c.vis.ann) ? '' : '1fr';
+}
+</script>
+
+<script>
 /* ===== V26：權限設定（角色預設權限矩陣＋使用者權限） ===== */
 const PM={tab:'role',mod:'全部',u:'王大明',du:null,
  roles:[['ADM','最高管理者','資訊室系統維運；角色預設為業務功能僅檢視（權責分離），系統管理功能完整權限。唯內建「系統管理員」帳號為雛型展示用，具全功能最高權限'],['UNIT','單位管理者','科長／覆核主管：核符、覆核核准、管理本單位使用者'],['HOST','業務組主辦人','軍／公／教科主辦：確認異動名單、設定本科名單與時限'],['STAFF','承辦人員','一般承辦：資料建置、計算、產製，依自身管轄範圍'],['QRY','查詢人員','唯讀查詢，不得新增、修改或註銷'],['AUD','稽核人員','稽核日誌及各項紀錄唯讀查核，可匯出稽核資料']],
@@ -12537,7 +12645,7 @@ const PM={tab:'role',mod:'全部',u:'王大明',du:null,
  ['止付作業','stop-payment','止付作業入口','132201'],['止付作業','stop-register','案件登錄與檢核','132201'],['止付作業','stop-docs','文件產製','132201'],['止付作業','stop-index','發文資訊索引維護（限主辦）','132101'],['止付作業','stop-tracking','案件追蹤統計','111111'],['止付作業','stop-recon','時限設定與異常勾稽（設定限主辦）','132101'],
  ['查詢作業','query-individual','個人支領查詢','111111'],['查詢作業','query-batch','批次查詢','111111'],['查詢作業','query-flexible','彈性報表','111101'],
  ['函釋管理','ruling-search','函釋查詢','111111'],['函釋管理','ruling-maintain','資料維護','132001'],
- ['系統管理','admin-users','使用者管理（單位管理者限本單位）','320001'],['系統管理','admin-permissions','權限設定','310001'],['系統管理','admin-simulate','模擬登入','300000'],['系統管理','admin-audit','稽核日誌','110002'],['系統管理','admin-announcements','公告管理','300000'],['系統管理','admin-workday','工作日管理','310000'],['系統管理','admin-interface','介接管理','300001'],['系統管理','admin-tax-params','課稅參數設定','132001'],['系統管理','admin-site-help','網站說明管理','320000'],['系統管理','admin-menu-config','功能表管理','300001']],
+ ['系統管理','admin-users','使用者管理（單位管理者限本單位）','320001'],['系統管理','admin-permissions','權限設定','310001'],['系統管理','admin-simulate','模擬登入','300000'],['系統管理','admin-audit','稽核日誌','110002'],['系統管理','admin-announcements','公告管理','300000'],['系統管理','admin-workday','工作日管理','310000'],['系統管理','admin-interface','介接管理','300001'],['系統管理','admin-tax-params','課稅參數設定','132001'],['系統管理','admin-site-help','網站說明管理','320000'],['系統管理','admin-home-blocks','首頁區塊管理','300001'],['系統管理','admin-menu-config','功能表管理','300001']],
  sys:{},cur:{},users:{}};
 (function(){
  PM.roles.forEach((r,i)=>{PM.sys[r[0]]={};PM.cur[r[0]]={};PM.fns.forEach(f=>{PM.sys[r[0]][f[1]]=+f[3][i];PM.cur[r[0]][f[1]]=+f[3][i];});});
@@ -12610,7 +12718,7 @@ function pmUClear(){PM.du.ov={};pmRender();}
 function pmUSave(){
  const d=PM.du,p={};PM.fns.forEach(f=>p[f[1]]=d.ov[f[1]]!==undefined?d.ov[f[1]]:PM.cur[d.role][f[1]]);
  const bad=pmSod(p,d.role);if(bad.length)return showToast('error','違反權責分離',bad[0]);
- if(d.role!=='ADM'&&(p['admin-simulate']>=1||p['admin-menu-config']>=2||p['admin-interface']>=2))return showToast('error','超出角色範圍','模擬登入、功能表管理、介接管理僅限最高管理者');
+ if(d.role!=='ADM'&&(p['admin-simulate']>=1||p['admin-home-blocks']>=2||p['admin-menu-config']>=2||p['admin-interface']>=2))return showToast('error','超出角色範圍','模擬登入、首頁區塊管理、功能表管理、介接管理僅限最高管理者');
  Object.assign(PM.users[d.name],{role:d.role,ov:Object.assign({},d.ov)});
  try{appendAuditLog('權限設定',d.name+' 角色='+pmRN(d.role)+'，自訂 '+Object.keys(d.ov).length+' 項');}catch(e){}
  showToast('success','儲存成功','使用者權限設定已更新，下次登入生效');pmRender();
@@ -12728,19 +12836,19 @@ function dashRender(){
  const chg=g(()=>CHG.status,'edit');
  const AL=g(dashAlerts,[]);const alerts=AL.length;
  /* 統計卡 */
- const sc=(cls,fn,label,val,sub,trend,go,vc)=>dLvl(fn)>0?`<div class="stat-card ${cls}" style="cursor:pointer" onclick="navigateTo('${go}')"><div class="stat-label">${label}</div><div class="stat-value ${vc||''}">${val}</div><div class="stat-sub">${sub}</div><div class="stat-trend">${trend}</div></div>`:'';
- dEl('dash-stats').innerHTML=[
+ const sc=(cls,fn,label,val,sub,trend,go,vc)=>{const C=hbStat(go);return !(dLvl(fn)>0&&C.on&&hbCan(C.go))?'':`<div class="stat-card ${cls}" style="cursor:pointer" onclick="navigateTo('${C.go}')"><div class="stat-label">${label}</div><div class="stat-value ${vc||''}">${val}</div><div class="stat-sub">${sub}</div><div class="stat-trend">${trend}</div></div>`;};
+ dEl('dash-stats').innerHTML=hbSort('stat',[
   dir&&sc('gold','supervisor-approval','待核符直撥案件',dir.pend,'逾期未核符 '+dir.over+' 件｜待核符金額 NT$ '+dFm(dir.amt),'今日已核符 '+dir.today+' 件','supervisor-approval','gold'),
   ovf&&sc('danger','overflow-stats','溢領未收回',ovf.open,'金額 NT$ '+dFm(ovf.openAmt)+'｜部分／分期 '+ovf.part+' 件','待處理合計 '+(ovf.open+ovf.part)+' 件','overflow-stats','danger'),
   sp&&sc('success','stop-payment','止付案件處理中',sp.run,'逾時未回饋 '+sp.over+'｜結果未明 '+sp.unc+'｜失敗 '+sp.fail,'累計止付成功 '+sp.succ+' 件','stop-payment','success'),
   tx&&sc('info','tax-uncalc','未完成課稅計算',tx.todo,'逾 7 日 '+tx.over+' 件','課稅案件 '+tx.cases+' 件｜註銷待覆核 '+tx.pend+' 件','tax-uncalc',''),
   mo&&sc('teal','monthly-dashboard',mo.ym.replace('/','年')+'月定撥（'+mo.stage+'）',mo.core+(mo.core==='執行中'?' '+mo.pct+'%':''),'報表 '+mo.rep+' / '+mo.repTotal+' 項','前置作業：'+(mo.prep?'已完成':'進行中'),'monthly-dashboard',''),
   dashAlertStat(AL)
- ].join('');
+ ]);
  /* 模組卡 */
  const mt=(v,l,c)=>`<div class="dashboard-metric"><div class="dashboard-metric-val" ${c?`style="color:var(--${c})"`:''}>${v}</div><div class="dashboard-metric-label">${l}</div></div>`;
- const mc=(fn,go,ic,title,sub,mets,acts)=>dLvl(fn)>0?`<div class="dashboard-card" onclick="navigateTo('${go}')"><div class="dashboard-card-header"><div class="dashboard-card-icon ${ic}">${dIco(go)}</div><div><div class="dashboard-card-title">${title}</div><div class="dashboard-card-sub">${sub}</div></div></div><div class="dashboard-metrics">${mets.join('')}</div><div class="quick-actions">${acts.filter(a=>dLvl(a[0])>=(a[3]||1)).map((a,i)=>`<button class="btn btn-sm ${i?'btn-outline':'btn-primary'}" onclick="event.stopPropagation();navigateTo('${a[0]}')">${a[1]}</button>`).join('')}</div></div>`:'';
- dEl('dash-cards').innerHTML=[
+ const mc=(fn,go,ic,title,sub,mets,acts)=>{const C=hbMod(go);return !(dLvl(fn)>0&&C.on&&hbCan(C.go))?'':`<div class="dashboard-card" onclick="navigateTo('${C.go}')"><div class="dashboard-card-header"><div class="dashboard-card-icon ${ic}">${dIco(go)}</div><div><div class="dashboard-card-title">${title}</div><div class="dashboard-card-sub">${sub}</div></div></div><div class="dashboard-metrics">${mets.join('')}</div><div class="quick-actions">${C.btns.filter(a=>a.on&&hbCan(a.go)).map((a,i)=>`<button class="btn btn-sm ${i?'btn-outline':'btn-primary'}" onclick="event.stopPropagation();navigateTo('${a.go}')">${hbEsc(a.t)}</button>`).join('')}</div></div>`;};
+ dEl('dash-cards').innerHTML=hbSort('mod',[
   dir&&mc('direct-register','direct-register','navy','直撥登錄','Direct Payment',[mt(dir.pend,'待核符','warning'),mt(dir.appr,'已核符','success'),mt(dir.canc,'已取消','danger')],[['direct-register','手動建置'],['supervisor-approval','科長核符'],['direct-letter','書函產製']]),
   ovf&&mc('overflow-single','overflow-single','navy','溢領管理','Overpayment Management',[mt(ovf.open+ovf.part,'待處理','warning'),mt(ovf.total,'本年累計'),mt(ovf.done,'已收回','success')],[['overflow-single','單筆建置'],['overflow-batch','批次計算'],['overflow-docs','產製函表']]),
   sp&&mc('stop-payment','stop-payment','" style="background:linear-gradient(135deg,var(--danger),#922b21)','止付作業','Stop Payment',[mt(sp.run,'處理中','warning'),mt(sp.succ,'累計成功','success'),mt(sp.fail,'失敗','danger')],[['stop-register','登錄止付案件'],['stop-tracking','追蹤查詢']]),
@@ -12748,7 +12856,7 @@ function dashRender(){
   mo&&mc('monthly-dashboard','monthly-dashboard','teal','定撥作業','Monthly Payment',[mt(mo.core+(mo.pct&&mo.pct<100?' '+mo.pct+'%':''),mo.ym.replace('/','年')+'月（'+mo.stage+'）','warning'),mt(mo.rep+'/'+mo.repTotal,'報表項目'),mt(mo.anom,'異常',mo.anom?'danger':'success')],[['monthly-prep','前置準備'],['monthly-exec','執行定撥']]),
   sal&&mc('salary-retdiff','salary-active','gold','調薪作業','Salary Adjustment',[mt(sal.pend,'退職差額待處理','warning'),mt(sal.n+'/5','現職調薪流程'),mt(sal.ver,'現行俸額筆數')],[['salary-retdiff','退職差額'],['salary-active','現職調薪']]),
   mc('query-individual','query-individual','info','查詢與函釋','Query & Rulings',[mt(g(()=>QR.snaps.length,0),'查詢留存紀錄'),mt(rul,'函釋筆數'),mt(ext?ext.ok+'/'+ext.n:'-','外部資料正常',ext&&ext.bl?'danger':'success')],[['query-individual','個人查詢'],['query-batch','批次查詢'],['ruling-search','函釋查詢']])
- ].join('');
+ ]);
  /* 待辦 */
  const td=[];const add=(fn,go,sev,txt,n)=>{if(n>0&&dLvl(fn)>0)td.push([go,sev,txt,n]);};
  if(dir){add('supervisor-approval','supervisor-approval',dir.over?'danger':'warning','直撥案件待科長核符'+(dir.over?'（含逾期 '+dir.over+' 件）':''),dir.pend);}
@@ -14172,7 +14280,7 @@ function dashAlertStat(AL) {
 function dashAlertRender(AL) {
   DASH_AL.list = AL;
   const card = document.getElementById('dash-alert-card'); if (!card) return;
-  document.getElementById('dash-alert-wrap').style.display = dLvl('dashboard') > 0 ? '' : 'none';
+  document.getElementById('dash-alert-wrap').style.display = (dLvl('dashboard') > 0 && HB.applied.vis.alerts) ? '' : 'none';
   const by = {}; AL.forEach(a => by[a.mod] = (by[a.mod] || 0) + 1);
   if (DASH_AL.mod !== '全部' && !by[DASH_AL.mod]) DASH_AL.mod = '全部';
   const chips = [['全部', AL.length]].concat(AL_MODS.filter(m => by[m]).map(m => [m, by[m]]));
@@ -16200,5 +16308,125 @@ saveInterfaceSystem = function () {
 
 </script>
 
+
+<script>
+/* ===== V40：首頁區塊管理（管理介面） ===== */
+(function () {
+  const $ = id => document.getElementById(id), E = hbEsc, C = () => HB.draft;
+  const clone = o => JSON.parse(JSON.stringify(o));
+  const swap = (arr, i, d) => { const j = i + d; if (j < 0 || j >= arr.length) return; [arr[i], arr[j]] = [arr[j], arr[i]]; };
+  function opts(cur) {
+    let found = false, leaf = '', grp = '';
+    const opt = k => { if (!MC.meta[k]) return ''; if (k === cur) found = true; return `<option value="${k}" ${k === cur ? 'selected' : ''}>${E(MC.meta[k].name)}</option>`; };
+    MC.secs.forEach(s => s.items.forEach(i => {
+      if (i.children.length) grp += `<optgroup label="${E(MC.meta[i.key].name)}">${i.children.map(c => opt(c.key)).join('')}</optgroup>`;
+      else leaf += opt(i.key);
+    }));
+    return (leaf ? `<optgroup label="共通">${leaf}</optgroup>` : '') + grp + (found || !cur ? '' : `<option value="${E(cur)}" selected>${E(cur)}</option>`);
+  }
+  const tog = (on, fn) => `<label class="toggle-switch"><input type="checkbox" ${on ? 'checked' : ''} onchange="${fn}"><span class="toggle-slider"></span></label>`;
+  const mv = (pre, first, last) => `<button class="mc-move" title="上移" ${first ? 'disabled' : ''} onclick="${pre}-1)">▲</button><button class="mc-move" title="下移" ${last ? 'disabled' : ''} onclick="${pre}1)">▼</button>`;
+
+  window.hbRender = function () {
+    const c = C(), dirty = JSON.stringify(c) !== JSON.stringify(HB.applied);
+    $('hb-dirty').classList.toggle('show', dirty);
+    let h = `<div class="mc-group-label">固定區塊</div>
+      <div class="mc-row ${c.banner ? '' : 'off'}"><span style="width:24px"></span><span class="mc-name">重要公告橫幅<span class="hb-desc">有「緊急」等級公告時顯示於標題上方</span></span><span class="badge badge-secondary">固定置頂</span>${tog(c.banner, 'hbOnBanner(this.checked)')}</div>
+      <div class="mc-group-label">儀表板區塊（可調整順序）</div>`;
+    let st = c.statOrder.filter(k => c.stat[k].on).length, md = c.modOrder.filter(k => c.mod[k].on).length, bt = 0;
+    c.modOrder.forEach(k => { if (c.mod[k].on) bt += c.mod[k].btns.filter(b => b.on).length; });
+    c.order.forEach((k, i) => {
+      const exp = k === 'stats' || k === 'cards', op = HB.open[k];
+      const badge = k === 'stats' ? `<span class="badge badge-info">${st}/${c.statOrder.length}</span>` : k === 'cards' ? `<span class="badge badge-info">${md}/${c.modOrder.length}</span>` : '';
+      h += `<div class="mc-row ${c.vis[k] ? '' : 'off'}">${exp ? `<button class="mc-expand ${op ? 'open' : ''}" onclick="hbOpen('${k}')">▶</button>` : '<span style="width:24px"></span>'}
+        <span class="mc-name">${HB.BLK[k][0]}<span class="hb-desc">${HB.BLK[k][1]}</span></span>${badge}${tog(c.vis[k], `hbOnBlock('${k}',this.checked)`)}${mv(`hbMoveBlock(${i},`, i === 0, i === c.order.length - 1)}</div>`;
+      if (k === 'stats' && op) c.statOrder.forEach((s, j) => {
+        const it = c.stat[s];
+        h += `<div class="mc-row child ${it.on ? '' : 'off'}"><span class="mc-name">${HB.STATN[s]}</span>${s === 'alert' ? '<span class="badge badge-secondary">固定：捲動至告警彙整區</span>' : `<select class="form-control hb-sel" title="點選卡片時前往的頁面" onchange="hbGoS('${s}',this.value)">${opts(it.go)}</select>`}${tog(it.on, `hbOnS('${s}',this.checked)`)}${mv(`hbMoveS(${j},`, j === 0, j === c.statOrder.length - 1)}</div>`;
+      });
+      if (k === 'cards' && op) c.modOrder.forEach((m, j) => {
+        const it = c.mod[m], mo = HB.open['m:' + m];
+        h += `<div class="mc-row child ${it.on ? '' : 'off'}"><button class="mc-expand ${mo ? 'open' : ''}" title="展開按鈕設定" onclick="hbOpenM('${m}')">▶</button><span class="mc-name">${HB.MODN[m]}</span><span class="badge badge-info" title="顯示中的按鈕數">按鈕 ${it.btns.filter(b => b.on).length}/${it.btns.length}</span><select class="form-control hb-sel" title="點選卡片時前往的頁面" onchange="hbGoM('${m}',this.value)">${opts(it.go)}</select>${tog(it.on, `hbOnM('${m}',this.checked)`)}${mv(`hbMoveM(${j},`, j === 0, j === c.modOrder.length - 1)}</div>`;
+        if (mo) {
+          it.btns.forEach((b, bi) => {
+            h += `<div class="mc-row child hb-btnrow ${b.on ? '' : 'off'}"><span class="hb-btnno">按鈕${bi + 1}</span><input class="form-control hb-in" maxlength="8" placeholder="按鈕名稱" value="${E(b.t)}" oninput="hbBtnT('${m}',${bi},this.value)"><select class="form-control hb-sel" onchange="hbBtnGo('${m}',${bi},this.value)">${opts(b.go)}</select>${tog(b.on, `hbBtnOn('${m}',${bi},this.checked)`)}${mv(`hbBtnMove('${m}',${bi},`, bi === 0, bi === it.btns.length - 1)}<button class="mc-move" title="刪除按鈕" onclick="hbBtnDel('${m}',${bi})">✕</button></div>`;
+          });
+          h += `<div class="hb-add"><button class="btn btn-outline btn-sm" ${it.btns.length >= HB.MAXBTN ? 'disabled' : ''} onclick="hbBtnAdd('${m}')">＋ 新增按鈕${it.btns.length >= HB.MAXBTN ? '（已達上限 ' + HB.MAXBTN + ' 顆）' : ''}</button></div>`;
+        }
+      });
+    });
+    $('hb-tree').innerHTML = h;
+    const vis = c.order.filter(k => c.vis[k]).length;
+    $('hb-stat').textContent = `共 ${c.order.length} 個區塊，顯示 ${vis} 個；統計卡 ${st}/${c.statOrder.length} 張、模組卡 ${md}/${c.modOrder.length} 張、快速按鈕 ${bt} 顆`;
+    hbPreview();
+  };
+
+  window.hbPreview = function () {
+    const c = C(), pos = k => c.order.indexOf(k);
+    const stat = c.statOrder.filter(k => c.stat[k].on).map(k => `<div class="hbp-tile"><b>${HB.STATN[k]}</b></div>`).join('') || '<div class="hbp-empty">（未顯示任何統計卡）</div>';
+    const cards = c.modOrder.filter(k => c.mod[k].on).map(k => `<div class="hbp-card"><b>${HB.MODN[k]}</b><div class="hbp-chips">${c.mod[k].btns.filter(b => b.on).map((b, i) => `<span class="hbp-chip ${i ? '' : 'p'}">${E(b.t) || '（未命名）'}</span>`).join('')}</div></div>`).join('') || '<div class="hbp-empty">（未顯示任何模組卡）</div>';
+    const two = ['todo', 'ann'].filter(k => c.vis[k]).sort((a, b) => pos(a) - pos(b));
+    const units = [
+      {p: pos('stats'), v: c.vis.stats, h: `<div class="hbp-grid">${stat}</div>`},
+      {p: pos('cards'), v: c.vis.cards, h: `<div class="hbp-grid">${cards}</div>`},
+      {p: pos('alerts'), v: c.vis.alerts, h: '<div class="hbp-box">系統異常告警彙整</div>'},
+      {p: Math.min(pos('todo'), pos('ann')), v: two.length > 0, h: `<div class="hbp-two ${two.length === 1 ? 'one' : ''}">${two.map(k => `<div class="hbp-box">${HB.BLK[k][0]}</div>`).join('')}</div>`}
+    ].filter(u => u.v).sort((a, b) => a.p - b.p);
+    $('hb-preview').innerHTML = (c.banner ? '<div class="hbp-bar">⚠ 重要公告橫幅</div>' : '') + '<div class="hbp-head">系統儀表板（標題列固定）</div>' + (units.map(u => u.h).join('') || '<div class="hbp-empty">（首頁未顯示任何區塊）</div>');
+  };
+
+  const R = () => hbRender();
+  Object.assign(window, {
+    hbOpen: k => { HB.open[k] = !HB.open[k]; R(); },
+    hbOpenM: k => { HB.open['m:' + k] = !HB.open['m:' + k]; R(); },
+    hbExpandAll: v => { HB.open.stats = v; HB.open.cards = v; HB.KEYS.mod.forEach(k => HB.open['m:' + k] = v); R(); },
+    hbOnBanner: v => { C().banner = v; R(); },
+    hbOnBlock: (k, v) => { C().vis[k] = v; R(); },
+    hbMoveBlock: (i, d) => { swap(C().order, i, d); R(); },
+    hbOnS: (k, v) => { C().stat[k].on = v; R(); },
+    hbGoS: (k, v) => { C().stat[k].go = v; R(); },
+    hbMoveS: (i, d) => { swap(C().statOrder, i, d); R(); },
+    hbOnM: (k, v) => { C().mod[k].on = v; R(); },
+    hbGoM: (k, v) => { C().mod[k].go = v; R(); },
+    hbMoveM: (i, d) => { swap(C().modOrder, i, d); R(); },
+    hbBtnOn: (k, i, v) => { C().mod[k].btns[i].on = v; R(); },
+    hbBtnGo: (k, i, v) => { C().mod[k].btns[i].go = v; R(); },
+    hbBtnT: (k, i, v) => { C().mod[k].btns[i].t = v; $('hb-dirty').classList.toggle('show', JSON.stringify(C()) !== JSON.stringify(HB.applied)); hbPreview(); },
+    hbBtnMove: (k, i, d) => { swap(C().mod[k].btns, i, d); R(); },
+    hbBtnDel: (k, i) => { C().mod[k].btns.splice(i, 1); R(); },
+    hbBtnAdd: k => { const b = C().mod[k].btns; if (b.length >= HB.MAXBTN) return; b.push({t: '新按鈕', go: 'dashboard', on: true}); R(); },
+    hbCancel: () => { HB.draft = clone(HB.applied); R(); },
+    hbReset: () => { if (!confirm('確定還原為系統預設的首頁區塊配置？')) return; HB.draft = HB.mk(); R(); showToast('warning', '已還原預設', '請按「儲存並套用」使首頁生效'); },
+    hbSave: () => {
+      const c = C();
+      if (!c.order.some(k => c.vis[k])) return showToast('error', '無法儲存', '首頁至少需顯示一個儀表板區塊');
+      for (const m of c.modOrder) {
+        const bs = c.mod[m].btns;
+        for (let i = 0; i < bs.length; i++) {
+          if (!bs[i].t.trim()) return showToast('error', '按鈕名稱未填', `「${HB.MODN[m]}」第 ${i + 1} 顆按鈕請輸入名稱，或將其刪除`);
+          if (!bs[i].go) return showToast('error', '連結頁面未選', `「${HB.MODN[m]}」第 ${i + 1} 顆按鈕請選擇連結頁面`);
+        }
+        if (c.mod[m].on && !c.mod[m].go) return showToast('error', '連結頁面未選', `「${HB.MODN[m]}」卡片請選擇連結頁面`);
+      }
+      for (const s of c.statOrder) if (s !== 'alert' && c.stat[s].on && !c.stat[s].go) return showToast('error', '連結頁面未選', `「${HB.STATN[s]}」統計卡請選擇連結頁面`);
+      c.modOrder.forEach(m => c.mod[m].btns.forEach(b => b.t = b.t.trim()));
+      HB.applied = clone(c); hbApply(HB.applied); dashRender(); R();
+      try { appendAuditLog('首頁區塊管理', `顯示區塊 ${c.order.filter(k => c.vis[k]).length}/${c.order.length}；統計卡 ${c.statOrder.filter(k => c.stat[k].on).length} 張；模組卡 ${c.modOrder.filter(k => c.mod[k].on).length} 張`); } catch (e) {}
+      showToast('success', '首頁區塊已套用', '使用者首頁已依新設定顯示');
+    }
+  });
+
+  const _nav = navigateTo;
+  navigateTo = function (id) {
+    _nav(id);
+    if (id === 'admin-home-blocks') {
+      const sm = $('submenu-admin'); if (sm) { sm.classList.add('open'); $('menu-admin').classList.add('expanded'); }
+      document.querySelectorAll('.sidebar-item, .sidebar-sub-item').forEach(el => { if ((el.getAttribute('onclick') || '').indexOf("navigateTo('admin-home-blocks')") > -1) el.classList.add('active'); });
+      HB.draft = clone(HB.applied); hbRender();
+    }
+  };
+  hbApply(HB.applied);
+})();
+</script>
 </body>
 </html>
