@@ -2,6 +2,15 @@
 <html lang="zh-TW">
 <head>
 <script>
+/* ===== V42：個資遮罩政策（身分證／人名；全系統統一） ===== */
+var PII={idOn:true,nameOn:true,idFmt:'std',nameFmt:'std',reason:true,scope:{screen:true,print:true,export:true},ctx:'screen',
+ roles:{ADM:[1,1],UNIT:[1,1],HOST:[1,1],STAFF:[0,0],QRY:[0,0],AUD:[1,1]},log:[]};
+function piiAct(k){return PII.scope[PII.ctx]!==false&&(k==='id'?PII.idOn:PII.nameOn);}
+function piiId(id){id=String(id==null?'':id);if(!piiAct('id')||id.length<8||id.indexOf('*')>-1)return id;return PII.idFmt==='strict'?id.slice(0,1)+'*'.repeat(id.length-3)+id.slice(-2):id.slice(0,4)+'***'+id.slice(7);}
+function piiName(n){n=String(n==null?'':n);if(!piiAct('name'))return n;const a=Array.from(n);if(a.length<=1||/[Ｏ〇○]/.test(n))return n;return PII.nameFmt==='sur'?a[0]+'Ｏ'.repeat(a.length-1):a.length===2?a[0]+'Ｏ':a[0]+'Ｏ'.repeat(a.length-2)+a[a.length-1];}
+function piiLabel(){return (PII.idOn||PII.nameOn)?'遮罩（隱碼）':'完整顯示';}
+</script>
+<script>
 window.contextInfo = {"files":[],"materials":[],"crafts":[]};
 // 提早套用使用者已儲存的字體大小設定，避免頁面載入時閃爍
 (function() {
@@ -1340,10 +1349,10 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div class="sidebar-sub-item" onclick="navigateTo('admin-announcements')">公告管理</div>
 		<div class="sidebar-sub-item" onclick="navigateTo('admin-site-help')">網站說明管理</div>
         <div class="sidebar-sub-item" onclick="navigateTo('admin-home-blocks')">首頁區塊管理</div>
-        <div class="sidebar-sub-item" onclick="navigateTo('admin-glyph-mgmt')">造字檔管理</div>
         <div class="sidebar-sub-item" onclick="navigateTo('admin-menu-config')">功能表管理</div>
 		<div class="sidebar-sub-item" onclick="navigateTo('admin-tax-params')">課稅參數設定</div>
         <div class="sidebar-sub-item" onclick="navigateTo('admin-workday')">工作日管理</div>
+		<div class="sidebar-sub-item" onclick="navigateTo('admin-glyph-mgmt')">造字檔與個資遮罩管理</div>
         <div class="sidebar-sub-item" onclick="navigateTo('admin-interface')">介接管理</div>
       </div>
     </div>
@@ -2342,20 +2351,10 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       </div>
       <div class="page-header">
         <div class="page-title">課稅報表彙整統計</div>
-        <div class="page-subtitle">依規範產製 5 類法定報表，支援造字檔顯示及個人資料遮罩；輸出格式支援 PDF 與 Excel，並可下載及列印</div>
+        <div class="page-subtitle">依規範產製 5 類法定報表；造字檔與個資遮罩統一依「系統管理 › 造字檔與個資遮罩管理」設定；輸出格式支援 PDF 與 Excel，並可下載及列印</div>
       </div>
 
-      <div class="card" style="margin-bottom:16px" id="rpt-font-card">
-        <div class="card-header"><div><div class="card-title">造字檔與個資顯示設定</div><div class="card-subtitle">本子系統支援機關提供之造字檔，確保特殊字元或罕見字正確顯示；報表個人資料顯示可由承辦人員選擇遮罩（隱碼）</div></div></div>
-        <div class="filter-row" style="display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;padding:0 16px 12px">
-          <div class="filter-group"><div class="filter-label">目前造字檔</div><div style="font-size:13px"><b id="font-name">機關造字檔_v115.03.ttf</b>　<span class="badge badge-success" id="font-state">已啟用</span><br><span style="color:var(--text-secondary)" id="font-meta">收錄 1,286 字；更新日期 115/03/15</span></div></div>
-          <div class="filter-group"><div class="filter-label">字元預覽</div><div class="cns-font" id="font-sample" style="font-size:20px;letter-spacing:4px">周𠮷明　𡌛　𪚥　堃　峯</div></div>
-          <div class="filter-group"><div class="filter-label">個資顯示（全報表）</div><select class="filter-control" id="rpt-mask-global" onchange="rptSetMask(this.value)"><option value="1">遮罩（隱碼）</option><option value="0">完整顯示</option></select></div>
-          <label class="btn btn-outline btn-sm" style="align-self:flex-end;cursor:pointer">上傳／更新造字檔<input type="file" accept=".ttf,.otf,.woff,.woff2" style="display:none" onchange="rptLoadFont(this)"></label>
-        </div>
-      </div>
-
-      <div class="tabs">
+            <div class="tabs">
         <div class="tab-item active" onclick="switchTab(this,'taxreport-a')">扣繳稅額明細表</div>
         <div class="tab-item" onclick="switchTab(this,'taxreport-b')">扣繳稅額統計表</div>
         <div class="tab-item" onclick="switchTab(this,'taxreport-c')">退撫給與明細表</div>
@@ -2391,10 +2390,6 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           <div class="filter-group">
             <div class="filter-label">身分別</div>
             <select class="filter-control"><option>全部</option><option>公務人員</option><option>教育人員</option><option>軍職人員</option></select>
-          </div>
-          <div class="filter-group">
-            <div class="filter-label">個資顯示</div>
-            <select class="filter-control" id="rpt-mask" onchange="rptSetMask(this.value)"><option value="1">遮罩（隱碼）</option><option value="0">完整顯示</option></select>
           </div>
           <button class="btn btn-primary btn-sm" style="align-self:flex-end" onclick="showToast('success','查詢完成','已依查詢條件產製退職所得扣繳稅額明細表，共 1,847 筆')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> 查詢</button>
           <button class="btn btn-success btn-sm" style="align-self:flex-end" onclick="runDownload('退職所得扣繳稅額明細表','xlsx')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="20" x2="4" y2="12"/><line x1="10" y1="20" x2="10" y2="6"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="20" y1="20" x2="4" y2="20"/></svg> 匯出Excel</button>
@@ -2528,7 +2523,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           <div class="filter-group"><div class="filter-label">處理情形</div><select class="filter-control" id="txn-st" onchange="txnRender()"><option value="todo">未完成（未登錄＋已登錄未計算）</option><option value="unreg">未登錄</option><option value="reg">已登錄未計算</option><option value="done">已完成計算</option><option value="all">全部</option></select></div>
           <div class="filter-group"><div class="filter-label">撥付日期起</div><input class="filter-control" id="txn-d1" value="115/01/01" onchange="txnRender()"></div>
           <div class="filter-group"><div class="filter-label">撥付日期迄</div><input class="filter-control" id="txn-d2" value="115/10/31" onchange="txnRender()"></div>
-          <div class="filter-group"><div class="filter-label">個資顯示</div><select class="filter-control" id="txn-mask" onchange="txnRender()"><option value="1">遮罩（隱碼）</option><option value="0">完整顯示</option></select></div>
+          <input type="hidden" id="txn-mask" value="1">
           <button class="btn btn-success btn-sm" onclick="txnExport()">匯出Excel</button>
           <button class="btn btn-danger btn-sm" onclick="runDownload('未計算稅額案件清單','pdf')">匯出PDF</button>
           <button class="btn btn-outline btn-sm" onclick="txnPrint()">列印</button>
@@ -2662,7 +2657,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
             <div class="filter-group"><div class="filter-label">身分證字號</div><input type="text" class="filter-control" id="qc-id" placeholder="請輸入身分證字號（可部分輸入）" onkeydown="if(event.key==='Enter')qcSearch()"></div>
             <div class="filter-group"><div class="filter-label">姓名</div><input type="text" class="filter-control" id="qc-name" placeholder="請輸入姓名" onkeydown="if(event.key==='Enter')qcSearch()"></div>
             <div class="filter-group"><div class="filter-label">年度</div><select class="filter-control" id="qc-yr"><option value="">全部</option><option>115</option><option>114</option><option selected>113</option><option>112</option><option>111</option></select></div>
-            <div class="filter-group"><div class="filter-label">個資顯示</div><select class="filter-control" id="qc-mask" onchange="qcRender()"><option value="1">遮罩（隱碼）</option><option value="0">完整顯示</option></select></div>
+            <input type="hidden" id="qc-mask" value="1">
             <button class="btn btn-primary btn-sm" style="align-self:flex-end" onclick="qcSearch()">查詢</button>
             <button class="btn btn-outline btn-sm" style="align-self:flex-end" onclick="qcClear()">清除條件</button>
           </div>
@@ -5742,12 +5737,13 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 
     <!-- ===== ADMIN GLYPH MGMT ===== -->
     <div class="view" id="view-admin-glyph-mgmt">
-      <div class="breadcrumb"><span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-item">系統管理</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-item current">造字檔管理</span></div>
+      <div class="breadcrumb"><span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-item">系統管理</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-item current">造字檔與個資遮罩管理</span></div>
       <div class="page-header">
-        <div><div class="page-title">造字檔管理</div><div class="page-subtitle">匯入機關提供之造字檔，確保姓名、地址等特殊字元與罕見字於畫面、報表、函表及匯出檔案皆能正確呈現</div></div>
-        <div class="page-actions"><input type="file" id="hg-file" accept=".ttf,.otf,.woff,.woff2" style="display:none"><button class="btn btn-gold" onclick="document.getElementById('hg-file').click()">匯入造字檔</button></div>
+        <div><div class="page-title">造字檔與個資遮罩管理</div><div class="page-subtitle">統一管理機關造字檔（罕見字正確顯示）與身分證、人名遮罩（隱碼）；設定即時套用至全系統畫面、報表列印與匯出檔案</div></div>
+        <div class="page-actions" id="hg-actions"><input type="file" id="hg-file" accept=".ttf,.otf,.woff,.woff2" style="display:none"><button class="btn btn-gold" onclick="document.getElementById('hg-file').click()">匯入造字檔</button></div>
       </div>
-      <div class="stats-grid" id="hg-stats"></div>
+      <div class="tabs" style="margin-bottom:16px"><div class="tab-item active" id="hg-tab-b1" onclick="hgTab('glyph')">造字檔</div><div class="tab-item" id="hg-tab-b2" onclick="hgTab('pii')">個資遮罩（隱碼）</div></div>
+      <div id="hg-tab-glyph"><div class="stats-grid" id="hg-stats"></div>
       <div class="card" style="margin-bottom:16px"><div class="card-header"><div><div class="card-title">造字檔清單</div><div class="card-subtitle">支援 TTF／OTF／WOFF／WOFF2 字型檔；匯入後立即套用至全系統；停用後恢復原字型</div></div></div><div class="table-wrapper"><table class="data-table"><thead><tr><th>檔名</th><th>版本</th><th>來源機關</th><th>類型</th><th>匯入時間</th><th>字數</th><th>啟用</th><th>操作</th></tr></thead><tbody id="hg-files"></tbody></table></div></div>
       <div class="menu-layout" style="margin-bottom:16px">
         <div class="card"><div class="card-header"><div><div class="card-title">字集對照表</div><div class="card-subtitle">造字碼（私人使用區 U+E000～U+F8FF）、部件拆字與替代字，供檢索、匯出及介接轉換使用</div></div></div><div class="table-wrapper"><table class="data-table"><thead><tr><th>預覽</th><th>造字碼</th><th>說明</th><th>部件</th><th>替代字</th><th>近 30 日使用</th><th>啟用</th></tr></thead><tbody id="hg-glyphs"></tbody></table></div></div>
@@ -5756,7 +5752,17 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       <div class="card hg-t"><div class="card-header"><div><div class="card-title">顯示測試與缺字檢核</div><div class="card-subtitle">貼上姓名、地址或報表文字，比對「未支援造字」與「已套用造字檔」之差異，並檢出未對照之缺字</div></div><div class="page-actions"><button class="btn btn-outline btn-sm" onclick="hgSample()">載入範例</button><button class="btn btn-primary btn-sm" onclick="hgTest()">檢核</button></div></div>
         <textarea id="hg-in" class="form-control" rows="3"></textarea>
         <div class="hg-cmp"><div><h5>未支援造字檔（缺字顯示為方框）</h5><span id="hg-o1" class="hg-raw"></span></div><div class="hg-big"><h5>已套用造字檔（個人資料／報表顯示）</h5><span id="hg-o2"></span></div><div><h5>匯出檔／介接文字（依輸出策略）</h5><span id="hg-o3" class="hg-raw"></span></div></div>
-        <div class="table-wrapper" style="margin-top:12px"><table class="data-table"><thead><tr><th>字元</th><th>碼位</th><th>檢核結果</th><th>處理</th></tr></thead><tbody id="hg-chk"></tbody></table></div></div>
+        <div class="table-wrapper" style="margin-top:12px"><table class="data-table"><thead><tr><th>字元</th><th>碼位</th><th>檢核結果</th><th>處理</th></tr></thead><tbody id="hg-chk"></tbody></table></div></div></div>
+      <div id="hg-tab-pii" style="display:none">
+        <div class="stats-grid" id="pii-stats"></div>
+        <div class="menu-layout" style="margin-bottom:16px">
+          <div class="card"><div class="card-header"><div><div class="card-title">遮罩開關與格式</div><div class="card-subtitle">開啟＝畫面、報表、匯出一律遮罩；關閉＝依該項目完整顯示。全系統（含課稅報表彙整統計）統一依此設定，各功能頁面不再個別設定</div></div></div><div id="pii-sw"></div></div>
+          <div class="card"><div class="card-title" style="margin-bottom:10px">套用範圍</div><div id="pii-scope"></div><div class="form-hint" style="margin-top:10px">※ 函表產製與介接傳輸之遮罩規則另依各子系統法定格式辦理。</div></div>
+        </div>
+        <div class="card" style="margin-bottom:16px"><div class="card-header"><div><div class="card-title">解除遮罩權限（依角色）</div><div class="card-subtitle">遮罩開啟時，僅下列角色可於畫面按「顯示完整」；解除時留存稽核紀錄</div></div></div><div class="table-wrapper"><table class="data-table"><thead><tr><th>角色</th><th>可解除身分證遮罩</th><th>可解除人名遮罩</th></tr></thead><tbody id="pii-roles"></tbody></table></div></div>
+        <div class="card" style="margin-bottom:16px"><div class="card-header"><div><div class="card-title">套用預覽</div><div class="card-subtitle">以示範資料呈現各輸出管道之遮罩結果（含造字）</div></div></div><div class="table-wrapper"><table class="data-table"><thead><tr><th>姓名（原始）</th><th>身分證字號（原始）</th><th>畫面顯示</th><th>列印／PDF</th><th>匯出 CSV／Excel</th></tr></thead><tbody id="pii-prev"></tbody></table></div></div>
+        <div class="card"><div class="card-header"><div><div class="card-title">解除遮罩稽核紀錄</div><div class="card-subtitle">本次工作階段之解除／拒絕紀錄（正式環境併入稽核日誌）</div></div></div><div class="table-wrapper"><table class="data-table"><thead><tr><th>時間</th><th>使用者</th><th>角色</th><th>欄位</th><th>用途</th><th>結果</th></tr></thead><tbody id="pii-log"></tbody></table></div></div>
+      </div>
     </div>
 
     <!-- ===== ADMIN MENU CONFIG ===== -->
@@ -10633,7 +10639,7 @@ const TXL = {once: '一次給與金額', per: '分期領取退職所得（全年
 const fm = n => Number(Math.round(n)).toLocaleString('en-US');
 const nt = n => (n < 0 ? '-' : '') + 'NT$ ' + fm(Math.abs(n));
 const rocNow = () => { const d = new Date(), p = x => String(x).padStart(2, '0'); return (d.getFullYear() - 1911) + '/' + p(d.getMonth() + 1) + '/' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()); };
-const mskId = id => id.slice(0, 4) + '***' + id.slice(7);
+const mskId = id => piiId(id);
 const txType = id => TXT.find(t => t.id === id);
 
 /* ---- A：計算引擎 ---- */
@@ -11375,7 +11381,7 @@ navigateTo = function (id) {
 const TODAY_ROC = '115/10/20';
 const rocToDate = t => { const m = /^(\d{3})\/(\d{2})\/(\d{2})/.exec(t); return m ? new Date(+m[1] + 1911, +m[2] - 1, +m[3]) : null; };
 const daysSince = t => Math.max(0, Math.floor((rocToDate(TODAY_ROC) - rocToDate(t)) / 86400000));
-function maskName(n) { const a = Array.from(n || ''); return a.length <= 1 ? n : a.length === 2 ? a[0] + 'Ｏ' : a[0] + 'Ｏ'.repeat(a.length - 2) + a[a.length - 1]; }
+function maskName(n) { return piiName(n); }
 const htmlEsc = t => String(t == null ? '' : t).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
 const csvCell = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
 const toCsv = rows => '﻿' + rows.map(r => r.map(csvCell).join(',')).join('\r\n');
@@ -11484,23 +11490,16 @@ function rptTableOf(tabId) {
   const t = document.querySelector('#' + tabId + ' table'); if (!t) return [[]];
   return Array.from(t.rows).map(tr => Array.from(tr.cells).map(c => c.innerText.trim()));
 }
-function rptPrint(tabId, title) { printHtml(title, tableToPrint(rptTableOf(tabId)) + '<div class="sub" style="margin-top:8px">個資顯示：' + (RPT.mask ? '遮罩（隱碼）' : '完整顯示') + '</div>'); }
+function rptPrint(tabId, title) { printHtml(title, tableToPrint(rptTableOf(tabId)) + '<div class="sub" style="margin-top:8px">個資顯示：' + (piiLabel()) + '</div>'); }
 function rptEnhance() {
   [['taxreport-a', '退職所得扣繳稅額明細表'], ['taxreport-b', '退職所得扣繳稅額統計表'], ['taxreport-c', '退撫給與明細表'], ['taxreport-d', '退職所得扣繳件數統計表'], ['taxreport-e', '稅額差異明細表']].forEach(([id, t]) => {
     const tab = document.getElementById(id); if (!tab || tab.querySelector('.rpt-print')) return;
     const pdfBtn = Array.from(tab.querySelectorAll('button')).find(b => (b.getAttribute('onclick') || '').indexOf("'pdf'") > -1); if (!pdfBtn) return;
     const b = document.createElement('button'); b.className = 'btn btn-outline btn-sm rpt-print'; b.style.alignSelf = 'flex-end'; b.textContent = '列印'; b.onclick = () => rptPrint(id, t);
     pdfBtn.insertAdjacentElement('afterend', b);
-    if (id === 'taxreport-e') { const sel = document.createElement('select'); sel.className = 'filter-control'; sel.id = 'rpt-mask-e'; sel.innerHTML = '<option value="1">個資遮罩（隱碼）</option><option value="0">個資完整顯示</option>'; sel.onchange = () => rptSetMask(sel.value); b.insertAdjacentElement('afterend', sel); }
     const xl = Array.from(tab.querySelectorAll('button')).find(x => (x.getAttribute('onclick') || '').indexOf("'xlsx'") > -1);
     if (xl) xl.setAttribute('onclick', "runDownload('" + t + "','xlsx',{onDone:()=>dlBlob('" + t + ".csv',toCsv(rptTableOf('" + id + "')),'text/csv')})");
   });
-}
-function rptLoadFont(inp) {
-  const f = inp.files && inp.files[0]; if (!f) return;
-  const rd = new FileReader();
-  rd.onload = () => { try { const ff = new FontFace('AgencyCNS', rd.result); ff.load().then(x => { document.fonts.add(x); document.getElementById('font-name').textContent = f.name; document.getElementById('font-meta').textContent = '已載入 ' + Math.round(f.size / 1024) + ' KB；更新日期 ' + TODAY_ROC; showToast('success', '造字檔已啟用', f.name + ' 已套用於報表及查詢畫面'); }).catch(() => showToast('error', '造字檔載入失敗', '檔案格式不正確（支援 TTF／OTF／WOFF）')); } catch (e) { showToast('error', '造字檔載入失敗', '瀏覽器不支援'); } };
-  rd.readAsArrayBuffer(f);
 }
 
 const _navV14 = navigateTo;
@@ -12677,7 +12676,7 @@ const PM={tab:'role',mod:'全部',u:'王大明',du:null,
  ['止付作業','stop-payment','止付作業入口','132201'],['止付作業','stop-register','案件登錄與檢核','132201'],['止付作業','stop-docs','文件產製','132201'],['止付作業','stop-index','發文資訊索引維護（限主辦）','132101'],['止付作業','stop-tracking','案件追蹤統計','111111'],['止付作業','stop-recon','時限設定與異常勾稽（設定限主辦）','132101'],
  ['查詢作業','query-individual','個人支領查詢','111111'],['查詢作業','query-batch','批次查詢','111111'],['查詢作業','query-flexible','彈性報表','111101'],
  ['函釋管理','ruling-search','函釋查詢','111111'],['函釋管理','ruling-maintain','資料維護','132001'],
- ['系統管理','admin-users','使用者管理（單位管理者限本單位）','320001'],['系統管理','admin-permissions','權限設定','310001'],['系統管理','admin-simulate','模擬登入','300000'],['系統管理','admin-audit','稽核日誌','110002'],['系統管理','admin-announcements','公告管理','300000'],['系統管理','admin-workday','工作日管理','310000'],['系統管理','admin-interface','介接管理','300001'],['系統管理','admin-tax-params','課稅參數設定','132001'],['系統管理','admin-site-help','網站說明管理','320000'],['系統管理','admin-home-blocks','首頁區塊管理','300001'],['系統管理','admin-glyph-mgmt','造字檔管理','320001'],['系統管理','admin-menu-config','功能表管理','300001']],
+ ['系統管理','admin-users','使用者管理（單位管理者限本單位）','320001'],['系統管理','admin-permissions','權限設定','310001'],['系統管理','admin-simulate','模擬登入','300000'],['系統管理','admin-audit','稽核日誌','110002'],['系統管理','admin-announcements','公告管理','300000'],['系統管理','admin-workday','工作日管理','310000'],['系統管理','admin-interface','介接管理','300001'],['系統管理','admin-tax-params','課稅參數設定','132001'],['系統管理','admin-site-help','網站說明管理','320000'],['系統管理','admin-home-blocks','首頁區塊管理','300001'],['系統管理','admin-glyph-mgmt','造字檔與個資遮罩管理','320001'],['系統管理','admin-menu-config','功能表管理','300001']],
  sys:{},cur:{},users:{}};
 (function(){
  PM.roles.forEach((r,i)=>{PM.sys[r[0]]={};PM.cur[r[0]]={};PM.fns.forEach(f=>{PM.sys[r[0]][f[1]]=+f[3][i];PM.cur[r[0]][f[1]]=+f[3][i];});});
@@ -15536,7 +15535,7 @@ function rpBuild(t, silent) {
   const f = {}; RPDEF[t].flt.forEach(x => f[x[0]] = rpV(t, x[0]));
   if (!rocOk(f.d1) || !rocOk(f.d2)) { if (!silent) showToast('warning', '期間格式錯誤', '請輸入有效日期，格式為 yyy/mm/dd（例：115/01/01）'); return null; }
   if (f.d1 > f.d2) { if (!silent) showToast('warning', '期間錯誤', '期間起不得大於期間迄'); return null; }
-  const all = rpData(), cond = ['期間：' + f.d1 + '～' + f.d2].concat(RPDEF[t].flt.slice(2).map(x => x[1] + '：' + f[x[0]])).join('　') + '　個資顯示：' + (RPT.mask ? '遮罩（隱碼）' : '完整顯示');
+  const all = rpData(), cond = ['期間：' + f.d1 + '～' + f.d2].concat(RPDEF[t].flt.slice(2).map(x => x[1] + '：' + f[x[0]])).join('　') + '　個資顯示：' + (piiLabel());
   let head, body = [], n = 0, note = '';
   if (t === 'a') {
     const rs = rpFilt(t, f, all).filter(c => f.mode === '全部' || (f.mode === '應扣繳') === c.wh).sort((x, y) => x.payDate.localeCompare(y.payDate) || x.doc.localeCompare(y.doc)); n = rs.length;
@@ -16524,6 +16523,78 @@ $('hg-file').addEventListener('change',async e=>{const f=e.target.files[0];e.tar
  }catch(x){showToast('error','匯入失敗','無法載入字型，請確認為有效之 TTF／OTF／WOFF／WOFF2 檔案');}});
 const _n=navigateTo;navigateTo=function(id){_n(id);if(id==='admin-glyph-mgmt'){const sm=$('submenu-admin');if(sm){sm.classList.add('open');$('menu-admin').classList.add('expanded');}
  document.querySelectorAll('.sidebar-sub-item').forEach(el=>{if((el.getAttribute('onclick')||'').indexOf("'admin-glyph-mgmt'")>-1)el.classList.add('active');});render();if(!$('hg-in').value)hgSample();else hgTest();}};
+run();
+})();
+</script>
+
+<script>
+/* ===== V42：個資遮罩管理介面／畫面遮罩引擎／輸出管道套用 ===== */
+(function(){
+const $=id=>document.getElementById(id),E=hbEsc,SKIP='script,style,textarea,input,.pii-raw,.hg-raw,.pii,[id^="view-admin-"]';
+const scr=k=>PII.scope.screen&&(k==='id'?PII.idOn:PII.nameOn);
+const IDF=/[A-Z][12]\d{8}/g,IDM=/^([A-Z]\d{3})\*{3}(\d{3})$/,NM=/^[\p{Script=Han}\uE000-\uF8FF]{2,6}$/u,NH=/姓名|領受人|退休人員|受款人|被保險人|當事人|遺族/,NX=/承辦|機關|身分證|證號|日期/;
+const fake=m=>{let h=0;for(const c of m)h=(h*31+c.charCodeAt(0))%1000;return m.slice(0,4)+String(h).padStart(3,'0')+m.slice(7);};
+const orig=el=>{const c=el.cloneNode(true);c.querySelectorAll('[data-ch]').forEach(e=>e.replaceWith(document.createTextNode(e.dataset.ch)));return c.textContent.trim();};
+function unscan(){document.querySelectorAll('[data-pii-h]').forEach(e=>{e.innerHTML=e.dataset.piiH;e.removeAttribute('data-pii-h');});
+ document.querySelectorAll('.pii').forEach(e=>e.replaceWith(document.createTextNode(e.dataset.o)));document.body.normalize();}
+function scan(){
+ if(scr('id')||!PII.idOn||!PII.scope.screen){const L=[],w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{acceptNode:n=>n.parentElement&&!n.parentElement.closest(SKIP)&&/[A-Z]/.test(n.nodeValue)?1:3});
+  while(w.nextNode())L.push(w.currentNode);
+  L.forEach(n=>{const t=n.nodeValue.trim();let r=null;
+   if(scr('id')&&IDF.test(n.nodeValue)){IDF.lastIndex=0;r=n.nodeValue.replace(IDF,m=>piiId(m));}
+   else if(!scr('id')&&IDM.test(t))r=n.nodeValue.replace(t,fake(t));
+   IDF.lastIndex=0;if(r!==null&&r!==n.nodeValue){const sp=document.createElement('span');sp.className='pii';sp.dataset.o=n.nodeValue;sp.textContent=r;n.replaceWith(sp);}});}
+ if(!scr('name'))return;
+ const mask=(c,v)=>{if(c.dataset.piiH!==undefined||c.closest(SKIP)||c.querySelector('.pii-raw'))return;const tn=Array.from(c.childNodes).find(n=>n.nodeType===3&&NM.test(n.nodeValue.trim()));if(tn){c.dataset.piiH=c.innerHTML;tn.nodeValue=piiName(tn.nodeValue.trim());return;}const o=orig(c);if(!NM.test(o))return;c.dataset.piiH=c.innerHTML;c.textContent=piiName(o);};
+ document.querySelectorAll('table').forEach(t=>{const hs=Array.from(t.querySelectorAll('thead th')).map(h=>h.textContent.trim()),ix=[];hs.forEach((h,i)=>{if(NH.test(h)&&!NX.test(h))ix.push(i);});
+  if(ix.length)t.querySelectorAll('tbody tr').forEach(r=>ix.forEach(i=>{if(r.cells[i]&&r.cells.length===hs.length)mask(r.cells[i]);}));});
+ document.querySelectorAll('.info-key').forEach(k=>{if(NH.test(k.textContent)&&!NX.test(k.textContent)&&k.nextElementSibling)mask(k.nextElementSibling);});
+}
+let tm;const mo=new MutationObserver(()=>{clearTimeout(tm);tm=setTimeout(run,80);});
+function run(){mo.disconnect();scan();mo.observe(document.body,{childList:true,subtree:true});}
+function refresh(){mo.disconnect();unscan();['trRenderA','txnRender','qcRender'].forEach(f=>{try{window[f]&&window[f]();}catch(e){}});run();}
+
+/* 輸出管道：列印／匯出時切換遮罩情境 */
+const wrap=(n,c)=>{const o=window[n];if(typeof o!=='function')return;window[n]=function(){const p=PII.ctx;if(p==='screen')PII.ctx=c;try{return o.apply(this,arguments);}finally{PII.ctx=p;}};};
+['rptPrint','printHtml'].forEach(n=>wrap(n,'print'));['rptTableOf','txnTable','qcTable','toCsv'].forEach(n=>wrap(n,'export'));
+
+/* 解除遮罩：依角色權限＋原因＋稽核 */
+const role=()=>{try{return PM.users[PERM_CUR].role;}catch(e){return 'ADM';}};
+const nowS=()=>{const d=new Date(),p=n=>String(n).padStart(2,'0');return (d.getFullYear()-1911)+'/'+p(d.getMonth()+1)+'/'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes());};
+const audit=m=>{try{appendAuditLog('個資遮罩設定',m);}catch(e){}};
+function guard(name){const o=window[name];if(typeof o!=='function')return;window[name]=function(){
+ const b=window.event&&window.event.target,rev=b&&/顯示/.test(b.textContent||'');
+ if(rev&&scr('id')){const ok=PII.roles[role()][0];let why='-';
+  if(ok&&PII.reason){why=(prompt('解除身分證遮罩須填寫用途（將留存稽核紀錄）：')||'').trim();if(!why){showToast('warning','已取消','未填寫用途，維持遮罩');return;}}
+  PII.log.unshift({t:nowS(),u:PERM_CUR,r:role(),f:'身分證字號',why:ok?why:'-',res:ok?'已解除':'拒絕（無權限）'});audit((ok?'解除':'拒絕解除')+'身分證遮罩：'+PERM_CUR);piiRender();
+  if(!ok){showToast('error','無解除遮罩權限','您的角色未獲授權解除身分證遮罩');return;}}
+ return o.apply(this,arguments);};}
+['toggleMask','qiToggleId'].forEach(guard);
+
+/* 管理介面 */
+const tg=(on,fn)=>`<label class="toggle-switch"><input type="checkbox" ${on?'checked':''} onchange="${fn}"><span class="toggle-slider"></span></label>`;
+const row=(l,d,c)=>`<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)"><span style="font-size:calc(13px * var(--font-scale))"><b>${l}</b>${d?`<br><span style="color:var(--text-secondary);font-size:calc(12px * var(--font-scale))">${d}</span>`:''}</span>${c}</div>`;
+const sel=(v,o,fn)=>`<select class="form-control hb-sel" onchange="${fn}">${o.map(x=>`<option value="${x[0]}" ${v===x[0]?'selected':''}>${x[1]}</option>`).join('')}</select>`;
+const RN={ADM:'最高管理者',UNIT:'單位管理者',HOST:'業務組主辦人',STAFF:'承辦人員',QRY:'查詢人員',AUD:'稽核人員'};
+const via=(c,f)=>{const p=PII.ctx;PII.ctx=c;try{return f();}finally{PII.ctx=p;}};
+window.piiRender=function(){
+ if(!$('pii-sw'))return;
+ $('pii-stats').innerHTML=[['身分證字號遮罩',PII.idOn?'開啟':'關閉',PII.idOn?'success':'danger'],['人名遮罩',PII.nameOn?'開啟':'關閉',PII.nameOn?'success':'danger'],['可解除遮罩角色數',Object.values(PII.roles).filter(x=>x[0]||x[1]).length+' / 6','info'],['本次解除／拒絕',PII.log.length+' 筆','gold']].map(x=>`<div class="stat-card ${x[2]}"><div class="stat-label">${x[0]}</div><div class="stat-value">${x[1]}</div></div>`).join('');
+ $('pii-sw').innerHTML=row('身分證字號遮罩','開啟後僅顯示部分碼',tg(PII.idOn,"piiSet('idOn',this.checked)"))+row('身分證遮罩格式','',sel(PII.idFmt,[['std','標準：A123***789'],['strict','嚴格：A*******89']],"piiSet('idFmt',this.value)"))+row('人名遮罩','開啟後中間字以「Ｏ」取代',tg(PII.nameOn,"piiSet('nameOn',this.checked)"))+row('人名遮罩格式','',sel(PII.nameFmt,[['std','標準：王Ｏ明'],['sur','僅留姓氏：王ＯＯ']],"piiSet('nameFmt',this.value)"))+row('解除遮罩須填寫用途','解除時須輸入原因，並留存稽核',tg(PII.reason,"piiSet('reason',this.checked)"));
+ const S={screen:'畫面顯示（全系統清單、明細、查詢結果）',print:'列印與 PDF 報表',export:'CSV／Excel 匯出檔'};
+ $('pii-scope').innerHTML=Object.keys(S).map(k=>row(S[k],'',tg(PII.scope[k],`piiScopeSet('${k}',this.checked)`))).join('');
+ $('pii-roles').innerHTML=Object.keys(RN).map(r=>`<tr><td>${RN[r]}</td><td>${tg(PII.roles[r][0],`piiRoleSet('${r}',0,this.checked)`)}</td><td>${tg(PII.roles[r][1],`piiRoleSet('${r}',1,this.checked)`)}</td></tr>`).join('');
+ $('pii-prev').innerHTML=[['周𠮷明','L156789014'],['陳\uE000','A123456789'],['李秀蘭','F278901236']].map(p=>`<tr class="pii-raw"><td>${E(p[0])}</td><td>${p[1]}</td>`+['screen','print','export'].map(c=>`<td>${via(c,()=>E(piiName(p[0]))+'／'+piiId(p[1]))}</td>`).join('')+'</tr>').join('');
+ $('pii-log').innerHTML=PII.log.map(l=>`<tr><td>${l.t}</td><td>${E(l.u)}</td><td>${RN[l.r]||l.r}</td><td>${l.f}</td><td>${E(l.why)}</td><td><span class="badge ${l.res==='已解除'?'badge-warning':'badge-danger'}">${l.res}</span></td></tr>`).join('')||'<tr><td colspan="6" style="color:var(--text-secondary)">尚無解除遮罩紀錄</td></tr>';
+};
+const chg=m=>{audit(m);piiRender();refresh();showToast('success','個資遮罩設定已套用',m);};
+Object.assign(window,{
+ hgTab:t=>{$('hg-tab-glyph').style.display=t==='glyph'?'':'none';$('hg-tab-pii').style.display=t==='pii'?'':'none';$('hg-actions').style.display=t==='glyph'?'':'none';$('hg-tab-b1').classList.toggle('active',t==='glyph');$('hg-tab-b2').classList.toggle('active',t==='pii');if(t==='pii')piiRender();},
+ piiSet:(k,v)=>{PII[k]=v;chg('「'+k+'」設為 '+v);},
+ piiScopeSet:(k,v)=>{PII.scope[k]=v;chg('套用範圍「'+k+'」'+(v?'開啟':'關閉'));},
+ piiRoleSet:(r,i,v)=>{PII.roles[r][i]=v?1:0;audit(RN[r]+(i?'人名':'身分證')+'解除權限'+(v?'開啟':'關閉'));piiRender();}
+});
+const _n=navigateTo;navigateTo=function(id){_n(id);if(id==='admin-glyph-mgmt')piiRender();};
 run();
 })();
 </script>
