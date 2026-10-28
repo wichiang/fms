@@ -819,6 +819,17 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 .hbp-empty{color:var(--text-secondary);padding:8px;text-align:center;grid-column:1/-1}
 @media(max-width:600px){.mc-row.hb-btnrow{margin-left:16px}.hb-add{margin-left:16px}}
 
+
+/* ===== V41 造字檔 ===== */
+.hg{display:inline-block;line-height:1}.hg svg{width:1.05em;height:1.05em;vertical-align:-.16em;fill:none;stroke:currentColor;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
+.hg-miss{color:var(--danger);border-bottom:2px dotted var(--danger);cursor:help}
+.hg-cmp{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+.hg-cmp>div{border:1px solid var(--border);border-radius:8px;padding:10px 12px;background:#fff;font-size:calc(15px * var(--font-scale));line-height:1.9;word-break:break-all}
+.hg-cmp h5{font-size:calc(12px * var(--font-scale));color:var(--text-secondary);margin:0 0 4px;font-weight:700}
+.hg-big .hg svg{width:2em;height:2em}
+.hg-t textarea{font-size:calc(14px * var(--font-scale))}
+@media(max-width:900px){.hg-cmp{grid-template-columns:1fr}}
+
 /* ===== V12 課稅管理改版 ===== */
 .tx-steps{display:flex;gap:0;margin-bottom:20px;background:var(--card);border-radius:var(--radius-card);box-shadow:var(--shadow-sm);overflow:hidden;flex-wrap:wrap}
 .tx-step{flex:1;min-width:170px;display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;border-bottom:3px solid transparent;color:var(--text-secondary);transition:var(--transition)}
@@ -1329,6 +1340,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div class="sidebar-sub-item" onclick="navigateTo('admin-announcements')">公告管理</div>
 		<div class="sidebar-sub-item" onclick="navigateTo('admin-site-help')">網站說明管理</div>
         <div class="sidebar-sub-item" onclick="navigateTo('admin-home-blocks')">首頁區塊管理</div>
+        <div class="sidebar-sub-item" onclick="navigateTo('admin-glyph-mgmt')">造字檔管理</div>
         <div class="sidebar-sub-item" onclick="navigateTo('admin-menu-config')">功能表管理</div>
 		<div class="sidebar-sub-item" onclick="navigateTo('admin-tax-params')">課稅參數設定</div>
         <div class="sidebar-sub-item" onclick="navigateTo('admin-workday')">工作日管理</div>
@@ -5727,6 +5739,26 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       </div>
     </div>
 
+
+    <!-- ===== ADMIN GLYPH MGMT ===== -->
+    <div class="view" id="view-admin-glyph-mgmt">
+      <div class="breadcrumb"><span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-item">系統管理</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-item current">造字檔管理</span></div>
+      <div class="page-header">
+        <div><div class="page-title">造字檔管理</div><div class="page-subtitle">匯入機關提供之造字檔，確保姓名、地址等特殊字元與罕見字於畫面、報表、函表及匯出檔案皆能正確呈現</div></div>
+        <div class="page-actions"><input type="file" id="hg-file" accept=".ttf,.otf,.woff,.woff2" style="display:none"><button class="btn btn-gold" onclick="document.getElementById('hg-file').click()">匯入造字檔</button></div>
+      </div>
+      <div class="stats-grid" id="hg-stats"></div>
+      <div class="card" style="margin-bottom:16px"><div class="card-header"><div><div class="card-title">造字檔清單</div><div class="card-subtitle">支援 TTF／OTF／WOFF／WOFF2 字型檔；匯入後立即套用至全系統；停用後恢復原字型</div></div></div><div class="table-wrapper"><table class="data-table"><thead><tr><th>檔名</th><th>版本</th><th>來源機關</th><th>類型</th><th>匯入時間</th><th>字數</th><th>啟用</th><th>操作</th></tr></thead><tbody id="hg-files"></tbody></table></div></div>
+      <div class="menu-layout" style="margin-bottom:16px">
+        <div class="card"><div class="card-header"><div><div class="card-title">字集對照表</div><div class="card-subtitle">造字碼（私人使用區 U+E000～U+F8FF）、部件拆字與替代字，供檢索、匯出及介接轉換使用</div></div></div><div class="table-wrapper"><table class="data-table"><thead><tr><th>預覽</th><th>造字碼</th><th>說明</th><th>部件</th><th>替代字</th><th>近 30 日使用</th><th>啟用</th></tr></thead><tbody id="hg-glyphs"></tbody></table></div></div>
+        <div class="card"><div class="card-title" style="margin-bottom:10px">套用範圍與輸出策略</div><div id="hg-scope"></div></div>
+      </div>
+      <div class="card hg-t"><div class="card-header"><div><div class="card-title">顯示測試與缺字檢核</div><div class="card-subtitle">貼上姓名、地址或報表文字，比對「未支援造字」與「已套用造字檔」之差異，並檢出未對照之缺字</div></div><div class="page-actions"><button class="btn btn-outline btn-sm" onclick="hgSample()">載入範例</button><button class="btn btn-primary btn-sm" onclick="hgTest()">檢核</button></div></div>
+        <textarea id="hg-in" class="form-control" rows="3"></textarea>
+        <div class="hg-cmp"><div><h5>未支援造字檔（缺字顯示為方框）</h5><span id="hg-o1" class="hg-raw"></span></div><div class="hg-big"><h5>已套用造字檔（個人資料／報表顯示）</h5><span id="hg-o2"></span></div><div><h5>匯出檔／介接文字（依輸出策略）</h5><span id="hg-o3" class="hg-raw"></span></div></div>
+        <div class="table-wrapper" style="margin-top:12px"><table class="data-table"><thead><tr><th>字元</th><th>碼位</th><th>檢核結果</th><th>處理</th></tr></thead><tbody id="hg-chk"></tbody></table></div></div>
+    </div>
+
     <!-- ===== ADMIN MENU CONFIG ===== -->
     <div class="view" id="view-admin-menu-config">
       <div class="breadcrumb">
@@ -7247,7 +7279,7 @@ function navigateTo(viewId) {
     'query-individual': 'query', 'query-batch': 'query', 'query-flexible': 'query',
     'ruling-search': 'ruling', 'ruling-maintain': 'ruling',
     'admin-users': 'admin', 'admin-permissions': 'admin', 'admin-simulate': 'admin', 'admin-audit': 'admin',
-    'admin-announcements': 'admin', 'admin-home-blocks': 'admin', 'admin-workday': 'admin', 'admin-interface': 'admin', 'admin-tax-params': 'admin'
+    'admin-announcements': 'admin', 'admin-home-blocks': 'admin', 'admin-glyph-mgmt': 'admin', 'admin-workday': 'admin', 'admin-interface': 'admin', 'admin-tax-params': 'admin'
   };
   
   if (menuMap[viewId]) {
@@ -12645,7 +12677,7 @@ const PM={tab:'role',mod:'全部',u:'王大明',du:null,
  ['止付作業','stop-payment','止付作業入口','132201'],['止付作業','stop-register','案件登錄與檢核','132201'],['止付作業','stop-docs','文件產製','132201'],['止付作業','stop-index','發文資訊索引維護（限主辦）','132101'],['止付作業','stop-tracking','案件追蹤統計','111111'],['止付作業','stop-recon','時限設定與異常勾稽（設定限主辦）','132101'],
  ['查詢作業','query-individual','個人支領查詢','111111'],['查詢作業','query-batch','批次查詢','111111'],['查詢作業','query-flexible','彈性報表','111101'],
  ['函釋管理','ruling-search','函釋查詢','111111'],['函釋管理','ruling-maintain','資料維護','132001'],
- ['系統管理','admin-users','使用者管理（單位管理者限本單位）','320001'],['系統管理','admin-permissions','權限設定','310001'],['系統管理','admin-simulate','模擬登入','300000'],['系統管理','admin-audit','稽核日誌','110002'],['系統管理','admin-announcements','公告管理','300000'],['系統管理','admin-workday','工作日管理','310000'],['系統管理','admin-interface','介接管理','300001'],['系統管理','admin-tax-params','課稅參數設定','132001'],['系統管理','admin-site-help','網站說明管理','320000'],['系統管理','admin-home-blocks','首頁區塊管理','300001'],['系統管理','admin-menu-config','功能表管理','300001']],
+ ['系統管理','admin-users','使用者管理（單位管理者限本單位）','320001'],['系統管理','admin-permissions','權限設定','310001'],['系統管理','admin-simulate','模擬登入','300000'],['系統管理','admin-audit','稽核日誌','110002'],['系統管理','admin-announcements','公告管理','300000'],['系統管理','admin-workday','工作日管理','310000'],['系統管理','admin-interface','介接管理','300001'],['系統管理','admin-tax-params','課稅參數設定','132001'],['系統管理','admin-site-help','網站說明管理','320000'],['系統管理','admin-home-blocks','首頁區塊管理','300001'],['系統管理','admin-glyph-mgmt','造字檔管理','320001'],['系統管理','admin-menu-config','功能表管理','300001']],
  sys:{},cur:{},users:{}};
 (function(){
  PM.roles.forEach((r,i)=>{PM.sys[r[0]]={};PM.cur[r[0]]={};PM.fns.forEach(f=>{PM.sys[r[0]][f[1]]=+f[3][i];PM.cur[r[0]][f[1]]=+f[3][i];});});
@@ -16426,6 +16458,73 @@ saveInterfaceSystem = function () {
     }
   };
   hbApply(HB.applied);
+})();
+</script>
+
+<script>
+/* ===== V41：造字檔支援（全系統顯示／報表／匯出） ===== */
+(function(){
+const $=id=>document.getElementById(id),E=hbEsc,RX=/[\uE000-\uF8FF]/,hex=c=>'U+'+c.codePointAt(0).toString(16).toUpperCase();
+const RAD={'亻':'M10 6L5 18M8 14V38','氵':'M5 8l3 3M4 20l3 3M5 34l5-5','木':'M2 16H18M10 4V38M10 16L3 32M10 16L17 32','口':'M3 10H17V30H3Z','日':'M3 8H17V32H3ZM3 20H17','金':'M10 4L3 14M10 4L17 14M5 18H15M5 26H15M10 18V36M4 36H16','糸':'M10 4L4 14M10 4L16 14M3 22H17M10 22V38M4 30L10 26'};
+const G=(c,l,r,alt,d,u)=>({c:String.fromCharCode(c),l,r,alt,desc:d,use:u,on:true});
+const HG={files:[{id:'b',n:'機關造字檔_示範版.hgl',ver:'v1.0',org:'本局資訊室',kind:'內建向量造字（SVG）',at:'115/10/20 09:10',n_:6,on:true}],
+ glyphs:[G(0xE000,'亻','口','佶','姓名用字',128),G(0xE001,'氵','木','沐','姓名用字',96),G(0xE002,'木','日','杲','姓名用字',41),G(0xE003,'金','口','鉬','地址用字',17),G(0xE004,'糸','木','綝','姓名用字',9),G(0xE005,'氵','日','沺','地址用字',5)],
+ pend:[],scope:{screen:true,print:true,export:true,doc:true,xfer:false},strat:'embed',miss:'mark',base:''};
+window.HG=HG;
+const find=c=>HG.glyphs.find(g=>g.c===c&&g.on&&HG.files[0].on);
+const userFont=()=>HG.files.some(f=>f.fam&&f.on);
+const svg=g=>`<span class="hg" data-ch="${g.c}" title="造字 ${hex(g.c)}｜${E(g.desc)}"><svg viewBox="0 0 48 48" role="img" aria-label="${g.alt}"><g transform="translate(2,4)">${'<path d="'+RAD[g.l]+'"/>'}</g><g transform="translate(26,4)"><path d="${RAD[g.r]}"/></g></svg></span>`;
+function unscan(){document.querySelectorAll('[data-ch]').forEach(e=>e.replaceWith(document.createTextNode(e.dataset.ch)));document.body.normalize();}
+function scan(){
+ if(!HG.scope.screen)return;const L=[],w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{acceptNode:n=>RX.test(n.nodeValue)&&!(n.parentElement&&n.parentElement.closest('script,style,textarea,input,.hg-raw,[data-ch]'))?1:3});
+ while(w.nextNode())L.push(w.currentNode);
+ L.forEach(n=>{const f=document.createDocumentFragment();n.nodeValue.split(/([\uE000-\uF8FF])/).forEach(p=>{
+  if(RX.test(p)){const g=find(p),t=document.createElement('span');
+   if(g){t.innerHTML=svg(g);f.appendChild(t.firstChild);return;}
+   if(!userFont()){t.className='hg-miss';t.dataset.ch=p;t.title='缺字：'+hex(p)+' 尚未對照造字檔';t.textContent=HG.miss==='mark'?p:'〓';f.appendChild(t);return;}}
+  f.appendChild(document.createTextNode(p));});n.replaceWith(f);});
+}
+let tm,mo=new MutationObserver(()=>{clearTimeout(tm);tm=setTimeout(run,60);});
+function run(){mo.disconnect();scan();mo.observe(document.body,{childList:true,subtree:true});}
+function refresh(){mo.disconnect();unscan();run();}
+function applyFont(){const fam=HG.files.filter(f=>f.fam&&f.on).map(f=>`"${f.fam}"`);let st=$('hg-style');if(!st){st=document.createElement('style');st.id='hg-style';document.head.appendChild(st);}
+ if(!HG.base)HG.base=getComputedStyle(document.body).fontFamily;const stack=fam.concat(HG.base).join(',');st.textContent=fam.length?`body,input,textarea,select,button{font-family:${stack} !important}`:'';}
+const tg=(on,fn)=>`<label class="toggle-switch"><input type="checkbox" ${on?'checked':''} onchange="${fn}"><span class="toggle-slider"></span></label>`;
+const SC={screen:'畫面顯示（全系統個人資料、查詢結果、清單）',print:'列印與 PDF 報表產製',export:'CSV／Excel 匯出檔',doc:'函表、書函與憑單產製',xfer:'外部資料交換／介接傳輸（依對方字集轉換）'};
+function render(){
+ const gl=HG.glyphs.length,pend=HG.pend.length,fo=HG.files.filter(f=>f.on).length;
+ $('hg-stats').innerHTML=[['已啟用造字檔',fo+' / '+HG.files.length,'gold'],['已對照造字',gl+' 字',''],['待提供缺字',pend+' 字',pend?'danger':'success'],['近 30 日造字使用',HG.glyphs.reduce((a,g)=>a+g.use,0)+' 次','info']].map(x=>`<div class="stat-card ${x[2]}"><div class="stat-label">${x[0]}</div><div class="stat-value">${x[1]}</div></div>`).join('');
+ $('hg-files').innerHTML=HG.files.map((f,i)=>`<tr><td>${E(f.n)}</td><td>${f.ver}</td><td>${f.org}</td><td>${f.kind}</td><td>${f.at}</td><td>${f.n_||'—'}</td><td>${tg(f.on,`hgFile(${i},this.checked)`)}</td><td>${i?`<button class="btn btn-outline btn-sm" onclick="hgDel(${i})">移除</button>`:'<span class="badge badge-secondary">內建</span>'}</td></tr>`).join('');
+ $('hg-glyphs').innerHTML=HG.glyphs.map((g,i)=>`<tr><td class="hg-big">${svg(g).replace(' data-ch="'+g.c+'"','')}</td><td>${hex(g.c)}</td><td>${g.desc}</td><td>${g.l} ＋ ${g.r}</td><td>${g.alt}</td><td>${g.use}</td><td>${tg(g.on,`hgGly(${i},this.checked)`)}</td></tr>`).join('')+HG.pend.map(c=>`<tr><td>？</td><td>${hex(c)}</td><td colspan="4"><span class="badge badge-warning">待提供</span> 已登記缺字，請洽機關提供造字檔</td><td></td></tr>`).join('');
+ $('hg-scope').innerHTML=Object.keys(SC).map(k=>`<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:calc(13px * var(--font-scale))"><span>${SC[k]}</span>${tg(HG.scope[k],`hgScope('${k}',this.checked)`)}</div>`).join('')+
+ `<div class="form-group" style="margin-top:12px"><label class="form-label">報表／匯出之造字輸出策略</label><select class="form-control" onchange="HG.strat=this.value;hgTest()"><option value="embed" ${HG.strat==='embed'?'selected':''}>內嵌造字字型（PDF 嵌入子集）</option><option value="image" ${HG.strat==='image'?'selected':''}>以向量圖嵌入（無法內嵌字型之格式）</option><option value="alt" ${HG.strat==='alt'?'selected':''}>替代字並加註造字碼</option></select></div>
+ <div class="form-group"><label class="form-label">未對照缺字之顯示方式</label><select class="form-control" onchange="HG.miss=this.value;hgRefresh()"><option value="mark" ${HG.miss==='mark'?'selected':''}>紅色虛線標示原碼</option><option value="gt" ${HG.miss==='gt'?'selected':''}>以「〓」取代並標示</option></select></div>`;
+ refresh();
+}
+const audit=m=>{try{appendAuditLog('造字檔管理',m);}catch(e){}};
+Object.assign(window,{
+ hgRefresh:()=>refresh(),
+ hgFile:(i,v)=>{HG.files[i].on=v;if(HG.files[i].fam)applyFont();audit((v?'啟用':'停用')+'造字檔 '+HG.files[i].n);render();hgTest();},
+ hgDel:i=>{if(!confirm('確定移除造字檔「'+HG.files[i].n+'」？'))return;audit('移除造字檔 '+HG.files[i].n);HG.files.splice(i,1);applyFont();render();hgTest();},
+ hgGly:(i,v)=>{HG.glyphs[i].on=v;audit((v?'啟用':'停用')+'造字 '+hex(HG.glyphs[i].c));render();hgTest();},
+ hgScope:(k,v)=>{HG.scope[k]=v;audit('套用範圍「'+SC[k]+'」'+(v?'開啟':'關閉'));if(k==='screen'){v?run():unscan();}},
+ hgSample:()=>{$('hg-in').value='領受人：陳\uE000\uE001　服務機關：臺北市\uE002路國小\n地址：新北市\uE003\uE004里12鄰　備註：𠮷野家、\uE0FF（未對照）';hgTest();},
+ hgReg:c=>{if(!HG.pend.includes(c))HG.pend.push(c);audit('登記缺字 '+hex(c));render();hgTest();showToast('warning','已登記缺字',hex(c)+' 待機關提供造字檔');},
+ hgTest:()=>{const t=$('hg-in').value;
+  const ex=Array.from(t).map(c=>{const g=find(c);if(!RX.test(c))return c;if(!g)return '〓';return HG.strat==='alt'?g.alt+'*['+hex(c)+']':HG.strat==='image'?'[向量圖:'+hex(c)+']':'[內嵌字型:'+hex(c)+']';}).join('');
+  $('hg-o1').textContent=t;$('hg-o2').textContent=t;$('hg-o3').textContent=ex;refresh();
+  const u=Array.from(new Set(Array.from(t))).filter(c=>RX.test(c)||c.codePointAt(0)>0xFFFF);
+  $('hg-chk').innerHTML=u.map(c=>{const p=RX.test(c),g=find(c),pe=HG.pend.includes(c);
+   return `<tr><td class="hg-raw hg-big">${g?svg(g).replace(' data-ch="'+c+'"',''):E(c)}</td><td>${hex(c)}</td><td>${!p?'<span class="badge badge-info">CJK 擴充區字</span> 需系統字型／IVS 支援':g?'<span class="badge badge-success">已對照</span> 替代字「'+g.alt+'」':pe?'<span class="badge badge-warning">已登記待提供</span>':'<span class="badge badge-danger">缺字</span> 未對照任何造字檔'}</td><td>${p&&!g&&!pe?`<button class="btn btn-outline btn-sm" onclick="hgReg('${c}')">登記缺字</button>`:'—'}</td></tr>`;}).join('')||'<tr><td colspan="4" style="color:var(--text-secondary)">未檢出造字或擴充區字元</td></tr>';
+ }});
+$('hg-file').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
+ try{const fam='HGU'+Date.now(),ff=new FontFace(fam,await f.arrayBuffer());await ff.load();document.fonts.add(ff);
+  const d=new Date(),p=n=>String(n).padStart(2,'0');HG.files.push({id:fam,fam,n:f.name,ver:'—',org:'機關提供',kind:'字型檔 '+Math.max(1,Math.round(f.size/1024))+' KB',at:(d.getFullYear()-1911)+'/'+p(d.getMonth()+1)+'/'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes()),on:true});
+  applyFont();audit('匯入造字檔 '+f.name);render();hgTest();showToast('success','造字檔已匯入','「'+f.name+'」已套用至全系統輸入與顯示');
+ }catch(x){showToast('error','匯入失敗','無法載入字型，請確認為有效之 TTF／OTF／WOFF／WOFF2 檔案');}});
+const _n=navigateTo;navigateTo=function(id){_n(id);if(id==='admin-glyph-mgmt'){const sm=$('submenu-admin');if(sm){sm.classList.add('open');$('menu-admin').classList.add('expanded');}
+ document.querySelectorAll('.sidebar-sub-item').forEach(el=>{if((el.getAttribute('onclick')||'').indexOf("'admin-glyph-mgmt'")>-1)el.classList.add('active');});render();if(!$('hg-in').value)hgSample();else hgTest();}};
+run();
 })();
 </script>
 </body>
