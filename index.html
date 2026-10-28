@@ -99,7 +99,7 @@ table{border-collapse:collapse;width:100%}
 ::-webkit-scrollbar-thumb{background:#c1c1c1;border-radius:3px}
 
 /* ===== LOGIN PAGE ===== */
-#login-page{display:grid;place-items:center;min-height:100vh;background:linear-gradient(135deg,#0a2647 0%,#144272 50%,#0d1b2a 100%);position:fixed;inset:0;z-index:9999;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:32px 16px}
+#login-page{display:grid;place-items:center;min-height:100vh;background:var(--login-bg);position:fixed;inset:0;z-index:9999;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:32px 16px}
 .login-bg-pattern{position:absolute;inset:0;opacity:0.05;background-image:repeating-linear-gradient(45deg,#fff 0,#fff 1px,transparent 0,transparent 50%);background-size:20px 20px}
 .login-card{background:rgba(255,255,255,0.97);border-radius:16px;padding:40px;width:480px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,0.4);position:relative;z-index:1}
 .login-logo{text-align:center;margin-bottom:28px}
@@ -111,15 +111,15 @@ table{border-collapse:collapse;width:100%}
 .login-section-label{font-size:calc(12px * var(--font-scale));font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px}
 .login-methods{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}
 .login-method-card{border:2px solid var(--border);border-radius:8px;padding:14px 8px;text-align:center;cursor:pointer;transition:var(--transition);background:#fff}
-.login-method-card:hover{border-color:var(--secondary);background:#f8faff}
-.login-method-card.active{border-color:var(--primary);background:#eef2ff}
+.login-method-card:hover{border-color:var(--secondary);background:var(--tint-soft)}
+.login-method-card.active{border-color:var(--primary);background:var(--tint)}
 .login-method-icon{font-size:calc(24px * var(--font-scale));margin-bottom:6px;color:var(--secondary)}
 .login-method-card.active .login-method-icon{color:var(--primary)}
 .login-method-name{font-size:calc(12px * var(--font-scale));font-weight:600;color:var(--primary);line-height:1.4}
 .login-form-group{margin-bottom:16px}
 .login-form-group label{display:block;font-size:calc(12px * var(--font-scale));font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px}
 .login-input{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-input);font-size:calc(14px * var(--font-scale));transition:var(--transition);outline:none}
-.login-input:focus{border-color:var(--secondary);box-shadow:0 0 0 3px rgba(20,66,114,0.1)}
+.login-input:focus{border-color:var(--secondary);box-shadow:0 0 0 3px rgba(var(--secondary-rgb),0.1)}
 .login-input.error{border-color:var(--danger)}
 .login-error-msg{font-size:calc(12px * var(--font-scale));color:var(--danger);margin-top:4px;display:flex;align-items:center;gap:4px}
 .btn-login{width:100%;padding:12px;background:linear-gradient(135deg,var(--accent-gold),#b8922a);color:#fff;border:none;border-radius:var(--radius-btn);font-size:calc(15px * var(--font-scale));font-weight:700;transition:var(--transition);letter-spacing:0.04em;display:inline-flex;align-items:center;justify-content:center;gap:8px}
@@ -228,7 +228,7 @@ table{border-collapse:collapse;width:100%}
 .btn-warning{background:var(--warning);color:#fff}
 .btn-info{background:var(--info);color:#fff}
 .btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--text-primary)}
-.btn-outline:hover{border-color:var(--secondary);color:var(--secondary);background:#f0f4ff}
+.btn-outline:hover{border-color:var(--secondary);color:var(--secondary);background:var(--tint)}
 .btn-outline-primary{background:transparent;border:1.5px solid var(--primary);color:var(--primary)}
 .btn-outline-primary:hover{background:var(--primary);color:#fff}
 .btn-outline-danger{background:transparent;border:1.5px solid var(--danger);color:var(--danger)}
@@ -242,7 +242,7 @@ table{border-collapse:collapse;width:100%}
 .form-label{display:block;font-size:calc(12px * var(--font-scale));font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px}
 .form-label .required{color:var(--danger);margin-left:2px}
 .form-control{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-input);font-size:calc(14px * var(--font-scale));transition:var(--transition);outline:none;background:#fff;color:var(--text-primary)}
-.form-control:focus{border-color:var(--secondary);box-shadow:0 0 0 3px rgba(20,66,114,0.08)}
+.form-control:focus{border-color:var(--secondary);box-shadow:0 0 0 3px rgba(var(--secondary-rgb),0.08)}
 .form-control:disabled{background:#f5f7fa;color:var(--text-secondary)}
 .form-control.error{border-color:var(--danger)}
 .form-control.success{border-color:var(--success)}
@@ -262,12 +262,12 @@ select.form-control{appearance:none;background-image:url("data:image/svg+xml,%3C
 
 /* UPLOAD DROPZONE */
 .upload-dropzone{border:2px dashed var(--border);border-radius:var(--radius-card);padding:28px 20px;text-align:center;cursor:pointer;transition:var(--transition);background:#fafbfc}
-.upload-dropzone:hover{border-color:var(--secondary);background:#f8faff}
-.upload-dropzone.dragover{border-color:var(--primary);background:#eef2ff}
+.upload-dropzone:hover{border-color:var(--secondary);background:var(--tint-soft)}
+.upload-dropzone.dragover{border-color:var(--primary);background:var(--tint)}
 .upload-dropzone-icon{color:var(--secondary);margin-bottom:8px}
 .upload-dropzone-title{font-size:calc(13px * var(--font-scale));font-weight:700;color:var(--primary)}
 .upload-dropzone-hint{font-size:calc(12px * var(--font-scale));color:var(--text-secondary);margin-top:4px}
-.upload-file-chip{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;background:#eef2ff;border-radius:6px;font-size:calc(12px * var(--font-scale));font-weight:600;color:var(--primary);margin-top:10px}
+.upload-file-chip{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;background:var(--tint);border-radius:6px;font-size:calc(12px * var(--font-scale));font-weight:600;color:var(--primary);margin-top:10px}
 
 /* CASE TIMELINE (課稅案件 / 直撥 歷程) */
 .case-timeline{position:relative;padding-left:24px}
@@ -282,17 +282,17 @@ select.form-control{appearance:none;background-image:url("data:image/svg+xml,%3C
 
 /* SECTION DIVIDER */
 .section-divider{border:none;border-top:1px solid var(--border);margin:20px 0}
-.section-title{font-size:calc(14px * var(--font-scale));font-weight:700;color:var(--primary);padding:10px 14px;background:#f5f8ff;border-radius:6px;border-left:3px solid var(--primary);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.section-title{font-size:calc(14px * var(--font-scale));font-weight:700;color:var(--primary);padding:10px 14px;background:var(--tint-soft);border-radius:6px;border-left:3px solid var(--primary);margin-bottom:16px;display:flex;align-items:center;gap:8px}
 
 /* TABLES */
 .table-wrapper{overflow-x:auto;border-radius:var(--radius-card)}
 table.data-table{width:100%;border-collapse:collapse}
 table.data-table th{background:#f5f7fa;padding:10px 14px;text-align:left;font-size:calc(12px * var(--font-scale));font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;border-bottom:2px solid var(--border);white-space:nowrap}
 table.data-table th.sortable{cursor:pointer}
-table.data-table th.sortable:hover{background:#eef2ff;color:var(--primary)}
+table.data-table th.sortable:hover{background:var(--tint);color:var(--primary)}
 table.data-table td{padding:11px 14px;border-bottom:1px solid var(--border);font-size:calc(13px * var(--font-scale));color:var(--text-primary)}
 table.data-table tr:last-child td{border-bottom:none}
-table.data-table tr:hover td{background:#fafbff}
+table.data-table tr:hover td{background:var(--tint-soft)}
 table.data-table td.masked{font-family:monospace;letter-spacing:0.05em}
 .table-checkbox{width:16px;height:16px;accent-color:var(--primary);cursor:pointer}
 
@@ -312,7 +312,7 @@ table.data-table td.masked{font-family:monospace;letter-spacing:0.05em}
 .badge-warning{background:#fff3cd;color:#856404}
 .badge-info{background:#d1ecf1;color:#0c5460}
 .badge-secondary{background:#e2e3e5;color:#383d41}
-.badge-primary{background:#cce5ff;color:#004085}
+.badge-primary{background:var(--badge-bg);color:var(--primary-deep)}
 .badge-gold{background:#fff8e1;color:#8a6d00}
 
 /* TOAST */
@@ -394,7 +394,7 @@ table.data-table td.masked{font-family:monospace;letter-spacing:0.05em}
 
 /* UPLOAD ZONE */
 .upload-zone{border:2px dashed var(--border);border-radius:var(--radius-card);padding:40px;text-align:center;cursor:pointer;transition:var(--transition);background:#fafbfc}
-.upload-zone:hover,.upload-zone.drag-over{border-color:var(--secondary);background:#f0f4ff}
+.upload-zone:hover,.upload-zone.drag-over{border-color:var(--secondary);background:var(--tint)}
 .upload-zone-icon{font-size:calc(48px * var(--font-scale));margin-bottom:12px;opacity:0.5}
 .upload-zone-text{font-size:calc(15px * var(--font-scale));font-weight:600;color:var(--text-primary);margin-bottom:4px}
 .upload-zone-hint{font-size:calc(12px * var(--font-scale));color:var(--text-secondary)}
@@ -461,7 +461,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 .validation-icon{font-size:calc(15px * var(--font-scale));flex-shrink:0}
 
 /* INFO CARD */
-.info-card{background:#f0f4ff;border:1px solid #c8d8f8;border-radius:var(--radius-card);padding:14px 16px}
+.info-card{background:var(--tint);border:1px solid #c8d8f8;border-radius:var(--radius-card);padding:14px 16px}
 .info-card.success{background:#f0fff4;border-color:#b2dfdb}
 .info-card.warning{background:#fff8f0;border-color:#ffe0b2}
 .info-card.danger{background:#fff5f5;border-color:#ffcdd2}
@@ -489,7 +489,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 .param-history-dot{width:10px;height:10px;border-radius:50%;background:var(--border);margin-top:5px;flex-shrink:0}
 .param-history-item.current .param-history-dot{background:var(--success);box-shadow:0 0 0 3px rgba(45,139,78,0.15)}
 .param-history-content{flex:1}
-.param-formula-box{background:#f5f8ff;border:1px solid var(--border);border-radius:6px;padding:14px 16px;font-family:"Consolas","Courier New",monospace;font-size:calc(13px * var(--font-scale));color:var(--primary);line-height:1.8;overflow-x:auto}
+.param-formula-box{background:var(--tint-soft);border:1px solid var(--border);border-radius:6px;padding:14px 16px;font-family:"Consolas","Courier New",monospace;font-size:calc(13px * var(--font-scale));color:var(--primary);line-height:1.8;overflow-x:auto}
 .conn-test-result{margin-top:12px;padding:10px 14px;border-radius:6px;font-size:calc(13px * var(--font-scale));display:none;align-items:center;gap:8px}
 .conn-test-result.show{display:flex}
 .conn-test-result.ok{background:#d4edda;color:#155724}
@@ -530,14 +530,14 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 /* REPORT ITEMS */
 .report-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);transition:var(--transition)}
 .report-item:last-child{border-bottom:none}
-.report-item:hover{background:#fafbff}
+.report-item:hover{background:var(--tint-soft)}
 .report-item-name{font-size:calc(13px * var(--font-scale));color:var(--text-primary);font-weight:500}
 .report-item-meta{font-size:calc(11px * var(--font-scale));color:var(--text-secondary);margin-top:2px}
 .report-item-actions{display:flex;gap:6px;align-items:center}
 
 /* EXPANDABLE ROW */
 .expandable-row{cursor:pointer}
-.expandable-row:hover td{background:#f0f4ff}
+.expandable-row:hover td{background:var(--tint)}
 .expanded-detail{background:#f8f9fa;display:none}
 .expanded-detail.open{display:table-row}
 .expanded-detail td{padding:12px 16px;border-bottom:1px solid var(--border)}
@@ -680,7 +680,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 
 /* RICH TEXT AREA */
 .rich-text-area{width:100%;min-height:200px;padding:12px;border:1.5px solid var(--border);border-radius:var(--radius-input);font-size:calc(14px * var(--font-scale));line-height:1.6;resize:vertical;outline:none;transition:var(--transition)}
-.rich-text-area:focus{border-color:var(--secondary);box-shadow:0 0 0 3px rgba(20,66,114,0.08)}
+.rich-text-area:focus{border-color:var(--secondary);box-shadow:0 0 0 3px rgba(var(--secondary-rgb),0.08)}
 .rich-text-toolbar{display:flex;gap:4px;padding:8px;background:#f5f7fa;border:1.5px solid var(--border);border-bottom:none;border-radius:var(--radius-input) var(--radius-input) 0 0}
 .rich-text-toolbar button{padding:4px 8px;border:1px solid var(--border);border-radius:3px;background:#fff;font-size:calc(12px * var(--font-scale));cursor:pointer;font-weight:600;transition:var(--transition)}
 .rich-text-toolbar button:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
@@ -688,8 +688,8 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 /* COLUMN SELECTOR */
 .col-selector{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .col-selector-item{display:flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--border);border-radius:4px;cursor:pointer;transition:var(--transition);font-size:calc(12px * var(--font-scale))}
-.col-selector-item:hover{border-color:var(--secondary);background:#f0f4ff}
-.col-selector-item.selected{border-color:var(--primary);background:#eef2ff;color:var(--primary);font-weight:600}
+.col-selector-item:hover{border-color:var(--secondary);background:var(--tint)}
+.col-selector-item.selected{border-color:var(--primary);background:var(--tint);color:var(--primary);font-weight:600}
 .col-selector-item input{accent-color:var(--primary)}
 
 /* AUDIT LOG */
@@ -722,7 +722,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 .date-field-wrap input{padding-right:36px!important;width:100%}
 .date-picker-toggle{position:absolute;right:5px;top:50%;transform:translateY(-50%);width:26px;height:26px;display:flex;align-items:center;justify-content:center;background:none;border:none;color:var(--text-secondary);cursor:pointer;border-radius:4px;transition:var(--transition);padding:0}
 .date-picker-toggle svg{width:15px;height:15px}
-.date-picker-toggle:hover{background:#eef2ff;color:var(--primary)}
+.date-picker-toggle:hover{background:var(--tint);color:var(--primary)}
 .date-picker-backdrop{position:fixed;inset:0;z-index:5990;display:none}
 .date-picker-backdrop.open{display:block}
 .date-picker-popup{position:absolute;top:calc(100% + 6px);left:0;z-index:5999;background:var(--card);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow-md);padding:12px;width:264px;display:none}
@@ -732,20 +732,20 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 .date-picker-weekdays{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:11px;color:var(--text-secondary);margin-bottom:4px;font-weight:600}
 .date-picker-days{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
 .date-picker-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:12px;cursor:pointer;color:var(--text-primary)}
-.date-picker-day:hover{background:#eef2ff}
+.date-picker-day:hover{background:var(--tint)}
 .date-picker-day.selected{background:var(--primary);color:#fff;font-weight:700}
 .date-picker-day.today:not(.selected){border:1px solid var(--accent-gold);font-weight:700}
 .date-picker-day.empty{visibility:hidden;cursor:default}
 .date-picker-footer{display:flex;justify-content:space-between;margin-top:10px;padding-top:8px;border-top:1px solid var(--border)}
 .date-picker-footer button{font-size:12px;color:var(--info);background:none;border:none;cursor:pointer;font-weight:700;padding:4px 6px;border-radius:4px}
-.date-picker-footer button:hover{background:#eef2ff}
+.date-picker-footer button:hover{background:var(--tint)}
 .date-picker-footer button.dp-close{color:var(--text-secondary)}
 
 /* ===== DOWNLOAD / GENERATION PROGRESS ===== */
-.dl-progress-overlay{position:fixed;inset:0;background:rgba(10,38,71,0.55);z-index:6500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s ease}
+.dl-progress-overlay{position:fixed;inset:0;background:rgba(var(--primary-rgb),0.55);z-index:6500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s ease}
 .dl-progress-overlay.open{opacity:1;pointer-events:auto}
 .dl-progress-card{background:var(--card);border-radius:14px;padding:30px 28px;width:360px;max-width:90vw;box-shadow:0 24px 70px rgba(0,0,0,0.4);text-align:center}
-.dl-progress-icon{width:52px;height:52px;border-radius:50%;background:#eef2ff;color:var(--primary);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;animation:dlSpin 1.4s linear infinite}
+.dl-progress-icon{width:52px;height:52px;border-radius:50%;background:var(--tint);color:var(--primary);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;animation:dlSpin 1.4s linear infinite}
 .dl-progress-icon svg{width:24px;height:24px}
 .dl-progress-icon.done{background:#e8f6ec;color:var(--success);animation:none}
 .dl-progress-title{font-weight:700;color:var(--primary);font-size:15px;margin-bottom:4px}
@@ -772,11 +772,11 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 .editor-btn:hover{background:#fff;border-color:var(--border)}
 .editor-sep{width:1px;background:var(--border);margin:4px 4px}
 .editor-area{min-height:340px;max-height:520px;overflow-y:auto;border:1.5px solid var(--border);border-radius:0 0 4px 4px;padding:16px 18px;outline:none;background:#fff}
-.editor-area:focus{border-color:var(--secondary);box-shadow:0 0 0 3px rgba(20,66,114,0.08)}
+.editor-area:focus{border-color:var(--secondary);box-shadow:0 0 0 3px rgba(var(--secondary-rgb),0.08)}
 .editor-meta{display:flex;justify-content:space-between;font-size:calc(12px * var(--font-scale));color:var(--text-secondary);margin-top:6px}
 .manual-item{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;background:#fff}
 .manual-item.current{border-color:var(--accent-gold);background:#fffdf5}
-.manual-icon{width:40px;height:40px;border-radius:8px;background:#eef2ff;color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.manual-icon{width:40px;height:40px;border-radius:8px;background:var(--tint);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
 .manual-info{flex:1;min-width:0}
 .manual-name{font-weight:700;color:var(--primary);word-break:break-all;font-size:calc(13px * var(--font-scale))}
 .manual-meta{font-size:calc(12px * var(--font-scale));color:var(--text-secondary)}
@@ -794,7 +794,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 .mc-expand{width:24px;height:24px;border:none;background:none;color:var(--text-secondary);font-size:11px;transition:var(--transition)}
 .mc-expand.open{transform:rotate(90deg)}
 .mc-move{width:28px;height:28px;border:1px solid var(--border);background:#fff;border-radius:4px;color:var(--primary);line-height:1;font-size:12px}
-.mc-move:hover:not(:disabled){border-color:var(--secondary);background:#f0f4ff}
+.mc-move:hover:not(:disabled){border-color:var(--secondary);background:var(--tint)}
 .mc-move:disabled{opacity:.3;cursor:not-allowed}
 .sb-preview-wrap{position:sticky;top:calc(var(--header-h) + 16px)}
 .sb-preview{background:var(--secondary);border-radius:10px;padding:6px 0 10px;max-height:70vh;overflow-y:auto}
@@ -842,8 +842,8 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 /* ===== V12 課稅管理改版 ===== */
 .tx-steps{display:flex;gap:0;margin-bottom:20px;background:var(--card);border-radius:var(--radius-card);box-shadow:var(--shadow-sm);overflow:hidden;flex-wrap:wrap}
 .tx-step{flex:1;min-width:170px;display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;border-bottom:3px solid transparent;color:var(--text-secondary);transition:var(--transition)}
-.tx-step:hover{background:#f8faff}
-.tx-step.active{border-bottom-color:var(--accent-gold);color:var(--primary);background:#f5f8ff}
+.tx-step:hover{background:var(--tint-soft)}
+.tx-step.active{border-bottom-color:var(--accent-gold);color:var(--primary);background:var(--tint-soft)}
 .tx-step.done .tx-num{background:var(--success);color:#fff}
 .tx-step.lock{opacity:.5;cursor:not-allowed}
 .tx-num{width:26px;height:26px;border-radius:50%;background:#e0e5ec;color:var(--primary);font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
@@ -851,13 +851,13 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 .tx-step b{display:block;font-size:calc(13px * var(--font-scale))}
 .tx-step small{font-size:calc(11px * var(--font-scale))}
 .tx-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
-.tx-kpi{border-radius:8px;padding:14px;text-align:center;background:#f0f4ff}
+.tx-kpi{border-radius:8px;padding:14px;text-align:center;background:var(--tint)}
 .tx-kpi small{display:block;font-size:calc(11px * var(--font-scale));color:var(--text-secondary);letter-spacing:.06em;margin-bottom:4px}
 .tx-kpi b{font-size:calc(21px * var(--font-scale));font-weight:800;color:var(--primary)}
 .tx-kpi.g{background:#f0fff4}.tx-kpi.g b{color:var(--success)}
 .tx-kpi.o{background:#fff8f0}.tx-kpi.o b{color:var(--warning)}
 .tx-kpi.r{background:#fff5f5}.tx-kpi.r b{color:var(--danger)}
-.tx-formula{background:#f5f8ff;border-left:3px solid var(--accent-gold);border-radius:4px;padding:12px 14px;font-size:calc(13px * var(--font-scale));line-height:1.8}
+.tx-formula{background:var(--tint-soft);border-left:3px solid var(--accent-gold);border-radius:4px;padding:12px 14px;font-size:calc(13px * var(--font-scale));line-height:1.8}
 .tx-bar{display:flex;height:22px;border-radius:11px;overflow:hidden;background:#e0e5ec;font-size:11px;font-weight:700;color:#fff}
 .tx-bar div{display:flex;align-items:center;justify-content:center;white-space:nowrap}
 .neg{color:var(--danger);font-weight:700}.pos{color:var(--success);font-weight:700}
@@ -880,13 +880,13 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 .al-row:last-child{border-bottom:none}
 .al-title{font-weight:700;font-size:calc(13px * var(--font-scale))}
 .al-desc{font-size:calc(12px * var(--font-scale));color:var(--text-secondary);margin-top:2px}
-.al-mod{display:inline-block;font-size:calc(11px * var(--font-scale));color:var(--primary);background:#eef2ff;border-radius:4px;padding:1px 6px;margin-right:6px}
+.al-mod{display:inline-block;font-size:calc(11px * var(--font-scale));color:var(--primary);background:var(--tint);border-radius:4px;padding:1px 6px;margin-right:6px}
 .al-flash{animation:alflash 1.2s ease 1}
 @keyframes alflash{0%,100%{box-shadow:var(--shadow-sm)}40%{box-shadow:0 0 0 4px rgba(192,57,43,.35)}}
 .ql-group{margin-bottom:14px}
 .ql-title{font-weight:700;color:var(--primary);font-size:calc(13px * var(--font-scale));margin-bottom:6px}
 .ql-chip{display:inline-flex;align-items:center;gap:6px;margin:0 8px 8px 0;padding:6px 12px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;font-size:calc(13px * var(--font-scale));color:var(--text-primary)}
-.ql-chip:hover{border-color:var(--primary);background:#eef2ff}
+.ql-chip:hover{border-color:var(--primary);background:var(--tint)}
 .ql-chip.locked{opacity:.45;cursor:not-allowed;background:#f5f7fa}
 .ql-chip small{font-size:calc(10px * var(--font-scale));color:var(--text-secondary)}
 #tour-mask{position:fixed;inset:0;z-index:20000;display:none}
@@ -910,14 +910,14 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 .mnc-steps{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
 .mnc-st{display:flex;align-items:center;gap:6px;font-size:calc(12px * var(--font-scale));color:#8892a6;padding:4px 8px;border-radius:14px;background:#f1f3f8}
 .mnc-st span{display:inline-flex;width:18px;height:18px;border-radius:50%;background:#cfd5e3;color:#fff;align-items:center;justify-content:center;font-size:11px}
-.mnc-st.cur{background:#eef2ff;color:var(--primary);font-weight:700}.mnc-st.cur span{background:var(--primary)}
+.mnc-st.cur{background:var(--tint);color:var(--primary);font-weight:700}.mnc-st.cur span{background:var(--primary)}
 .mnc-st.done{color:#1e8e4a}.mnc-st.done span{background:#1e8e4a}
 .mnc-main{border:1px dashed var(--border);border-radius:12px;padding:16px;text-align:center;min-height:290px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
 .mnc-qr{padding:8px;background:#fff;border:1px solid var(--border);border-radius:8px;position:relative}.mnc-qr.exp svg{opacity:.15}.mnc-qr.scanned{outline:3px solid #1e8e4a}
 .mnc-hint{font-size:calc(13px * var(--font-scale));color:var(--text-primary);line-height:1.7}
 .mnc-sess{font-size:calc(11px * var(--font-scale));color:var(--text-secondary)}
-.mnc-code{font-size:56px;font-weight:800;letter-spacing:6px;color:var(--primary);background:#eef2ff;border-radius:14px;padding:6px 30px}
-.mnc-pushico{width:76px;height:76px;border-radius:50%;background:#eef2ff;color:var(--primary);display:flex;align-items:center;justify-content:center}
+.mnc-code{font-size:56px;font-weight:800;letter-spacing:6px;color:var(--primary);background:var(--tint);border-radius:14px;padding:6px 30px}
+.mnc-pushico{width:76px;height:76px;border-radius:50%;background:var(--tint);color:var(--primary);display:flex;align-items:center;justify-content:center}
 .mnc-ok{color:#1e8e4a}
 .mnc-pill{padding:7px 12px;border-radius:8px;font-size:calc(13px * var(--font-scale));font-weight:600}
 .mnc-pill.wait{background:#fff8e1;color:#7a5b00}.mnc-pill.ok{background:#e7f6ec;color:#1e8e4a}.mnc-pill.err{background:#fdecea;color:#c0392b}
@@ -932,23 +932,23 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 .mnc-screen.dark{background:linear-gradient(160deg,#243b6b,#0e1a36);color:#fff}.mnc-screen.cam{background:#101418;color:#fff}
 .mnc-home{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);width:90px;height:4px;border-radius:2px;background:#bbb;z-index:5}
 .mnc-cap{font-size:12px;color:var(--text-secondary)}
-.ph-app-h{display:flex;align-items:center;gap:8px;padding:12px 14px;background:#1a3a6e;color:#fff;font-weight:700;font-size:14px}
+.ph-app-h{display:flex;align-items:center;gap:8px;padding:12px 14px;background:var(--primary-deep);color:#fff;font-weight:700;font-size:14px}
 .ph-logo{display:inline-flex;width:22px;height:22px;border-radius:6px;background:#d4a843;color:#fff;align-items:center;justify-content:center;font-size:12px}
-.ph-cert{margin:14px;padding:14px;border-radius:14px;background:linear-gradient(135deg,#1a3a6e,#3b6bb5);color:#fff}.ph-cert-t{font-size:11px;opacity:.8}.ph-cert-n{font-size:20px;font-weight:700;margin:6px 0;letter-spacing:1px}.ph-cert-s{font-size:10px;opacity:.85}
+.ph-cert{margin:14px;padding:14px;border-radius:14px;background:linear-gradient(135deg,var(--primary-deep),#3b6bb5);color:#fff}.ph-cert-t{font-size:11px;opacity:.8}.ph-cert-n{font-size:20px;font-weight:700;margin:6px 0;letter-spacing:1px}.ph-cert-s{font-size:10px;opacity:.85}
 .ph-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 14px}
-.ph-tile{background:#fff;border-radius:12px;padding:14px 6px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;color:#1a3a6e;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.08)}.ph-tile.off{opacity:.45;cursor:default}
+.ph-tile{background:#fff;border-radius:12px;padding:14px 6px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;color:var(--primary-deep);cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.08)}.ph-tile.off{opacity:.45;cursor:default}
 .ph-tip{text-align:center;font-size:11px;color:#667;padding:10px 14px}
 .ph-cam{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}.ph-cam-t{font-size:14px;font-weight:700}.ph-cam-s{font-size:11px;opacity:.8}
 .ph-frame{position:relative;width:170px;height:170px;border:2px solid #fff;border-radius:14px;display:flex;align-items:center;justify-content:center;background:#1c2530}.ph-qrmini{opacity:.85}
 .ph-line{position:absolute;left:6px;right:6px;height:2px;background:#4ade80;box-shadow:0 0 8px #4ade80;animation:phscan 1.2s linear infinite}
 @keyframes phscan{0%{top:6px}100%{top:162px}}
 .ph-ask{padding:12px 14px 4px;font-size:12px;font-weight:600;text-align:center}
-.ph-card{margin:8px 14px;background:#fff;border-radius:12px;padding:6px 12px}.ph-row{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid #eef0f5;font-size:11px}.ph-row:last-child{border:0}.ph-row span{color:#889}.ph-row b{text-align:right;color:#1a3a6e}
-.ph-btns{display:flex;gap:10px;padding:10px 14px}.ph-btn{flex:1;padding:10px;border:0;border-radius:10px;background:#1a3a6e;color:#fff;font-weight:700;font-size:13px;cursor:pointer}.ph-btn.gh{background:#e8ebf3;color:#444}
-.ph-opts{display:flex;gap:10px;padding:8px 14px;justify-content:center}.ph-opts b{flex:1;text-align:center;font-size:24px;padding:12px 0;border-radius:12px;background:#fff;color:#1a3a6e;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.1)}.ph-opts b:active{background:#eef2ff}
-.ph-dots{display:flex;gap:12px;justify-content:center;padding:12px}.ph-dots i{width:13px;height:13px;border-radius:50%;border:2px solid #1a3a6e}.ph-dots i.on{background:#1a3a6e}
+.ph-card{margin:8px 14px;background:#fff;border-radius:12px;padding:6px 12px}.ph-row{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid #eef0f5;font-size:11px}.ph-row:last-child{border:0}.ph-row span{color:#889}.ph-row b{text-align:right;color:var(--primary-deep)}
+.ph-btns{display:flex;gap:10px;padding:10px 14px}.ph-btn{flex:1;padding:10px;border:0;border-radius:10px;background:var(--primary-deep);color:#fff;font-weight:700;font-size:13px;cursor:pointer}.ph-btn.gh{background:#e8ebf3;color:#444}
+.ph-opts{display:flex;gap:10px;padding:8px 14px;justify-content:center}.ph-opts b{flex:1;text-align:center;font-size:24px;padding:12px 0;border-radius:12px;background:#fff;color:var(--primary-deep);cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.1)}.ph-opts b:active{background:var(--tint)}
+.ph-dots{display:flex;gap:12px;justify-content:center;padding:12px}.ph-dots i{width:13px;height:13px;border-radius:50%;border:2px solid var(--primary-deep)}.ph-dots i.on{background:var(--primary-deep)}
 .ph-err{text-align:center;color:#c0392b;font-size:11px;min-height:16px;padding:0 10px}
-.ph-keys{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:6px 18px}.ph-keys b{padding:11px 0;text-align:center;background:#fff;border-radius:10px;font-size:18px;font-weight:600;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.1)}.ph-keys b.sm{font-size:10px;line-height:1.2;padding:9px 0;background:transparent;box-shadow:none;color:#1a3a6e}.ph-keys b:active{background:#e3e9f7}
+.ph-keys{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:6px 18px}.ph-keys b{padding:11px 0;text-align:center;background:#fff;border-radius:10px;font-size:18px;font-weight:600;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.1)}.ph-keys b.sm{font-size:10px;line-height:1.2;padding:9px 0;background:transparent;box-shadow:none;color:var(--primary-deep)}.ph-keys b:active{background:#e3e9f7}
 .ph-done{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:20px}.ph-done b{font-size:16px}.ph-done span{font-size:11px;color:#667}
 .ph-lock{flex:1;display:flex;flex-direction:column;align-items:center;padding:46px 14px 14px;gap:6px}.ph-lt{font-size:56px;font-weight:300}.ph-ld{font-size:13px;opacity:.85;margin-bottom:26px}
 .ph-notif{width:100%;background:rgba(255,255,255,.2);backdrop-filter:blur(8px);border-radius:16px;padding:10px 12px;color:#fff;cursor:pointer;display:flex;flex-direction:column;gap:3px;animation:phin .5s ease}.ph-notif span{font-size:11px;opacity:.9}.ph-n-h{display:flex;align-items:center;gap:6px;font-size:11px;opacity:.9}.ph-n-h em{margin-left:auto;font-style:normal}
@@ -1002,7 +1002,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 .qr-grid{display:grid;grid-template-columns:minmax(340px,440px) minmax(0,1fr);gap:20px;align-items:start}
 @media (max-width:1100px){.qr-grid{grid-template-columns:1fr}}
 .qr-paper{background:#fff;border:1px solid var(--border);box-shadow:0 2px 10px rgba(0,0,0,.08);padding:22px 24px;min-height:320px;overflow:auto}
-.qr-chip{display:flex;align-items:center;justify-content:space-between;padding:5px 10px;background:#eef2ff;border-radius:4px;font-size:calc(12px * var(--font-scale));font-weight:600;color:var(--primary);margin-bottom:4px}
+.qr-chip{display:flex;align-items:center;justify-content:space-between;padding:5px 10px;background:var(--tint);border-radius:4px;font-size:calc(12px * var(--font-scale));font-weight:600;color:var(--primary);margin-bottom:4px}
 .qr-chip button{border:0;background:transparent;cursor:pointer;color:var(--primary);font-size:13px;padding:0 4px}
 </style>
 <style>
@@ -4329,7 +4329,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
                     <div style="font-size:calc(20px * var(--font-scale));font-weight:800;color:var(--success)">1,102</div>
                     <div style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary)">新增筆數</div>
                   </div>
-                  <div style="text-align:center;padding:12px;background:#f0f4ff;border-radius:6px">
+                  <div style="text-align:center;padding:12px;background:var(--tint);border-radius:6px">
                     <div style="font-size:calc(20px * var(--font-scale));font-weight:800;color:var(--info)">318</div>
                     <div style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary)">異動筆數</div>
                   </div>
@@ -4399,7 +4399,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
                     <div style="font-size:calc(20px * var(--font-scale));font-weight:800;color:var(--success)">234</div>
                     <div style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary)">新增筆數</div>
                   </div>
-                  <div style="text-align:center;padding:12px;background:#f0f4ff;border-radius:6px">
+                  <div style="text-align:center;padding:12px;background:var(--tint);border-radius:6px">
                     <div style="font-size:calc(20px * var(--font-scale));font-weight:800;color:var(--info)">89</div>
                     <div style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary)">異動筆數</div>
                   </div>
@@ -4465,7 +4465,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
                     <div style="font-size:calc(20px * var(--font-scale));font-weight:800;color:var(--success)">56</div>
                     <div style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary)">新增筆數</div>
                   </div>
-                  <div style="text-align:center;padding:12px;background:#f0f4ff;border-radius:6px">
+                  <div style="text-align:center;padding:12px;background:var(--tint);border-radius:6px">
                     <div style="font-size:calc(20px * var(--font-scale));font-weight:800;color:var(--info)">19</div>
                     <div style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary)">異動筆數</div>
                   </div>
@@ -4551,7 +4551,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
               <div style="font-size:calc(26px * var(--font-scale));font-weight:800;color:var(--success)">8,456</div>
               <div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">本期比對總筆數</div>
             </div>
-            <div style="text-align:center;padding:16px;background:#f0f4ff;border-radius:6px">
+            <div style="text-align:center;padding:16px;background:var(--tint);border-radius:6px">
               <div style="font-size:calc(26px * var(--font-scale));font-weight:800;color:var(--info)">8,453</div>
               <div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">比對相符筆數</div>
             </div>
@@ -4662,7 +4662,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
                   <div style="font-size:calc(26px * var(--font-scale));font-weight:800;color:var(--success)">256</div>
                   <div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">清單筆數</div>
                 </div>
-                <div style="text-align:center;padding:16px;background:#f0f4ff;border-radius:6px">
+                <div style="text-align:center;padding:16px;background:var(--tint);border-radius:6px">
                   <div style="font-size:calc(26px * var(--font-scale));font-weight:800;color:var(--info)">234</div>
                   <div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">符合資格人數</div>
                 </div>
@@ -4756,7 +4756,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
                   <div style="font-size:calc(26px * var(--font-scale));font-weight:800;color:var(--success)">5,912</div>
                   <div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">本期資料筆數</div>
                 </div>
-                <div style="text-align:center;padding:16px;background:#f0f4ff;border-radius:6px">
+                <div style="text-align:center;padding:16px;background:var(--tint);border-radius:6px">
                   <div style="font-size:calc(26px * var(--font-scale));font-weight:800;color:var(--info)" id="mohw-supp-count">0</div>
                   <div style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">補入筆數</div>
                 </div>
@@ -5367,7 +5367,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         .pm-sel.pm-dif{outline:2px solid #f59e0b}
         .pm-wrap{max-height:62vh;overflow:auto;border:1px solid var(--border);border-radius:6px}
         .pm-role{display:flex;align-items:flex-start;gap:10px;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;cursor:pointer;margin-bottom:6px}
-        .pm-role.on{border-color:var(--primary);background:#eef2ff}
+        .pm-role.on{border-color:var(--primary);background:var(--tint)}
       </style>
       <div class="breadcrumb"><span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-item">系統管理</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-item current">權限設定</span></div>
       <div class="page-header">
@@ -5709,14 +5709,15 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <span class="breadcrumb-item">系統管理</span><span class="breadcrumb-sep">›</span>
         <span class="breadcrumb-item current">首頁區塊管理</span></div>
       <div class="page-header">
-        <div><div class="page-title">首頁區塊管理</div><div class="page-subtitle">設定首頁儀表板各區塊的顯示開關與排列順序，並管理業務統計卡、業務模組卡之連結頁面與快速操作按鈕；儲存後即時套用至使用者首頁</div></div>
+        <div><div class="page-title">首頁區塊管理</div><div class="page-subtitle">設定首頁儀表板各區塊的顯示開關與排列順序，並管理業務統計卡、業務模組卡之連結頁面與快速操作按鈕，另可設定全系統色系（標題列、側欄、按鈕、頁面底色與登入頁）；儲存後即時套用至使用者首頁與全系統</div></div>
         <div class="page-actions">
           <button class="btn btn-outline" onclick="hbReset()">還原系統預設</button>
           <button class="btn btn-outline" onclick="hbCancel()">取消變更</button>
           <button class="btn btn-gold" onclick="hbSave()">儲存並套用</button>
         </div>
       </div>
-      <div class="dirty-bar" id="hb-dirty">⚠ 尚有未儲存的變更，請按「儲存並套用」使首頁生效</div>
+      <div class="dirty-bar" id="hb-dirty">⚠ 尚有未儲存的變更，請按「儲存並套用」使首頁與色系生效</div>
+      <div class="card" id="hb-theme-card" style="margin-bottom:16px"></div>
       <div class="menu-layout">
         <div class="card">
           <div class="card-header"><div><div class="card-title">區塊清單</div><div class="card-subtitle" id="hb-stat"></div></div>
@@ -12307,7 +12308,7 @@ function mbGenXfer(c) {
 }
 function mbGenAll() { if (!mbGate()) { showToast('error', '無法產製', '須先完成異動名單簽核'); return; } MB_BANKS.forEach(b => mbGenXfer(b.c)); }
 function mbXferPrev(c) { const X = MB.xfer[c], L = X.text.split(/\r\n/).filter(Boolean); openDetailModal(X.name + ' 內容預覽', `<pre style="background:#0f1b2d;color:#d6e4ff;padding:12px;border-radius:6px;font-size:12px;overflow-x:auto">${mbEsc(L.slice(0, 7).join('\n'))}\n…（共 ${L.length} 行）\n${mbEsc(L[L.length - 1])}</pre><div class="form-hint">格式：H（檔頭）|銀行代號|撥付日|批號；D（明細）|序號|身分證|戶名|帳號|金額|類別碼(01～08)|止付註記；T（檔尾）|筆數|總額。暫緩撥款者帳號尾碼改為 XX 並註記 Y。（欄位格式依各銀行媒體規格參數化）</div>`); }
-function mbStatPrev() { openDetailModal('系統定撥統計表（銀行別×發放類別）', `<table class="data-table"><thead><tr><th>發放類別</th>${MB_BANKS.map(b => `<th style="text-align:right">${b.c} ${b.n}<br>筆數／金額</th>`).join('')}</tr></thead><tbody>${MB_CATS.map((cat, ci) => `<tr><td style="font-size:12px">${cat}</td>${MB_BANKS.map(b => { const s = MB_STATE.stat[b.c][ci]; return `<td style="text-align:right">${mbF(s.n)}<br><span style="font-size:11px;color:var(--text-secondary)">${mbF(s.amt)}</span></td>`; }).join('')}</tr>`).join('')}<tr style="font-weight:700;background:#f5f8ff"><td>合計</td>${MB_BANKS.map(b => `<td style="text-align:right">${mbF(mbStatSum(b.c).n)}<br>${mbF(mbStatSum(b.c).amt)}</td>`).join('')}</tr></tbody></table>`); }
+function mbStatPrev() { openDetailModal('系統定撥統計表（銀行別×發放類別）', `<table class="data-table"><thead><tr><th>發放類別</th>${MB_BANKS.map(b => `<th style="text-align:right">${b.c} ${b.n}<br>筆數／金額</th>`).join('')}</tr></thead><tbody>${MB_CATS.map((cat, ci) => `<tr><td style="font-size:12px">${cat}</td>${MB_BANKS.map(b => { const s = MB_STATE.stat[b.c][ci]; return `<td style="text-align:right">${mbF(s.n)}<br><span style="font-size:11px;color:var(--text-secondary)">${mbF(s.amt)}</span></td>`; }).join('')}</tr>`).join('')}<tr style="font-weight:700;background:var(--tint-soft)"><td>合計</td>${MB_BANKS.map(b => `<td style="text-align:right">${mbF(mbStatSum(b.c).n)}<br>${mbF(mbStatSum(b.c).amt)}</td>`).join('')}</tr></tbody></table>`); }
 
 /* ---- (C) 銀行回饋檔檢核 ---- */
 function mbMockFb(c, scen) {
@@ -12372,7 +12373,7 @@ function mbS1() {
 }
 function mbS2() {
   return `<div class="card" style="margin-bottom:16px"><div class="card-header"><div><div class="card-title">產製銀行核發清冊（發放明細）</div><div class="card-subtitle">各金融機構所需之發放明細，依 8 類發放類別分段列示並小計；暫緩撥款受款人標示止付</div></div><div style="display:flex;gap:8px"><button class="btn btn-outline btn-sm" onclick="mbStatPrev()">檢視定撥統計表</button><button class="btn btn-gold btn-sm" onclick="MB_BANKS.forEach(b=>mbGenLedger(b.c))">產製全部核發清冊</button></div></div>
-    <div class="table-wrapper"><table class="data-table"><thead><tr><th>發放類別</th>${MB_BANKS.map(b => `<th style="text-align:right">${b.c} ${b.n}</th>`).join('')}</tr></thead><tbody>${MB_CATS.map((cat, ci) => `<tr><td style="font-size:12px">${cat}</td>${MB_BANKS.map(b => `<td style="text-align:right">${mbF(MB_STATE.stat[b.c][ci].n)}</td>`).join('')}</tr>`).join('')}<tr style="font-weight:700;background:#f5f8ff"><td>合計（筆）</td>${MB_BANKS.map(b => `<td style="text-align:right">${mbF(mbStatSum(b.c).n)}</td>`).join('')}</tr></tbody></table></div></div>
+    <div class="table-wrapper"><table class="data-table"><thead><tr><th>發放類別</th>${MB_BANKS.map(b => `<th style="text-align:right">${b.c} ${b.n}</th>`).join('')}</tr></thead><tbody>${MB_CATS.map((cat, ci) => `<tr><td style="font-size:12px">${cat}</td>${MB_BANKS.map(b => `<td style="text-align:right">${mbF(MB_STATE.stat[b.c][ci].n)}</td>`).join('')}</tr>`).join('')}<tr style="font-weight:700;background:var(--tint-soft)"><td>合計（筆）</td>${MB_BANKS.map(b => `<td style="text-align:right">${mbF(mbStatSum(b.c).n)}</td>`).join('')}</tr></tbody></table></div></div>
   <div class="tx-grid">${MB_BANKS.map(b => { const l = MB.ledger[b.c]; return `<div class="card"><div class="card-title">${b.c} ${b.n}</div><div class="manual-meta" style="margin:4px 0 10px">${mbF(mbStatSum(b.c).n)} 筆｜NT$ ${mbF(mbStatSum(b.c).amt)}</div>${l ? `<div class="form-hint" style="color:var(--success)">已產製：${l.name}<br>${l.t}</div><div style="display:flex;gap:6px;margin-top:8px"><button class="btn btn-outline btn-sm" onclick="mbLedgerPrev('${b.c}')">預覽</button><button class="btn btn-primary btn-sm" onclick="mbDl(MB.ledger['${b.c}'].name,MB.ledger['${b.c}'].text,'text/csv')">下載</button></div>` : `<button class="btn btn-gold btn-sm" onclick="mbGenLedger('${b.c}')">產製核發清冊</button> <button class="btn btn-outline btn-sm" onclick="mbLedgerPrev('${b.c}')">預覽</button>`}</div>`; }).join('')}</div>
   <div class="page-actions" style="margin-top:16px"><button class="btn btn-gold" onclick="mbGo(3)">下一步：產製轉出清冊 →</button></div>`;
 }
@@ -16696,6 +16697,178 @@ img,svg,canvas,video{max-width:100%}
     new MutationObserver(schedule).observe(m,{childList:true,subtree:true});
   });
   if(document.readyState!=='loading')document.dispatchEvent(new Event('DOMContentLoaded'));
+})();
+</script>
+
+<!-- ===== V44 全系統色系設定（首頁區塊管理） ===== -->
+<style id="theme-v44-css">
+:root{--tint:#eef2ff;--tint-soft:#f5f8ff;--primary-deep:#1a3a6e;--badge-bg:#cce5ff;--primary-rgb:10,38,71;--secondary-rgb:20,66,114;--login-bg:linear-gradient(135deg,#0a2647 0%,#144272 50%,#0d1b2a 100%)}
+.th-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,340px);gap:20px;align-items:start}
+.th-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.th-sw{display:flex;flex-direction:column;gap:8px;align-items:flex-start;text-align:left;padding:10px;border:2px solid var(--border);border-radius:8px;background:#fff;min-height:44px;color:var(--text-primary);position:relative}
+.th-sw:hover{border-color:var(--secondary)}
+.th-sw.sel{border-color:var(--primary);box-shadow:0 0 0 3px rgba(var(--secondary-rgb),.18)}
+.th-strip{display:flex;width:100%;height:28px;border-radius:5px;overflow:hidden;border:1px solid rgba(0,0,0,.1)}
+.th-strip i{flex:1;display:block}
+.th-name{font-weight:600;font-size:calc(13px*var(--font-scale))}
+.th-use{position:absolute;top:6px;right:6px;font-size:11px;padding:1px 6px;border-radius:10px;background:var(--success);color:#fff}
+.th-custom{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+.th-pick{display:flex;align-items:center;gap:8px}
+.th-pick input[type=color]{width:44px;height:40px;padding:2px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;flex:0 0 auto}
+.th-pick input[type=text]{width:100%;max-width:120px;font-family:Consolas,monospace}
+.th-note{margin-top:10px;font-size:calc(12px*var(--font-scale));color:var(--text-secondary);line-height:1.8}
+.th-note .ok{color:var(--success);font-weight:600}.th-note .bad{color:var(--danger);font-weight:600}
+.th-mini{border:1px solid var(--border);border-radius:8px;overflow:hidden;font-size:12px;box-shadow:var(--shadow-sm)}
+.th-mh{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;color:#fff;font-weight:700}
+.th-mb{display:flex;min-height:150px}
+.th-ms{width:34%;padding:8px;display:flex;flex-direction:column;gap:6px}
+.th-ms b{display:block;height:8px;border-radius:4px;background:rgba(255,255,255,.55)}
+.th-ms b:first-child{background:rgba(255,255,255,.95)}
+.th-mc{flex:1;padding:10px;display:flex;flex-direction:column;gap:8px}
+.th-card{background:#fff;border-radius:6px;padding:8px;box-shadow:0 1px 3px rgba(0,0,0,.1);display:flex;flex-direction:column;gap:6px}
+.th-chip{display:inline-block;padding:1px 8px;border-radius:10px;font-weight:600;align-self:flex-start}
+.th-btns{display:flex;gap:6px}.th-btns span{padding:4px 10px;border-radius:5px;color:#fff;font-weight:600}
+@media(max-width:1100px){.th-layout{grid-template-columns:1fr}}
+@media(max-width:600px){.th-custom{grid-template-columns:1fr}.th-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+<script id="theme-v44-js">
+(function () {
+  'use strict';
+  var KEY = 'fund-system-theme-v1';
+  var PRESETS = [
+    {id: 'blue',   name: '經典藍（系統預設）', p: '#0a2647', s: '#144272', bg: '#f0f2f5'},
+    {id: 'teal',   name: '海洋青藍', p: '#0b3d4a', s: '#146b7c', bg: '#eff4f5'},
+    {id: 'green',  name: '森林綠',   p: '#12372a', s: '#1f5c45', bg: '#f0f4f1'},
+    {id: 'slate',  name: '石墨灰',   p: '#1f2937', s: '#3f4b5e', bg: '#f1f2f4'},
+    {id: 'wine',   name: '酒紅',     p: '#4a1727', s: '#7b2a40', bg: '#f6f1f2'},
+    {id: 'violet', name: '紫羅蘭',   p: '#2b1d59', s: '#4b3b8c', bg: '#f3f1f8'},
+    {id: 'brown',  name: '暖棕',     p: '#3f2b1c', s: '#6c4b32', bg: '#f5f2ee'}
+  ];
+  var DEF = {preset: 'blue', p: '#0a2647', s: '#144272', bg: '#f0f2f5'};
+  var HEX = /^#[0-9a-fA-F]{6}$/;
+  var clone = function (o) { return JSON.parse(JSON.stringify(o)); };
+  var $ = function (id) { return document.getElementById(id); };
+
+  /* ---- 色彩工具 ---- */
+  function rgb(h) { return [1, 3, 5].map(function (i) { return parseInt(h.substr(i, 2), 16); }); }
+  function hex(a) { return '#' + a.map(function (v) { v = Math.max(0, Math.min(255, Math.round(v))); return (v < 16 ? '0' : '') + v.toString(16); }).join(''); }
+  function mix(a, b, t) { var x = rgb(a), y = rgb(b); return hex(x.map(function (v, i) { return v + (y[i] - v) * t; })); }
+  function lum(h) { var c = rgb(h).map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; }
+  function contrast(a, b) { var l1 = lum(a), l2 = lum(b), hi = Math.max(l1, l2), lo = Math.min(l1, l2); return (hi + 0.05) / (lo + 0.05); }
+  function nameOf(t) { if (!t) return '經典藍'; if (t.preset === 'custom') return '自訂（' + t.p + '／' + t.bg + '）'; var p = PRESETS.filter(function (x) { return x.id === t.preset; })[0]; return p ? p.name.replace('（系統預設）', '') : '經典藍'; }
+
+  function tokens(t) {
+    var tk = {'--primary': t.p, '--secondary': t.s, '--bg': t.bg, '--primary-rgb': rgb(t.p).join(','), '--secondary-rgb': rgb(t.s).join(',')};
+    if (t.preset === 'blue') {
+      tk['--tint'] = '#eef2ff'; tk['--tint-soft'] = '#f5f8ff'; tk['--primary-deep'] = '#1a3a6e'; tk['--badge-bg'] = '#cce5ff';
+      tk['--login-bg'] = 'linear-gradient(135deg,#0a2647 0%,#144272 50%,#0d1b2a 100%)';
+    } else {
+      tk['--tint'] = mix(t.s, '#ffffff', 0.92); tk['--tint-soft'] = mix(t.s, '#ffffff', 0.96);
+      tk['--primary-deep'] = mix(t.p, t.s, 0.5); tk['--badge-bg'] = mix(t.s, '#ffffff', 0.82);
+      tk['--login-bg'] = 'linear-gradient(135deg,' + t.p + ' 0%,' + t.s + ' 50%,' + mix(t.p, '#000000', 0.35) + ' 100%)';
+    }
+    return tk;
+  }
+  function applyTheme(t) {
+    t = t || DEF; var tk = tokens(t), st = document.documentElement.style;
+    Object.keys(tk).forEach(function (k) { st.setProperty(k, tk[k]); });
+    var m = document.querySelector('meta[name="theme-color"]');
+    if (!m) { m = document.createElement('meta'); m.name = 'theme-color'; document.head.appendChild(m); }
+    m.content = t.p;
+  }
+  function validate(t) {
+    if (!HEX.test(t.p) || !HEX.test(t.bg)) return '色碼格式不正確，請輸入 # 加 6 碼十六進位（例：#0a2647）';
+    if (contrast(t.p, '#ffffff') < 4.5) return '主色太淺：與白色文字的對比僅 ' + contrast(t.p, '#ffffff').toFixed(1) + ':1，標題列文字將難以閱讀（至少需 4.5:1），請改用較深的顏色';
+    if (contrast(t.s, '#ffffff') < 4.5) return '側欄色（由主色推得）太淺，對比僅 ' + contrast(t.s, '#ffffff').toFixed(1) + ':1，請改用較深的主色';
+    if (lum(t.bg) < 0.8) return '頁面底色太深：系統內文為深色字，底色須為淺色（亮度不足），請改用較淺的顏色';
+    return '';
+  }
+
+  /* ---- 狀態：納入首頁區塊設定，共用「儲存／取消／還原」 ---- */
+  var _mk = HB.mk;
+  HB.mk = function () { var o = _mk(); o.theme = clone(DEF); return o; };
+  var saved = null;
+  try { var raw = localStorage.getItem(KEY); if (raw) { var j = JSON.parse(raw); if (j && HEX.test(j.p) && HEX.test(j.s) && HEX.test(j.bg)) saved = j; } } catch (e) {}
+  HB.applied = HB.mk(); if (saved) HB.applied.theme = saved;
+  HB.draft = clone(HB.applied);
+  applyTheme(HB.applied.theme);
+
+  var _ha = window.hbApply;
+  window.hbApply = function (c) { if (_ha) _ha(c); applyTheme((c && c.theme) || DEF); };
+
+  /* ---- 預覽與畫面 ---- */
+  function previewHtml(t) {
+    var k = tokens(t);
+    return '<div class="th-mini" style="background:' + t.bg + '"><div class="th-mh" style="background:' + t.p + '"><span>基金業務管理系統</span><span>●</span></div>' +
+      '<div class="th-mb"><div class="th-ms" style="background:' + t.s + '"><b></b><b></b><b></b><b></b></div>' +
+      '<div class="th-mc"><div style="font-weight:700;color:' + t.p + '">系統儀表板</div><div class="th-card"><span class="th-chip" style="background:' + k['--tint'] + ';color:' + k['--primary-deep'] + '">待核符 3 件</span>' +
+      '<div class="th-btns"><span style="background:' + t.p + '">主要按鈕</span><span style="background:#c9a84c">強調按鈕</span></div></div>' +
+      '<div class="th-card" style="background:' + k['--tint-soft'] + '">資料列底色示意</div></div></div></div>';
+  }
+  function noteHtml(t) {
+    var cp = contrast(t.p, '#ffffff'), cs = contrast(t.s, '#ffffff'), bgok = lum(t.bg) >= 0.8, msg = validate(t);
+    var f = function (v) { return '<span class="' + (v >= 4.5 ? 'ok' : 'bad') + '">' + v.toFixed(1) + ':1' + (v >= 4.5 ? ' ✓' : ' ✕') + '</span>'; };
+    return '標題列文字對比 ' + f(cp) + '｜側欄文字對比 ' + f(cs) + '｜頁面底色 <span class="' + (bgok ? 'ok' : 'bad') + '">' + (bgok ? '夠淺 ✓' : '過深 ✕') + '</span>' +
+      (msg ? '<br><span class="bad">' + msg + '</span>' : '<br>符合可讀性標準（WCAG AA 4.5:1），可儲存套用。');
+  }
+  function dirty() { var d = $('hb-dirty'); if (d) d.classList.toggle('show', JSON.stringify(HB.draft) !== JSON.stringify(HB.applied)); }
+  function renderCard() {
+    var box = $('hb-theme-card'); if (!box) return;
+    var t = HB.draft.theme || DEF, ap = HB.applied.theme || DEF;
+    var sw = PRESETS.map(function (p) {
+      var sel = t.preset === p.id, used = ap.preset === p.id;
+      return '<button type="button" class="th-sw' + (sel ? ' sel' : '') + '" aria-pressed="' + sel + '" onclick="thPick(\'' + p.id + '\')">' + (used ? '<span class="th-use">使用中</span>' : '') +
+        '<span class="th-strip"><i style="background:' + p.p + '"></i><i style="background:' + p.s + '"></i><i style="background:' + p.bg + '"></i></span><span class="th-name">' + p.name + '</span></button>';
+    }).join('');
+    box.innerHTML = '<div class="card-header"><div><div class="card-title">全系統色系</div><div class="card-subtitle">目前使用：' + nameOf(ap) + (JSON.stringify(t) !== JSON.stringify(ap) ? '｜待套用：' + nameOf(t) : '') + '</div></div>' +
+      '<div class="page-actions"><button class="btn btn-outline btn-sm" onclick="thDefault()">還原為預設藍色系</button></div></div>' +
+      '<div class="th-layout"><div><div class="th-grid">' + sw + '</div>' +
+      '<div class="th-custom"><div class="form-group"><label class="form-label" for="th-p">自訂主色（標題列、按鈕、文字重點色）</label><div class="th-pick"><input type="color" id="th-p" value="' + t.p + '" oninput="thCustom()"><input type="text" class="form-control" id="th-p-hex" value="' + t.p + '" maxlength="7" onchange="thHex(\'p\',this.value)"></div></div>' +
+      '<div class="form-group"><label class="form-label" for="th-bg">自訂頁面底色（宜為淺色）</label><div class="th-pick"><input type="color" id="th-bg" value="' + t.bg + '" oninput="thCustom()"><input type="text" class="form-control" id="th-bg-hex" value="' + t.bg + '" maxlength="7" onchange="thHex(\'bg\',this.value)"></div></div></div>' +
+      '<div class="th-note" id="th-note">' + noteHtml(t) + '</div>' +
+      '<div class="form-hint" style="margin-top:8px">※ 選定色系後按頁面右上「儲存並套用」，標題列、側欄、按鈕、頁籤、表格底色、頁面背景與登入頁將同步變更；「取消變更」可放棄、「還原系統預設」會一併還原首頁區塊與色系。<br>※ 狀態色（成功綠、警示橙、錯誤紅）與金色強調色維持不變，以確保各類提示仍可辨識。<br>※ 儲存會寫入稽核日誌；本原型將設定保存於此瀏覽器，重新整理後仍會套用。</div></div>' +
+      '<div><div class="card-subtitle" style="margin-bottom:6px">套用預覽（示意）</div><div id="th-prev">' + previewHtml(t) + '</div></div></div>';
+  }
+  function live() {
+    var t = HB.draft.theme;
+    if ($('th-prev')) $('th-prev').innerHTML = previewHtml(t);
+    if ($('th-note')) $('th-note').innerHTML = noteHtml(t);
+    document.querySelectorAll('#hb-theme-card .th-sw').forEach(function (b) { b.classList.remove('sel'); b.setAttribute('aria-pressed', 'false'); });
+    dirty();
+  }
+  var _hr = window.hbRender;
+  window.hbRender = function () { if (_hr) _hr(); renderCard(); };
+
+  window.thPick = function (id) {
+    var p = PRESETS.filter(function (x) { return x.id === id; })[0]; if (!p) return;
+    HB.draft.theme = {preset: p.id, p: p.p, s: p.s, bg: p.bg}; window.hbRender();
+  };
+  window.thDefault = function () { HB.draft.theme = clone(DEF); window.hbRender(); };
+  window.thCustom = function () {
+    var p = $('th-p').value, bg = $('th-bg').value;
+    HB.draft.theme = {preset: 'custom', p: p, s: mix(p, '#ffffff', 0.18), bg: bg};
+    $('th-p-hex').value = p; $('th-bg-hex').value = bg; live();
+  };
+  window.thHex = function (kind, v) {
+    v = String(v).trim(); if (v && v[0] !== '#') v = '#' + v;
+    if (!HEX.test(v)) { showToast('error', '色碼格式不正確', '請輸入 # 加 6 碼十六進位，例如 #0a2647'); window.hbRender(); return; }
+    $(kind === 'p' ? 'th-p' : 'th-bg').value = v.toLowerCase(); window.thCustom();
+  };
+
+  var _hs = window.hbSave;
+  window.hbSave = function () {
+    var t = HB.draft.theme || DEF, msg = validate(t);
+    if (msg) { showToast('error', '色系設定無法儲存', msg); return; }
+    var prev = JSON.stringify(HB.applied.theme);
+    _hs();
+    if (JSON.stringify(HB.applied.theme) !== prev) {
+      try { localStorage.setItem(KEY, JSON.stringify(HB.applied.theme)); } catch (e) {}
+      try { appendAuditLog('首頁區塊管理', '全系統色系：' + nameOf(JSON.parse(prev)) + ' → ' + nameOf(HB.applied.theme)); } catch (e) {}
+      showToast('success', '全系統色系已套用', '目前色系：' + nameOf(HB.applied.theme));
+    }
+  };
+
+  if ($('hb-tree') && $('hb-theme-card')) window.hbRender();
 })();
 </script>
 
