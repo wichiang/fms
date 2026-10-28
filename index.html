@@ -42,8 +42,8 @@ document.addEventListener('click', function(e) {
 <title>公務人員退休撫卹基金管理局 - 基金業務系統（V22 止付作業子系統需求對照）</title>
 <style>
 :root {
-  --primary: #0a2647;
-  --secondary: #144272;
+  --primary: #07645c;
+  --secondary: #0a554f;
   --accent-gold: #c9a84c;
   --accent-teal: #0d7377;
   --success: #2d8b4e;
@@ -66,14 +66,19 @@ document.addEventListener('click', function(e) {
   --transition: 0.2s ease;
   --font-scale: 1;
 }
-html[data-font-size="small"]{ --font-scale: 0.9; }
-html[data-font-size="medium"]{ --font-scale: 1; }
-html[data-font-size="large"]{ --font-scale: 1.15; }
+/* 三級字體各再增大一級：小 1.0（原中）／中 1.15（原大）／大 1.3（新增一級） */
+html[data-font-size="small"]{ --font-scale: 1; }
+html[data-font-size="medium"]{ --font-scale: 1.15; }
+html[data-font-size="large"]{ --font-scale: 1.3; }
 @media(max-width:900px){
-  html[data-font-size="large"]{ --font-scale: 1.1; }
+  html[data-font-size="small"]{ --font-scale: 1; }
+  html[data-font-size="medium"]{ --font-scale: 1.1; }
+  html[data-font-size="large"]{ --font-scale: 1.2; }
 }
 @media(max-width:480px){
-  html[data-font-size="large"]{ --font-scale: 1.06; }
+  html[data-font-size="small"]{ --font-scale: 1; }
+  html[data-font-size="medium"]{ --font-scale: 1.06; }
+  html[data-font-size="large"]{ --font-scale: 1.12; }
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,-apple-system,"Segoe UI","Noto Sans TC",sans-serif;font-size:calc(14px * var(--font-scale));line-height:1.6;color:var(--text-primary);background:var(--bg);overflow-x:hidden}
@@ -16702,7 +16707,7 @@ img,svg,canvas,video{max-width:100%}
 
 <!-- ===== V44 全系統色系設定（首頁區塊管理） ===== -->
 <style id="theme-v44-css">
-:root{--tint:#eef2ff;--tint-soft:#f5f8ff;--primary-deep:#1a3a6e;--badge-bg:#cce5ff;--primary-rgb:10,38,71;--secondary-rgb:20,66,114;--login-bg:linear-gradient(135deg,#0a2647 0%,#144272 50%,#0d1b2a 100%)}
+:root{--tint:#ebf1f1;--tint-soft:#f5f8f8;--primary-deep:#085c56;--badge-bg:#d3e0df;--primary-rgb:7,100,92;--secondary-rgb:10,85,79;--login-bg:linear-gradient(135deg,#07645c 0%,#0a554f 50%,#05413c 100%)}
 .th-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,340px);gap:20px;align-items:start}
 .th-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
 .th-sw{display:flex;flex-direction:column;gap:8px;align-items:flex-start;text-align:left;padding:10px;border:2px solid var(--border);border-radius:8px;background:#fff;min-height:44px;color:var(--text-primary);position:relative}
@@ -16736,7 +16741,8 @@ img,svg,canvas,video{max-width:100%}
   'use strict';
   var KEY = 'fund-system-theme-v1';
   var PRESETS = [
-    {id: 'blue',   name: '經典藍（系統預設）', p: '#0a2647', s: '#144272', bg: '#f0f2f5'},
+    {id: 'brand',  name: '品牌青綠（系統預設）', p: '#07645c', s: '#0a554f', bg: '#f0f2f5'},
+    {id: 'blue',   name: '經典藍', p: '#0a2647', s: '#144272', bg: '#f0f2f5'},
     {id: 'teal',   name: '海洋青藍', p: '#0b3d4a', s: '#146b7c', bg: '#eff4f5'},
     {id: 'green',  name: '森林綠',   p: '#12372a', s: '#1f5c45', bg: '#f0f4f1'},
     {id: 'slate',  name: '石墨灰',   p: '#1f2937', s: '#3f4b5e', bg: '#f1f2f4'},
@@ -16744,7 +16750,7 @@ img,svg,canvas,video{max-width:100%}
     {id: 'violet', name: '紫羅蘭',   p: '#2b1d59', s: '#4b3b8c', bg: '#f3f1f8'},
     {id: 'brown',  name: '暖棕',     p: '#3f2b1c', s: '#6c4b32', bg: '#f5f2ee'}
   ];
-  var DEF = {preset: 'blue', p: '#0a2647', s: '#144272', bg: '#f0f2f5'};
+  var DEF = {preset: 'brand', p: '#07645c', s: '#0a554f', bg: '#f0f2f5'};
   var HEX = /^#[0-9a-fA-F]{6}$/;
   var clone = function (o) { return JSON.parse(JSON.stringify(o)); };
   var $ = function (id) { return document.getElementById(id); };
@@ -16755,7 +16761,7 @@ img,svg,canvas,video{max-width:100%}
   function mix(a, b, t) { var x = rgb(a), y = rgb(b); return hex(x.map(function (v, i) { return v + (y[i] - v) * t; })); }
   function lum(h) { var c = rgb(h).map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; }
   function contrast(a, b) { var l1 = lum(a), l2 = lum(b), hi = Math.max(l1, l2), lo = Math.min(l1, l2); return (hi + 0.05) / (lo + 0.05); }
-  function nameOf(t) { if (!t) return '經典藍'; if (t.preset === 'custom') return '自訂（' + t.p + '／' + t.bg + '）'; var p = PRESETS.filter(function (x) { return x.id === t.preset; })[0]; return p ? p.name.replace('（系統預設）', '') : '經典藍'; }
+  function nameOf(t) { if (!t) return '品牌青綠'; if (t.preset === 'custom') return '自訂（' + t.p + '／' + t.bg + '）'; var p = PRESETS.filter(function (x) { return x.id === t.preset; })[0]; return p ? p.name.replace('（系統預設）', '') : '品牌青綠'; }
 
   function tokens(t) {
     var tk = {'--primary': t.p, '--secondary': t.s, '--bg': t.bg, '--primary-rgb': rgb(t.p).join(','), '--secondary-rgb': rgb(t.s).join(',')};
@@ -16777,7 +16783,7 @@ img,svg,canvas,video{max-width:100%}
     m.content = t.p;
   }
   function validate(t) {
-    if (!HEX.test(t.p) || !HEX.test(t.bg)) return '色碼格式不正確，請輸入 # 加 6 碼十六進位（例：#0a2647）';
+    if (!HEX.test(t.p) || !HEX.test(t.bg)) return '色碼格式不正確，請輸入 # 加 6 碼十六進位（例：#07645c）';
     if (contrast(t.p, '#ffffff') < 4.5) return '主色太淺：與白色文字的對比僅 ' + contrast(t.p, '#ffffff').toFixed(1) + ':1，標題列文字將難以閱讀（至少需 4.5:1），請改用較深的顏色';
     if (contrast(t.s, '#ffffff') < 4.5) return '側欄色（由主色推得）太淺，對比僅 ' + contrast(t.s, '#ffffff').toFixed(1) + ':1，請改用較深的主色';
     if (lum(t.bg) < 0.8) return '頁面底色太深：系統內文為深色字，底色須為淺色（亮度不足），請改用較淺的顏色';
@@ -16821,7 +16827,7 @@ img,svg,canvas,video{max-width:100%}
         '<span class="th-strip"><i style="background:' + p.p + '"></i><i style="background:' + p.s + '"></i><i style="background:' + p.bg + '"></i></span><span class="th-name">' + p.name + '</span></button>';
     }).join('');
     box.innerHTML = '<div class="card-header"><div><div class="card-title">全系統色系</div><div class="card-subtitle">目前使用：' + nameOf(ap) + (JSON.stringify(t) !== JSON.stringify(ap) ? '｜待套用：' + nameOf(t) : '') + '</div></div>' +
-      '<div class="page-actions"><button class="btn btn-outline btn-sm" onclick="thDefault()">還原為預設藍色系</button></div></div>' +
+      '<div class="page-actions"><button class="btn btn-outline btn-sm" onclick="thDefault()">還原為預設色系（品牌青綠）</button></div></div>' +
       '<div class="th-layout"><div><div class="th-grid">' + sw + '</div>' +
       '<div class="th-custom"><div class="form-group"><label class="form-label" for="th-p">自訂主色（標題列、按鈕、文字重點色）</label><div class="th-pick"><input type="color" id="th-p" value="' + t.p + '" oninput="thCustom()"><input type="text" class="form-control" id="th-p-hex" value="' + t.p + '" maxlength="7" onchange="thHex(\'p\',this.value)"></div></div>' +
       '<div class="form-group"><label class="form-label" for="th-bg">自訂頁面底色（宜為淺色）</label><div class="th-pick"><input type="color" id="th-bg" value="' + t.bg + '" oninput="thCustom()"><input type="text" class="form-control" id="th-bg-hex" value="' + t.bg + '" maxlength="7" onchange="thHex(\'bg\',this.value)"></div></div></div>' +
@@ -16851,7 +16857,7 @@ img,svg,canvas,video{max-width:100%}
   };
   window.thHex = function (kind, v) {
     v = String(v).trim(); if (v && v[0] !== '#') v = '#' + v;
-    if (!HEX.test(v)) { showToast('error', '色碼格式不正確', '請輸入 # 加 6 碼十六進位，例如 #0a2647'); window.hbRender(); return; }
+    if (!HEX.test(v)) { showToast('error', '色碼格式不正確', '請輸入 # 加 6 碼十六進位，例如 #07645c'); window.hbRender(); return; }
     $(kind === 'p' ? 'th-p' : 'th-bg').value = v.toLowerCase(); window.thCustom();
   };
 
