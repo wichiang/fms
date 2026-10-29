@@ -2530,7 +2530,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           <div class="filter-group"><div class="filter-label">撥付日期迄</div><input class="filter-control" id="txn-d2" value="115/10/31" onchange="txnRender()"></div>
           <input type="hidden" id="txn-mask" value="1">
           <button class="btn btn-success btn-sm" onclick="txnExport()">匯出Excel</button>
-          <button class="btn btn-danger btn-sm" onclick="runDownload('未計算稅額案件清單','pdf')">匯出PDF</button>
+          <button class="btn btn-danger btn-sm" onclick="txnPdf()">匯出PDF</button>
           <button class="btn btn-outline btn-sm" onclick="txnPrint()">列印</button>
           <button class="btn btn-warning btn-sm" onclick="txnNotifyAll()">通知承辦人員（全部未完成案件）</button>
         </div>
@@ -2562,7 +2562,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
             <div class="card-title">定期給與預扣稅額檢核</div>
             <div class="card-subtitle">按月定時就定期給與達預扣稅額門檻進行檢核（每月排程自動執行）</div>
           </div>
-          <button class="btn btn-outline-primary btn-sm" onclick="showToast('info','檢核中','正在依現行課稅參數執行本月定期給與預扣稅額檢核...')">立即執行本月檢核</button>
+          <button class="btn btn-outline-primary btn-sm" onclick="toxRunMonthly()">立即執行本月檢核</button>
         </div>
         <div class="table-wrapper">
           <table class="data-table">
@@ -2571,14 +2571,15 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           </table>
         </div>
         <div class="form-hint" style="margin:8px 16px 0">預扣稅額條件成立時，系統將自動介接撥付系統建置預扣稅額支領紀錄，紀錄格式以負數形式呈現，與現行撥付系統支領紀錄格式相符；如因重審致稅額差異，仍依前述步驟辦理。</div>
+        <div class="form-hint" id="tox-audit-last" style="margin:6px 16px 0"></div>
         <div style="padding:10px 16px;border-top:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap">
-          <button class="btn btn-outline btn-sm" onclick="runDownload('定期給與預扣稅額檢核報表','xlsx')">下載檢核報表</button>
+          <button class="btn btn-outline btn-sm" onclick="toxAuditXlsx()">下載檢核報表（Excel）</button><button class="btn btn-outline btn-sm" onclick="toxAuditPdf()">下載PDF</button><button class="btn btn-outline btn-sm" onclick="toxAuditPrint()">列印</button>
           <button class="btn btn-primary btn-sm" onclick="buildAllWithholdingRecords()">批次建置已達門檻支領紀錄</button>
         </div>
       </div>
       
       <div class="card" style="margin-bottom:16px">
-        <div class="card-header"><div><div class="card-title">撥付系統預扣稅額支領紀錄</div><div class="card-subtitle">介接撥付系統建置之紀錄，金額以負數呈現（重審退還稅款則為正數），格式與現行撥付系統支領紀錄一致；來源含定期檢核、課稅計算及重審差異</div></div><span class="badge badge-info" id="tx-rec-count">0 筆</span></div>
+        <div class="card-header"><div><div class="card-title">撥付系統預扣稅額支領紀錄</div><div class="card-subtitle">介接撥付系統建置之紀錄，金額以負數呈現（重審退還稅款則為正數），格式與現行撥付系統支領紀錄一致；來源含定期檢核、課稅計算及重審差異</div></div><div style="display:flex;align-items:center;gap:8px"><span class="badge badge-info" id="tx-rec-count">0 筆</span><button class="btn btn-success btn-sm" onclick="toxRecXlsx()">匯出Excel</button></div></div>
         <div class="table-wrapper"><table class="data-table"><thead><tr><th>建置時間</th><th>撥付文號</th><th>領受人</th><th>給與項目</th><th>每期金額</th><th>期數</th><th>合計金額</th><th>來源</th><th>狀態</th></tr></thead><tbody id="tx-rec-body"></tbody></table></div>
       </div>
       <div class="card" id="tax-anomaly-list">
@@ -2598,7 +2599,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         </table>
         </div>
         <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px">
-          <button class="btn btn-outline btn-sm" onclick="runDownload('課稅異常清單','xlsx')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 下載異常清單</button>
+          <button class="btn btn-outline btn-sm" onclick="toxAnoXlsx()"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 下載異常清單</button><button class="btn btn-outline btn-sm" onclick="toxAnoPdf()">下載PDF</button><button class="btn btn-outline btn-sm" onclick="toxAnoPrint()">列印</button>
           <button class="btn btn-primary btn-sm" onclick="taxAnoBatch()">批次處理可自動修正項目</button>
         </div>
       </div>
@@ -2616,7 +2617,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       <div class="breadcrumb"><span class="breadcrumb-item" onclick="navigateTo('dashboard')">首頁</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-item">課稅管理</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-item current">重審差異管理</span></div>
       <div class="page-header">
         <div><div class="page-title">重審差異管理</div><div class="page-subtitle">撥付案經主管機關重新審定致領取金額變動時，介接撥付系統取得新資料，重新計算退職所得與稅額，產製稅額差異明細表並完整記錄異動內容</div></div>
-        <div class="page-actions"><button class="btn btn-outline btn-sm" onclick="showToast('info','介接中','正在向撥付系統查詢重審案件...');setTimeout(()=>showToast('success','介接完成','目前共 3 筆重審案件'),700)">重新介接重審案件</button></div>
+        <div class="page-actions"><button class="btn btn-outline btn-sm" onclick="rcSync()">重新介接重審案件</button></div>
       </div>
       <div class="card" style="margin-bottom:16px">
         <div class="card-header"><div><div class="card-title">重審案件清單</div><div class="card-subtitle">資料來源：撥付系統（主管機關重新審定通知）</div></div></div>
@@ -2624,7 +2625,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       </div>
       <div id="rc-detail"></div>
       <div class="card" style="margin-top:16px">
-        <div class="card-header"><div><div class="card-title">異動紀錄</div><div class="card-subtitle">資料更新時完整記錄異動內容、異動人員及異動時間</div></div><button class="btn btn-outline btn-sm" onclick="runDownload('課稅異動紀錄','xlsx')">匯出</button></div>
+        <div class="card-header"><div><div class="card-title">異動紀錄</div><div class="card-subtitle">資料更新時完整記錄異動內容、異動人員及異動時間</div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-success btn-sm" onclick="toxLogXlsx()">匯出Excel</button><button class="btn btn-danger btn-sm" onclick="toxLogPdf()">匯出PDF</button><button class="btn btn-outline btn-sm" onclick="toxLogPrint()">列印</button></div></div>
         <div class="table-wrapper"><table class="data-table"><thead><tr><th>異動時間</th><th>異動人員</th><th>案件</th><th>異動內容</th><th>異動前</th><th>異動後</th><th>異動原因</th></tr></thead><tbody id="rc-log"></tbody></table></div>
       </div>
     </div>
@@ -2653,7 +2654,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
 
       <!-- 案件查詢（全景視圖） -->
       <div class="tab-content" id="taxcase-tab-log">
-        <div class="card"><div class="card-header"><div><div class="card-title">課稅案件異動紀錄</div><div class="card-subtitle">含重審重新計算、人工修改／註銷之異動內容、異動人員及異動時間</div></div></div>
+        <div class="card"><div class="card-header"><div><div class="card-title">課稅案件異動紀錄</div><div class="card-subtitle">含重審重新計算、人工修改／註銷之異動內容、異動人員及異動時間</div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-success btn-sm" onclick="toxLogXlsx()">匯出Excel</button><button class="btn btn-danger btn-sm" onclick="toxLogPdf()">匯出PDF</button><button class="btn btn-outline btn-sm" onclick="toxLogPrint()">列印</button></div></div>
         <div class="table-wrapper"><table class="data-table"><thead><tr><th>異動時間</th><th>異動人員</th><th>案件</th><th>異動內容</th><th>異動前</th><th>異動後</th><th>異動原因</th></tr></thead><tbody id="tx-log-body"></tbody></table></div></div>
       </div>
       <div class="tab-content active" id="taxcase-tab-search">
@@ -2684,7 +2685,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           <div class="filter-group"><div class="filter-label">狀態</div><select class="filter-control" id="cl-st"><option>全部</option><option>正常</option><option>暫緩</option><option>註銷待覆核</option><option>已註銷</option></select></div>
           <div class="filter-group"><div class="filter-label">領取年度</div><select class="filter-control" id="cl-yr"><option>全部</option><option>115</option><option>114</option><option>113</option><option>112</option><option>111</option><option>110</option><option>109</option></select></div>
           <button class="btn btn-primary btn-sm" onclick="clRender()">查詢</button></div></div>
-        <div class="card"><div class="card-header"><div><div class="card-title">課稅案件清單</div><div class="card-subtitle">含撥付介接、人工建檔及歷史匯入之案件</div></div><span class="badge badge-info" id="cl-count"></span></div>
+        <div class="card"><div class="card-header"><div><div class="card-title">課稅案件清單</div><div class="card-subtitle">含撥付介接、人工建檔及歷史匯入之案件</div></div><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span class="badge badge-info" id="cl-count"></span><button class="btn btn-success btn-sm" onclick="clExport()">匯出Excel</button><button class="btn btn-danger btn-sm" onclick="clPdf()">匯出PDF</button><button class="btn btn-outline btn-sm" onclick="clPrint()">列印</button></div></div>
           <div class="table-wrapper"><table class="data-table"><thead><tr><th>案件編號</th><th>姓名</th><th>身分證</th><th>給與種類</th><th>領取日期</th><th>給付總額</th><th>扣繳稅額</th><th>來源</th><th>狀態</th><th>申報</th><th>操作</th></tr></thead><tbody id="cl-body"></tbody></table></div></div>
       </div>
       <div class="tab-content" id="taxcase-tab-manual">
@@ -7092,9 +7093,9 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
     <div class="modal-footer">
       <span style="font-size:calc(11px * var(--font-scale));color:var(--text-secondary);margin-right:auto;align-self:center">電子申報格式檔內容以本畫面資料為準，版面配置符合財政部規範</span>
       <button class="btn btn-outline" onclick="closeModal('wh-statement-modal')">關閉</button>
-      <button class="btn btn-outline" id="wh-statement-print-btn" onclick="showToast('info','列印中','正在準備列印各類所得扣繳暨免扣繳憑單...')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> 列印</button>
-      <button class="btn btn-secondary" id="wh-statement-dl-pdf-btn" onclick="runDownload('各類所得扣繳暨免扣繳憑單','pdf')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 下載PDF</button>
-      <button class="btn btn-primary" id="wh-statement-dl-txt-btn" onclick="runDownload('各類所得扣繳暨免扣繳憑單_電子申報','txt')"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 下載電子申報格式檔</button>
+      <button class="btn btn-outline" id="wh-statement-print-btn" onclick="toxWhPrint()"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> 列印</button>
+      <button class="btn btn-secondary" id="wh-statement-dl-pdf-btn" onclick="toxWhPdf()"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 下載PDF</button>
+      <button class="btn btn-primary" id="wh-statement-dl-txt-btn" onclick="toxWhTxt()"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 下載電子申報格式檔</button>
     </div>
   </div>
 </div>
@@ -8049,8 +8050,8 @@ function previewWithholdingStatement(docNum) {
   document.getElementById('wh-statement-modal-body').innerHTML = html;
   const dlPdf = document.getElementById('wh-statement-dl-pdf-btn');
   const dlTxt = document.getElementById('wh-statement-dl-txt-btn');
-  if (dlPdf) dlPdf.setAttribute('onclick', "runDownload('各類所得扣繳暨免扣繳憑單_" + c.name + "','pdf')");
-  if (dlTxt) dlTxt.setAttribute('onclick', "runDownload('各類所得扣繳暨免扣繳憑單_電子申報_" + c.name + "','txt')");
+  if (dlPdf) dlPdf.setAttribute('onclick', "toxWhPdf()");
+  if (dlTxt) dlTxt.setAttribute('onclick', "toxWhTxt()");
   openModal('wh-statement-modal');
 }
 
@@ -10203,7 +10204,7 @@ function runDownload(fileLabel, ext, opts) {
       title.textContent = '檔案已產製完成';
       sub.textContent = fileLabel + (ext ? ('.' + ext) : '') + '　已就緒';
       closeBtn.style.display = 'inline-flex';
-      showToast('success', '下載完成', fileLabel + ' 已產製完成，可於下載紀錄中查看');
+      if (!opts.silentToast) showToast('success', '下載完成', fileLabel + ' 已產製完成，可於下載紀錄中查看');
       if (opts.onDone) opts.onDone();
       if (!opts.keepOpen) {
         setTimeout(() => { closeDownloadProgress(); }, 1100);
@@ -10815,7 +10816,7 @@ function txR1() {
   const vers = [...new Set(TX.cases.map(c => txP(c.payDate).lbl))];
   const rows = TX.cases.map((c, i) => {
     if (TX.only) { if (c.doc !== TX.only) return ''; } else if (TX.flt !== '全部' && txP(c.payDate).lbl !== TX.flt) return '';
-    const v = txValidate(c), ok = v.every(x => x[3]), st = !c.checked ? '<span class="badge badge-secondary">待介接</span>' : ok ? '<span class="badge badge-success">檢核通過</span>' : '<span class="badge badge-danger">檢核未通過</span>';
+    const v = txValidate(c), ok = v.every(x => x[3]), st = !c.checked ? '<span class="badge badge-secondary">待介接</span>' : ok ? '<span class="badge badge-success">檢核通過</span>' : (c.ret ? '<span class="badge badge-warning">已退回補正</span>' : '<span class="badge badge-danger">檢核未通過</span>');
     return `<tr class="${TX.sel === i ? 'tx-chg' : ''}"><td style="font-size:12px">${c.doc}</td><td>${c.name}</td><td>${mskId(c.pid)}</td><td>${txType(c.type).name}</td><td>${c.payDate}</td><td><span class="badge badge-gold">${txP(c.payDate).lbl}</span></td><td style="font-size:12px;color:var(--text-secondary)">${c.note || ''}</td><td>${TX.regs[c.doc] ? '<span class="badge badge-gold">已建檔</span>' : st}</td><td><button class="btn btn-sm btn-gold" style="white-space:nowrap" onclick="txFetch(${i})">介接並檢核</button></td></tr>`;
   }).join('');
   let h = `<div class="card" style="margin-bottom:16px"><div class="card-header"><div><div class="card-title">待辦理課稅計算案件（撥付系統）</div><div class="card-subtitle">以介接方式取得案件辦理退職所得課稅計算所需資料，接收後先執行必要之欄位完整性及格式檢核</div>${TX.only ? txOnlyBanner() : ''}</div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><label class="form-label" style="margin:0">適用版次</label><select class="form-control" style="width:auto" ${TX.only ? 'disabled' : ''} onchange="TX.flt=this.value;TX.sel=-1;txRender()">${['全部', ...vers].map(v => `<option ${TX.flt === v ? 'selected' : ''}>${v}</option>`).join('')}</select><span class="badge badge-warning">${TX.only ? 1 : TX.cases.filter(c => TX.flt === '全部' || txP(c.payDate).lbl === TX.flt).length} 筆</span></div></div>
@@ -10825,7 +10826,7 @@ function txR1() {
     const v = txValidate(c), bad = v.filter(x => !x[3]).length;
     h += `<div class="card"><div class="card-header"><div><div class="card-title">介接資料檢核結果：${c.name}（${c.doc}）</div><div class="card-subtitle">共 ${v.length} 項檢核，${bad ? `<span class="tx-bad">${bad} 項未通過</span>` : '<span class="tx-ok">全數通過</span>'}</div></div></div>
       <div class="table-wrapper"><table class="data-table"><thead><tr><th>欄位</th><th>介接值</th><th>檢核規則</th><th>結果</th></tr></thead><tbody>${v.map(x => `<tr class="${x[3] ? '' : 'tx-chg'}"><td><b>${x[0]}</b></td><td>${x[1]}</td><td style="color:var(--text-secondary)">${x[2]}</td><td>${x[3] ? '<span class="badge badge-success">通過</span>' : '<span class="badge badge-danger">未通過</span>'}</td></tr>`).join('')}</tbody></table></div>
-      <div class="page-actions" style="margin-top:16px">${bad ? `<button class="btn btn-outline-danger" onclick="showToast('warning','已通知撥付系統','已退回 ${c.name} 案件，請撥付系統補正欄位')">退回撥付系統補正</button><button class="btn btn-outline" onclick="txFix(${TX.sel})">模擬撥付系統補正並重新介接</button>` : `<button class="btn btn-gold" onclick="txGo(2)">進入稅額計算 →</button>`}</div></div>`;
+      <div class="page-actions" style="margin-top:16px">${bad ? `<button class="btn btn-outline-danger" onclick="txReturn(${TX.sel})" ${c.ret ? 'disabled' : ''}>${c.ret ? '已退回撥付系統' : '退回撥付系統補正'}</button><button class="btn btn-outline" onclick="txFix(${TX.sel})">模擬撥付系統補正並重新介接</button>` : `<button class="btn btn-gold" onclick="txGo(2)">進入稅額計算 →</button>`}</div></div>`;
   }
   return h;
 }
@@ -10902,7 +10903,7 @@ function txR3() {
   const docs = [['official', '課稅計算完成通知公文', '公文系統產製，可直接拋轉發文'], ['sheet', '退職所得應課稅所得試算表', '依計算過程自動產製'], ['detail', '退職所得扣繳稅額明細表', '依領受人比例分配']];
   return `<div class="card"><div class="card-header"><div><div class="card-title">公文及相關文件：${c.name}</div><div class="card-subtitle">建檔編號 ${g.no}　建檔時間 ${g.t}；承辦人員可預覽、列印及下載</div></div><span class="badge ${g.disp ? 'badge-success' : 'badge-warning'}">${g.disp ? '已發文' : '尚未發文'}</span></div>
     ${docs.map(d => `<div class="tx-doc"><div style="display:flex;gap:10px;align-items:center"><div class="manual-icon">PDF</div><div><b>${d[1]}</b><div class="manual-meta">${d[2]}${d[0] === 'official' && g.disp ? '　發文文號：' + g.disp : ''}</div></div></div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-outline btn-sm" onclick="txPrev('${d[0]}','${d[1]}')">預覽</button><button class="btn btn-outline btn-sm" onclick="showToast('info','列印中','正在準備列印${d[1]}...')">列印</button><button class="btn btn-outline btn-sm" onclick="runDownload('${d[1]}','pdf')">下載</button>${d[0] === 'official' ? `<button class="btn btn-primary btn-sm" ${g.disp ? 'disabled' : ''} onclick="txDispatch()">${g.disp ? '已拋轉' : '拋轉公文系統發文'}</button>` : ''}</div></div>`).join('')}
+    <div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-outline btn-sm" onclick="txPrev('${d[0]}','${d[1]}')">預覽</button><button class="btn btn-outline btn-sm" onclick="toxDocPrint('${d[0]}','${d[1]}')">列印</button><button class="btn btn-outline btn-sm" onclick="toxDocPdf('${d[0]}','${d[1]}')">下載PDF</button>${d[0] === 'official' ? `<button class="btn btn-primary btn-sm" ${g.disp ? 'disabled' : ''} onclick="txDispatch()">${g.disp ? '已拋轉' : '拋轉公文系統發文'}</button>` : ''}</div></div>`).join('')}
     <div class="page-actions" style="margin-top:16px"><button class="btn btn-gold" onclick="txGo(4)">下一步：預扣支領紀錄 →</button></div></div>`;
 }
 /* ---- E：預扣稅額支領紀錄 ---- */
@@ -10941,7 +10942,7 @@ function rcOpen(i) {
     <div class="table-wrapper"><table class="data-table"><thead><tr><th>項目</th><th style="text-align:right">重審前</th><th style="text-align:right">重審後</th><th style="text-align:right">差異</th></tr></thead><tbody>${c.rows.map(x => { const d = x[2] - x[1]; return `<tr class="${d ? 'tx-chg' : ''}"><td>${x[0]}</td><td style="text-align:right">${fm(x[1])}</td><td style="text-align:right"><b>${fm(x[2])}</b></td><td style="text-align:right" class="${d > 0 ? 'neg' : d < 0 ? 'pos' : ''}">${d > 0 ? '+' : ''}${fm(d)}</td></tr>`; }).join('')}</tbody></table></div>
     <div class="form-row cols-2" style="margin-top:16px"><div class="form-group"><label class="form-label">異動原因 <span class="required">*</span></label><input class="form-control" id="rc-why" ${done ? 'disabled' : ''} value="${r.why || ''}" placeholder="例：主管機關重新審定，給付金額變動"></div>
     <div class="form-group"><label class="form-label">異動人員／時間</label><input class="form-control" disabled value="${done ? r.by : '王大明（給付科）／確認更新時記錄'}"></div></div>
-    <div class="page-actions"><button class="btn btn-gold" ${done ? 'disabled' : ''} onclick="rcConfirm(${i})">${done ? '已更新' : '確認更新並記錄異動'}</button><button class="btn btn-outline" ${done ? '' : 'disabled'} onclick="rcDoc(${i})">預覽稅額差異明細表</button><button class="btn btn-outline" ${done ? '' : 'disabled'} onclick="runDownload('稅額差異明細表','pdf')">下載</button></div></div>
+    <div class="page-actions"><button class="btn btn-gold" ${done ? 'disabled' : ''} onclick="rcConfirm(${i})">${done ? '已更新' : '確認更新並記錄異動'}</button><button class="btn btn-outline" ${done ? '' : 'disabled'} onclick="rcDoc(${i})">預覽稅額差異明細表</button><button class="btn btn-outline" ${done ? '' : 'disabled'} onclick="rcPdf(${i})">下載PDF</button></div></div>
     <div class="card" style="margin-top:16px"><div class="card-title">差額支領紀錄（撥付系統）</div>${c.adj === 0 ? '<div class="form-hint" style="margin-top:8px">稅額無差異，不須建置差額支領紀錄。</div>' : `<div class="form-hint" style="margin:6px 0 12px">依預扣稅額支領紀錄格式：補扣以負數、退還以正數呈現。</div>
     <div class="table-wrapper"><table class="data-table"><thead><tr><th>撥付文號</th><th>領受人</th><th>給與項目</th><th>差額</th><th>說明</th><th>狀態</th></tr></thead><tbody><tr><td style="font-size:12px">${r.doc}</td><td>${r.name}</td><td>預扣稅額（重審差異）</td><td class="${c.adj < 0 ? 'neg' : 'pos'}">${c.adj > 0 ? '+' : ''}${fm(c.adj)}</td><td>${c.adj < 0 ? '補扣差額' : '退還差額'}</td><td>${r.rec ? '<span class="badge badge-success">已介接撥付系統</span>' : '<span class="badge badge-secondary">待建置</span>'}</td></tr></tbody></table></div>
     <div class="page-actions" style="margin-top:12px"><button class="btn btn-gold" ${!done || r.rec ? 'disabled' : ''} onclick="rcRec(${i})">${r.rec ? '已建置' : '介接撥付系統建置差額支領紀錄'}</button>${done ? '' : '<span class="form-hint">請先確認更新後再建置</span>'}</div>`}</div>`;
@@ -11372,7 +11373,7 @@ function vcRender() {
     else if (!fs.length) h += '<div class="card"><div class="form-hint">無可產製之憑單。</div></div>';
     else h += `<div class="card"><div class="card-header"><div><div class="card-title">電子申報檔（UTF-8 分隔符號格式，副檔名 U8）</div><div class="card-subtitle">所得資料 32 欄＋各類所得申報書資料 26 欄＋申報單位基本資料 17 欄；欄位以直線（|）分隔，空值以前後分隔符號相連</div></div><button class="btn btn-gold btn-sm" onclick="vcDlAll()">下載全部</button></div>
       ${fs.map((x, i) => `<div class="tx-doc"><div><b>${x.name}</b><div class="manual-meta">${x.kind}｜憑單 ${x.n} 筆、申報書 ${x.g} 筆｜給付總額 ${fm(x.gross)}、扣繳稅額 ${fm(x.tax)}｜欄位數檢核：${x.fc}（32／26／17）</div></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-outline btn-sm" onclick="document.getElementById('vc-pre-${i}').style.display=document.getElementById('vc-pre-${i}').style.display==='none'?'block':'none'">檢視內容</button><button class="btn btn-primary btn-sm" onclick="vcDl(${i})">下載電子檔</button></div></div><pre id="vc-pre-${i}" style="display:none;background:#0f1b2d;color:#d6e4ff;padding:12px;border-radius:6px;font-size:11px;overflow-x:auto;white-space:pre">${x.text.split('\r\n').slice(0, 5).join('\n').replace(/</g, '&lt;')}\n…（共 ${x.lines.length} 筆記錄）</pre>`).join('')}</div>
-      <div class="card" style="margin-top:16px"><div class="card-title" style="margin-bottom:10px">報送文件與紙本憑單</div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-outline" onclick="vcReport()">各類所得扣繳暨免扣繳憑單申報書</button><button class="btn btn-outline" onclick="vcDeliver()">媒體檔案遞送單</button><button class="btn btn-outline" onclick="VC.tab=2;vcRender()">逐筆預覽／列印憑單</button><button class="btn btn-outline" onclick="runDownload('扣繳暨免扣繳憑單_全部紙本','pdf')">批次產製紙本憑單 PDF</button></div><div class="form-hint" style="margin-top:8px">紙本憑單依電子申報專用格式（每聯 14×17.5 公分、第 2 聯所得人證號後 3 碼以＊取代）；檔名規則：居住者「統編.年度.U8」、非居住者「統編.給付日期.U8」。</div></div>`;
+      <div class="card" style="margin-top:16px"><div class="card-title" style="margin-bottom:10px">報送文件與紙本憑單</div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-outline" onclick="vcReport()">各類所得扣繳暨免扣繳憑單申報書</button><button class="btn btn-outline" onclick="vcDeliver()">媒體檔案遞送單</button><button class="btn btn-outline" onclick="VC.tab=2;vcRender()">逐筆預覽／列印憑單</button><button class="btn btn-outline" onclick="vcPaperPdf()">批次產製紙本憑單 PDF</button></div><div class="form-hint" style="margin-top:8px">紙本憑單依電子申報專用格式（每聯 14×17.5 公分、第 2 聯所得人證號後 3 碼以＊取代）；檔名規則：居住者「統編.年度.U8」、非居住者「統編.給付日期.U8」。</div></div>`;
   }
   el.innerHTML = h;
 }
@@ -15593,7 +15594,7 @@ function rpInit() {
   const tabs = document.querySelectorAll('#view-tax-report .tab-content'); tabs.forEach(e => e.remove());
   const host = document.querySelector('#view-tax-report'); 
   Object.keys(RPDEF).forEach((t, i) => { const d = RPDEF[t], div = document.createElement('div'); div.className = 'tab-content' + (i === 0 ? ' active' : ''); div.id = d.id;
-    div.innerHTML = `<div class="card" style="margin-bottom:16px"><div class="card-subtitle" style="margin-bottom:12px">${d.desc}</div><div class="filter-row" style="display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap">${d.flt.map(x => `<div class="filter-group"><div class="filter-label">${x[1]}</div>${x[2] === 'date' ? `<input type="text" class="filter-control" id="rf-${t}-${x[0]}" value="${x[0] === 'd1' ? '115/01/01' : '115/12/31'}" placeholder="yyy/mm/dd" style="width:120px">` : `<select class="filter-control" id="rf-${t}-${x[0]}">${x[3].map(o => `<option>${o}</option>`).join('')}</select>`}</div>`).join('')}<button class="btn btn-primary btn-sm" style="align-self:flex-end" onclick="rpShow('${t}')">查詢</button><button class="btn btn-success btn-sm" style="align-self:flex-end" onclick="rpXlsx('${t}')">匯出Excel</button><button class="btn btn-danger btn-sm" style="align-self:flex-end" onclick="runDownload('${d.title}','pdf')">匯出PDF</button><button class="btn btn-outline btn-sm rpt-print" style="align-self:flex-end" onclick="rptPrint('${d.id}','${d.title}')">列印</button>${t === 'a' ? `<button class="btn btn-secondary btn-sm" style="align-self:flex-end" onclick="runDownload('各類所得扣繳暨免扣繳憑單_電子申報','txt')">產製電子申報格式檔</button>` : ''}</div></div><div id="rq-${t}-out"></div>`;
+    div.innerHTML = `<div class="card" style="margin-bottom:16px"><div class="card-subtitle" style="margin-bottom:12px">${d.desc}</div><div class="filter-row" style="display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap">${d.flt.map(x => `<div class="filter-group"><div class="filter-label">${x[1]}</div>${x[2] === 'date' ? `<input type="text" class="filter-control" id="rf-${t}-${x[0]}" value="${x[0] === 'd1' ? '115/01/01' : '115/12/31'}" placeholder="yyy/mm/dd" style="width:120px">` : `<select class="filter-control" id="rf-${t}-${x[0]}">${x[3].map(o => `<option>${o}</option>`).join('')}</select>`}</div>`).join('')}<button class="btn btn-primary btn-sm" style="align-self:flex-end" onclick="rpShow('${t}')">查詢</button><button class="btn btn-success btn-sm" style="align-self:flex-end" onclick="rpXlsx('${t}')">匯出Excel</button><button class="btn btn-danger btn-sm" style="align-self:flex-end" onclick="rpPdf('${t}')">匯出PDF</button><button class="btn btn-outline btn-sm rpt-print" style="align-self:flex-end" onclick="rptPrint('${d.id}','${d.title}')">列印</button>${t === 'a' ? `<button class="btn btn-secondary btn-sm" style="align-self:flex-end" onclick="rpEfile()">產製電子申報格式檔</button>` : ''}</div></div><div id="rq-${t}-out"></div>`;
     host.appendChild(div); });
 }
 function rpAll(silent) { rpInit(); Object.keys(RPDEF).forEach(t => rpShow(t, silent !== false)); }
@@ -16876,6 +16877,225 @@ img,svg,canvas,video{max-width:100%}
 
   if ($('hb-tree') && $('hb-theme-card')) window.hbRender();
 })();
+</script>
+
+<script>
+/* ####### V47 ####### */
+/* ===== V47：課稅管理—實際輸出與動作補強 =====
+   1. 所有「匯出 Excel」改為產製真實 .xlsx（原部分僅輸出 CSV 或只跑進度條）
+   2. 所有「匯出 PDF／下載」改為開啟列印預覽並可「另存為 PDF」（原僅顯示進度條，無任何檔案）
+   3. 預覽視窗（公文、試算表、憑單、彙整表…）之「下載」「列印」於課稅管理頁面皆產出實際內容
+   4. 電子申報格式檔（U8）、紙本憑單批次 PDF、支領紀錄／異常清單／檢核報表／異動紀錄匯出
+   5. 原僅跳出通知之動作改為實際執行：本月檢核、重審案件介接、退回撥付系統補正 */
+const TOX = {capture: false, captured: null, rcSync: null, runs: [{t: TODAY_ROC + ' 08:00', by: '月排程'}]};
+const toxHm = () => new Date().toTimeString().slice(0, 5);
+const toxStamp = () => TODAY_ROC.replace(/\//g, '');
+const toxInTax = () => /^(tax-|admin-tax)/.test(typeof currentView === 'string' ? currentView : '');
+const toxSel = id => { const e = document.getElementById(id); return e && e.options && e.selectedIndex > -1 ? e.options[e.selectedIndex].text : ''; };
+const toxClean = el => { const c = el.cloneNode(true); c.querySelectorAll('button,.btn,script,.modal-close').forEach(x => x.remove()); return c.innerHTML; };
+
+/* ---- 共用：真實 .xlsx ---- */
+function toxXlsx(title, rows, note) {
+  if (!rows || rows.length < 2) { showToast('warning', '無資料可匯出', '目前沒有符合條件之資料，請調整條件後再匯出'); return; }
+  const head = rows[0].map(String), body = rows.slice(1).map(r => r.map(v => v == null ? '' : v));
+  let bytes;
+  try {
+    bytes = xlsxBuild({sheet: title.replace(/[\[\]:*?\/\\]/g, '').slice(0, 28), title, lines: ['公務人員退休撫卹基金管理局　產製日期：' + TODAY_ROC + '　產製人員：王大明'].concat(note ? [note] : [], ['個資顯示：' + piiLabel()])}, head, body);
+  } catch (e) { showToast('error', '產製失敗', String(e.message || e)); return; }
+  runDownload(title, 'xlsx', {verb: '正在產製Excel', onDone: () => rpDownload(title + '_' + toxStamp() + '.xlsx', bytes)});
+}
+
+/* ---- 共用：列印／另存為 PDF（獨立列印文件，含版面樣式） ---- */
+function toxPrintHtml(title, bodyHtml, o) {
+  o = o || {};
+  const f = document.createElement('iframe'); f.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0'; document.body.appendChild(f);
+  const d = f.contentWindow.document; d.open();
+  const base = o.copyCss ? [...document.querySelectorAll('style')].map(s => s.textContent).join('\n') : '';
+  const css = base + '@page{size:A4 ' + (o.landscape ? 'landscape' : 'portrait') + ';margin:12mm}' +
+    'body{background:#fff!important;color:#111!important;font-family:"AgencyCNS","Noto Sans CJK TC","Microsoft JhengHei","TW-Sung-Ext-B","HanaMinB",sans-serif;padding:8px;font-size:12px;line-height:1.5}' +
+    'h2{margin:0 0 4px;font-size:18px}h3{margin:14px 0 4px;font-size:14px}.sub{color:#555;font-size:11px;margin-bottom:8px}' +
+    'table{border-collapse:collapse;width:100%;margin:6px 0}th,td{border:1px solid #888;padding:4px 6px;text-align:left;vertical-align:top}th{background:#eee}' +
+    '.num{text-align:right}.total td{font-weight:700;background:#fff3cd}.pg{page-break-after:always}.pg:last-child{page-break-after:auto}' +
+    '.info-card{border:1px solid #bbb;margin:6px 0}.info-row{display:flex;border-bottom:1px solid #ddd}.info-row:last-child{border-bottom:0}.info-key{width:120px;flex:none;font-weight:700;padding:4px 8px;background:#f4f4f4}.info-val{flex:1;padding:4px 8px}' +
+    '.badge{border:1px solid #999;border-radius:8px;padding:0 6px;font-size:11px}.neg{color:#b00}.pos{color:#060}.table-wrapper{overflow:visible}.tx-formula{border-left:3px solid #999;padding:4px 8px;margin:6px 0;background:#f7f7f7}.form-hint,.manual-meta{color:#555;font-size:11px}' +
+    '.tx-grid{display:flex;gap:8px;margin:8px 0}.tx-kpi{border:1px solid #bbb;padding:6px 10px;flex:1}.tx-kpi small{display:block;color:#555}.tx-bar{display:flex;font-size:11px;color:#fff}';
+  d.write('<!doctype html><html><head><meta charset="utf-8"><title>' + htmlEsc(title) + '</title><style>' + css + '</style></head><body><h2>' + htmlEsc(title) + '</h2><div class="sub">公務人員退休撫卹基金管理局　列印日期：' + TODAY_ROC + '　列印人員：王大明　個資顯示：' + piiLabel() + '</div>' + bodyHtml + '</body></html>');
+  d.close();
+  setTimeout(() => { try { f.contentWindow.focus(); f.contentWindow.print(); } catch (e) { showToast('error', '列印失敗', '瀏覽器未允許列印'); } setTimeout(() => f.remove(), 2500); }, 350);
+}
+function toxPdf(title, bodyHtml, o) {
+  runDownload(title, 'pdf', {verb: '正在產製PDF', silentToast: true, onDone: () => {
+    toxPrintHtml(title, bodyHtml, o);
+    showToast('info', '請選擇「另存為 PDF」', '已開啟列印預覽；於列印視窗「目的地」選擇「另存為 PDF」，即可儲存 ' + title + '.pdf');
+  }});
+}
+const toxTbl = (rows, numCols) => '<table><thead><tr>' + rows[0].map(h => '<th>' + htmlEsc(h) + '</th>').join('') + '</tr></thead><tbody>' + rows.slice(1).map(r => '<tr>' + r.map((c, i) => typeof c === 'number' ? '<td class="num">' + fm(c) + '</td>' : '<td>' + htmlEsc(c) + '</td>').join('') + '</tr>').join('') + '</tbody></table>';
+function toxPdfRows(title, rows, cond) {
+  if (!rows || rows.length < 2) { showToast('warning', '無資料可匯出', '目前沒有符合條件之資料，請調整條件後再匯出'); return; }
+  toxPdf(title, (cond ? '<div class="sub">' + htmlEsc(cond) + '</div>' : '') + toxTbl(rows) + '<div class="sub">共 ' + (rows.length - 1) + ' 筆</div>', {landscape: rows[0].length >= 8});
+}
+function toxPrintRows(title, rows, cond) {
+  if (!rows || rows.length < 2) { showToast('warning', '無資料可列印', '目前沒有符合條件之資料'); return; }
+  toxPrintHtml(title, (cond ? '<div class="sub">' + htmlEsc(cond) + '</div>' : '') + toxTbl(rows) + '<div class="sub">共 ' + (rows.length - 1) + ' 筆</div>', {landscape: rows[0].length >= 8});
+}
+function toxText(label, ext, text, mime) {
+  runDownload(label, ext, {verb: '正在產製檔案', onDone: () => dlBlob(label + '.' + ext, text, mime || 'text/plain')});
+}
+
+/* ---- 預覽視窗：課稅管理頁面之「下載」「列印」皆產出實際內容 ---- */
+const _od47 = openDetailModal;
+openDetailModal = function (title, html, dlLabel, dlExt) {
+  if (TOX.capture) { TOX.captured = {title, html, dlLabel, dlExt}; return; }
+  const r = _od47.apply(this, arguments);
+  const pb = document.getElementById('detail-modal-print-btn'), db = document.getElementById('detail-modal-dl-btn');
+  if (toxInTax()) {
+    if (pb) { pb.style.display = /^異常修正/.test(title) ? 'none' : 'inline-flex'; pb.setAttribute('onclick', 'toxModalPrint()'); }
+    if (db && dlLabel) { db.dataset.toxLabel = dlLabel; db.dataset.toxExt = dlExt || 'xlsx'; db.setAttribute('onclick', 'toxModalDl()'); }
+  } else if (pb) pb.setAttribute('onclick', 'dirModalPrint()');
+  return r;
+};
+function toxCapture(fn) { TOX.capture = true; TOX.captured = null; try { fn(); } finally { TOX.capture = false; } return TOX.captured; }
+const toxModalTitle = () => (document.querySelector('#detail-modal-title span') || {textContent: '明細'}).textContent.trim();
+function toxDomRows(t) {
+  return [...t.rows].map(tr => [...tr.cells].map(c => { const x = c.innerText.replace(/\s+/g, ' ').trim(); return /^-?(0|[1-9]\d{0,2}(,\d{3})+|[1-9]\d*)$/.test(x) ? Number(x.replace(/,/g, '')) : x; }));
+}
+function toxModalPrint() { toxPrintHtml(toxModalTitle(), toxClean(document.getElementById('detail-modal-body'))); }
+function toxModalDl() {
+  const b = document.getElementById('detail-modal-dl-btn'), label = b.dataset.toxLabel || toxModalTitle(), ext = b.dataset.toxExt || 'pdf', body = document.getElementById('detail-modal-body');
+  if (ext === 'xlsx' || ext === 'csv') { const t = body.querySelector('table'); if (t) { toxXlsx(label, toxDomRows(t)); return; } }
+  if (ext === 'txt') { toxText(label, 'txt', body.innerText); return; }
+  toxPdf(label, toxClean(body));
+}
+
+/* ---- 課稅計算 步驟3：公文／試算表／扣繳稅額明細表 列印與下載 ---- */
+function toxDocPrint(k, nm) { const c = TX.cur(); if (!c || !TX.regs[c.doc]) { showToast('warning', '尚未建檔', '請先完成課稅計算並確認建檔'); return; } toxPrintHtml(nm + ' · ' + maskName(c.name), txDocHtml(k)); }
+function toxDocPdf(k, nm) { const c = TX.cur(); if (!c || !TX.regs[c.doc]) { showToast('warning', '尚未建檔', '請先完成課稅計算並確認建檔'); return; } toxPdf(nm + '_' + maskName(c.name), txDocHtml(k)); }
+function txReturn(i) {
+  const c = TX.cases[i]; c.ret = rocNow();
+  TXN.log.unshift({t: TODAY_ROC + ' ' + toxHm(), who: '系統', c: c.doc + ' ' + maskName(c.name) + ' 欄位檢核未通過，已退回撥付系統補正', how: '退回撥付系統'});
+  showToast('warning', '已退回撥付系統', c.name + ' 案件已退回，並記錄於通知紀錄；請撥付系統補正後重新介接'); txRender(); txnRender();
+}
+
+/* ---- 未計算稅額案件通知 ---- */
+function toxTxnNote() { return '處理情形：' + toxSel('txn-st') + '；撥付日期 ' + document.getElementById('txn-d1').value + '～' + document.getElementById('txn-d2').value + '；最近介接 ' + TXN.sync; }
+txnExport = function () { toxXlsx('未計算稅額案件清單', txnTable(), toxTxnNote()); };
+function txnPdf() { toxPdfRows('未計算稅額案件清單', txnTable(), toxTxnNote()); }
+
+/* ---- 課稅案件管理：案件查詢 ---- */
+const qcCond = () => '查詢條件：身分證字號「' + (document.getElementById('qc-id').value || '不限') + '」、姓名「' + (document.getElementById('qc-name').value || '不限') + '」、年度「' + (document.getElementById('qc-yr').value || '全部') + '」';
+qcExport = function () { if (!QC.rows.length) { showToast('warning', '無資料', '請先查詢'); return; } toxXlsx('課稅案件查詢結果', qcTable(), qcCond()); };
+qcPdf = function () { if (!QC.rows.length) { showToast('warning', '無資料', '請先查詢'); return; } toxPdfRows('課稅案件查詢結果', qcTable(), qcCond()); };
+function qcDetailHtml() {
+  const r = QC.rows.find(x => x.no === QC.sel); if (!r) return '';
+  const mk = qcMk(), nm = mk ? maskName(r.name) : r.name, pid = mk ? mskId(r.pid) : r.pid, kv = a => '<table>' + a.map(x => '<tr><th style="width:130px">' + x[0] + '</th><td>' + htmlEsc(x[1]) + '</td></tr>').join('') + '</table>';
+  return '<h3>案件：' + htmlEsc(r.no) + '（' + htmlEsc(nm) + '　' + htmlEsc(pid) + '）</h3><h3>人員資料</h3>' + kv([['出生年月日', r.dob], ['通訊地址', mk ? r.addr.slice(0, 6) + '＊＊＊' : r.addr], ['服務機關', r.unit]]) +
+    '<h3>關聯退撫給與資料</h3>' + kv([['退撫給與種類', r.kind], ['領受期間', r.period], ['領受總額', 'NT$ ' + fm(r.total)]]) +
+    '<h3>課稅計算結果</h3>' + kv([['應稅所得', 'NT$ ' + fm(r.taxable)], ['應納稅額', 'NT$ ' + fm(r.tax)], ['案件狀態', r.st]]) +
+    '<h3>案件異動歷程</h3><table><thead><tr><th>時間</th><th>事件</th><th>說明</th></tr></thead><tbody>' + r.tl.map(t => '<tr><td>' + t[0] + '</td><td>' + t[1] + '</td><td>' + t[2] + '</td></tr>').join('') + '</tbody></table>';
+}
+qcDetailPdf = function () { const h = qcDetailHtml(); if (!h) { showToast('warning', '無資料', '請先查詢並選擇案件'); return; } toxPdf('課稅案件全景資料_' + QC.sel, h); };
+qcDetailPrint = function () { const h = qcDetailHtml(); if (!h) { showToast('warning', '無資料', '請先查詢並選擇案件'); return; } toxPrintHtml('課稅案件全景資料_' + QC.sel, h); };
+
+/* ---- 課稅案件管理：案件清單／異動紀錄 ---- */
+function clRows() {
+  const g = id => (document.getElementById(id) || {}).value || '', q = g('cl-q'), sr = g('cl-src') || '全部', st = g('cl-st') || '全部', yr = g('cl-yr') || '全部';
+  const rows = TXC.list.filter(c => (!q || (c.no + c.name + c.pid).includes(q)) && (sr === '全部' || c.src === sr) && (st === '全部' || c.status === st) && (yr === '全部' || String(c.payDate.slice(0, 3)) === yr));
+  return [['案件編號', '姓名', '身分證字號', '給與種類', '領取日期', '給付總額', '扣繳稅額', '來源', '狀態', '申報']].concat(rows.map(c => [c.no, maskName(c.name), mskId(c.pid), txType(c.type).name, c.payDate, c.gross, c.tax, c.src, c.status, c.decl]));
+}
+const clCond = () => '查詢條件：關鍵字「' + ((document.getElementById('cl-q') || {}).value || '不限') + '」、來源「' + toxSel('cl-src') + '」、狀態「' + toxSel('cl-st') + '」、領取年度「' + toxSel('cl-yr') + '」';
+function clExport() { toxXlsx('課稅案件清單', clRows(), clCond()); }
+function clPdf() { toxPdfRows('課稅案件清單', clRows(), clCond()); }
+function clPrint() { toxPrintRows('課稅案件清單', clRows(), clCond()); }
+const toxLogRows = () => [['異動時間', '異動人員', '案件', '異動內容', '異動前', '異動後', '異動原因', '來源']].concat(TX.log.map(l => [l.t, l.u, l.c, l.k, l.a, l.b, l.why, l.src || '']));
+function toxLogXlsx() { toxXlsx('課稅異動紀錄', toxLogRows(), '含重審重新計算、人工修改／註銷及異常修正之異動內容、異動人員及異動時間'); }
+function toxLogPdf() { toxPdfRows('課稅異動紀錄', toxLogRows()); }
+function toxLogPrint() { toxPrintRows('課稅異動紀錄', toxLogRows()); }
+
+/* ---- 重審差異管理 ---- */
+function rcPdf(i) {
+  const r = TX.recalc[i]; if (!r || !r.cr) { showToast('warning', '尚未重新計算', '請先介接並重新計算'); return; }
+  const cap = toxCapture(() => rcDoc(i)); if (!cap) return; toxPdf('稅額差異明細表_' + maskName(r.name), cap.html);
+}
+function toxRcMeta() { const st = document.querySelector('#view-tax-recalc .card .card-subtitle'); if (st) st.innerHTML = '資料來源：撥付系統（主管機關重新審定通知）；最近介接：<span id="rc-sync-time">' + (TOX.rcSync || TODAY_ROC + ' 08:00') + '</span>'; }
+function rcSync() {
+  showToast('info', '介接中', '正在向撥付系統查詢重審案件...');
+  setTimeout(() => {
+    TOX.rcSync = TODAY_ROC + ' ' + toxHm(); toxRcMeta(); rcList();
+    const n = TX.recalc.length, c = s => TX.recalc.filter(r => r.st === s).length;
+    showToast('success', '介接完成', '目前共 ' + n + ' 筆重審案件（待重算 ' + c('待重算') + '、已重算 ' + c('已重算') + '、已更新 ' + c('已更新') + '）');
+  }, 700);
+}
+
+/* ---- 報表彙整統計：PDF／電子申報格式檔 ---- */
+function rpPdf(t) {
+  const q = rpBuild(t, false); if (!q) return;
+  if (!q.n) { showToast('warning', '無資料可匯出', '目前查詢條件無符合資料，請調整條件後再匯出'); return; }
+  rpShow(t, true);
+  const cell = c => typeof c === 'number' ? '<td class="num">' + fm(c) + '</td>' : '<td>' + htmlEsc(c) + '</td>';
+  const html = '<div class="sub">查詢條件：' + htmlEsc(q.cond) + '<br>' + htmlEsc(String(q.note).replace(/<[^>]+>/g, '')) + '</div><table><thead><tr>' + q.head.map(h => '<th>' + h + '</th>').join('') + '</tr></thead><tbody>' +
+    q.body.map(b => { const r = b.r || b; return '<tr' + (b.k === 'total' ? ' class="total"' : '') + '>' + r.map(cell).join('') + '</tr>'; }).join('') + '</tbody></table>';
+  toxPdf(q.title, html, {landscape: q.head.length >= 8});
+}
+function rpEfile() {
+  const y = +(rpV('a', 'd1') || '').slice(0, 3); if (y) VC.year = y;
+  VC.built = false; vcBuild();
+  const se = vcSetErr();
+  if (se.length) { showToast('warning', '申報單位資料未完整', '請先至「扣繳憑單產製 › 申報設定」修正 ' + se.length + ' 項後再產製電子申報檔'); return; }
+  const errN = VC.rows.filter(r => r.lv === 'err').length, fs = vcFiles();
+  if (!fs.length) { showToast('warning', '無可產製之憑單', VC.year + ' 年度無符合申報條件之案件'); return; }
+  runDownload('各類所得扣繳暨免扣繳憑單_電子申報', 'txt', {verb: '正在產製電子申報檔', onDone: () => {
+    fs.forEach((f, i) => setTimeout(() => dlBlob(f.name, f.text, 'text/plain'), i * 300));
+    showToast(errN ? 'warning' : 'success', '電子申報檔已產製', VC.year + ' 年度共 ' + fs.length + ' 個檔案、' + fs.reduce((a, f) => a + f.n, 0) + ' 筆憑單（UTF-8、| 分隔）' + (errN ? '；另有 ' + errN + ' 筆審核錯誤已剔除不進檔' : ''));
+  }});
+}
+
+/* ---- 扣繳憑單產製：批次紙本憑單 ---- */
+function vcPaperPdf() {
+  if (!VC.built) vcBuild();
+  const ok = VC.rows.filter(r => r.lv !== 'err'); if (!ok.length) { showToast('warning', '無可產製之憑單', '無通過審核之憑單'); return; }
+  toxPdf('扣繳暨免扣繳憑單_全部紙本', ok.map(r => '<div class="pg">' + vcForm(r, 1) + vcForm(r, 2) + '</div>').join(''), {landscape: false});
+}
+
+/* ---- 定期給與預扣稅額檢核 ---- */
+function toxAuditCalc() {
+  const I = a => ({resident: true, d: '115/10/19', per: a.m * 12});
+  return TX.audit.map(a => { const r = txCalc(txType('period-ret'), I(a)), p = r.parts[0], hit = !p.waived, mo = Math.round(p.tax / 12), has = TX.records.some(x => x.doc === a.doc && x.src === '定期檢核'); return {a, r, hit, mo, has}; });
+}
+function toxAuditRows() {
+  return [['姓名', '身分證字號', '退撫給與種類', '月領金額', '全年課稅所得額', '是否達預扣門檻', '每月預扣稅額（每次）', '撥付系統支領紀錄']].concat(toxAuditCalc().map(x => [maskName(x.a.n), mskId(x.a.pid), '月退休(職)金(俸)', x.a.m, Math.round(x.r.inc), x.hit ? '已達門檻' : '未達門檻', x.hit ? x.mo : '-', x.hit ? (x.has ? '已建置（-' + fm(x.mo) + '）' : '待建置') : '-']));
+}
+const toxAuditNote = () => '檢核基準：居住者每次預扣稅額逾 NT$2,000 者須預扣；最近檢核 ' + TOX.runs[0].t + '（' + TOX.runs[0].by + '）';
+function toxAuditXlsx() { toxXlsx('定期給與預扣稅額檢核報表', toxAuditRows(), toxAuditNote()); }
+function toxAuditPdf() { toxPdfRows('定期給與預扣稅額檢核報表', toxAuditRows(), toxAuditNote()); }
+function toxAuditPrint() { toxPrintRows('定期給與預扣稅額檢核報表', toxAuditRows(), toxAuditNote()); }
+function toxAuditMeta() {
+  const el = document.getElementById('tox-audit-last'); if (!el) return;
+  const c = toxAuditCalc(), hit = c.filter(x => x.hit).length, built = c.filter(x => x.hit && x.has).length, r = TOX.runs[0];
+  el.innerHTML = '最近檢核：<b>' + r.t + '</b>（' + r.by + '）　檢核 ' + c.length + ' 位領受人，已達預扣門檻 ' + hit + ' 位，已建置支領紀錄 ' + built + ' 位，待建置 <b style="color:' + (hit - built ? 'var(--danger)' : 'var(--success)') + '">' + (hit - built) + '</b> 位';
+}
+function toxRunMonthly() {
+  showToast('info', '檢核中', '正在依現行課稅參數執行本月定期給與預扣稅額檢核...');
+  setTimeout(() => {
+    TOX.runs.unshift({t: rocNow(), by: '王大明（手動）'}); txAuditRender();
+    const c = toxAuditCalc(), hit = c.filter(x => x.hit).length, pend = c.filter(x => x.hit && !x.has).length;
+    showToast(pend ? 'warning' : 'success', '本月檢核完成', '共檢核 ' + c.length + ' 位領受人，已達預扣門檻 ' + hit + ' 位' + (pend ? '，尚有 ' + pend + ' 位待建置支領紀錄' : '，支領紀錄均已建置'));
+  }, 900);
+}
+const toxRecRows = () => [['建置時間', '撥付文號', '領受人', '給與項目', '每期金額', '期數', '合計金額', '來源', '狀態']].concat(TX.records.map(x => [x.t, x.doc, maskName(x.who), '預扣稅額', x.per, x.times, x.total, x.src, '已建置']));
+function toxRecXlsx() { toxXlsx('撥付系統預扣稅額支領紀錄', toxRecRows(), '金額以負數呈現（重審退還稅款為正數），格式與現行撥付系統支領紀錄一致'); }
+const toxAnoRows = () => [['文號', '姓名', '身分證字號', '異常類型', '說明', '狀態']].concat(TAXANO.map(a => [a.doc, maskName(a.name), mskId(a.pid), a.ty, a.desc, a.st ? '已修正（' + a.st + '）' : a.stTxt]));
+function toxAnoXlsx() { toxXlsx('課稅異常清單', toxAnoRows(), '檢核時間：' + rocNow() + '；尚待處理 ' + taOpen() + ' 筆'); }
+function toxAnoPdf() { toxPdfRows('課稅異常清單', toxAnoRows(), '尚待處理 ' + taOpen() + ' 筆'); }
+function toxAnoPrint() { toxPrintRows('課稅異常清單', toxAnoRows(), '尚待處理 ' + taOpen() + ' 筆'); }
+const _txAudit47 = txAuditRender; txAuditRender = function () { _txAudit47(); toxAuditMeta(); };
+
+/* ---- （舊版）扣繳憑單預覽視窗 ---- */
+function toxWhPrint() { toxPrintHtml('各類所得扣繳暨免扣繳憑單', document.getElementById('wh-statement-modal-body').innerHTML, {copyCss: true}); }
+function toxWhPdf() { toxPdf('各類所得扣繳暨免扣繳憑單', document.getElementById('wh-statement-modal-body').innerHTML, {copyCss: true}); }
+function toxWhTxt() { const v = [...document.querySelectorAll('#wh-statement-modal-body .wh-val')].map(e => e.innerText.replace(/\s+/g, ' ').trim()); toxText('各類所得扣繳暨免扣繳憑單_電子申報', 'txt', v.join('|') + '\r\n'); }
+
+toxRcMeta(); toxAuditMeta();
+
 </script>
 
 </body>
