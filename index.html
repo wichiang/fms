@@ -3021,9 +3021,24 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
       </div>
       <div class="page-header">
         <div class="page-title">科長核符作業</div>
-        <div class="page-subtitle">查詢已送審之直撥案件，核符前得修改撥付期間、金額等欄位；核符後系統即鎖定資料，禁止任何修改</div>
       </div>
       <div class="form-hint" style="margin:-8px 0 16px">首期直撥案件經科長核符完成後，系統將自動介接撥付系統登錄支領紀錄並產生批號；屬期次撥付案件者，後續各期將自動納入本局定撥排程，無需逐期送核。</div>
+      <div class="card" style="margin-bottom:16px" id="sup-legend">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
+          <div style="flex:1;min-width:300px">
+            <div class="card-title" style="margin-bottom:8px">案件狀態控管說明</div>
+            <div style="display:grid;gap:6px;font-size:calc(13px * var(--font-scale))">
+              <div><span class="badge badge-warning">⏳ 待核符</span>　<b>🔓 可編修</b>：科長核符前，得修正撥付期間、金額等欄位；每次修正均留存異動紀錄。</div>
+              <div><span class="badge badge-success">✔ 已核符</span>　<b>🔒 不可編修</b>：核符後系統立即鎖定，並登錄支領紀錄至公、教、軍職撥付系統（產生批號）。</div>
+              <div><span class="badge badge-danger">↩ 取消核准</span>　由<b>科長</b>取消原核准：系統介接撥付系統刪除已登錄之支領紀錄與批號，案件回復「待核符・可編修」；異動及已刪除批號永久保留。</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+            <button class="btn btn-outline-danger btn-sm" onclick="switchSupervisorFilter('approved', document.getElementById('sup-tab-approved'))">查看已核符案件（可取消核准）</button>
+            <span style="font-size:calc(12px * var(--font-scale));color:var(--text-secondary)">取消核准僅限科長（核准層級）操作</span>
+          </div>
+        </div>
+      </div>
 
       <div class="card" style="margin-bottom:16px">
         <div class="tabs" style="margin-bottom:0">
@@ -3108,6 +3123,16 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         </div>
         <div class="form-hint" style="margin-top:8px">任何異動行為（含取消核准後刪除之批號及支領紀錄）均永久保留，供查核與追蹤。</div>
       </div>
+    <div class="card" style="margin-top:16px">
+      <div class="card-title" style="margin-bottom:4px">取消核准紀錄・撥付系統刪除紀錄</div>
+      <div class="form-hint" style="margin:0 0 12px">科長取消原核准後，系統介接撥付系統刪除之支領紀錄與批號，均於此保留備查，不因案件重新核符而消失。</div>
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead><tr><th style="width:120px">取消時間</th><th>案件編號</th><th>退撫人</th><th>已刪除批號（撥付子系統）</th><th>刪除內容</th><th>取消原因</th><th>操作人</th><th>目前狀態</th></tr></thead>
+          <tbody id="sup-cancel-body"></tbody>
+        </table>
+      </div>
+    </div>
     </div>
 
     <!-- ===== DIRECT LETTER ===== -->
@@ -4043,24 +4068,15 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           <button class="btn btn-sm btn-outline" onclick="runDownload(document.getElementById('report-merge-filename').textContent.replace('.pdf',''),'pdf')">下載合併 PDF</button>
         </div>
       </div>
- <!--    
+      
       <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
         <div class="stat-card success"><div class="stat-label">已完成</div><div class="stat-value success" id="report-done">0</div><div class="stat-sub">/ 57 項</div></div>
         <div class="stat-card danger"><div class="stat-label">失敗</div><div class="stat-value danger" id="report-fail">0</div><div class="stat-sub">需重試</div></div>
         <div class="stat-card warning"><div class="stat-label">執行中</div><div class="stat-value" style="color:var(--warning)" id="report-running">0</div><div class="stat-sub">-</div></div>
         <div class="stat-card secondary"><div class="stat-label">待執行</div><div class="stat-value" style="color:var(--text-secondary)" id="report-pending">57</div><div class="stat-sub">-</div></div>
       </div>
- --!>
-      
 
-      <div class="tabs" id="report-cat-tabs" style="margin-bottom:16px">
-        <div class="tab-item active" id="tabbtn-rpt-mil-monthly" onclick="switchTab(this,'rpt-mil-monthly')">① 軍職月退月撫</div>
-        <div class="tab-item" id="tabbtn-rpt-civil-monthly" onclick="switchTab(this,'rpt-civil-monthly')">② 政公教月退月撫</div>
-        <div class="tab-item" id="tabbtn-rpt-civil-annual" onclick="switchTab(this,'rpt-civil-annual')">③ 政公教年撫卹</div>
-        <div class="tab-item" id="tabbtn-rpt-mil-annual" onclick="switchTab(this,'rpt-mil-annual')">④ 軍職年撫卹（1項，每年1月）</div>
-      </div>
-	  
-	  <div class="card" style="margin-bottom:20px">
+      <div class="card" style="margin-bottom:20px">
         <div class="card-header">
           <div>
             <div class="card-title">共用彙總報表</div>
@@ -4072,6 +4088,13 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           <button class="btn btn-sm btn-outline" onclick="runSingleReport('cal2pay1new')">產製</button>
           <button class="btn btn-sm btn-outline" onclick="runDownload('CAL2PAY1New_銀行別撥付總表','xlsx')">下載</button>
         </div>
+      </div>
+
+      <div class="tabs" id="report-cat-tabs" style="margin-bottom:16px">
+        <div class="tab-item active" id="tabbtn-rpt-mil-monthly" onclick="switchTab(this,'rpt-mil-monthly')">① 軍職月退月撫（13項）</div>
+        <div class="tab-item" id="tabbtn-rpt-civil-monthly" onclick="switchTab(this,'rpt-civil-monthly')">② 政公教月退月撫（34項）</div>
+        <div class="tab-item" id="tabbtn-rpt-civil-annual" onclick="switchTab(this,'rpt-civil-annual')">③ 政公教年撫卹</div>
+        <div class="tab-item" id="tabbtn-rpt-mil-annual" onclick="switchTab(this,'rpt-mil-annual')">④ 軍職年撫卹（1項，每年1月）</div>
       </div>
 
       <!-- 軍職月退月輔 -->
@@ -4161,6 +4184,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
         <div class="card-header">
           <div>
             <div class="card-title">科長未核符清冊與未壓撥付日期檢核表（共 5 項）</div>
+            <div class="card-subtitle">科長未核符清冊 4 項、未壓撥付日期檢核表 1 項，與軍職類 12 項、政公教類 25 項銀行核對清冊合計 42 項清冊</div>
           </div>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -8361,7 +8385,7 @@ function renderDirectNotiLog() {
   if (!tb) return;
   tb.innerHTML = DIRECT_NOTI.length ? DIRECT_NOTI.slice(0, 30).map(n => '<tr><td>' + n.t + '</td><td>' + n.caseNo + '</td><td>' + n.name + '</td><td>' + n.to + '</td><td>' + n.reason + '</td><td>' + n.ch + '</td><td><span class="badge badge-success">' + n.st + '</span></td></tr>').join('') : '<tr><td colspan="7" style="text-align:center;color:var(--text-secondary)">尚無通知紀錄</td></tr>';
 }
-function dirIsOverdue(c) { return c.status === 'pending' && c.submitTime < '113/12/07'; }
+function dirIsOverdue(c) { return c.status === 'pending' && (c.reopenTime || c.submitTime) < '113/12/07'; }
 function notifyPendingDirectCases() {
   const list = supervisorCases.filter(c => c.status === 'pending');
   if (!list.length) { showToast('info', '無須通知', '目前無已登錄未核符案件'); return; }
@@ -8544,9 +8568,9 @@ const supervisorCases = [
   { caseNo:'DIR-113-0046', pensionerName:'吳文雄', pensionerId:'G789***345', payeeName:'吳文雄', payeeId:'G789***345', idType:'公務人員', type:'單筆', period:'113/12', amount:71000, submittedBy:'王大明', submitTime:'113/12/10 09:20', status:'pending', isPeriodCase:false },
   { caseNo:'DIR-113-0047', pensionerName:'李秀蘭', pensionerId:'F678***234', payeeName:'李秀蘭之子 李文彬', payeeId:'H321***654', idType:'公務人員', type:'期次', period:'114/01～114/06（首期 114/01）', totalPeriods:6, amount:71000, submittedBy:'王大明', submitTime:'113/12/10 11:05', status:'pending', isPeriodCase:true },
   { caseNo:'DIR-113-0048', pensionerName:'陳淑華', pensionerId:'B234***890', payeeName:'陳淑華', payeeId:'B234***890', idType:'教育人員', type:'單筆', period:'113/12', amount:64000, submittedBy:'王大明', submitTime:'113/12/06 14:10', status:'pending', isPeriodCase:false },
-  { caseNo:'DIR-113-0045', pensionerName:'林建志', pensionerId:'C345***678', payeeName:'林建志', payeeId:'C345***678', idType:'軍職人員', type:'單筆', period:'113/12', amount:71000, submittedBy:'王大明', submitTime:'113/12/09 10:00', status:'approved', approver:'科長 陳主任', approveTime:'113/12/09 14:30', isPeriodCase:false },
-  { caseNo:'DIR-113-0044', pensionerName:'張美玲', pensionerId:'D456***789', payeeName:'張美玲', payeeId:'D456***789', idType:'公務人員', type:'單筆', period:'113/11', amount:68500, submittedBy:'王大明', submitTime:'113/12/08 09:40', status:'approved', approver:'科長 陳主任', approveTime:'113/12/08 10:15', isPeriodCase:false },
-  { caseNo:'DIR-113-0043', pensionerName:'王志明', pensionerId:'E567***890', payeeName:'王志明', payeeId:'E567***890', idType:'公務人員', type:'單筆', period:'113/12', amount:85000, submittedBy:'王大明', submitTime:'113/12/07 15:00', status:'approved', approver:'科長 陳主任', approveTime:'113/12/07 16:22', isPeriodCase:false }
+  { caseNo:'DIR-113-0045', pensionerName:'林建志', pensionerId:'C345***678', payeeName:'林建志', payeeId:'C345***678', idType:'軍職人員', type:'單筆', period:'113/12', amount:71000, submittedBy:'王大明', submitTime:'113/12/09 10:00', status:'approved', approver:'科長 陳主任', approveTime:'113/12/09 14:30', subSystem:'軍職人員撥付系統', batchNo:'BM1131209001', feedback:'待回饋', isPeriodCase:false },
+  { caseNo:'DIR-113-0044', pensionerName:'張美玲', pensionerId:'D456***789', payeeName:'張美玲', payeeId:'D456***789', idType:'公務人員', type:'單筆', period:'113/11', amount:68500, submittedBy:'王大明', submitTime:'113/12/08 09:40', status:'approved', approver:'科長 陳主任', approveTime:'113/12/08 10:15', subSystem:'公務人員撥付系統', batchNo:'BP1131208002', feedback:'成功', feedbackFile:'FB_BP1131208002.txt', feedbackTime:'113/12/08 17:05', cancelRecords:[{ time:'113/12/08 09:58', by:'科長 陳主任', reasonType:'撥付金額／期間需更正', reason:'撥付金額登打錯誤（原 66,500 元，更正為 68,500 元）', batchNo:'BP1131208001', subSystem:'公務人員撥付系統', records:1, later:0, resp:'D00 刪除成功', approver:'科長 陳主任', approveTime:'113/12/08 09:41' }], isPeriodCase:false },
+  { caseNo:'DIR-113-0043', pensionerName:'王志明', pensionerId:'E567***890', payeeName:'王志明', payeeId:'E567***890', idType:'公務人員', type:'單筆', period:'113/12', amount:85000, submittedBy:'王大明', submitTime:'113/12/07 15:00', status:'approved', approver:'科長 陳主任', approveTime:'113/12/07 16:22', subSystem:'公務人員撥付系統', batchNo:'BP1131207003', feedback:'成功', feedbackFile:'FB_BP1131207003.txt', feedbackTime:'113/12/07 17:05', isPeriodCase:false }
 ];
 let supervisorFilterStatus = 'pending';
 const supervisorTabTitles = { pending:'尚未核符案件清單', approved:'已核符案件清單', all:'全部案件清單' };
@@ -8587,7 +8611,7 @@ function renderSupervisorQueue() {
   document.getElementById('sup-stat-pending').textContent = supervisorCases.filter(c => c.status === 'pending').length;
   document.getElementById('sup-stat-approved').textContent = supervisorCases.filter(c => c.status === 'approved').length;
   document.getElementById('sup-stat-today').textContent = supervisorCases.filter(c => c.status === 'approved' && (c.approveTime || '').indexOf('113/12/10') === 0).length;
-  document.getElementById('sup-stat-overdue').textContent = supervisorCases.filter(c => c.status === 'pending' && c.submitTime < '113/12/07').length;
+  document.getElementById('sup-stat-overdue').textContent = supervisorCases.filter(dirIsOverdue).length;
 
   const tbody = document.getElementById('sup-queue-body');
   const emptyHint = document.getElementById('sup-empty-hint');
@@ -8606,8 +8630,8 @@ function renderSupervisorQueue() {
 function renderSupervisorRow(c) {
   const isPending = c.status === 'pending';
   const statusBadge = isPending
-    ? '<span class="badge badge-warning">⏳ 待核符</span><br><span style="font-size:11px;color:var(--text-secondary)">可編修' + (dirIsOverdue(c) ? '・<span style="color:var(--danger)">逾期</span>' : '') + '</span>'
-    : '<span class="badge badge-success">✔ 已核符（鎖定）</span><br><span style="font-size:11px;color:var(--text-secondary)">不可編修・回饋：' + (c.feedback || '成功') + '</span>';
+    ? '<span class="badge badge-warning">⏳ 待核符</span><br><span style="font-size:11px;color:var(--text-secondary)">🔓 可編修' + (dirIsOverdue(c) ? '・<span style="color:var(--danger)">逾期</span>' : '') + '</span>' + (c.reopened ? '<br><span class="badge badge-danger" style="margin-top:3px">↩ 取消核准後回復</span><br><span style="font-size:11px;color:var(--text-secondary)">原批號 ' + (c.cancelRecords[c.cancelRecords.length - 1].batchNo) + ' 已刪除</span>' : '')
+    : '<span class="badge badge-success">✔ 已核符（鎖定）</span><br><span style="font-size:11px;color:var(--text-secondary)">🔒 不可編修・回饋：' + (c.feedback || '成功') + '</span><br><span style="font-size:11px;color:var(--text-secondary)">已登錄' + (c.subSystem || '-') + '<br>批號 ' + (c.batchNo || '-') + '</span>';
   const typeBadge = c.isPeriodCase ? c.type + '（共' + c.totalPeriods + '期）' : c.type;
   const periodCell = isPending
     ? '<input type="text" class="form-control sup-edit-period" onchange="syncSupervisorRowEdits(\'' + c.caseNo + '\')" data-case="' + c.caseNo + '" value="' + c.period + '" style="min-width:150px">'
@@ -8668,7 +8692,7 @@ function dirDoApprove(c, batchMode) {
   if (miss.length) { showToast('error', '介接格式檢核未通過', '案件 ' + c.caseNo + ' 欄位未完整：' + miss.join('、')); return false; }
   const subSystemMap = { '公務人員': '公務人員撥付系統', '教育人員': '教育人員撥付系統', '軍職人員': '軍職人員撥付系統' };
   const subSystem = subSystemMap[c.idType] || '公務人員撥付系統';
-  const batchNo = 'B' + subSystem.substr(0,1) + new Date().getFullYear() + Math.floor(1000 + Math.random() * 9000);
+  const batchNo = dirBatchNo(subSystem);
   c.status = 'approved';
   c.approver = DIR_SUPERVISOR;
   c.approveTime = dirNow();
@@ -9519,7 +9543,7 @@ function runSingleReport(id) {
 
   setTimeout(() => {
     statusEl.className = 'badge badge-success';
-    statusEl.textContent = '完成';
+    statusEl.textContent = '已產製';
     reportRunning -= sheets;
     reportDone += sheets;
     updateReportStats();
@@ -16951,6 +16975,206 @@ document.addEventListener('click',function(e){if(e.target.classList&&e.target.cl
 (function(){var _n=window.navigateTo;window.navigateTo=function(id){var r=_n.apply(this,arguments);if(window.XP[id]){try{window.XP[id]();if(typeof permApplyAll==='function')permApplyAll()}catch(err){console.error(err)}}return r}})();
 /* 外部資料交換頁面的傳送按鈕，改接新版傳送作業 */
 window.laborSftp=function(){XPX.open('sftp')};window.mohwEmail=function(){XPX.open('mail')};
+</script>
+<script>
+/* ===== V51：清冊產製狀態  待執行 → 產製中 → 已產製（查看視窗即時更新） ===== */
+(function(){
+  var STATE={};
+  var BADGE={
+    done:'<span class="badge badge-success">已產製</span>',
+    run:'<span class="badge badge-warning">產製中…</span>',
+    idle:'<span class="badge badge-secondary">待執行</span>'
+  };
+  function meta(c){
+    if (BANK_CHECKLIST_DEF[c]) return {names:BANK_CHECKLIST_DEF[c].items,idLabel:BANK_CHECKLIST_DEF[c].id,modalTitle:c+'銀行核對清冊',blockTitle:c+'銀行核對清冊',label:c+'銀行核對清冊'};
+    if (CHK_SPECIAL[c]) return {names:CHK_SPECIAL[c],idLabel:null,modalTitle:c+'清冊',blockTitle:(c==='科長未核符'?'科長未核符清冊':'未壓撥付日期檢核表'),label:(c==='科長未核符'?'科長未核符清冊':'未壓撥付日期檢核表')};
+    return null;
+  }
+  function st(c,i){
+    var d=bankChecklistDone[c]||0;
+    if (i<d) return 'done';
+    if (STATE[c]==='running' && i===d) return 'run';
+    return 'idle';
+  }
+  function sum(c,n){
+    var d=bankChecklistDone[c]||0;
+    if (STATE[c]==='running') return '<span class="badge badge-warning">產製中</span> 已產製 '+d+' / '+n+' 項';
+    if (d>=n) return '<span class="badge badge-success">已產製</span> 共 '+n+' 項皆已產製';
+    return '<span class="badge badge-secondary">待執行</span> 尚未產製（共 '+n+' 項）';
+  }
+  function refresh(c){
+    var w=document.querySelector('#detail-modal.open [data-chk-cat="'+c+'"]');
+    if(!w) return;
+    var m=meta(c);
+    w.querySelectorAll('[data-chk-st]').forEach(function(td){ td.innerHTML=BADGE[st(c,+td.getAttribute('data-chk-st'))]; });
+    var el=w.querySelector('.chk-sum'); if(el) el.innerHTML=sum(c,m.names.length);
+  }
+  window.showBankChecklist=function(category,total){
+    var m=meta(category); if(!m) return;
+    var rows='';
+    m.names.forEach(function(name,i){
+      var seq=String(i+1).padStart(2,'0');
+      var fname=m.idLabel ? category+'銀行核對清冊_'+seq+'_'+name.replace(/~/g,'-').replace(/[（）()；：\s]/g,'') : name;
+      rows+='<tr><td>'+(i+1)+'</td>'+(m.idLabel?'<td style="white-space:nowrap">'+m.idLabel+'</td>':'')+'<td>'+name+'</td><td data-chk-st="'+i+'">'+BADGE[st(category,i)]+'</td><td><button class="btn btn-sm btn-outline" style="white-space:nowrap" onclick="runDownload(\''+fname+'\',\'xlsx\')">下載</button></td></tr>';
+    });
+    var html='<div class="detail-block" data-chk-cat="'+category+'"><div class="detail-block-title">'+m.blockTitle+'（共 '+m.names.length+' 項）</div>'
+      +'<div class="chk-sum" style="margin:6px 0 12px;font-size:calc(13px * var(--font-scale,1))">'+sum(category,m.names.length)+'</div>'
+      +'<div class="table-wrapper"><table class="data-table"><thead><tr><th>序號</th>'+(m.idLabel?'<th>身分別</th>':'')+'<th>清冊名稱</th><th>狀態</th><th>下載</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
+    openDetailModal(m.modalTitle,html);
+  };
+  window.runBankChecklist=function(category,total){
+    var m=meta(category); if(!m) return;
+    var n=m.names.length;
+    if (STATE[category]==='running'){ showToast('warning','產製中','「'+m.label+'」正在產製，請稍候…'); return; }
+    if ((bankChecklistDone[category]||0)>=n){ reportDone-=n; reportPending+=n; }   // 重新產製：先還原統計
+    bankChecklistDone[category]=0; STATE[category]='running';
+    reportRunning+=n; reportPending-=n; updateReportStats();
+    showToast('info','開始產製','正在產製「'+m.label+'」共 '+n+' 項，請稍候...');
+    refresh(category);
+    var step=Math.max(60,Math.min(500,Math.round(1600/n)));
+    var t=setInterval(function(){
+      bankChecklistDone[category]=(bankChecklistDone[category]||0)+1;
+      if (bankChecklistDone[category]>=n){
+        clearInterval(t); STATE[category]='done';
+        reportRunning-=n; reportDone+=n; updateReportStats();
+        showToast('success','產製完成','「'+m.label+'」共 '+n+' 項已產製');
+      }
+      refresh(category);
+    },step);
+  };
+})();
+</script>
+<script>
+/* ===== V52：直撥登錄 ‧ 科長取消原核准作業（依建議書 直撥登錄子系統 A.(B)登錄時點／(C)承科長取消核准／(D)狀態控管與檢核） ===== */
+(function(){
+  var SUBCODE={'公務人員撥付系統':'P','教育人員撥付系統':'E','軍職人員撥付系統':'M'}, SEQ={};
+  var REASONS=['資料登打錯誤','撥付金額／期間需更正','領受人或銀行帳號資料變更','公文文號或附件更正','重複登錄','其他'];
+  function esc(x){ return String(x==null?'':x).replace(/[&<>"]/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m];}); }
+  window.dirBatchNo=function(sub){
+    var d=dirNow().substr(0,9).replace(/\//g,''), k=(SUBCODE[sub]||'P')+d;
+    SEQ[k]=(SEQ[k]||0)+1; return 'B'+k+String(SEQ[k]).padStart(3,'0');
+  };
+  function roleOk(){ var l; try{ l=dLvl('supervisor-approval'); }catch(e){ l=undefined; } return l===undefined||l>=3; }
+  function draftOf(c){ return !!(window.dirLet && dirLet.gen && !dirLet.gen.dispatched && dirLet.gen.cases.some(function(x){return x.caseNo===c.caseNo;})); }
+
+  /* ---- 取消核准：作業視窗（確認將刪除之內容、檢核、必填原因） ---- */
+  window.cancelSupervisorApproval=function(caseNo){
+    var c=findSupervisorCase(caseNo); if(!c||c.status!=='approved') return;
+    var later=c.isPeriodCase?(c.totalPeriods-1):0, ok=roleOk(), sent=!!c.letterDocNo, draft=draftOf(c), blocked=!ok||sent;
+    function chk(pass,txt,warn){ return '<div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0"><span class="badge '+(pass?'badge-success':(warn?'badge-warning':'badge-danger'))+'" style="min-width:34px;text-align:center">'+(pass?'通過':(warn?'注意':'不符'))+'</span><div style="font-size:calc(13px * var(--font-scale))">'+txt+'</div></div>'; }
+    var h='<div class="detail-block"><div class="detail-block-title">案件資料</div><div class="info-card">'
+      +'<div class="info-row"><div class="info-key">案件編號</div><div class="info-val">'+esc(c.caseNo)+'</div></div>'
+      +'<div class="info-row"><div class="info-key">退撫人／領受人</div><div class="info-val">'+esc(c.pensionerName)+' <span class="masked">'+esc(c.pensionerId)+'</span>／'+esc(c.payeeName)+'</div></div>'
+      +'<div class="info-row"><div class="info-key">身分別／類型</div><div class="info-val">'+esc(c.idType)+'／'+esc(c.type)+(c.isPeriodCase?'（共 '+c.totalPeriods+' 期）':'')+'</div></div>'
+      +'<div class="info-row"><div class="info-key">撥付期間／金額</div><div class="info-val">'+esc(c.period)+'／NT$ '+c.amount.toLocaleString('en-US')+'</div></div>'
+      +'<div class="info-row"><div class="info-key">原核符人／時間</div><div class="info-val">'+esc(c.approver)+'　'+esc(c.approveTime)+'</div></div></div></div>'
+      +'<div class="detail-block" style="margin-top:12px"><div class="detail-block-title" style="color:var(--danger)">取消後，系統將介接撥付系統刪除下列內容</div><div class="info-card" style="border-left:4px solid var(--danger)">'
+      +'<div class="info-row"><div class="info-key">撥付子系統</div><div class="info-val">'+esc(c.subSystem||'-')+'</div></div>'
+      +'<div class="info-row"><div class="info-key">批號</div><div class="info-val" style="font-weight:700">'+esc(c.batchNo||'-')+'</div></div>'
+      +'<div class="info-row"><div class="info-key">支領紀錄</div><div class="info-val">'+(c.isPeriodCase?'首期支領紀錄 1 筆（'+esc(c.period)+'）':'支領紀錄 1 筆（'+esc(c.period)+'，NT$ '+c.amount.toLocaleString('en-US')+'）')+'</div></div>'
+      +(later?'<div class="info-row"><div class="info-key">定撥排程</div><div class="info-val">後續 '+later+' 期已排入定撥排程之紀錄，一併移除</div></div>':'')
+      +'<div class="info-row"><div class="info-key">回饋狀態</div><div class="info-val">'+esc(c.feedback||'成功')+(c.feedbackFile?'（'+esc(c.feedbackFile)+'）':'')+'</div></div></div></div>'
+      +'<div class="detail-block" style="margin-top:12px"><div class="detail-block-title">取消前檢核</div>'
+      +chk(ok,ok?'登入身分具科長核准權限，得執行取消核准。':'目前登入身分不具科長核准權限，無法取消核准（僅科長／核准層級可操作）。')
+      +chk(!sent,sent?'本案書函已於 '+esc(c.letterAt||'-')+' 發文（文號：'+esc(c.letterDocNo)+'），不得直接取消核准；請先辦理書函更正後再行處理。':'本案書函尚未發文，得取消核准。')
+      +(draft?chk(false,'本案已列入尚未發文之書函草稿，取消核准後將一併自書函移除，須重新產製。',true):'')
+      +'</div>'
+      +'<div class="detail-block" style="margin-top:12px"><div class="detail-block-title">取消原因（必填）</div>'
+      +'<div style="display:grid;gap:8px"><select class="form-control" id="cxl-type" onchange="cxlCheck()"><option value="">請選擇取消原因類別</option>'+REASONS.map(function(r){return '<option>'+r+'</option>';}).join('')+'</select>'
+      +'<textarea class="form-control" id="cxl-reason" rows="3" placeholder="請說明取消核准之具體原因（至少 5 個字），將併同刪除紀錄永久留存" oninput="cxlCheck()"'+(blocked?' disabled':'')+'></textarea>'
+      +'<label style="display:flex;gap:8px;align-items:flex-start;font-size:calc(13px * var(--font-scale))"><input type="checkbox" id="cxl-ack" onchange="cxlCheck()"'+(blocked?' disabled':'')+' style="margin-top:3px"> <span>我已確認：取消核准後，撥付系統已登錄之支領紀錄與批號將被刪除，案件回復「待核符・可編修」，本次異動及被刪除之批號將永久保留紀錄。</span></label>'
+      +'<div id="cxl-err" style="color:var(--danger);font-size:calc(12px * var(--font-scale));min-height:16px"></div></div></div>'
+      +'<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:8px"><button class="btn btn-outline btn-sm" onclick="closeModal(\'detail-modal\')">放棄</button><button class="btn btn-danger btn-sm" id="cxl-go" disabled onclick="cxlRun(\''+esc(c.caseNo)+'\')">確認取消核准</button></div>';
+    window.__cxl={caseNo:caseNo,blocked:blocked};
+    openDetailModal('取消核准作業 － '+c.caseNo,h);
+    cxlCheck();
+  };
+  window.cxlCheck=function(){
+    var st=window.__cxl; if(!st) return;
+    var type=(document.getElementById('cxl-type')||{}).value||'', txt=((document.getElementById('cxl-reason')||{}).value||'').trim(), ack=(document.getElementById('cxl-ack')||{}).checked;
+    var err='';
+    if(st.blocked) err='本案目前不得取消核准，請見上方檢核結果。';
+    else if(!type) err='請選擇取消原因類別。';
+    else if(txt.length<5) err='請填寫取消原因說明（至少 5 個字，目前 '+txt.length+' 字）。';
+    else if(!ack) err='請勾選確認事項。';
+    document.getElementById('cxl-err').textContent=err;
+    document.getElementById('cxl-go').disabled=!!err;
+  };
+
+  /* ---- 取消核准：執行（介接撥付系統刪除支領紀錄與批號 → 回復待核符 → 保留紀錄 → 通知） ---- */
+  window.cxlRun=function(caseNo){
+    var c=findSupervisorCase(caseNo); if(!c||c.status!=='approved'||(window.__cxl&&window.__cxl.blocked)) return;
+    var type=document.getElementById('cxl-type').value, reason=document.getElementById('cxl-reason').value.trim();
+    var batchNo=c.batchNo||'-', sub=c.subSystem||'-', later=c.isPeriodCase?(c.totalPeriods-1):0, oldApprover=c.approver, oldTime=c.approveTime, voided=false;
+    (c.cancelRecords=c.cancelRecords||[]).push({ time:dirNow(), by:DIR_SUPERVISOR, reasonType:type, reason:reason, batchNo:batchNo, subSystem:sub, records:1, later:later, resp:'D00 刪除成功', approver:oldApprover, approveTime:oldTime });
+    c.status='pending'; c.reopened=true; c.reopenTime=dirNow();
+    delete c.approver; delete c.approveTime; delete c.batchNo; delete c.subSystem; delete c.feedback; delete c.feedbackFile; delete c.feedbackTime;
+    if(window.dirLet&&dirLet.gen&&!dirLet.gen.dispatched){
+      var before=dirLet.gen.cases.length; dirLet.gen.cases=dirLet.gen.cases.filter(function(x){return x.caseNo!==caseNo;});
+      if(dirLet.gen.cases.length!==before){ voided=true; if(!dirLet.gen.cases.length) dirLet.gen=null; if(dirLet.sel) dirLet.sel.delete(caseNo); try{ dirLetterRender(); }catch(e){} }
+    }
+    appendAuditLog('取消核准','科長取消案件 '+c.caseNo+' 原核准（原核符人：'+oldApprover+'；核符時間：'+oldTime+'），原因類別：'+type+'；說明：'+reason+'；資料回復為可編修狀態',DIR_SUPERVISOR,c.caseNo);
+    appendAuditLog('刪除批號','已介接'+sub+'刪除支領紀錄'+(later?'（含後續 '+later+' 期定撥排程）':'')+'及批號 '+batchNo+'，撥付系統回應 D00 刪除成功；刪除紀錄永久保留','系統（撥付系統介接）',c.caseNo);
+    if(voided) appendAuditLog('書函','案件取消核准，已自尚未發文之書函草稿移除，須於重新核符後重新產製','系統',c.caseNo);
+    directNotify(c,'科長取消核准，案件回復為待核符（原批號 '+batchNo+' 已刪除，原因：'+type+'）');
+    renderSupervisorQueue();
+    var steps=['介接'+sub+'（連線驗證完成）','刪除支領紀錄'+(later?'（含後續 '+later+' 期定撥排程）':' 1 筆'),'刪除批號 '+batchNo,'撥付系統回應：D00 刪除成功','案件回復「待核符・可編修」（資料解除鎖定）','保留取消核准及刪除紀錄','以系統訊息通知承辦人員（'+c.submittedBy+'）與所屬業務主管（'+DIR_MANAGER+'）'];
+    var body=document.getElementById('detail-modal-body');
+    body.innerHTML='<div class="detail-block"><div class="detail-block-title">執行中：'+esc(c.caseNo)+' 取消核准</div><div id="cxl-steps" style="display:grid;gap:8px">'+steps.map(function(t,i){return '<div class="cxl-step" data-i="'+i+'" style="display:flex;gap:8px;align-items:center"><span class="badge badge-secondary" style="min-width:52px;text-align:center">等待</span><span>'+esc(t)+'</span></div>';}).join('')+'</div><div id="cxl-done"></div></div>';
+    var i=0;
+    (function tick(){
+      var el=document.querySelector('.cxl-step[data-i="'+i+'"]'); if(!el) return;
+      var b=el.querySelector('.badge'); b.className='badge badge-warning'; b.textContent='進行中';
+      setTimeout(function(){
+        b.className='badge badge-success'; b.textContent='完成'; i++;
+        if(i<steps.length) tick(); else finish();
+      },260);
+    })();
+    function finish(){
+      document.getElementById('cxl-done').innerHTML='<div class="info-card" style="margin-top:14px;border-left:4px solid var(--success)">'
+        +'<div class="info-row"><div class="info-key">處理結果</div><div class="info-val"><span class="badge badge-success">取消核准完成</span></div></div>'
+        +'<div class="info-row"><div class="info-key">已刪除批號</div><div class="info-val">'+esc(batchNo)+'（'+esc(sub)+'）</div></div>'
+        +'<div class="info-row"><div class="info-key">案件狀態</div><div class="info-val"><span class="badge badge-warning">⏳ 待核符</span> 🔓 可編修，請修正後重新送科長核符</div></div>'
+        +(voided?'<div class="info-row"><div class="info-key">書函</div><div class="info-val">已自尚未發文之書函草稿移除，須重新產製</div></div>':'')
+        +'</div><div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px"><button class="btn btn-outline btn-sm" onclick="closeModal(\'detail-modal\')">關閉</button><button class="btn btn-primary btn-sm" onclick="cxlGoPending(\''+esc(caseNo)+'\')">前往待核符案件</button></div>';
+      showToast('success','取消核准完成','案件 '+caseNo+' 已刪除'+sub+'批號 '+batchNo+' 及支領紀錄，已保留異動紀錄並通知承辦人員與業務主管');
+    }
+  };
+  window.cxlGoPending=function(caseNo){
+    closeModal('detail-modal');
+    switchSupervisorFilter('pending',document.getElementById('sup-tab-pending'));
+    var cb=document.querySelector('#sup-queue-body .sup-row-check[data-case="'+caseNo+'"]');
+    if(cb){ var tr=cb.closest('tr'); tr.style.outline='2px solid var(--warning)'; tr.scrollIntoView({block:'center'}); setTimeout(function(){ tr.style.outline=''; },3500); }
+  };
+
+  /* ---- 取消核准紀錄（撥付系統刪除紀錄）列表 ---- */
+  window.renderCancelLog=function(){
+    var tb=document.getElementById('sup-cancel-body'); if(!tb) return;
+    var rows=[]; supervisorCases.forEach(function(c){ (c.cancelRecords||[]).forEach(function(r){ rows.push({c:c,r:r}); }); });
+    rows.sort(function(a,b){ return a.r.time<b.r.time?1:-1; });
+    tb.innerHTML=rows.length?rows.map(function(x){
+      var c=x.c,r=x.r;
+      var st=c.status==='approved'?'<span class="badge badge-success">已重新核符</span><br><span style="font-size:11px;color:var(--text-secondary)">新批號 '+esc(c.batchNo||'-')+'</span>':'<span class="badge badge-warning">待核符・可編修</span>';
+      return '<tr><td>'+esc(r.time)+'</td><td>'+esc(c.caseNo)+'</td><td>'+esc(c.pensionerName)+'</td><td>'+esc(r.batchNo)+'<br><span style="font-size:11px;color:var(--text-secondary)">'+esc(r.subSystem)+'</span></td><td>支領紀錄 '+(r.records||1)+' 筆'+(r.later?'<br><span style="font-size:11px;color:var(--text-secondary)">＋後續 '+r.later+' 期排程</span>':'')+'<br><span style="font-size:11px;color:var(--text-secondary)">'+esc(r.resp||'')+'</span></td><td>'+esc(r.reasonType||'')+'<br><span style="font-size:12px">'+esc(r.reason)+'</span></td><td>'+esc(r.by)+'</td><td>'+st+'</td></tr>';
+    }).join(''):'<tr><td colspan="8" style="text-align:center;color:var(--text-secondary)">尚無取消核准紀錄</td></tr>';
+  };
+  var _rq=window.renderSupervisorQueue;
+  window.renderSupervisorQueue=function(){
+    _rq.apply(this,arguments); renderCancelLog();
+    var t=document.getElementById('sup-tab-approved');
+    if(t) t.innerHTML='已核符 <span class="badge badge-success" style="margin-left:4px">'+supervisorCases.filter(function(c){return c.status==='approved';}).length+'</span>';
+  };
+  /* 已核符案件明細：提供「取消核准」入口 */
+  var _vd=window.viewSupervisorCaseDetail;
+  window.viewSupervisorCaseDetail=function(caseNo){
+    _vd.apply(this,arguments);
+    var c=findSupervisorCase(caseNo);
+    if(c&&c.status==='approved'){
+      document.getElementById('detail-modal-body').insertAdjacentHTML('beforeend','<div style="margin-top:16px;display:flex;justify-content:flex-end"><button class="btn btn-sm btn-outline-danger" onclick="closeModal(\'detail-modal\');cancelSupervisorApproval(\''+caseNo+'\')">取消核准…</button></div>');
+    }
+  };
+  try{ renderSupervisorQueue(); }catch(e){}
+})();
 </script>
 </body>
 </html>
