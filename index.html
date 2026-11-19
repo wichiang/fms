@@ -4068,15 +4068,23 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           <button class="btn btn-sm btn-outline" onclick="runDownload(document.getElementById('report-merge-filename').textContent.replace('.pdf',''),'pdf')">下載合併 PDF</button>
         </div>
       </div>
-      
+<!-- 
       <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
         <div class="stat-card success"><div class="stat-label">已完成</div><div class="stat-value success" id="report-done">0</div><div class="stat-sub">/ 57 項</div></div>
         <div class="stat-card danger"><div class="stat-label">失敗</div><div class="stat-value danger" id="report-fail">0</div><div class="stat-sub">需重試</div></div>
         <div class="stat-card warning"><div class="stat-label">執行中</div><div class="stat-value" style="color:var(--warning)" id="report-running">0</div><div class="stat-sub">-</div></div>
         <div class="stat-card secondary"><div class="stat-label">待執行</div><div class="stat-value" style="color:var(--text-secondary)" id="report-pending">57</div><div class="stat-sub">-</div></div>
       </div>
-
-      <div class="card" style="margin-bottom:20px">
+ --!>
+      
+      <div class="tabs" id="report-cat-tabs" style="margin-bottom:16px">
+        <div class="tab-item active" id="tabbtn-rpt-mil-monthly" onclick="switchTab(this,'rpt-mil-monthly')">① 軍職月退月撫</div>
+        <div class="tab-item" id="tabbtn-rpt-civil-monthly" onclick="switchTab(this,'rpt-civil-monthly')">② 政公教月退月撫</div>
+        <div class="tab-item" id="tabbtn-rpt-civil-annual" onclick="switchTab(this,'rpt-civil-annual')">③ 政公教年撫卹</div>
+        <div class="tab-item" id="tabbtn-rpt-mil-annual" onclick="switchTab(this,'rpt-mil-annual')">④ 軍職年撫卹（1項，每年1月）</div>
+      </div>
+      
+	  <div class="card" style="margin-bottom:20px">
         <div class="card-header">
           <div>
             <div class="card-title">共用彙總報表</div>
@@ -4089,14 +4097,7 @@ select.filter-control{appearance:none;background-image:url("data:image/svg+xml,%
           <button class="btn btn-sm btn-outline" onclick="runDownload('CAL2PAY1New_銀行別撥付總表','xlsx')">下載</button>
         </div>
       </div>
-
-      <div class="tabs" id="report-cat-tabs" style="margin-bottom:16px">
-        <div class="tab-item active" id="tabbtn-rpt-mil-monthly" onclick="switchTab(this,'rpt-mil-monthly')">① 軍職月退月撫（13項）</div>
-        <div class="tab-item" id="tabbtn-rpt-civil-monthly" onclick="switchTab(this,'rpt-civil-monthly')">② 政公教月退月撫（34項）</div>
-        <div class="tab-item" id="tabbtn-rpt-civil-annual" onclick="switchTab(this,'rpt-civil-annual')">③ 政公教年撫卹</div>
-        <div class="tab-item" id="tabbtn-rpt-mil-annual" onclick="switchTab(this,'rpt-mil-annual')">④ 軍職年撫卹（1項，每年1月）</div>
-      </div>
-
+	  
       <!-- 軍職月退月輔 -->
       <div class="tab-content active" id="rpt-mil-monthly">
         <div class="table-card" style="margin-bottom:16px">
